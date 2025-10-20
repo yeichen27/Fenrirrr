@@ -305,8 +305,8 @@ class MainActivity : AppCompatActivity(), OnSectionResumeCallback, AppStyleable,
                     supportFragmentManager,
                     "left_options"
                 ) { _, option ->
-                    when {
-                        option.id == 0 -> {
+                    when (option.id) {
+                        0 -> {
                             if (Settings.get().main()
                                     .nightMode == AppCompatDelegate.MODE_NIGHT_YES || Settings.get()
                                     .main()
@@ -324,7 +324,7 @@ class MainActivity : AppCompatActivity(), OnSectionResumeCallback, AppStyleable,
                             }
                         }
 
-                        option.id == 1 && FenrirNative.isNativeLoaded -> {
+                        1 if FenrirNative.isNativeLoaded -> {
                             val intent =
                                 Intent(this@MainActivity, CameraScanActivity::class.java)
                             requestQRScan.launch(intent)

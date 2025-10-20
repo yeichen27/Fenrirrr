@@ -119,7 +119,7 @@ internal object Utils {
     }
 
     fun log(owner: String, verb: String, logId: String, extras: String? = "") {
-        Log.d(TAG, String.format("%1$-11s %2$-12s %3\$s %4\$s", owner, verb, logId, extras ?: ""))
+        Log.d(TAG, String.format($$"%1$-11s %2$-12s %3$s %4$s", owner, verb, logId, extras ?: ""))
     }
 
     fun createDefaultCacheDir(context: Context): File {

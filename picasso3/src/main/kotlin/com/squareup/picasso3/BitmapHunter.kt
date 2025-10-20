@@ -192,7 +192,7 @@ internal open class BitmapHunter(
         if (actions == null) {
             actions = ArrayList(3)
         }
-        actions!!.add(action)
+        actions?.add(action)
 
         if (loggingEnabled) {
             log(OWNER_HUNTER, VERB_JOINED, request.logId(), getLogIdsForHunter(this, "to "))

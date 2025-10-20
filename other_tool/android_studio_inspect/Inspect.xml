@@ -233,7 +233,6 @@
     <option name="ignoreSerializable" value="false" />
     <option name="ignoreCloneable" value="false" />
   </inspection_tool>
-  <inspection_tool class="RedundantInnerClassModifier" enabled="true" level="WARNING" enabled_by_default="true" />
   <inspection_tool class="RedundantLabelMigration" enabled="true" level="WEAK WARNING" enabled_by_default="true" />
   <inspection_tool class="Reformat" enabled="true" level="WEAK WARNING" enabled_by_default="true" />
   <inspection_tool class="ReplaceCollectionCountWithSize" enabled="true" level="WEAK WARNING" enabled_by_default="true" />

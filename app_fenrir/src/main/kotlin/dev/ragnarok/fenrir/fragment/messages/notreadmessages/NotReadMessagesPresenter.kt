@@ -102,9 +102,8 @@ class NotReadMessagesPresenter(
 
     private fun loadMoreDown() {
         if (!loadingState.canLoadingHeader()) return
-        val firstMessageId = firstMessageId
-        loadingState.headerLoading()
         val targetMessageId = firstMessageId
+        loadingState.headerLoading()
         appendJob(
             messagesInteractor.getPeerMessages(
                 accountId,
@@ -167,9 +166,8 @@ class NotReadMessagesPresenter(
 
     private fun loadMoreUp() {
         if (!loadingState.canLoadingFooter()) return
-        val lastMessageId = lastMessageId ?: return
+        val targetLastMessageId = lastMessageId ?: return
         loadingState.footerLoading()
-        val targetLastMessageId = lastMessageId
         appendJob(
             messagesInteractor.getPeerMessages(
                 accountId,

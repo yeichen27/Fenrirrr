@@ -284,7 +284,7 @@ class LocalJsonToChatFragment :
             if (peer.getTitle().nonNullNoEmpty()) {
                 EmptyAvatar?.visibility = View.VISIBLE
                 var name: String = peer.getTitle().orEmpty()
-                if (name.length > 2) name = name.substring(0, 2)
+                if (name.length > 2) name = name.take(2)
                 name = name.trim()
                 EmptyAvatar?.text = name
             } else {

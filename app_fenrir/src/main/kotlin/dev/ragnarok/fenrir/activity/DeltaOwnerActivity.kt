@@ -181,7 +181,7 @@ class DeltaOwnerActivity : AppCompatActivity(), PlaceProvider, AppStyleable {
                     if (owner.owner.fullName.nonNullNoEmpty()) {
                         EmptyAvatar.visibility = View.VISIBLE
                         var name: String = owner.owner.fullName.orEmpty()
-                        if (name.length > 2) name = name.substring(0, 2)
+                        if (name.length > 2) name = name.take(2)
                         name = name.trim()
                         EmptyAvatar.text = name
                     } else {

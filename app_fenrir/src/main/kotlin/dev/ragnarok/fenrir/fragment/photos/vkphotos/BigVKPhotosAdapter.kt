@@ -161,8 +161,7 @@ class BigVKPhotosAdapter(
     }
 
     override fun getItemViewType(adapterPosition: Int): Int {
-        val dataType = getDataTypeByAdapterPosition(adapterPosition)
-        return when (dataType) {
+        return when (val dataType = getDataTypeByAdapterPosition(adapterPosition)) {
             DATA_TYPE_PHOTO -> VIEW_TYPE_PHOTO
             DATA_TYPE_UPLOAD -> VIEW_TYPE_UPLOAD
             else -> throw IllegalStateException("Unknown data type, dataType: $dataType")

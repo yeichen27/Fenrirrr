@@ -9,7 +9,7 @@ object Constants {
 
     const val PICASSO_TAG = "picasso_tag"
     const val EXPORT_SETTINGS_FORMAT = 1
-    const val forceDeveloperMode = BuildConfig.FORCE_DEVELOPER_MODE
+    const val forceDeveloperMode: Boolean = BuildConfig.FORCE_DEVELOPER_MODE
 
     val IS_DEBUG: Boolean = BuildConfig.DEBUG
     const val PIN_DIGITS_COUNT = 4

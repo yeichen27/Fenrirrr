@@ -197,10 +197,7 @@ class TouchImageView @JvmOverloads constructor(
         if (!FenrirNative.isNativeLoaded) {
             return
         }
-        val ch = cache.fetch(key)
-        if (ch == null) {
-            return
-        }
+        val ch = cache.fetch(key) ?: return
         if (filePathTmp == ch.absolutePath && fallbackTmp == fallback && loadedFrom == LoadedFrom.FILE) {
             return
         }
@@ -520,7 +517,7 @@ class TouchImageView @JvmOverloads constructor(
         }
     }
 
-    override fun onSaveInstanceState(): Parcelable? {
+    override fun onSaveInstanceState(): Parcelable {
         val bundle = Bundle()
         bundle.putParcelable(STATE, super.onSaveInstanceState())
         bundle.putInt("orientation", orientation)

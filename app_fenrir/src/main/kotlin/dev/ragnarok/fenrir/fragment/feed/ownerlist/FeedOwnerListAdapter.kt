@@ -140,7 +140,7 @@ class FeedOwnerListAdapter(private var data: List<FeedOwnersEntity>, private val
 
         if (item.title.nonNullNoEmpty()) {
             var name: String = item.title ?: ""
-            if (name.length > 2) name = name.substring(0, 2)
+            if (name.length > 2) name = name.take(2)
             name = name.trim()
             holder.tvBackgroundText.text = name
         } else {

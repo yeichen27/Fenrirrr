@@ -54,7 +54,7 @@ object AppTextUtils {
         return if (text == null || text.length < maxLength) {
             text
         } else {
-            text.substring(0, maxLength) + "..."
+            text.take(maxLength) + "..."
         }
     }
 

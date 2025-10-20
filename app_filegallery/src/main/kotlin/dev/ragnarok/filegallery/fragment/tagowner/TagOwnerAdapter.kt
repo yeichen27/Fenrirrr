@@ -138,7 +138,7 @@ class TagOwnerAdapter(private var data: List<TagOwner>, private val context: Con
 
         if (item.name.nonNullNoEmpty()) {
             var name: String = item.name ?: ""
-            if (name.length > 2) name = name.substring(0, 2)
+            if (name.length > 2) name = name.take(2)
             name = name.trim()
             holder.tvBackgroundText.text = name
         } else {

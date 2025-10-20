@@ -241,7 +241,7 @@ class InputViewController(
             mInputField.removeTextChangedListener(mTextWatcher)
             var txt = Utils.firstNonEmptyString(mInputField.text.toString(), " ")
             if ((txt ?: return).lastIndexOf('@') != -1) {
-                txt = txt.substring(0, txt.length - 1)
+                txt = txt.dropLast(1)
             }
             mInputField.setText("$txt $text")
             mInputField.requestFocus()

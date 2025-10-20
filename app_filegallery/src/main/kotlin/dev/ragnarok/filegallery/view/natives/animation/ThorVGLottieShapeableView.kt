@@ -104,10 +104,7 @@ class ThorVGLottieShapeableView @JvmOverloads constructor(
         if (!FenrirNative.isNativeLoaded) {
             return
         }
-        val ch = cache.fetch(url)
-        if (ch == null) {
-            return
-        }
+        val ch = cache.fetch(url) ?: return
         if (filePathTmp == ch.absolutePath && deleteInvalidFileTmp && colorReplacementTmp.contentEquals(
                 colorReplacement
             ) && useMoveColorTmp == useMoveColor && loadedFrom == LoadedFrom.FILE

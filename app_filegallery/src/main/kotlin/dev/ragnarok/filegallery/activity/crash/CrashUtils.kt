@@ -39,10 +39,8 @@ object CrashUtils {
                     var stackTraceString = sw.toString()
                     if (stackTraceString.length > 1677721) {
                         val disclaimer = " [stack trace too large]"
-                        stackTraceString = stackTraceString.substring(
-                            0,
-                            1677721 - disclaimer.length
-                        ) + disclaimer
+                        stackTraceString =
+                            stackTraceString.take(1677721 - disclaimer.length) + disclaimer
                     }
                     intent.putExtra(Extra.STACK_TRACE, stackTraceString)
                     intent.putExtra(Extra.IS_OUT_OF_MEMORY, throwable is OutOfMemoryError)

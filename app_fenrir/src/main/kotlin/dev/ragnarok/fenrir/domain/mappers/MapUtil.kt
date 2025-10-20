@@ -10,8 +10,7 @@ object MapUtil {
     fun calculateConversationAcl(conversation: VKApiConversation?): Int {
         conversation ?: return 0
         var result = 0
-        conversation.settings?.acl.requireNonNull {
-            val acl = it
+        conversation.settings?.acl.requireNonNull { acl ->
             result =
                 Utils.addFlagIf(result, Conversation.AclFlags.CAN_CHANGE_INFO, acl.can_change_info)
             result = Utils.addFlagIf(

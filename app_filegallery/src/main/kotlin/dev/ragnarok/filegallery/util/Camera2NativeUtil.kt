@@ -203,7 +203,7 @@ object Camera2ImageProcessingUtil : ImageProcessingUtil_JNI {
 }
 
 object Camera2SurfaceUtil : SurfaceUtil_JNI {
-    override fun nativeGetSurfaceInfo(surface: Surface?): IntArray? {
+    override fun nativeGetSurfaceInfo(surface: Surface?): IntArray {
         return SurfaceUtilNative.getSurfaceInfo(surface)
     }
 }

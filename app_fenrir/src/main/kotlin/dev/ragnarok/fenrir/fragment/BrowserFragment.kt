@@ -187,7 +187,7 @@ class BrowserFragment : BaseFragment(), MenuProvider, BackPressCallback,
                 val urlPath: String = urlObj.path
                 var fileName = urlPath.substring(urlPath.lastIndexOf('/') + 1)
                 if (fileName.lastIndexOf('.') != -1) {
-                    fileName = fileName.substring(0, fileName.lastIndexOf('.'))
+                    fileName = fileName.take(fileName.lastIndexOf('.'))
                 }
 
                 if (owner == null || typeRes.isEmpty()) {

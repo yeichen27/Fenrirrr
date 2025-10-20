@@ -125,7 +125,7 @@ internal class PicassoDrawable(
             } else {
                 if (placeholder != null) {
                     try {
-                        placeholder!!.draw(canvas)
+                        placeholder?.draw(canvas)
                     } catch (e: Exception) {
                         if (BuildConfig.DEBUG) {
                             e.printStackTrace()
@@ -154,23 +154,17 @@ internal class PicassoDrawable(
 
     override fun setAlpha(alpha: Int) {
         this._alpha = alpha
-        if (placeholder != null) {
-            placeholder!!.alpha = alpha
-        }
+        placeholder?.alpha = alpha
         super.setAlpha(alpha)
     }
 
     override fun setColorFilter(cf: ColorFilter?) {
-        if (placeholder != null) {
-            placeholder!!.colorFilter = cf
-        }
+        placeholder?.colorFilter = cf
         super.setColorFilter(cf)
     }
 
     override fun onBoundsChange(bounds: Rect) {
-        if (placeholder != null) {
-            placeholder!!.bounds = bounds
-        }
+        placeholder?.bounds = bounds
         super.onBoundsChange(bounds)
     }
 

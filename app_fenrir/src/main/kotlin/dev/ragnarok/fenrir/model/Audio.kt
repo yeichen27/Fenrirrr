@@ -97,26 +97,26 @@ class Audio : AbsModel {
         downloadIndicator = parcel.readInt()
     }
 
-    /*
+    /**
     public static String getMp3FromM3u8(String url) {
-        if (Utils.isEmpty(url) || !url.contains("index.m3u8"))
-            return url;
-        if (url.contains("/audios/")) {
-            final String regex = "^(.+?)/[^/]+?/audios/([^/]+)/.+$";
-            final String subst = "$1/audios/$2.mp3";
+    if (Utils.isEmpty(url) || !url.contains("index.m3u8"))
+    return url;
+    if (url.contains("/audios/")) {
+    final String regex = "^(.+?)/[^/]+?/audios/([^/]+)/.+$";
+    final String subst = "$1/audios/$2.mp3";
 
-            Pattern pattern = Pattern.compile(regex);
-            Matcher matcher = pattern.matcher(url);
+    Pattern pattern = Pattern.compile(regex);
+    Matcher matcher = pattern.matcher(url);
 
-            return matcher.replaceFirst(subst);
-        } else {
-            final String regex = "^(.+?)/(p[0-9]+)/[^/]+?/([^/]+)/.+$";
-            final String subst = "$1/$2/$3.mp3";
+    return matcher.replaceFirst(subst);
+    } else {
+    final String regex = "^(.+?)/(p[0-9]+)/[^/]+?/([^/]+)/.+$";
+    final String subst = "$1/$2/$3.mp3";
 
-            Pattern pattern = Pattern.compile(regex);
-            Matcher matcher = pattern.matcher(url);
-            return matcher.replaceFirst(subst);
-        }
+    Pattern pattern = Pattern.compile(regex);
+    Matcher matcher = pattern.matcher(url);
+    return matcher.replaceFirst(subst);
+    }
     }
      */
     fun needRefresh(): Pair<Boolean, Boolean> {

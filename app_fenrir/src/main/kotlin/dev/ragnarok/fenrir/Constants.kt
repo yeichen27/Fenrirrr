@@ -10,7 +10,7 @@ object Constants {
     const val DATABASE_FENRIR_VERSION = 46
     const val DATABASE_TEMPORARY_VERSION = 12
     const val EXPORT_SETTINGS_FORMAT = 1
-    const val forceDeveloperMode = BuildConfig.FORCE_DEVELOPER_MODE
+    const val forceDeveloperMode: Boolean = BuildConfig.FORCE_DEVELOPER_MODE
 
     @AccountType
     val DEFAULT_ACCOUNT_TYPE: Int = AccountType.toAccountType(BuildConfig.DEFAULT_ACCOUNT_TYPE)

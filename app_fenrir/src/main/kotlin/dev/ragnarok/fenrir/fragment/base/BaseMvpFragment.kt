@@ -71,10 +71,7 @@ abstract class BaseMvpFragment<P : AbsPresenter<V>, V : IMvpView> : AbsMvpFragme
             var stackTraceString = text.toString()
             if (stackTraceString.length > 500) {
                 val disclaimer = " [stack trace too large]"
-                stackTraceString = stackTraceString.substring(
-                    0,
-                    500 - disclaimer.length
-                ) + disclaimer
+                stackTraceString = stackTraceString.take(500 - disclaimer.length) + disclaimer
             }
 
             showBottomSheetError(

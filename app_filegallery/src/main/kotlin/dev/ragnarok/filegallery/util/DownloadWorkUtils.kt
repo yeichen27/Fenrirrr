@@ -116,7 +116,7 @@ object DownloadWorkUtils {
 
     fun makeLegalFilename(filename: String, extension: String?): String {
         var result = makeLegalFilenameFull(filename)
-        if (result.length > 90) result = result.substring(0, 90).trim()
+        if (result.length > 90) result = result.take(90).trim()
         if (extension == null)
             return result
         return "$result.$extension"
@@ -125,7 +125,7 @@ object DownloadWorkUtils {
     fun makeLegalFilenameFromArg(filename: String?, extension: String?): String? {
         filename ?: return null
         var result = makeLegalFilenameFull(filename)
-        if (result.length > 90) result = result.substring(0, 90).trim()
+        if (result.length > 90) result = result.take(90).trim()
         if (extension == null)
             return result
         return "$result.$extension"

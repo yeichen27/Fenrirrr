@@ -1692,7 +1692,7 @@ object Utils {
         intent.action = Intent.ACTION_VIEW
         intent.component = ComponentName(
             "com.google.android.youtube",
-            "com.google.android.apps.youtube.app.application.Shell\$UrlActivity"
+            $$"com.google.android.apps.youtube.app.application.Shell$UrlActivity"
         )
         context.startActivity(intent)
     }

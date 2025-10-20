@@ -110,7 +110,7 @@ class FfmpegAudioDecoder(
             inputData,
             inputSize,
             outputBuffer,
-            outputBuffer.data!!,
+            outputBuffer.data ?: return null,
             outputBufferSize
         )
         when {

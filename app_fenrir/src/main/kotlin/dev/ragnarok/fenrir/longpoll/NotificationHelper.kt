@@ -450,10 +450,9 @@ object NotificationHelper {
     fun showSimpleNotification(
         context: Context,
         body: String?,
-        pTitle: String?,
+        title: String?,
         url: String?
     ) {
-        val title = pTitle
         val hideBody = Settings.get()
             .security()
             .needHideMessagesBodyForNotif

@@ -1776,7 +1776,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 initialSelection = "0"
                 titleRes = R.string.rendering_mode
                 visible = Build.VERSION.SDK_INT >= Build.VERSION_CODES.P
-                onSelectionChange { it ->
+                onSelectionChange {
                     var sz = 0
                     try {
                         sz = it.trim().toInt()

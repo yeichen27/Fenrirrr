@@ -132,7 +132,7 @@ open class PhotoPagerPresenter internal constructor(
         var path = photo.text
         val ndx = path?.indexOf('/')
         if (ndx != -1) {
-            path = ndx?.let { path.substring(0, it) }
+            path = ndx?.let { path.take(it) }
         }
         DownloadResult(path, dir, photo)
     }

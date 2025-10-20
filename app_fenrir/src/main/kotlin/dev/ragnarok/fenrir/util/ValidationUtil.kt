@@ -25,7 +25,7 @@ object ValidationUtil {
         for (block in blocks) {
             try {
                 val num = block.toInt()
-                if (num > 255 || num < 0) {
+                if (num !in 0..255) {
                     return false
                 }
             } catch (_: Exception) {

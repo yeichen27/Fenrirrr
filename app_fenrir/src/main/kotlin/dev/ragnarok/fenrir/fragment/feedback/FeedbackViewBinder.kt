@@ -1205,7 +1205,7 @@ class FeedbackViewBinder(
      * @return обрезанная строка
      */
     private fun reduce(input: String): String {
-        return if (input.length > 100) input.substring(0, 100) + "..." else input
+        return if (input.length > 100) input.take(100) + "..." else input
     }
 
     /**

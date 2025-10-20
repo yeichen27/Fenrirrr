@@ -879,7 +879,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
                 if (itv.getTitle().nonNullNoEmpty()) {
                     emptyAvatar?.visibility = View.VISIBLE
                     var name: String = itv.getTitle().orEmpty()
-                    if (name.length > 2) name = name.substring(0, 2)
+                    if (name.length > 2) name = name.take(2)
                     name = name.trim()
                     emptyAvatar?.text = name
                 } else {
@@ -1608,7 +1608,12 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
     private val openRequestUploadChatAvatar =
         registerForActivityResult(StartActivityForResult()) { result ->
             if (result.resultCode == RESULT_OK) {
-                result.data?.let { presenter?.fireNewChatPhotoSelected(UCrop.getOutput(it)!!.path!!) }
+                result.data?.let {
+                    presenter?.fireNewChatPhotoSelected(
+                        (UCrop.getOutput(it)
+                            ?: return@let).path ?: return@let
+                    )
+                }
             } else if (result.resultCode == UCrop.RESULT_ERROR) {
                 result.data?.let { showThrowable(UCrop.getError(it)) }
             }

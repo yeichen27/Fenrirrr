@@ -138,7 +138,7 @@ class EmojiconTextView @JvmOverloads constructor(context: Context, attrs: Attrib
         try {
             val res = URL_VK_PATTERN.findAll(spannable)
             for (i in res) {
-                val url = spannable.toString().substring(i.range.start, i.range.last + 1)
+                val url = spannable.toString().substring(i.range.first, i.range.last + 1)
                 val urlSpan: ClickableSpan = object : ClickableSpan() {
                     override fun onClick(widget: View) {
                         LinkHelper.openUrl(
@@ -151,7 +151,7 @@ class EmojiconTextView @JvmOverloads constructor(context: Context, attrs: Attrib
                 }
                 spannable.setSpan(
                     urlSpan,
-                    i.range.start,
+                    i.range.first,
                     i.range.last + 1,
                     Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
                 )
@@ -164,7 +164,7 @@ class EmojiconTextView @JvmOverloads constructor(context: Context, attrs: Attrib
         try {
             val res = URL_NON_VK_PATTERN.findAll(spannable)
             for (i in res) {
-                val url = spannable.toString().substring(i.range.start, i.range.last + 1)
+                val url = spannable.toString().substring(i.range.first, i.range.last + 1)
                 val urlSpan: ClickableSpan = object : ClickableSpan() {
                     override fun onClick(widget: View) {
                         if (URL_YOUTUBE_PATTERN.containsMatchIn(url)) {
@@ -252,7 +252,7 @@ class EmojiconTextView @JvmOverloads constructor(context: Context, attrs: Attrib
                                         intent.action = Intent.ACTION_VIEW
                                         intent.component = ComponentName(
                                             "com.google.android.youtube",
-                                            "com.google.android.apps.youtube.app.application.Shell\$UrlActivity"
+                                            $$"com.google.android.apps.youtube.app.application.Shell$UrlActivity"
                                         )
                                         context.startActivity(intent)
                                     }
@@ -270,7 +270,7 @@ class EmojiconTextView @JvmOverloads constructor(context: Context, attrs: Attrib
                 }
                 spannable.setSpan(
                     urlSpan,
-                    i.range.start,
+                    i.range.first,
                     i.range.last + 1,
                     Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
                 )

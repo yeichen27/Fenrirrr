@@ -252,7 +252,7 @@ internal class MatrixTransformation(private val data: Request) : Transformation 
             }
     }
 
-    override fun localTransform(source: android.graphics.Bitmap?): android.graphics.Bitmap? {
+    override fun localTransform(source: android.graphics.Bitmap?): android.graphics.Bitmap {
         throw UnsupportedOperationException("MatrixTransformation")
     }
 }

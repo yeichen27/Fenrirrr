@@ -63,7 +63,7 @@ internal class VKCaptchaWebViewActivity : AppCompatActivity() {
 
         webView = findViewById(R.id.webview)
         mLoadingProgressBar = findViewById(R.id.loading_progress_bar)
-        val url = intent.getStringExtra(VK_CAPTCHA_URL_KEY)!!
+        val url = intent.getStringExtra(VK_CAPTCHA_URL_KEY) ?: return
         setupWebView(url)
     }
 

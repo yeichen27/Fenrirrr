@@ -1,5 +1,6 @@
 package dev.ragnarok.fenrir.view.emoji
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.util.AttributeSet
 import androidx.core.content.withStyledAttributes
@@ -13,6 +14,8 @@ class EmojiconEditText @JvmOverloads constructor(context: Context, attrs: Attrib
         context, attrs
     ) {
     private var mEmojiconSize = 0
+
+    @SuppressLint("CustomViewStyleable")
     private fun init(attrs: AttributeSet?) {
         mEmojiconSize = textSize.toInt()
         context.withStyledAttributes(attrs, R.styleable.Emojicon) {

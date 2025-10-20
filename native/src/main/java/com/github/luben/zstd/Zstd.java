@@ -655,18 +655,7 @@ public class Zstd {
             throw new ArrayIndexOutOfBoundsException(srcPosition + srcSize);
         }
 
-        long contentSize = getFrameContentSize0(src, srcPosition, srcSize, magicless);
-        if (isError(contentSize)) {
-            // known error at the moment, but not for getErrorName
-            if (contentSize == -1) {
-                throw new ZstdException(contentSize, "Content size is unknown");
-            }
-
-            // otherwise let ZstdException get error message itself
-            throw new ZstdException(contentSize);
-        }
-
-        return contentSize;
+        return getFrameContentSize0(src, srcPosition, srcSize, magicless);
     }
 
     private static native long getFrameContentSize0(byte[] src, int srcPosition, int srcSize, boolean magicless);
@@ -1395,9 +1384,18 @@ public class Zstd {
      * @return byte array with the decompressed data
      */
     public static byte[] decompressFrame(byte[] src, int srcOffset) {
-        int frameCompressedSize = (int) findFrameCompressedSize(src, srcOffset);
-        int frameContentSize = (int) getFrameContentSize(src, srcOffset, frameCompressedSize);
-        return decompressFrame(src, srcOffset, frameCompressedSize, frameContentSize);
+        int compressedSize = (int) findFrameCompressedSize(src, srcOffset);
+        long contentSize = getFrameContentSize(src, srcOffset, compressedSize);
+        if (Zstd.isError(contentSize)) {
+            // known error at the moment, but not for getErrorName
+            if (contentSize == -1) {
+                throw new ZstdException(contentSize, "Content size is unknown");
+            }
+            // otherwise let ZstdException get error message itself
+            throw new ZstdException(contentSize);
+        }
+
+        return decompressFrame(src, srcOffset, compressedSize, (int) contentSize);
     }
 
     /**
@@ -1656,6 +1654,15 @@ public class Zstd {
         FrameData(byte[] src, int srcPosition) {
             compressedSize = findFrameCompressedSize(src, srcPosition);
             contentSize = getFrameContentSize(src, srcPosition, (int) compressedSize);
+
+            if (Zstd.isError(contentSize)) {
+                // known error at the moment, but not for getErrorName
+                if (contentSize == -1) {
+                    throw new ZstdException(contentSize, "Content size is unknown");
+                }
+                // otherwise let ZstdException get error message itself
+                throw new ZstdException(contentSize);
+            }
         }
     }
 }

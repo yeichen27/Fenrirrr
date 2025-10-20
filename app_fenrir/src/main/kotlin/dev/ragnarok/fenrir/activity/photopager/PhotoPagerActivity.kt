@@ -1077,26 +1077,32 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
             )
             ret.photo.setOnLongClickListener {
                 val lCMode = Settings.get().main().longClickPhoto
-                if (lCMode == 1) {
-                    presenter?.fireSaveOnDriveClick(this@PhotoPagerActivity)
-                    true
-                } else if (lCMode == 2 && ret.photo.drawable is Rotatable) {
-                    var rot = (ret.photo.drawable as Rotatable).getRotation() + 45
-                    if (rot >= 360f) {
-                        rot = 0f
+                when (lCMode) {
+                    1 -> {
+                        presenter?.fireSaveOnDriveClick(this@PhotoPagerActivity)
+                        true
                     }
-                    if (rot == 0f) {
-                        ret.clearTags()
-                        ret.addTags()
-                    } else {
-                        ret.clearTags()
+
+                    2 if ret.photo.drawable is Rotatable -> {
+                        var rot = (ret.photo.drawable as Rotatable).getRotation() + 45
+                        if (rot >= 360f) {
+                            rot = 0f
+                        }
+                        if (rot == 0f) {
+                            ret.clearTags()
+                            ret.addTags()
+                        } else {
+                            ret.clearTags()
+                        }
+                        (ret.photo.drawable as Rotatable).rotate(rot)
+                        ret.photo.fitImageToView()
+                        ret.photo.invalidate()
+                        true
                     }
-                    (ret.photo.drawable as Rotatable).rotate(rot)
-                    ret.photo.fitImageToView()
-                    ret.photo.invalidate()
-                    true
-                } else {
-                    false
+
+                    else -> {
+                        false
+                    }
                 }
             }
             ret.photo.setOnStateChangeListener(object : TouchImageView.StateListener {

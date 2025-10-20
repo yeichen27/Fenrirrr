@@ -277,9 +277,8 @@ internal class BasicMsgUnpacker(private val dataBuffer: MsgPackDataInputBuffer) 
     }
 
     override fun unpackByteArray(preventOverflow: Boolean): ByteArray {
-        val next = dataBuffer.requireNextByte()
         val length =
-            when (next) {
+            when (val next = dataBuffer.requireNextByte()) {
                 MsgPackType.Bin.BIN8 -> dataBuffer.requireNextByte().toInt() and 0xff
                 MsgPackType.Bin.BIN16 -> dataBuffer.takeNext(2).joinToNumber()
                 MsgPackType.Bin.BIN32 -> {

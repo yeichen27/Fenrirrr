@@ -291,34 +291,42 @@ internal class ExtensionTypeDecoder(
     override fun decodeSequentially(): Boolean = false
 
     override fun decodeByte(): Byte {
-        return if (bytesRead == 0) {
-            val byte = dataBuffer.requireNextByte()
-            bytesRead++
-            if (!MsgPackType.Ext.isExt(byte)) {
-                throw MsgPackSerializationException.deserialization(
-                    dataBuffer,
-                    "Unexpected byte: $byte. Expected extension type byte!"
-                )
+        return when (bytesRead) {
+            0 -> {
+                val byte = dataBuffer.requireNextByte()
+                bytesRead++
+                if (!MsgPackType.Ext.isExt(byte)) {
+                    throw MsgPackSerializationException.deserialization(
+                        dataBuffer,
+                        "Unexpected byte: $byte. Expected extension type byte!"
+                    )
+                }
+                type = byte
+                if (MsgPackType.Ext.SIZES.containsKey(type)) {
+                    size = MsgPackType.Ext.SIZES[type]
+                }
+                type!!
             }
-            type = byte
-            if (MsgPackType.Ext.SIZES.containsKey(type)) {
-                size = MsgPackType.Ext.SIZES[type]
+
+            1 if size != null -> {
+                val byte = dataBuffer.requireNextByte()
+                bytesRead++
+                typeId = byte
+                typeId!!
             }
-            type!!
-        } else if (bytesRead == 1 && size != null) {
-            val byte = dataBuffer.requireNextByte()
-            bytesRead++
-            typeId = byte
-            typeId!!
-        } else if (bytesRead == 1 && size == null) {
-            val sizeSize = MsgPackType.Ext.SIZE_SIZE[type]
-            bytesRead += sizeSize!!
-            size = dataBuffer.takeNext(sizeSize).joinToNumber()
-            val byte = dataBuffer.requireNextByte()
-            typeId = byte
-            typeId!!
-        } else {
-            throw AssertionError()
+
+            1 if size == null -> {
+                val sizeSize = MsgPackType.Ext.SIZE_SIZE[type]
+                bytesRead += sizeSize!!
+                size = dataBuffer.takeNext(sizeSize).joinToNumber()
+                val byte = dataBuffer.requireNextByte()
+                typeId = byte
+                typeId!!
+            }
+
+            else -> {
+                throw AssertionError()
+            }
         }
     }
 

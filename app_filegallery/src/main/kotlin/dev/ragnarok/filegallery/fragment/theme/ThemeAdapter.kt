@@ -58,7 +58,7 @@ class ThemeAdapter(private var data: List<ThemeValue>, context: Context) :
         if (category.name.nonNullNoEmpty()) {
             holder.special_title.visibility = View.VISIBLE
             var name = category.name
-            if (name.length > 4) name = name.substring(0, 4)
+            if (name.length > 4) name = name.take(4)
             name = name.trim()
             holder.special_title.text = name
             holder.special_title.setTextColor(

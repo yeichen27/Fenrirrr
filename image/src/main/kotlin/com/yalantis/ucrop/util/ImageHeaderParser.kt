@@ -320,7 +320,7 @@ class ImageHeaderParser(v: InputStream) {
                 formatCode = segmentData.getInt16(tagOffset + 2).toInt()
 
                 // 12 is max format code.
-                if (formatCode < 1 || formatCode > 12) {
+                if (formatCode !in 1..12) {
                     if (Log.isLoggable(TAG, Log.DEBUG)) {
                         Log.d(TAG, "Got invalid format code = $formatCode")
                     }

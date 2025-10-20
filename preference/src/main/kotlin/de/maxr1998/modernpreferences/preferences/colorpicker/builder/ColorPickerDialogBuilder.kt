@@ -170,7 +170,7 @@ class ColorPickerDialogBuilder private constructor(context: Context, theme: Int 
 
     @Throws(IndexOutOfBoundsException::class)
     fun setPickerCount(pickerCount: Int): ColorPickerDialogBuilder {
-        if (pickerCount < 1 || pickerCount > 5) throw IndexOutOfBoundsException("Picker Can Only Support 1-5 Colors")
+        if (pickerCount !in 1..5) throw IndexOutOfBoundsException("Picker Can Only Support 1-5 Colors")
         this.pickerCount = pickerCount
         if (this.pickerCount > 1) isPreviewEnabled = true
         return this

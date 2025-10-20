@@ -322,21 +322,27 @@ class MessageAttachmentsPresenter(
         val size = Settings.get()
             .main()
             .uploadImageSize
-        if (size == null) {
-            view?.displaySelectUploadPhotoSizeDialog(
-                photos
-            )
-        } else if (size == Upload.IMAGE_SIZE_CROPPING && photos.size == 1) {
-            var to_up = photos[0].fullImageUri ?: return
-            if (to_up.path?.let { File(it).isFile } == true) {
-                to_up = Uri.fromFile(to_up.path?.let { File(it) })
+        when (size) {
+            null -> {
+                view?.displaySelectUploadPhotoSizeDialog(
+                    photos
+                )
             }
-            val finalTo_up = to_up
-            view?.displayCropPhotoDialog(
-                finalTo_up
-            )
-        } else {
-            doUploadPhotos(photos, size)
+
+            Upload.IMAGE_SIZE_CROPPING if photos.size == 1 -> {
+                var to_up = photos[0].fullImageUri ?: return
+                if (to_up.path?.let { File(it).isFile } == true) {
+                    to_up = Uri.fromFile(to_up.path?.let { File(it) })
+                }
+                val finalTo_up = to_up
+                view?.displayCropPhotoDialog(
+                    finalTo_up
+                )
+            }
+
+            else -> {
+                doUploadPhotos(photos, size)
+            }
         }
     }
 

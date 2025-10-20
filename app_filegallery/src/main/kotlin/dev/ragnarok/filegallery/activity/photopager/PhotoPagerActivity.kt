@@ -486,20 +486,26 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
                     true
                 } else {
                     val lCMode = Settings.get().main().longClickPhoto
-                    if (lCMode == 1) {
-                        presenter?.fireSaveOnDriveClick()
-                        true
-                    } else if (lCMode == 2 && photo.drawable is Rotatable) {
-                        var rot = (photo.drawable as Rotatable).getRotation() + 45
-                        if (rot >= 360f) {
-                            rot = 0f
+                    when (lCMode) {
+                        1 -> {
+                            presenter?.fireSaveOnDriveClick()
+                            true
                         }
-                        (photo.drawable as Rotatable).rotate(rot)
-                        photo.fitImageToView()
-                        photo.invalidate()
-                        true
-                    } else {
-                        false
+
+                        2 if photo.drawable is Rotatable -> {
+                            var rot = (photo.drawable as Rotatable).getRotation() + 45
+                            if (rot >= 360f) {
+                                rot = 0f
+                            }
+                            (photo.drawable as Rotatable).rotate(rot)
+                            photo.fitImageToView()
+                            photo.invalidate()
+                            true
+                        }
+
+                        else -> {
+                            false
+                        }
                     }
                 }
             }

@@ -319,7 +319,7 @@ class DialogsAdapter(private val mContext: Context, private var mDialogs: List<D
                 dialog.getDisplayTitle(mContext).ifNonNullNoEmpty({
                     holder.EmptyAvatar.visibility = View.VISIBLE
                     var name = it
-                    if (name.length > 2) name = name.substring(0, 2)
+                    if (name.length > 2) name = name.take(2)
                     name = name.trim { it1 -> it1 <= ' ' }
                     holder.EmptyAvatar.text = name
                 }, {

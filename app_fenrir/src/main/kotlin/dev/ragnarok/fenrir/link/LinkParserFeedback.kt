@@ -29,14 +29,14 @@ object LinkParserFeedback {
 
                 val linkSpan = LinkSpan(context, jj, true)
                 spannableStringBuilder.replace(
-                    res.range.start,
+                    res.range.first,
                     (res.range.last + 1),
                     res.groupValues.getOrNull(3)
                 )
                 spannableStringBuilder.setSpan(
                     linkSpan,
-                    res.range.start,
-                    res.range.start + (res.groupValues.getOrNull(3)?.length.orZero()),
+                    res.range.first,
+                    res.range.first + (res.groupValues.getOrNull(3)?.length.orZero()),
                     0
                 )
             } while (res != null)
@@ -47,7 +47,7 @@ object LinkParserFeedback {
             for (i in res) {
                 spannableStringBuilder.setSpan(
                     LinkSpan(context, i.groupValues.getOrNull(0).orEmpty(), true),
-                    i.range.start,
+                    i.range.first,
                     (i.range.last + 1),
                     0
                 )
@@ -60,7 +60,7 @@ object LinkParserFeedback {
             for (i in res) {
                 spannableStringBuilder.setSpan(
                     LinkSpan(context, "tel:" + i.groupValues.getOrNull(0).orEmpty(), false),
-                    i.range.start,
+                    i.range.first,
                     (i.range.last + 1),
                     0
                 )
@@ -81,14 +81,14 @@ object LinkParserFeedback {
                     false
                 )
                 val replace2 = spannableStringBuilder.replace(
-                    res.range.start,
+                    res.range.first,
                     (res.range.last + 1),
                     res.groupValues.getOrNull(2).orEmpty()
                 )
                 replace2.setSpan(
                     linkSpan2,
-                    res.range.start,
-                    res.range.start + (res.groupValues.getOrNull(2)?.length.orZero()),
+                    res.range.first,
+                    res.range.first + (res.groupValues.getOrNull(2)?.length.orZero()),
                     0
                 )
                 spannableStringBuilder = replace2

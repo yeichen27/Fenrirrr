@@ -1,5 +1,6 @@
 package com.yalantis.ucrop.view
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
@@ -9,6 +10,7 @@ import com.yalantis.ucrop.callback.CropBoundsChangeListener
 import com.yalantis.ucrop.callback.OverlayViewChangeListener
 import me.minetsh.imaging.R
 
+@SuppressLint("CustomViewStyleable")
 class UCropView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet?,

@@ -728,7 +728,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 titleRes = R.string.rendering_mode
                 dependency = "developer_mode"
                 visible = Build.VERSION.SDK_INT >= Build.VERSION_CODES.P
-                onSelectionChange { it ->
+                onSelectionChange {
                     var sz = 0
                     try {
                         sz = it.trim().toInt()
@@ -824,7 +824,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                                 ".SLOGAN"
                             ).absolutePath || sel.absolutePath == File(
                                 Environment.getExternalStorageDirectory(),
-                                ".\$Trash$"
+                                $$".$Trash$"
                             ).absolutePath || sel.absolutePath == File(
                                 Environment.getExternalStorageDirectory(),
                                 "OplusOS"

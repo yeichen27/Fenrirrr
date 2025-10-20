@@ -116,20 +116,26 @@ class SinglePhotoActivity : NoMainActivity(), PlaceProvider, AppStyleable {
         )
         ret.photo.setOnLongClickListener {
             val lCMode = Settings.get().main().longClickPhoto
-            if (lCMode == 1) {
-                doSaveOnDrive(true)
-                true
-            } else if (lCMode == 2 && ret.photo.drawable is Rotatable) {
-                var rot = (ret.photo.drawable as Rotatable).getRotation() + 45
-                if (rot >= 360f) {
-                    rot = 0f
+            when (lCMode) {
+                1 -> {
+                    doSaveOnDrive(true)
+                    true
                 }
-                (ret.photo.drawable as Rotatable).rotate(rot)
-                ret.photo.fitImageToView()
-                ret.photo.invalidate()
-                true
-            } else {
-                false
+
+                2 if ret.photo.drawable is Rotatable -> {
+                    var rot = (ret.photo.drawable as Rotatable).getRotation() + 45
+                    if (rot >= 360f) {
+                        rot = 0f
+                    }
+                    (ret.photo.drawable as Rotatable).rotate(rot)
+                    ret.photo.fitImageToView()
+                    ret.photo.invalidate()
+                    true
+                }
+
+                else -> {
+                    false
+                }
             }
         }
         mDownload?.setOnClickListener { doSaveOnDrive(true) }

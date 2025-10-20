@@ -23,13 +23,13 @@ object AppPrefs {
         if (isPackageInstalled(context, "app.revanced.android.youtube")) {
             revanced = Pair(
                 "app.revanced.android.youtube",
-                "com.google.android.apps.youtube.app.application.Shell\$UrlActivity"
+                $$"com.google.android.apps.youtube.app.application.Shell$UrlActivity"
             )
             return true
         } else if (isPackageInstalled(context, "app.rvx.android.youtube")) {
             revanced = Pair(
                 "app.rvx.android.youtube",
-                "com.google.android.apps.youtube.app.application.Shell\$UrlActivity"
+                $$"com.google.android.apps.youtube.app.application.Shell$UrlActivity"
             )
             return true
         }

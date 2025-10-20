@@ -123,7 +123,7 @@ object OwnerLinkSpanFactory {
                 for (i in res) {
                     val link = TopicLink()
                     val club = "club" == i.groupValues.getOrNull(1)
-                    link.start = i.range.start
+                    link.start = i.range.first
                     link.end = i.range.last + 1
                     link.replyToOwner = toLong(i.groupValues.getOrNull(2), if (club) -1 else 1)
                     link.topicOwnerId = toLong(i.groupValues.getOrNull(3), 1)
@@ -148,7 +148,7 @@ object OwnerLinkSpanFactory {
                     val ownerId = toLong(i.groupValues.getOrNull(2), if (club) -1 else 1)
                     val name = i.groupValues.getOrNull(3)
 
-                    links.add(OwnerLink(i.range.start, i.range.last + 1, ownerId, name.orEmpty()))
+                    links.add(OwnerLink(i.range.first, i.range.last + 1, ownerId, name.orEmpty()))
                 }
                 links
             }
@@ -165,7 +165,7 @@ object OwnerLinkSpanFactory {
                 for (i in res) {
                     links.add(
                         OtherLink(
-                            i.range.start,
+                            i.range.first,
                             i.range.last + 1,
                             i.groupValues.getOrNull(1).orEmpty(),
                             i.groupValues.getOrNull(2).orEmpty()

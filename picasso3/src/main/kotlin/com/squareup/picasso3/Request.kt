@@ -530,7 +530,7 @@ class Request internal constructor(builder: Builder) {
             if (transformations == null) {
                 transformations = ArrayList(2)
             }
-            transformations!!.add(transformation)
+            transformations?.add(transformation)
         }
 
         /**

@@ -51,7 +51,7 @@ object EmojiconHandler {
         val textLength = text.length
         val textLengthToProcessMax = textLength - index
         val textLengthToProcess =
-            if (length < 0 || length >= textLengthToProcessMax) textLength else length + index
+            if (length !in 0..<textLengthToProcessMax) textLength else length + index
         val oldSpans = text.getSpans(0, textLength, EmojiconSpan::class.java)
         for (oldSpan in oldSpans) {
             text.removeSpan(oldSpan)

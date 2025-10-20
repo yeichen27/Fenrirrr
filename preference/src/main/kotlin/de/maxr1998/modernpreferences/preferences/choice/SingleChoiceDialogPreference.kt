@@ -44,7 +44,7 @@ class SingleChoiceDialogPreference(
 
     fun persistSelection(sel: SelectionItem?) {
         currentSelection = sel
-        currentSelection?.let { (key1, _, _, _, _) ->
+        currentSelection?.let { (key1, _, _, _, _, _) ->
             if (selectionBeforeChangeListener?.onSelectionBeforeChange(
                     this,
                     key1
@@ -59,7 +59,8 @@ class SingleChoiceDialogPreference(
 
     override fun resetSelection() {
         val persisted = getString() ?: initialSelection
-        currentSelection = persisted?.let { items.find { (key1, _, _, _, _) -> key1 == persisted } }
+        currentSelection =
+            persisted?.let { items.find { (key1, _, _, _, _, _) -> key1 == persisted } }
     }
 
     override fun createAndShowDialogFragment() {

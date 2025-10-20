@@ -44,9 +44,9 @@ internal class AssetRequestHandler(private val context: Context) : RequestHandle
         initializeIfFirstTime()
         var signaledCallback = false
         try {
-            assetManager!!.open(getFilePath(request))
-                .source()
-                .use { source ->
+            assetManager?.open(getFilePath(request))
+                ?.source()
+                ?.use { source ->
                     val bitmap = decodeStream(source, request)
                     signaledCallback = true
                     callback.onSuccess(Result.Bitmap(bitmap, DISK))

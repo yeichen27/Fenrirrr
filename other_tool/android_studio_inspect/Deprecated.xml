@@ -5,6 +5,7 @@
   <inspection_tool class="AccessorsWereOverridden" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="ActionIsNotPreviewFriendly" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="ActionPresentationInstantiatedInCtor" enabled="false" level="WARNING" enabled_by_default="false" />
+  <inspection_tool class="AddExplicitTargetToParameterAnnotation" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
   <inspection_tool class="AddOperatorModifier" enabled="false" level="INFORMATION" enabled_by_default="false" />
   <inspection_tool class="AddVarianceModifier" enabled="false" level="INFORMATION" enabled_by_default="false" />
   <inspection_tool class="AiExcludeWrong" enabled="false" level="ERROR" enabled_by_default="false" />
@@ -163,6 +164,8 @@
   <inspection_tool class="AndroidLintInlinedApi" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintInnerclassSeparator" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintInsecureBaseConfiguration" enabled="false" level="WARNING" enabled_by_default="false" />
+  <inspection_tool class="AndroidLintInstantAppCall" enabled="false" level="WARNING" enabled_by_default="false" />
+  <inspection_tool class="AndroidLintInstantAppDeprecation" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintInstantApps" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintInstantiatable" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="AndroidLintIntentFilterExportedReceiver" enabled="false" level="WARNING" enabled_by_default="false" />
@@ -176,6 +179,7 @@
   <inspection_tool class="AndroidLintInvalidManifestAttribute" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintInvalidNavigation" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintInvalidPermission" enabled="false" level="ERROR" enabled_by_default="false" />
+  <inspection_tool class="AndroidLintInvalidPurposeString" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="AndroidLintInvalidResourceFolder" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="AndroidLintInvalidUsesTagAttribute" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="AndroidLintInvalidVectorPath" enabled="false" level="ERROR" enabled_by_default="false" />
@@ -360,6 +364,7 @@
   <inspection_tool class="AndroidLintSwitchIntDef" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintSystemPermissionTypo" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintTestAppLink" enabled="false" level="ERROR" enabled_by_default="false" />
+  <inspection_tool class="AndroidLintTextConcatSpace" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintTextFields" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintTextViewEdits" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintTilePreviewImageFormat" enabled="false" level="ERROR" enabled_by_default="false" />
@@ -548,7 +553,6 @@
   <inspection_tool class="ClassCanBeRecord" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
   <inspection_tool class="ClassEscapesItsScope" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="ClassGetClass" enabled="false" level="WARNING" enabled_by_default="false" />
-  <inspection_tool class="ClassInitializerMayBeStatic" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="ClassMayBeInterface" enabled="false" level="INFORMATION" enabled_by_default="false" />
   <inspection_tool class="ClassName" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
   <inspection_tool class="Clazy" enabled="false" level="WARNING" enabled_by_default="false" />
@@ -609,6 +613,7 @@
   <inspection_tool class="Convert2streamapi" enabled="false" level="INFORMATION" enabled_by_default="false" />
   <inspection_tool class="ConvertArgumentToSet" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
   <inspection_tool class="ConvertCallChainIntoSequence" enabled="false" level="INFO" enabled_by_default="false" />
+  <inspection_tool class="ConvertFromMultiDollarToRegularString" enabled="false" level="INFORMATION" enabled_by_default="false" />
   <inspection_tool class="ConvertLambdaToReference" enabled="false" level="INFORMATION" enabled_by_default="false" />
   <inspection_tool class="ConvertNaNEquality" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="ConvertObjectToDataObject" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
@@ -758,6 +763,7 @@
     <option name="REPORT_INDEXED_LOOP" value="false" />
     <option name="ignoreUntypedCollections" value="false" />
   </inspection_tool>
+  <inspection_tool class="ForEachJoinOnCollectionOfJob" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="ForEachParameterNotUsed" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
   <inspection_tool class="ForEachWithRecordPatternCanBeUsed" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="ForLoopReplaceableByWhile" enabled="false" level="WARNING" enabled_by_default="false">
@@ -906,6 +912,7 @@
   <inspection_tool class="IncompatibleInitializers" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="IncompatibleMask" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="IncompatiblePointers" enabled="false" level="WARNING" enabled_by_default="false" />
+  <inspection_tool class="IncompleteDestructuring" enabled="false" level="INFORMATION" enabled_by_default="false" />
   <inspection_tool class="IncompleteProperty" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="InconsistentCommentForJavaParameter" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="InconsistentResourceBundle" enabled="false" level="ERROR" enabled_by_default="false" />
@@ -918,6 +925,7 @@
   <inspection_tool class="IndexOfReplaceableByContains" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="InfiniteLoopStatement" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="InfinitePropertiesLabel" enabled="false" level="WARNING" enabled_by_default="false" />
+  <inspection_tool class="InfiniteRecursion" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="InfiniteTransitionLabel" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="InfixCallToOrdinary" enabled="false" level="INFORMATION" enabled_by_default="false" />
   <inspection_tool class="InjectedReferences" enabled="false" level="ERROR" enabled_by_default="false" />
@@ -967,6 +975,7 @@
   <inspection_tool class="Java9RedundantRequiresStatement" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="Java9ReflectionClassVisibility" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="Java9UndeclaredServiceUsage" enabled="false" level="WARNING" enabled_by_default="false" />
+  <inspection_tool class="JavaCollectionWithNullableTypeArgument" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="JavaCollectionsStaticMethod" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
   <inspection_tool class="JavaCollectionsStaticMethodOnImmutableList" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="JavaDefaultMethodsNotOverriddenByDelegation" enabled="false" level="WARNING" enabled_by_default="false" />
@@ -1047,6 +1056,7 @@
   <inspection_tool class="KDocUnresolvedReference" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="KRUnspecifiedParameters" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="KeyValueCoding" enabled="false" level="WARNING" enabled_by_default="false" />
+  <inspection_tool class="KotlinAmbiguousActuals" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="KotlinCatchMayIgnoreException" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="KotlinConstantConditions" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="KotlinCovariantEquals" enabled="false" level="WARNING" enabled_by_default="false" />
@@ -1118,6 +1128,7 @@
   <inspection_tool class="ManualArrayCopy" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="ManualArrayToCollectionCopy" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="ManualMinMaxCalculation" enabled="false" level="WARNING" enabled_by_default="false" />
+  <inspection_tool class="MapAwaitOnCollectionOfDeferred" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="MapGetWithNotNullAssertionOperator" enabled="false" level="INFORMATION" enabled_by_default="false" />
   <inspection_tool class="MappingBeforeCount" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="MarkdownDocumentationCommentsMigration" enabled="false" level="INFORMATION" enabled_by_default="false" />
@@ -1146,6 +1157,8 @@
   <inspection_tool class="MethodRefCanBeReplacedWithLambda" enabled="false" level="INFORMATION" enabled_by_default="false" />
   <inspection_tool class="MethodReturnType" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="MigrateDiagnosticSuppression" enabled="false" level="WARNING" enabled_by_default="false" />
+  <inspection_tool class="MigrateFromJavaLangIo" enabled="false" level="INFORMATION" enabled_by_default="false" />
+  <inspection_tool class="MigrateToJavaLangIo" enabled="false" level="INFORMATION" enabled_by_default="false" />
   <inspection_tool class="MigrateToOptControl" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="MismatchedArrayReadWrite" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="MismatchedCollectionQueryUpdate" enabled="false" level="WARNING" enabled_by_default="false">
@@ -1288,6 +1301,7 @@
     <option name="m_ignorePrivateConstructors" value="false" />
   </inspection_tool>
   <inspection_tool class="ObjectEqualsCanBeEquality" enabled="false" level="INFORMATION" enabled_by_default="false" />
+  <inspection_tool class="ObjectInheritsException" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="ObjectLiteralToLambda" enabled="false" level="INFO" enabled_by_default="false" />
   <inspection_tool class="ObjectPrivatePropertyName" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
   <inspection_tool class="ObjectPropertyName" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
@@ -1344,6 +1358,7 @@
   </inspection_tool>
   <inspection_tool class="PointlessNullCheck" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="PostfixTemplateDescriptionNotFound" enabled="false" level="WARNING" enabled_by_default="false" />
+  <inspection_tool class="PreferCurrentCoroutineContextToCoroutineContext" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="PreprocessorComment" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="PresentationAnnotation" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="PreviewAnnotationInFunctionWithParameters" enabled="false" level="ERROR" enabled_by_default="false" />
@@ -1407,6 +1422,7 @@
   <inspection_tool class="RedundantFileCreation" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="RedundantGetter" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
   <inspection_tool class="RedundantIf" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+  <inspection_tool class="RedundantInnerClassModifier" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="RedundantInterpolationPrefix" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
   <inspection_tool class="RedundantJavaTimeOperations" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="RedundantLabel" enabled="false" level="WARNING" enabled_by_default="false" />
@@ -1487,12 +1503,14 @@
   <inspection_tool class="ReplaceAssignmentWithOperatorAssignment" enabled="false" level="INFORMATION" enabled_by_default="false" />
   <inspection_tool class="ReplaceAssociateFunction" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
   <inspection_tool class="ReplaceCallWithBinaryOperator" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+  <inspection_tool class="ReplaceContains" enabled="false" level="INFORMATION" enabled_by_default="false" />
   <inspection_tool class="ReplaceGetOrSet" enabled="false" level="INFO" enabled_by_default="false" />
   <inspection_tool class="ReplaceGuardClauseWithFunctionCall" enabled="false" level="INFORMATION" enabled_by_default="false" />
   <inspection_tool class="ReplaceInefficientStreamCount" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="ReplaceIsEmptyWithIfEmpty" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
   <inspection_tool class="ReplaceJavaStaticMethodWithKotlinAnalog" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
   <inspection_tool class="ReplaceManualRangeWithIndicesCalls" enabled="false" level="INFO" enabled_by_default="false" />
+  <inspection_tool class="ReplaceMapGetOrDefault" enabled="false" level="INFORMATION" enabled_by_default="false" />
   <inspection_tool class="ReplaceMapIndexedWithListGenerator" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
   <inspection_tool class="ReplaceNegatedIsEmptyWithIsNotEmpty" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
   <inspection_tool class="ReplaceNullCheck" enabled="false" level="WARNING" enabled_by_default="false" />
@@ -1529,6 +1547,7 @@
   <inspection_tool class="ReturnSeparatedFromComputation" enabled="false" level="INFORMATION" enabled_by_default="false" />
   <inspection_tool class="ReuseOfLocalVariable" enabled="false" level="INFORMATION" enabled_by_default="false" />
   <inspection_tool class="RunBlocking" enabled="false" level="WARNING" enabled_by_default="false" />
+  <inspection_tool class="RunBlockingInSuspendFunction" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="SafeCastWithReturn" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
   <inspection_tool class="SafeVarargsDetector" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="SafeVarargsHasNoEffect" enabled="false" level="WARNING" enabled_by_default="false" />
@@ -1612,6 +1631,7 @@
   <inspection_tool class="SuspiciousArrayMethodCall" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="SuspiciousAsDynamic" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
   <inspection_tool class="SuspiciousCallableReferenceInLambda" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+  <inspection_tool class="SuspiciousCascadingIf" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="SuspiciousCollectionReassignment" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="SuspiciousDateFormat" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="SuspiciousEqualsCombination" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
@@ -1778,10 +1798,12 @@
   </inspection_tool>
   <inspection_tool class="UnusedDataClassCopyResult" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="UnusedEquals" enabled="false" level="WARNING" enabled_by_default="false" />
+  <inspection_tool class="UnusedExpression" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="UnusedExpressionResult" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="UnusedFlow" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="UnusedImportStatement" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="UnusedLabel" enabled="false" level="WARNING" enabled_by_default="false" />
+  <inspection_tool class="UnusedLambdaExpression" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="UnusedLambdaExpressionBody" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="UnusedLocalVariable" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="UnusedLocalization" enabled="false" level="WARNING" enabled_by_default="false" />
