@@ -11,9 +11,13 @@ import androidx.core.content.withStyledAttributes
 import com.google.android.material.imageview.ShapeableImageView
 import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.R
+import dev.ragnarok.fenrir.domain.InteractorFactory
+import dev.ragnarok.fenrir.model.Video
 import dev.ragnarok.fenrir.module.FenrirNative
 import dev.ragnarok.fenrir.module.animation.AnimatedFileDrawable
 import dev.ragnarok.fenrir.module.animation.LoadedFrom
+import dev.ragnarok.fenrir.nonNullNoEmpty
+import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.coroutines.CancelableJob
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
@@ -207,25 +211,38 @@ open class AnimatedShapeableImageView @JvmOverloads constructor(
                 tmpFade == true,
                 object : AnimatedFileDrawable.DecoderListener {
                     override fun onError() {
+                        clearAnimationDrawable(
+                            callSuper = true,
+                            clearState = true,
+                            cancelTask = true
+                        )
                         decoderCallback?.onLoaded(false)
                     }
 
+                    override fun onSuccess() {
+                        if (animatedDrawable?.isDecoded != true) {
+                            clearAnimationDrawable(
+                                callSuper = true,
+                                clearState = true,
+                                cancelTask = true
+                            )
+                            decoderCallback?.onLoaded(animatedDrawable?.isDecoded == true)
+                            return
+                        }
+                        decoderCallback?.onLoaded(animatedDrawable?.isDecoded == true)
+                        tmpFade = false
+                        animatedDrawable?.setAllowDecodeSingleFrame(true)
+                        setSuperImageDrawable(animatedDrawable)
+                        if (isPlaying == true) {
+                            playAnimation()
+                        }
+                    }
+
                 })
-            decoderCallback?.onLoaded(animatedDrawable?.isDecoded == true)
-            if (animatedDrawable?.isDecoded != true) {
-                clearAnimationDrawable(callSuper = true, clearState = true, cancelTask = true)
-                return
-            }
-            tmpFade = false
-            animatedDrawable?.setAllowDecodeSingleFrame(true)
-            super.setImageDrawable(animatedDrawable)
-            if (isPlaying == true) {
-                playAnimation()
-            }
         }
     }
 
-    fun fromFile(file: File) {
+    fun fromFile(file: File, autoPlay: Boolean) {
         if (!FenrirNative.isNativeLoaded || !file.exists()) {
             decoderCallback?.onLoaded(false)
             return
@@ -236,10 +253,65 @@ open class AnimatedShapeableImageView @JvmOverloads constructor(
         clearAnimationDrawable(callSuper = true, clearState = true, cancelTask = true)
         loadedFrom = LoadedFrom.FILE
         filePathTmp = file.absolutePath
+        isPlaying = autoPlay
         tmpFade = false
         if (attachedToWindow) {
             createAnimationDrawable()
         }
+    }
+
+    fun fromFile(file: String, autoPlay: Boolean) {
+        if (!FenrirNative.isNativeLoaded || file.isEmpty()) {
+            decoderCallback?.onLoaded(false)
+            return
+        }
+        if (filePathTmp == file && loadedFrom == LoadedFrom.FILE) {
+            return
+        }
+        clearAnimationDrawable(callSuper = true, clearState = true, cancelTask = true)
+        loadedFrom = LoadedFrom.FILE
+        filePathTmp = file
+        isPlaying = autoPlay
+        tmpFade = false
+        if (attachedToWindow) {
+            createAnimationDrawable()
+        }
+    }
+
+    fun fromVKVideo(video: Video, autoPlay: Boolean) {
+        if (!FenrirNative.isNativeLoaded) {
+            decoderCallback?.onLoaded(false)
+            return
+        }
+        val url = video.urlForPreviewInternal
+        if (url.nonNullNoEmpty()) {
+            fromFile(url, autoPlay)
+            return
+        }
+        mDisposable.set(
+            InteractorFactory.createVideosInteractor().getById(
+                Settings.get().accounts().current,
+                video.ownerId,
+                video.id,
+                video.accessKey,
+                false
+            )
+                .fromIOToMain({
+                    video.setHls(it.hls).setMp4link1080(it.mp4link1080)
+                        .setMp4link1440(it.mp4link1440).setMp4link2160(it.mp4link2160)
+                        .setMp4link720(it.mp4link720).setMp4link480(it.mp4link480)
+                        .setMp4link360(it.mp4link360).setMp4link240(it.mp4link240)
+                        .setTrailer(it.trailer)
+                    val url2 = it.urlForPreviewInternal
+                    if (url2.nonNullNoEmpty()) {
+                        fromFile(url2, autoPlay)
+                    } else {
+                        decoderCallback?.onLoaded(false)
+                    }
+                }, {
+                    decoderCallback?.onLoaded(false)
+                })
+        )
     }
 
     fun clearAnimationDrawable(callSuper: Boolean, clearState: Boolean, cancelTask: Boolean) {
@@ -314,6 +386,10 @@ open class AnimatedShapeableImageView @JvmOverloads constructor(
     override fun setImageDrawable(dr: Drawable?) {
         super.setImageDrawable(dr)
         clearAnimationDrawable(callSuper = false, clearState = true, cancelTask = true)
+    }
+
+    fun setSuperImageDrawable(dr: Drawable?) {
+        super.setImageDrawable(dr)
     }
 
     override fun setImageBitmap(bm: Bitmap?) {

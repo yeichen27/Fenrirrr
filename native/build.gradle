@@ -2,7 +2,6 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     id("com.android.library")
-    id("kotlin-android")
 }
 
 android {
@@ -75,6 +74,7 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-common:$lifecycleVersion")
     implementation("androidx.collection:collection-ktx:$collectionVersion")
     implementation("com.squareup.okio:okio:$okioVersion")
+    implementation("com.squareup.okhttp3:okhttp-android:$okhttpLibraryVersion")
     implementation("androidx.media3:media3-exoplayer:$media3Version")
     implementation("com.google.errorprone:error_prone_annotations:${errorProneVersion}")
 

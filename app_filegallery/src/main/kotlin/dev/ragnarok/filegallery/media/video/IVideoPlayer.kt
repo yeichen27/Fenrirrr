@@ -2,6 +2,7 @@ package dev.ragnarok.filegallery.media.video
 
 import android.content.Context
 import android.view.SurfaceHolder
+import android.view.TextureView
 
 interface IVideoPlayer {
     fun updateSource(
@@ -19,6 +20,7 @@ interface IVideoPlayer {
     val bufferPercentage: Int
     val bufferPosition: Long
     fun setSurfaceHolder(holder: SurfaceHolder?)
+    fun setTextureView(view: TextureView?)
     val isPlaybackSpeed: Boolean
     fun togglePlaybackSpeed()
     fun addVideoSizeChangeListener(listener: IVideoSizeChangeListener)

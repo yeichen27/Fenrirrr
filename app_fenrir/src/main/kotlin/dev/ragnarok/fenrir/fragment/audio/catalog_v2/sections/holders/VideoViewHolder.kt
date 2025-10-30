@@ -18,14 +18,18 @@ import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 import dev.ragnarok.fenrir.util.toast.CustomToast
 import dev.ragnarok.fenrir.view.VideoServiceIcons.getIconByType
+import dev.ragnarok.fenrir.view.natives.animation.AnimatedShapeableImageView
+import dev.ragnarok.fenrir.view.natives.animation.AspectRatioAnimatedShapeableImageView
 
 class VideoViewHolder(itemView: View) : IViewHolder(itemView) {
     val card: View = itemView.findViewById(R.id.card_view)
-    val image: ImageView = itemView.findViewById(R.id.video_image)
+    val image: AspectRatioAnimatedShapeableImageView = itemView.findViewById(R.id.video_image)
     val videoLenght: TextView = itemView.findViewById(R.id.video_lenght)
     val videoService: ImageView = itemView.findViewById(R.id.video_service)
     val title: TextView = itemView.findViewById(R.id.title)
     val viewsCount: TextView = itemView.findViewById(R.id.view_count)
+
+    private val isAutoPlayVideo = Settings.get().main().isAutoplay_video_on_posts
 
     private fun doAutoplayVideo(context: Context, video: Video) {
         InteractorFactory.createVideosInteractor()
@@ -51,7 +55,38 @@ class VideoViewHolder(itemView: View) : IViewHolder(itemView) {
         title.text = video.title
         videoLenght.text = AppTextUtils.getDurationString(video.duration)
         val photoUrl = video.image
-        if (photoUrl.nonNullNoEmpty()) {
+        val trailerUrl = video.trailer
+        if (isAutoPlayVideo == 1 && trailerUrl.nonNullNoEmpty() || isAutoPlayVideo == 2) {
+            PicassoInstance.with().cancelRequest(image)
+            image.setDecoderCallback(object :
+                AnimatedShapeableImageView.OnDecoderInit {
+                override fun onLoaded(success: Boolean) {
+                    if (!success) {
+                        if (photoUrl.nonNullNoEmpty()) {
+                            PicassoInstance.with()
+                                .load(photoUrl)
+                                .placeholder(R.drawable.background_gray)
+                                .tag(Constants.PICASSO_TAG)
+                                .into(image)
+                        } else {
+                            PicassoInstance.with().cancelRequest(image)
+                        }
+                    }
+                }
+            })
+            if (isAutoPlayVideo == 2) {
+                image.fromVKVideo(
+                    video, true
+                )
+            } else if (trailerUrl.nonNullNoEmpty()) {
+                image.fromNet(
+                    (video.ownerId.toString() + "_" + video.id.toString()),
+                    trailerUrl,
+                    Utils.createOkHttp(Constants.GIF_TIMEOUT, true),
+                    true
+                )
+            }
+        } else if (photoUrl.nonNullNoEmpty()) {
             PicassoInstance.with()
                 .load(photoUrl)
                 .tag(Constants.PICASSO_TAG)
@@ -95,7 +130,7 @@ class VideoViewHolder(itemView: View) : IViewHolder(itemView) {
         }
 
         override fun getLayout(): Int {
-            return R.layout.item_fave_video
+            return R.layout.item_catalog_v2_video
         }
     }
 }

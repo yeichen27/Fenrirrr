@@ -1,6 +1,7 @@
 package dev.ragnarok.fenrir.media.story
 
 import android.view.SurfaceHolder
+import android.view.TextureView
 import dev.ragnarok.fenrir.model.VideoSize
 
 interface IStoryPlayer {
@@ -8,7 +9,8 @@ interface IStoryPlayer {
     val videoSize: VideoSize?
     fun play()
     fun pause()
-    fun setDisplay(holder: SurfaceHolder?)
+    fun setVideoSurfaceHolder(holder: SurfaceHolder?)
+    fun setVideoTextureView(view: TextureView?)
     fun release()
     fun addVideoSizeChangeListener(listener: IVideoSizeChangeListener)
     fun addStatusChangeListener(listener: IStatusChangeListener)

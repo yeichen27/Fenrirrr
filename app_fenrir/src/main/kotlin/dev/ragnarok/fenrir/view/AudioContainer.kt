@@ -597,7 +597,7 @@ class AudioContainer : LinearLayout {
         this.audios = audios
         this.holderPosition = holderPosition
         val i = audios.size - childCount
-        for (j in 0 until i) {
+        (0 until i).forEach { _ ->
             val itemView = LayoutInflater.from(context).inflate(R.layout.item_audio, this, false)
             val holder = AudioHolder(itemView)
             itemView.tag = holder

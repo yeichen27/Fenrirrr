@@ -20,6 +20,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.newFixedThreadPoolContext
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import kotlin.math.abs
 
 class AnimatedFileDrawable(
@@ -56,7 +58,7 @@ class AnimatedFileDrawable(
     private external fun prepareToSeek(ptr: Long)
 
     private val metaData = IntArray(6)
-    private val decoderCreated: Boolean
+    private var decoderCreated: Boolean = false
     private val paint = Paint(Paint.FILTER_BITMAP_FLAG or Paint.ANTI_ALIAS_FLAG)
     private val sync = Any()
     private val actualDrawRect = RectF()
@@ -100,9 +102,14 @@ class AnimatedFileDrawable(
     private var startTime = 0f
     private var endTime = 0f
     private var startTimeMillis: Long = 0
-    private fun uiRunnableNoFrame() {
+
+    @Volatile
+    private var isInitializing = false
+    private suspend fun uiRunnableNoFrame() {
         if (destroyWhenDone && nativePtr != 0L) {
-            destroyDecoder(nativePtr)
+            withContext(coroutineDispatcher) {
+                destroyDecoder(nativePtr)
+            }
             nativePtr = 0
         }
         if (nativePtr == 0L) {
@@ -113,9 +120,11 @@ class AnimatedFileDrawable(
         scheduleNextGetFrame()
     }
 
-    private fun uiRunnable() {
+    private suspend fun uiRunnable() {
         if (destroyWhenDone && nativePtr != 0L) {
-            destroyDecoder(nativePtr)
+            withContext(coroutineDispatcher) {
+                destroyDecoder(nativePtr)
+            }
             nativePtr = 0
         }
         if (nativePtr == 0L) {
@@ -312,8 +321,10 @@ class AnimatedFileDrawable(
         isRunning = false
         isRecycled = true
         if (loadFrameTask == null) {
-            if (nativePtr != 0L) {
-                destroyDecoder(nativePtr)
+            if (nativePtr != 0L && !isInitializing) {
+                runBlocking(coroutineDispatcher) {
+                    destroyDecoder(nativePtr)
+                }
                 nativePtr = 0
             }
             recycleResources()
@@ -572,6 +583,7 @@ class AnimatedFileDrawable(
     @Keep
     interface DecoderListener {
         fun onError()
+        fun onSuccess()
     }
 
     companion object {
@@ -591,17 +603,35 @@ class AnimatedFileDrawable(
     }
 
     init {
-        nativePtr = createDecoder(filePath, metaData)
-        if (nativePtr != 0L && (metaData[0] > 3840 || metaData[1] > 3840)) {
-            destroyDecoder(nativePtr)
-            nativePtr = 0
-        }
-        decoderCreated = nativePtr != 0L
-        if (decoderCreated && seekTo != 0L) {
-            seekTo(seekTo, false)
-        }
-        if (!decoderCreated) {
-            decoderListener.onError()
+        isInitializing = true
+        CoroutineScope(coroutineDispatcher).launch {
+            nativePtr = createDecoder(filePath, metaData)
+            if (nativePtr != 0L && (metaData[0] > 3840 || metaData[1] > 3840)) {
+                destroyDecoder(nativePtr)
+                nativePtr = 0
+                isInitializing = false
+            }
+            decoderCreated = nativePtr != 0L
+            if (decoderCreated && seekTo != 0L) {
+                seekTo(seekTo, false)
+            }
+            if (isRecycled && nativePtr != 0L) {
+                destroyDecoder(nativePtr)
+                nativePtr = 0
+                isInitializing = false
+                return@launch
+            }
+            inMainThread {
+                isInitializing = false
+                if (isRecycled) {
+                    return@inMainThread
+                }
+                if (!decoderCreated) {
+                    decoderListener.onError()
+                } else {
+                    decoderListener.onSuccess()
+                }
+            }
         }
     }
 }

@@ -8,6 +8,7 @@ import dev.ragnarok.fenrir.activity.crash.CrashUtils
 import dev.ragnarok.fenrir.domain.Repository.messages
 import dev.ragnarok.fenrir.longpoll.NotificationHelper
 import dev.ragnarok.fenrir.media.music.MusicPlaybackController
+import dev.ragnarok.fenrir.module.FFmpegOkhttp
 import dev.ragnarok.fenrir.module.FenrirNative
 import dev.ragnarok.fenrir.picasso.PicassoInstance
 import dev.ragnarok.fenrir.service.ErrorLocalizer
@@ -53,6 +54,9 @@ class App : Application() {
             MusicPlaybackController.tracksExist = FileExistNative()
             ImageProcessingUtil.setProcessingUtil(Camera2ImageProcessingUtil)
             SurfaceUtil.setSurfaceUtil(Camera2SurfaceUtil)
+            FFmpegOkhttp.setOnFFmpegOkhttpCreate {
+                Utils.createOkHttp(Constants.EXO_PLAYER_TIMEOUT, true)
+            }
         } else {
             MusicPlaybackController.tracksExist = FileExistJVM()
         }

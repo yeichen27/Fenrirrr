@@ -259,9 +259,11 @@ class VideoPreviewFragment : BaseMvpFragment<VideoPreviewPresenter, IVideoPrevie
         }
         val imageUrl = video.image
         val trailerUrl = video.trailer
+        val ffmpegUrl = video.urlForPreviewInternal
 
         mPreviewImage?.let { pp ->
-            if (Settings.get().main().isAutoplay_gif && trailerUrl.nonNullNoEmpty()) {
+            val isAutoPlayVideo = Settings.get().main().isAutoplay_video_on_posts
+            if (isAutoPlayVideo == 1 && trailerUrl.nonNullNoEmpty() || isAutoPlayVideo == 2 && ffmpegUrl.nonNullNoEmpty()) {
                 with().cancelRequest(pp)
                 pp.setDecoderCallback(object :
                     AnimatedShapeableImageView.OnDecoderInit {
@@ -279,11 +281,17 @@ class VideoPreviewFragment : BaseMvpFragment<VideoPreviewPresenter, IVideoPrevie
                         }
                     }
                 })
-                pp.fromNet(
-                    (video.ownerId.toString() + "_" + video.id.toString()),
-                    video.trailer,
-                    Utils.createOkHttp(Constants.GIF_TIMEOUT, true), true
-                )
+                if (isAutoPlayVideo == 2 && ffmpegUrl.nonNullNoEmpty()) {
+                    pp.fromFile(
+                        ffmpegUrl, true
+                    )
+                } else if (isAutoPlayVideo == 1 && trailerUrl.nonNullNoEmpty()) {
+                    pp.fromNet(
+                        (video.ownerId.toString() + "_" + video.id.toString()),
+                        video.trailer,
+                        Utils.createOkHttp(Constants.GIF_TIMEOUT, true), true
+                    )
+                }
             } else if (imageUrl.nonNullNoEmpty()) {
                 with()
                     .load(imageUrl)

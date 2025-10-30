@@ -1,6 +1,7 @@
 package dev.ragnarok.fenrir.media.story
 
 import android.view.SurfaceHolder
+import android.view.TextureView
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.MediaSource
@@ -126,8 +127,12 @@ class ExoStoryPlayer(
         }
     }
 
-    override fun setDisplay(holder: SurfaceHolder?) {
+    override fun setVideoSurfaceHolder(holder: SurfaceHolder?) {
         internalPlayer?.setVideoSurfaceHolder(holder)
+    }
+
+    override fun setVideoTextureView(view: TextureView?) {
+        internalPlayer?.setVideoTextureView(view)
     }
 
     override fun release() {

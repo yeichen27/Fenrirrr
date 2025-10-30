@@ -123,7 +123,7 @@ interface ISettings {
         val isNative_parcel_docs: Boolean
         val isDoLogs: Boolean
         val isDump_fcm: Boolean
-        val isAutoplay_gif: Boolean
+        val isAutoplay_video_on_posts: Int
         val isStrip_news_repost: Boolean
         val isCommunities_in_page_search: Boolean
         val isAd_block_story_news: Boolean

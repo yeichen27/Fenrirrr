@@ -2,6 +2,7 @@ package dev.ragnarok.fenrir.media.video
 
 import android.content.Context
 import android.view.SurfaceHolder
+import android.view.TextureView
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
 import androidx.media3.common.Player
@@ -130,6 +131,10 @@ class ExoVideoPlayer(
 
     override fun setSurfaceHolder(holder: SurfaceHolder?) {
         player?.setVideoSurfaceHolder(holder)
+    }
+
+    override fun setTextureView(view: TextureView?) {
+        player?.setVideoTextureView(view)
     }
 
     internal fun onVideoSizeChanged(w: Int, h: Int) {

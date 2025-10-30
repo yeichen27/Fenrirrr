@@ -20,7 +20,6 @@ import dev.ragnarok.fenrir.util.DownloadWorkUtils.makeLegalFilename
 import dev.ragnarok.fenrir.util.Utils.firstNonEmptyString
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 import java.io.File
-import java.util.Calendar
 import kotlin.math.abs
 
 class StoryPagerPresenter(
@@ -85,7 +84,7 @@ class StoryPagerPresenter(
                 mStoryPlayer
             )
         } else {
-            mStoryPlayer?.setDisplay(null)
+            mStoryPlayer?.setVideoTextureView(null)
         }
     }
 
@@ -188,6 +187,8 @@ class StoryPagerPresenter(
         if (!isStoryIsVideo(adapterPosition)) return
         val isProgress =
             adapterPosition == mCurrentIndex && (mStoryPlayer == null || mStoryPlayer?.playerStatus == IStoryPlayer.IStatus.PREPARING)
+        val isPlaying =
+            adapterPosition == mCurrentIndex && mStoryPlayer?.playerStatus == IStoryPlayer.IStatus.PREPARED
         var size = if (mStoryPlayer == null) null else mStoryPlayer?.videoSize
         if (size == null) {
             size = DEF_SIZE
@@ -201,6 +202,7 @@ class StoryPagerPresenter(
         view?.configHolder(
             adapterPosition,
             isProgress,
+            isPlaying,
             size.width,
             size.width
         )
@@ -284,7 +286,7 @@ class StoryPagerPresenter(
                 view?.showError("Can't create directory $dir")
                 return
             }
-        } else dir.setLastModified(Calendar.getInstance().timeInMillis)
+        } else dir.setLastModified(System.currentTimeMillis())
         photo.photo?.let {
             downloadResult(photo.owner?.fullName?.let { it1 ->
                 makeLegalFilename(
@@ -309,7 +311,7 @@ class StoryPagerPresenter(
                     view?.showError("Can't create directory $dir_final")
                     return
                 }
-            } else dir_final.setLastModified(Calendar.getInstance().timeInMillis)
+            } else dir_final.setLastModified(System.currentTimeMillis())
             dir = dir_final
         }
         val url = photo.getUrlForSize(PhotoSize.W, true)

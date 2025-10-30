@@ -121,7 +121,7 @@ class ShortVideoPagerPresenter(
                 mShortVideoPlayer
             )
         } else {
-            mShortVideoPlayer?.setDisplay(null)
+            mShortVideoPlayer?.setVideoTextureView(null)
         }
     }
 
@@ -215,6 +215,8 @@ class ShortVideoPagerPresenter(
     fun fireHolderCreate(adapterPosition: Int) {
         val isProgress =
             adapterPosition == mCurrentIndex && (mShortVideoPlayer == null || mShortVideoPlayer?.playerStatus == IStoryPlayer.IStatus.PREPARING)
+        val isPlaying =
+            adapterPosition == mCurrentIndex && mShortVideoPlayer?.playerStatus == IStoryPlayer.IStatus.PREPARED
         var size = if (mShortVideoPlayer == null) null else mShortVideoPlayer?.videoSize
         if (size == null) {
             size = DEF_SIZE
@@ -228,9 +230,14 @@ class ShortVideoPagerPresenter(
         view?.configHolder(
             adapterPosition,
             isProgress,
+            isPlaying,
             size.width,
             size.width
         )
+    }
+
+    fun getVideo(pos: Int): Video? {
+        return mShortVideos.getOrNull(pos)
     }
 
     fun fireCommentsClick() {

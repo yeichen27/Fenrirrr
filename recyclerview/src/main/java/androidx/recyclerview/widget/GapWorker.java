@@ -276,13 +276,14 @@ final class GapWorker implements Runnable {
             // don't attempt to prefetch attached views
             return null;
         }
-
+        boolean traceStarted = false;
         RecyclerView.Recycler recycler = view.mRecycler;
         RecyclerView.ViewHolder holder;
         try {
             // FOREVER_NS is used as a deadline to force the work to occur now,
             // since it's needed next frame, even if it won't fit in gap
             if (deadlineNs == RecyclerView.FOREVER_NS && Trace.isEnabled()) {
+                traceStarted = true;
                 Trace.beginSection("RV Prefetch forced - needed next frame");
             }
             view.onEnterLayoutOrScroll();
@@ -304,7 +305,9 @@ final class GapWorker implements Runnable {
             }
         } finally {
             view.onExitLayoutOrScroll(false);
-            Trace.endSection();
+            if (traceStarted) {
+                Trace.endSection();
+            }
         }
         return holder;
     }

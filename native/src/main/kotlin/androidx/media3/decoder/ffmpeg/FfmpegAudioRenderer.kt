@@ -20,7 +20,6 @@ import androidx.media3.common.C
 import androidx.media3.common.Format
 import androidx.media3.common.MimeTypes
 import androidx.media3.common.audio.AudioProcessor
-import androidx.media3.common.util.Assertions
 import androidx.media3.common.util.TraceUtil
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.common.util.Util
@@ -70,7 +69,7 @@ class FfmpegAudioRenderer : DecoderAudioRenderer<FfmpegAudioDecoder> {
     }
 
     override fun supportsFormatInternal(format: Format): @C.FormatSupport Int {
-        val mimeType = Assertions.checkNotNull(format.sampleMimeType)
+        val mimeType = checkNotNull(format.sampleMimeType)
         return if (!FenrirNative.isNativeLoaded || !MimeTypes.isAudio(
                 mimeType
             )
@@ -107,7 +106,6 @@ class FfmpegAudioRenderer : DecoderAudioRenderer<FfmpegAudioDecoder> {
 
     /** {@inheritDoc} */
     override fun getOutputFormat(decoder: FfmpegAudioDecoder): Format {
-        Assertions.checkNotNull(decoder)
         return Format.Builder()
             .setSampleMimeType(MimeTypes.AUDIO_RAW)
             .setChannelCount(decoder.channelCount)

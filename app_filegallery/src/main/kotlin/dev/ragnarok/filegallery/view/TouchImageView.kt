@@ -300,6 +300,11 @@ class TouchImageView @JvmOverloads constructor(
                 tmpFade == true,
                 object : AnimatedFileDrawable.DecoderListener {
                     override fun onError() {
+                        clearAnimationDrawable(
+                            callSuper = true,
+                            clearState = true,
+                            cancelTask = true
+                        )
                         ref.get()?.let {
                             fallbackTmp.nonNullNoEmpty { k ->
                                 PicassoInstance.with().load(k).into(it)
@@ -307,23 +312,33 @@ class TouchImageView @JvmOverloads constructor(
                         }
                     }
 
+                    override fun onSuccess() {
+                        if (animatedDrawable?.isDecoded != true) {
+                            clearAnimationDrawable(
+                                callSuper = true,
+                                clearState = true,
+                                cancelTask = true
+                            )
+                            return
+                        }
+                        tmpFade = false
+                        animatedDrawable?.setAllowDecodeSingleFrame(true)
+
+                        imageRenderedAtLeastOnce = false
+                        setSuperImageDrawable(animatedDrawable)
+                        savePreviousImageValues()
+                        fitImageToView()
+
+                        if (isPlaying == true) {
+                            playAnimation()
+                        }
+                    }
                 })
-            if (animatedDrawable?.isDecoded != true) {
-                clearAnimationDrawable(callSuper = true, clearState = true, cancelTask = true)
-                return
-            }
-            tmpFade = false
-            animatedDrawable?.setAllowDecodeSingleFrame(true)
-
-            imageRenderedAtLeastOnce = false
-            super.setImageDrawable(animatedDrawable)
-            savePreviousImageValues()
-            fitImageToView()
-
-            if (isPlaying == true) {
-                playAnimation()
-            }
         }
+    }
+
+    fun setSuperImageDrawable(dr: Drawable?) {
+        super.setImageDrawable(dr)
     }
 
     fun fromAnimationFile(file: File, autoPlay: Boolean) {
@@ -336,6 +351,23 @@ class TouchImageView @JvmOverloads constructor(
         clearAnimationDrawable(callSuper = true, clearState = true, cancelTask = true)
         loadedFrom = LoadedFrom.FILE
         filePathTmp = file.absolutePath
+        tmpFade = false
+        isPlaying = autoPlay
+        if (attachedToWindow) {
+            createAnimationDrawable()
+        }
+    }
+
+    fun fromAnimationFile(file: String, autoPlay: Boolean) {
+        if (!FenrirNative.isNativeLoaded || file.isEmpty()) {
+            return
+        }
+        if (filePathTmp == file && loadedFrom == LoadedFrom.FILE) {
+            return
+        }
+        clearAnimationDrawable(callSuper = true, clearState = true, cancelTask = true)
+        loadedFrom = LoadedFrom.FILE
+        filePathTmp = file
         tmpFade = false
         isPlaying = autoPlay
         if (attachedToWindow) {
@@ -506,7 +538,7 @@ class TouchImageView @JvmOverloads constructor(
      * Save the current matrix and view dimensions
      * in the prevMatrix and prevView variables.
      */
-    private fun savePreviousImageValues() {
+    internal fun savePreviousImageValues() {
         if (viewHeight != 0 && viewWidth != 0) {
             touchMatrix.getValues(floatMatrix)
             prevMatrix.setValues(floatMatrix)

@@ -14,7 +14,6 @@ import android.os.Bundle
 import android.os.Process
 import android.util.Rational
 import android.view.ScaleGestureDetector
-import android.view.SurfaceHolder
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
@@ -26,6 +25,7 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.customview.widget.ViewDragHelper
+import dev.ragnarok.fenrir.module.FFmpegOkhttp
 import dev.ragnarok.filegallery.R
 import dev.ragnarok.filegallery.activity.slidr.Slidr
 import dev.ragnarok.filegallery.activity.slidr.model.SlidrConfig
@@ -53,7 +53,7 @@ import dev.ragnarok.filegallery.util.toast.CustomToast
 import dev.ragnarok.filegallery.view.ExpandableSurfaceView
 import dev.ragnarok.filegallery.view.VideoControllerView
 
-class VideoPlayerActivity : AppCompatActivity(), SurfaceHolder.Callback,
+class VideoPlayerActivity : AppCompatActivity(),
     VideoControllerView.MediaPlayerControl, IVideoSizeChangeListener, AppStyleable {
     private var mDecorView: View? = null
     private var mPlaySpeed: ImageView? = null
@@ -108,6 +108,7 @@ class VideoPlayerActivity : AppCompatActivity(), SurfaceHolder.Callback,
         setTheme(currentStyle())
         Utils.prepareDensity(this)
         super.onCreate(savedInstanceState)
+        FFmpegOkhttp.setLockNetwork(true)
         setContentView(R.layout.activity_video)
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         mDecorView = window.decorView
@@ -176,17 +177,18 @@ class VideoPlayerActivity : AppCompatActivity(), SurfaceHolder.Callback,
                 }
             })
         @SuppressLint("ClickableViewAccessibility")
-        surfaceContainer.setOnTouchListener { v, event ->
+        surfaceContainer.setOnTouchListener { _, event ->
             if (event.pointerCount >= 2) {
                 scaleGestureDetector.onTouchEvent(event)
             } else {
                 false
             }
         }
-        val videoHolder = mSurfaceView?.holder
-        videoHolder?.addCallback(this)
+        //val videoHolder = mSurfaceView?.holder
+        //videoHolder?.addCallback(this)
         resolveControlsVisibility()
         mPlayer = createPlayer()
+        mPlayer?.setTextureView(mSurfaceView)
         mPlayer?.addVideoSizeChangeListener(this)
         mPlayer?.play()
         if (seekSave > 0) {
@@ -263,6 +265,7 @@ class VideoPlayerActivity : AppCompatActivity(), SurfaceHolder.Callback,
 
     override fun onDestroy() {
         mPlayer?.release()
+        FFmpegOkhttp.setLockNetwork(false)
         super.onDestroy()
     }
 
@@ -325,12 +328,15 @@ class VideoPlayerActivity : AppCompatActivity(), SurfaceHolder.Callback,
         super.onPause()
     }
 
+    /*
     override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {}
     override fun surfaceCreated(holder: SurfaceHolder) {
         mPlayer?.setSurfaceHolder(holder)
     }
 
     override fun surfaceDestroyed(holder: SurfaceHolder) {}
+
+     */
     override fun canPause(): Boolean {
         return true
     }
@@ -392,12 +398,10 @@ class VideoPlayerActivity : AppCompatActivity(), SurfaceHolder.Callback,
         if (packageManager.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)
             && hasPipPermission()
         ) if (!isInPictureInPictureMode) {
-            mSurfaceView?.let {
-                val aspectRatio = Rational(it.width, it.height)
-                enterPictureInPictureMode(
-                    PictureInPictureParams.Builder().setAspectRatio(aspectRatio).build()
-                )
-            }
+            val aspectRatio = Rational(mSurfaceView?.width.orZero(), mSurfaceView?.height.orZero())
+            enterPictureInPictureMode(
+                PictureInPictureParams.Builder().setAspectRatio(aspectRatio).build()
+            )
         }
     }
 

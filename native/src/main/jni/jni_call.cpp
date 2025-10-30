@@ -8,6 +8,8 @@ bool fenrirNativeThorVGInited = false;
 
 extern jint FFMPEG_JNI_OnLoad(JNIEnv *env);
 
+extern "C" int av_jni_set_java_vm(void *vm, void *log_ctx);
+
 extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *) {
     JNIEnv *env = nullptr;
     srand((unsigned int) time(nullptr));
@@ -23,6 +25,7 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *) {
     }
 
     FFMPEG_JNI_OnLoad(env);
+    av_jni_set_java_vm((void *) vm, nullptr);
     return JNI_VERSION_1_6;
 }
 

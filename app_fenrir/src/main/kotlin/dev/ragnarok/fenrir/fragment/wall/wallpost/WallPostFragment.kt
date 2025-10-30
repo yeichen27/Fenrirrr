@@ -426,7 +426,7 @@ class WallPostFragment : PlaceSupportMvpFragment<WallPostPresenter, IWallPostVie
                 it,
                 false,
                 null,
-                null, null
+                null
             )
         }
         attachmentsViewBinder?.displayCopyHistory(

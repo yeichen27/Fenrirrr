@@ -16,7 +16,6 @@ import android.os.Bundle
 import android.os.Process
 import android.util.Rational
 import android.view.ScaleGestureDetector
-import android.view.SurfaceHolder
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
@@ -28,6 +27,7 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.customview.widget.ViewDragHelper.STATE_IDLE
+import com.google.android.material.imageview.ShapeableImageView
 import com.squareup.picasso3.BitmapTarget
 import com.squareup.picasso3.Picasso
 import dev.ragnarok.fenrir.Constants
@@ -49,6 +49,7 @@ import dev.ragnarok.fenrir.model.Commented
 import dev.ragnarok.fenrir.model.InternalVideoSize
 import dev.ragnarok.fenrir.model.Video
 import dev.ragnarok.fenrir.model.VideoSize
+import dev.ragnarok.fenrir.module.FFmpegOkhttp
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.picasso.PicassoInstance
@@ -70,15 +71,14 @@ import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 import dev.ragnarok.fenrir.util.toast.CustomToast
 import dev.ragnarok.fenrir.view.ExpandableSurfaceView
 import dev.ragnarok.fenrir.view.VideoControllerView
-import dev.ragnarok.fenrir.view.natives.animation.AnimatedShapeableImageView
 import kotlin.math.floor
 
-class VideoPlayerActivity : AppCompatActivity(), SurfaceHolder.Callback,
+class VideoPlayerActivity : AppCompatActivity(),
     VideoControllerView.MediaPlayerControl, IVideoPlayer.IVideoSizeChangeListener, AppStyleable {
     private val mCompositeJob = CompositeJob()
     private var mDecorView: View? = null
     private var mPlaySpeed: ImageView? = null
-    private var mItemTimelineImage: AnimatedShapeableImageView? = null
+    private var mItemTimelineImage: ShapeableImageView? = null
     private var mControllerView: VideoControllerView? = null
     private var mSurfaceView: ExpandableSurfaceView? = null
     private var mPlayer: IVideoPlayer? = null
@@ -190,6 +190,7 @@ class VideoPlayerActivity : AppCompatActivity(), SurfaceHolder.Callback,
         Utils.prepareDensity(this)
         Utils.registerColorsThorVG(this)
         super.onCreate(savedInstanceState)
+        FFmpegOkhttp.setLockNetwork(true)
         setContentView(R.layout.activity_video)
         val surfaceContainer = findViewById<ViewGroup>(R.id.videoSurfaceContainer)
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
@@ -294,17 +295,18 @@ class VideoPlayerActivity : AppCompatActivity(), SurfaceHolder.Callback,
                 }
             })
         @SuppressLint("ClickableViewAccessibility")
-        surfaceContainer.setOnTouchListener { v, event ->
+        surfaceContainer.setOnTouchListener { _, event ->
             if (event.pointerCount >= 2) {
                 scaleGestureDetector.onTouchEvent(event)
             } else {
                 false
             }
         }
-        val videoHolder = mSurfaceView?.holder
-        videoHolder?.addCallback(this)
+        //val videoHolder = mSurfaceView?.holder
+        //videoHolder?.addCallback(this)
         resolveControlsVisibility()
         mPlayer = createPlayer()
+        mPlayer?.setTextureView(mSurfaceView)
         mPlayer?.addVideoSizeChangeListener(this)
         mPlayer?.play()
         if (seekSave > 0) {
@@ -390,6 +392,7 @@ class VideoPlayerActivity : AppCompatActivity(), SurfaceHolder.Callback,
     override fun onDestroy() {
         mPlayer?.release()
         mCompositeJob.cancel()
+        FFmpegOkhttp.setLockNetwork(false)
         super.onDestroy()
     }
 
@@ -455,12 +458,15 @@ class VideoPlayerActivity : AppCompatActivity(), SurfaceHolder.Callback,
         super.onPause()
     }
 
+    /*
     override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {}
     override fun surfaceCreated(holder: SurfaceHolder) {
         mPlayer?.setSurfaceHolder(holder)
     }
 
     override fun surfaceDestroyed(holder: SurfaceHolder) {}
+
+     */
     override fun canPause(): Boolean {
         return true
     }

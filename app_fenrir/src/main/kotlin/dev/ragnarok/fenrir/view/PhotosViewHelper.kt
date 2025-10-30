@@ -32,7 +32,7 @@ class PhotosViewHelper internal constructor(
 ) {
     @PhotoSize
     private val mPhotoPreviewSize = Settings.get().main().prefPreviewImageSize
-    private val isAutoplayGif = Settings.get().main().isAutoplay_gif
+    private val isAutoPlayVideo = Settings.get().main().isAutoplay_video_on_posts
 
     @SuppressLint("SetTextI18n")
     fun displayVideos(videos: List<PostImage>, container: ViewGroup) {
@@ -46,7 +46,7 @@ class PhotosViewHelper internal constructor(
         container.visibility = View.VISIBLE
 
         val i = videos.size - container.childCount
-        (0 until i).forEach { j ->
+        (0 until i).forEach { _ ->
             val root = LayoutInflater.from(context)
                 .inflate(R.layout.item_video_attachment, container, false)
             container.addView(root)
@@ -89,10 +89,13 @@ class PhotosViewHelper internal constructor(
             val url = image.getPreviewUrl(mPhotoPreviewSize)
             if (image.type == PostImage.TYPE_VIDEO) {
                 val video = image.attachment as Video
+
+                val trailerUrl = video.trailer
+
                 holder.tvDelay.text = AppTextUtils.getDurationString(video.duration)
                 holder.tvTitle.text = Utils.firstNonEmptyString(video.title, " ")
 
-                if (isAutoplayGif && video.trailer.nonNullNoEmpty()) {
+                if (isAutoPlayVideo == 1 && trailerUrl.nonNullNoEmpty() || isAutoPlayVideo == 2) {
                     PicassoInstance.with().cancelRequest(holder.vgVideo)
                     holder.vgVideo.setDecoderCallback(object :
                         AnimatedShapeableImageView.OnDecoderInit {
@@ -112,12 +115,18 @@ class PhotosViewHelper internal constructor(
                             }
                         }
                     })
-                    holder.vgVideo.fromNet(
-                        (video.ownerId.toString() + "_" + image.attachment.id.toString()),
-                        video.trailer,
-                        Utils.createOkHttp(Constants.GIF_TIMEOUT, true),
-                        true
-                    )
+                    if (isAutoPlayVideo == 2) {
+                        holder.vgVideo.fromVKVideo(
+                            video, true
+                        )
+                    } else if (trailerUrl.nonNullNoEmpty()) {
+                        holder.vgVideo.fromNet(
+                            (video.ownerId.toString() + "_" + image.attachment.id.toString()),
+                            trailerUrl,
+                            Utils.createOkHttp(Constants.GIF_TIMEOUT, true),
+                            true
+                        )
+                    }
                 } else if (url.nonNullNoEmpty()) {
                     PicassoInstance.with()
                         .load(url)
@@ -179,7 +188,7 @@ class PhotosViewHelper internal constructor(
             }
         }
         val i = images.size - container.childCount
-        for (j in 0 until i) {
+        (0 until i).forEach { _ ->
             val root: View = when (roundedMode) {
                 1 -> {
                     if (images.size > 1) LayoutInflater.from(context).inflate(
@@ -269,7 +278,12 @@ class PhotosViewHelper internal constructor(
                     )
                 }
             }
-            if (isAutoplayGif && image.type == PostImage.TYPE_GIF) {
+            val isGifSrc = if (image.type == PostImage.TYPE_GIF) {
+                (image.attachment as Document).videoPreview?.src
+            } else {
+                null
+            }
+            if ((isAutoPlayVideo == 1 || isAutoPlayVideo == 2) && isGifSrc.nonNullNoEmpty()) {
                 PicassoInstance.with().cancelRequest(holder.vgPhoto)
                 holder.vgPhoto.setDecoderCallback(object :
                     AnimatedShapeableImageView.OnDecoderInit {
@@ -292,12 +306,19 @@ class PhotosViewHelper internal constructor(
                         }
                     }
                 })
-                holder.vgPhoto.fromNet(
-                    ((image.attachment as Document).ownerId.toString() + "_" + image.attachment.id.toString()),
-                    image.attachment.videoPreview?.src,
-                    Utils.createOkHttp(Constants.GIF_TIMEOUT, true),
-                    true
-                )
+                if (isAutoPlayVideo == 2) {
+                    holder.vgPhoto.fromFile(
+                        isGifSrc,
+                        true
+                    )
+                } else {
+                    holder.vgPhoto.fromNet(
+                        ((image.attachment as Document).ownerId.toString() + "_" + image.attachment.id.toString()),
+                        isGifSrc,
+                        Utils.createOkHttp(Constants.GIF_TIMEOUT, true),
+                        true
+                    )
+                }
             } else if (url.nonNullNoEmpty()) {
                 PicassoInstance.with()
                     .load(url)

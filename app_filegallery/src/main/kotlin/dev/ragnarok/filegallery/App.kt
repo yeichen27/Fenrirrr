@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.camera.core.ImageProcessingUtil
 import androidx.camera.core.impl.utils.SurfaceUtil
+import dev.ragnarok.fenrir.module.FFmpegOkhttp
 import dev.ragnarok.fenrir.module.FenrirNative
 import dev.ragnarok.filegallery.activity.crash.CrashUtils
 import dev.ragnarok.filegallery.media.music.MusicPlaybackController
@@ -41,6 +42,9 @@ class App : Application() {
             MusicPlaybackController.tracksExist = FileExistNative()
             ImageProcessingUtil.setProcessingUtil(Camera2ImageProcessingUtil)
             SurfaceUtil.setSurfaceUtil(Camera2SurfaceUtil)
+            FFmpegOkhttp.setOnFFmpegOkhttpCreate {
+                Utils.createOkHttp(Constants.EXO_PLAYER_TIMEOUT)
+            }
         } else {
             MusicPlaybackController.tracksExist = FileExistJVM()
         }

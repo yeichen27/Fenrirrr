@@ -210,6 +210,18 @@
         <item>2</item>
     </string-array>
 
+    <string-array name="array_autoplay_video_on_posts_names">
+        <item>Disable</item>
+        <item>Only GIF (cache)</item>
+        <item>All video on post (network)</item>
+    </string-array>
+
+    <string-array name="array_autoplay_video_on_posts_items" translatable="false">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+
     <string-array name="array_pager_transform_names" translatable="false">
         <item>Off</item>
         <item>Depth Transformer</item>
@@ -1730,7 +1742,7 @@
     <string name="call_reached">Completed</string>
     <string name="marketer">Contact the seller</string>
     <string name="not_update_dialogs">Update dialogs manually</string>
-    <string name="autoplay_gif">Autoplay GIF</string>
+    <string name="autoplay_video_on_posts">Autoplay video on posts</string>
     <string name="select_icon">Select an icon:</string>
     <string name="default_icon">Standard</string>
     <string name="dynamic_icon">Dynamic Android 12</string>

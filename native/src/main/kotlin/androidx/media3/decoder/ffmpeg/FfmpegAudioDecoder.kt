@@ -18,7 +18,6 @@ package androidx.media3.decoder.ffmpeg
 import androidx.media3.common.C
 import androidx.media3.common.Format
 import androidx.media3.common.MimeTypes
-import androidx.media3.common.util.Assertions.checkNotNull
 import androidx.media3.common.util.ParsableByteArray
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.common.util.Util
@@ -139,7 +138,7 @@ class FfmpegAudioDecoder(
                     checkNotNull(extraData)
                     // ALAC decoder did not set the sample rate in earlier versions of FFmpeg. See
                     // https://trac.ffmpeg.org/ticket/6096.
-                    val parsableExtraData = ParsableByteArray(extraData ?: return null)
+                    val parsableExtraData = ParsableByteArray(extraData)
                     parsableExtraData.position = extraData.size - 4
                     sampleRate = parsableExtraData.readUnsignedIntToInt()
                 }

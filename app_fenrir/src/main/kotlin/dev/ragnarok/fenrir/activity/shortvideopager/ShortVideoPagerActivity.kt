@@ -9,7 +9,6 @@ import android.os.Build
 import android.os.Bundle
 import android.util.SparseArray
 import android.view.LayoutInflater
-import android.view.SurfaceHolder
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -17,6 +16,7 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
+import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.util.size
 import androidx.core.view.WindowInsetsControllerCompat
@@ -40,6 +40,7 @@ import dev.ragnarok.fenrir.listener.AppStyleable
 import dev.ragnarok.fenrir.media.story.IStoryPlayer
 import dev.ragnarok.fenrir.model.Commented
 import dev.ragnarok.fenrir.model.Video
+import dev.ragnarok.fenrir.picasso.PicassoInstance
 import dev.ragnarok.fenrir.place.Place
 import dev.ragnarok.fenrir.place.PlaceFactory
 import dev.ragnarok.fenrir.place.PlaceProvider
@@ -395,14 +396,18 @@ class ShortVideoPagerActivity : BaseMvpActivity<ShortVideoPagerPresenter, IShort
             val progressVisible = isCurrent && preparing
             holder?.setProgressVisible(progressVisible)
             holder?.setSurfaceVisible(if (isCurrent && !preparing) View.VISIBLE else View.GONE)
+            holder?.setPreviewVisible(if (isCurrent && !preparing) View.GONE else View.VISIBLE)
         }
     }
 
     override fun attachDisplayToPlayer(adapterPosition: Int, storyPlayer: IStoryPlayer?) {
         val holder = findByPosition(adapterPosition)
+        /*
         if (holder?.isSurfaceReady == true) {
-            storyPlayer?.setDisplay(holder.mSurfaceHolder)
+            storyPlayer?.setVideoSurfaceHolder(holder.mSurfaceHolder)
         }
+         */
+        storyPlayer?.setVideoTextureView(holder?.mSurfaceView)
     }
 
     override fun setToolbarTitle(@StringRes titleRes: Int, vararg params: Any?) {
@@ -441,6 +446,7 @@ class ShortVideoPagerActivity : BaseMvpActivity<ShortVideoPagerPresenter, IShort
     override fun configHolder(
         adapterPosition: Int,
         progress: Boolean,
+        playing: Boolean,
         aspectRatioW: Int,
         aspectRatioH: Int
     ) {
@@ -448,6 +454,8 @@ class ShortVideoPagerActivity : BaseMvpActivity<ShortVideoPagerPresenter, IShort
         holder?.setProgressVisible(progress)
         holder?.setAspectRatio(aspectRatioW, aspectRatioH)
         holder?.setSurfaceVisible(if (progress) View.GONE else View.VISIBLE)
+        holder?.setPreviewVisible(if (playing) View.GONE else View.VISIBLE)
+        presenter?.fireSurfaceCreated(adapterPosition)
     }
 
     override fun onDestroy() {
@@ -476,10 +484,11 @@ class ShortVideoPagerActivity : BaseMvpActivity<ShortVideoPagerPresenter, IShort
         return weak?.get()
     }
 
-    inner class Holder(rootView: View) : RecyclerView.ViewHolder(rootView), SurfaceHolder.Callback {
+    inner class Holder(rootView: View) : RecyclerView.ViewHolder(rootView) {
         val mSurfaceView: ExpandableSurfaceView = rootView.findViewById(R.id.videoSurface)
-        val mSurfaceHolder: SurfaceHolder = mSurfaceView.holder
-        val mProgressBar: ThorVGLottieView
+        val mPreviewView: AppCompatImageView = rootView.findViewById(R.id.image_view)
+        val mProgressBar: ThorVGLottieView = rootView.findViewById(R.id.preparing_progress_bar)
+        /*
         var isSurfaceReady = false
         override fun surfaceCreated(holder: SurfaceHolder) {
             isSurfaceReady = true
@@ -490,6 +499,8 @@ class ShortVideoPagerActivity : BaseMvpActivity<ShortVideoPagerPresenter, IShort
         override fun surfaceDestroyed(holder: SurfaceHolder) {
             isSurfaceReady = false
         }
+
+         */
 
         fun setProgressVisible(visible: Boolean) {
             mProgressBar.visibility = if (visible) View.VISIBLE else View.GONE
@@ -520,9 +531,22 @@ class ShortVideoPagerActivity : BaseMvpActivity<ShortVideoPagerPresenter, IShort
             mSurfaceView.visibility = Vis
         }
 
+        fun setPreviewVisible(Vis: Int) {
+            mPreviewView.visibility = Vis
+        }
+
+        fun bindTo(video: Video) {
+            mSurfaceView.visibility = View.VISIBLE
+            PicassoInstance.with().cancelRequest(mPreviewView)
+            PicassoInstance.with()
+                .load(video.image)
+                .into(mPreviewView)
+        }
+
         init {
-            mSurfaceHolder.addCallback(this)
-            mProgressBar = rootView.findViewById(R.id.preparing_progress_bar)
+            //val mSurfaceHolder: SurfaceHolder = mSurfaceView.holder
+            //mSurfaceHolder.addCallback(this)
+            presenter?.fireSurfaceCreated(bindingAdapterPosition)
             mSurfaceView.setOnClickListener { toggleFullscreen() }
         }
     }
@@ -537,7 +561,11 @@ class ShortVideoPagerActivity : BaseMvpActivity<ShortVideoPagerPresenter, IShort
         }
 
         override fun onBindViewHolder(holder: Holder, position: Int) {
-
+            presenter?.let {
+                it.getVideo(position)?.let { s ->
+                    holder.bindTo(s)
+                }
+            }
         }
 
         fun updateCount(count: Int) {

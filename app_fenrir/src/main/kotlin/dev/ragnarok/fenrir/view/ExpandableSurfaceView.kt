@@ -2,14 +2,14 @@ package dev.ragnarok.fenrir.view
 
 import android.content.Context
 import android.util.AttributeSet
-import android.view.SurfaceView
+import android.view.TextureView
 import androidx.annotation.IntDef
 
 class ExpandableSurfaceView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyle: Int = 0
-) : SurfaceView(context, attrs, defStyle) {
+) : TextureView(context, attrs, defStyle) {
     @MustBeDocumented
     @Retention(AnnotationRetention.SOURCE)
     @Target(AnnotationTarget.TYPE)

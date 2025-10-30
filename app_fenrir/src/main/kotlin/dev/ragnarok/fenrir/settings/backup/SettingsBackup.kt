@@ -87,7 +87,7 @@ class SettingsBackup {
         var max_thumb_resolution: String? = null
         var ffmpeg_audio_codecs: String? = null
         var lifecycle_music_service: String? = null
-        var autoplay_gif: Boolean? = null
+        var autoplay_video_on_posts: String? = null
         var strip_news_repost: Boolean? = null
         var communities_in_page_search: Boolean? = null
         var ad_block_story_news: Boolean? = null

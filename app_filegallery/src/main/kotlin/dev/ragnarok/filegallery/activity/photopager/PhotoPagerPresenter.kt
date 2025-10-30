@@ -30,7 +30,6 @@ import dev.ragnarok.filegallery.settings.CurrentTheme.getColorSecondary
 import dev.ragnarok.filegallery.settings.Settings.get
 import dev.ragnarok.filegallery.util.AssertUtils
 import java.io.File
-import java.util.Calendar
 
 open class PhotoPagerPresenter internal constructor(
     initialData: ArrayList<Photo>
@@ -127,7 +126,7 @@ open class PhotoPagerPresenter internal constructor(
                 view?.showError("Can't create directory $dir")
                 return
             }
-        } else dir.setLastModified(Calendar.getInstance().timeInMillis)
+        } else dir.setLastModified(System.currentTimeMillis())
         val photo = current
         var path = photo.text
         val ndx = path?.indexOf('/')
@@ -225,7 +224,7 @@ open class PhotoPagerPresenter internal constructor(
                     view?.showError("Can't create directory $dir_final")
                     return
                 }
-            } else dir_final.setLastModified(Calendar.getInstance().timeInMillis)
+            } else dir_final.setLastModified(System.currentTimeMillis())
             dir = dir_final
         }
         photo.photo_url?.let {

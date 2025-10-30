@@ -6,6 +6,7 @@ import dev.ragnarok.fenrir.getBoolean
 import dev.ragnarok.fenrir.module.parcel.ParcelNative
 import dev.ragnarok.fenrir.putBoolean
 import dev.ragnarok.fenrir.readTypedObjectCompat
+import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.writeTypedObjectCompat
 
 class Video : AbsModel, ParcelNative.ParcelableNative {
@@ -180,6 +181,16 @@ class Video : AbsModel, ParcelNative.ParcelableNative {
         timelineThumbs = parcel.readParcelable(VideoTimeline.NativeCreator)
         optionalOwner = ParcelableOwnerWrapper.readOwner(parcel)
     }
+
+    val urlForPreviewInternal: String?
+        get() = Utils.firstNonEmptyString(
+            trailer,
+            mp4link1080,
+            mp4link1440,
+            mp4link720,
+            mp4link480,
+            hls
+        )
 
     @AbsModelType
     override fun getModelType(): Int {

@@ -1,5 +1,5 @@
 diff -ruN a/com/google/android/material/badge/BadgeDrawable.java b/com/google/android/material/badge/BadgeDrawable.java
---- a/com/google/android/material/badge/BadgeDrawable.java	2025-03-24 18:37:42.000000000 +0300
+--- a/com/google/android/material/badge/BadgeDrawable.java	2025-10-22 19:46:00.000000000 +0300
 +++ b/com/google/android/material/badge/BadgeDrawable.java	2024-05-24 13:50:12.000000000 +0300
 @@ -490,6 +490,17 @@
      }
@@ -20,7 +20,7 @@ diff -ruN a/com/google/android/material/badge/BadgeDrawable.java b/com/google/an
    public boolean hasNumber() {
      return !state.hasText() && state.hasNumber();
 diff -ruN a/com/google/android/material/badge/BadgeState.java b/com/google/android/material/badge/BadgeState.java
---- a/com/google/android/material/badge/BadgeState.java	2025-03-24 18:37:42.000000000 +0300
+--- a/com/google/android/material/badge/BadgeState.java	2025-10-22 19:46:00.000000000 +0300
 +++ b/com/google/android/material/badge/BadgeState.java	2024-05-14 22:22:38.000000000 +0300
 @@ -207,7 +207,7 @@
              : storedState.badgeWithTextShapeAppearanceOverlayResId;
@@ -81,7 +81,7 @@ diff -ruN a/com/google/android/material/badge/BadgeState.java b/com/google/andro
    }
  }
 diff -ruN a/com/google/android/material/badge/ExperimentalBadgeUtils.java b/com/google/android/material/badge/ExperimentalBadgeUtils.java
---- a/com/google/android/material/badge/ExperimentalBadgeUtils.java	2025-03-24 18:37:42.000000000 +0300
+--- a/com/google/android/material/badge/ExperimentalBadgeUtils.java	2025-10-22 19:46:00.000000000 +0300
 +++ b/com/google/android/material/badge/ExperimentalBadgeUtils.java	2022-06-22 15:35:34.000000000 +0300
 @@ -16,10 +16,8 @@
  
@@ -100,60 +100,18 @@ diff -ruN a/com/google/android/material/badge/ExperimentalBadgeUtils.java b/com/
  })
 -@Experimental(level = ERROR)
  public @interface ExperimentalBadgeUtils {}
-diff -ruN a/com/google/android/material/behavior/HideBottomViewOnScrollBehavior.java b/com/google/android/material/behavior/HideBottomViewOnScrollBehavior.java
---- a/com/google/android/material/behavior/HideBottomViewOnScrollBehavior.java	2025-03-24 18:37:42.000000000 +0300
-+++ b/com/google/android/material/behavior/HideBottomViewOnScrollBehavior.java	2025-03-25 18:30:49.735609582 +0300
-@@ -42,6 +42,9 @@
- import androidx.core.view.ViewCompat;
- import com.google.android.material.animation.AnimationUtils;
- import com.google.android.material.motion.MotionUtils;
-+
-+import java.lang.annotation.Retention;
-+import java.lang.annotation.RetentionPolicy;
- import java.util.LinkedHashSet;
- 
- /**
-@@ -108,6 +111,7 @@
-    */
-   @RestrictTo(LIBRARY_GROUP)
-   @IntDef({STATE_SCROLLED_DOWN, STATE_SCROLLED_UP})
-+  @Retention(RetentionPolicy.SOURCE)
-   public @interface ScrollState {}
- 
-   @ScrollState private int currentState = STATE_SCROLLED_UP;
-diff -ruN a/com/google/android/material/behavior/HideViewOnScrollBehavior.java b/com/google/android/material/behavior/HideViewOnScrollBehavior.java
---- a/com/google/android/material/behavior/HideViewOnScrollBehavior.java	2025-03-24 18:37:42.000000000 +0300
-+++ b/com/google/android/material/behavior/HideViewOnScrollBehavior.java	2025-03-25 18:31:22.930002616 +0300
-@@ -48,6 +48,9 @@
- import com.google.android.material.animation.AnimationUtils;
- import com.google.android.material.behavior.HideOnScrollView.ViewEdge;
- import com.google.android.material.motion.MotionUtils;
-+
-+import java.lang.annotation.Retention;
-+import java.lang.annotation.RetentionPolicy;
- import java.util.LinkedHashSet;
- 
- /**
-@@ -114,6 +117,7 @@
-    */
-   @RestrictTo(LIBRARY_GROUP)
-   @IntDef({STATE_SCROLLED_OUT, STATE_SCROLLED_IN})
-+  @Retention(RetentionPolicy.SOURCE)
-   public @interface ScrollState {}
- 
-   @ScrollState private int currentState = STATE_SCROLLED_IN;
 diff -ruN a/com/google/android/material/bottomnavigation/res/values/styles.xml b/com/google/android/material/bottomnavigation/res/values/styles.xml
---- a/com/google/android/material/bottomnavigation/res/values/styles.xml	2025-03-24 18:37:42.000000000 +0300
-+++ b/com/google/android/material/bottomnavigation/res/values/styles.xml	2024-10-31 00:03:14.860478183 +0300
-@@ -81,7 +81,6 @@
+--- a/com/google/android/material/bottomnavigation/res/values/styles.xml	2025-10-22 19:46:00.000000000 +0300
++++ b/com/google/android/material/bottomnavigation/res/values/styles.xml	2025-05-07 00:08:56.663587281 +0300
+@@ -66,7 +66,6 @@
      <item name="itemPaddingTop">@dimen/m3_bottom_nav_item_padding_top</item>
      <item name="itemPaddingBottom">@dimen/m3_bottom_nav_item_padding_bottom</item>
      <item name="android:minHeight">@dimen/m3_bottom_nav_min_height</item>
 -    <item name="materialThemeOverlay">@style/ThemeOverlay.Material3.BottomNavigationView</item>
-     <item name="shapeAppearance">@style/ShapeAppearance.M3.Comp.NavigationBar.Container.Shape</item>
+     <item name="shapeAppearance">@style/ShapeAppearance.M3.Comp.NavBar.Container.Shape</item>
      <item name="activeIndicatorLabelPadding">@dimen/m3_navigation_item_active_indicator_label_padding</item>
      <item name="iconLabelHorizontalSpacing">@dimen/m3_navigation_item_active_indicator_label_padding</item>
-@@ -89,15 +88,6 @@
+@@ -74,14 +73,6 @@
  
    <style name="Widget.Material3.BottomNavigationView" parent="Base.Widget.Material3.BottomNavigationView"/>
  
@@ -165,23 +123,22 @@ diff -ruN a/com/google/android/material/bottomnavigation/res/values/styles.xml b
 -    <item name="verticalOffsetWithText">@dimen/m3_nav_badge_with_text_vertical_offset</item>
 -  </style>
 -
--
    <style name="Widget.Material3.BottomNavigationView.ActiveIndicator" parent="">
      <item name="android:width">@dimen/m3_bottom_nav_item_active_indicator_width</item>
      <item name="android:height">@dimen/m3_bottom_nav_item_active_indicator_height</item>
 diff -ruN a/com/google/android/material/bottomsheet/BottomSheetBehavior.java b/com/google/android/material/bottomsheet/BottomSheetBehavior.java
---- a/com/google/android/material/bottomsheet/BottomSheetBehavior.java	2025-03-24 18:37:42.000000000 +0300
-+++ b/com/google/android/material/bottomsheet/BottomSheetBehavior.java	2025-01-29 14:20:16.413912254 +0300
-@@ -70,6 +70,8 @@
- import androidx.core.view.accessibility.AccessibilityViewCommand;
+--- a/com/google/android/material/bottomsheet/BottomSheetBehavior.java	2025-10-22 19:46:00.000000000 +0300
++++ b/com/google/android/material/bottomsheet/BottomSheetBehavior.java	2025-10-15 10:16:56.150346968 +0300
+@@ -74,6 +74,8 @@
  import androidx.customview.view.AbsSavedState;
  import androidx.customview.widget.ViewDragHelper;
+ import com.google.android.material.color.MaterialColors;
 +import androidx.recyclerview.widget.RecyclerView;
 +import androidx.viewpager2.widget.ViewPager2;
  import com.google.android.material.internal.ViewUtils;
  import com.google.android.material.internal.ViewUtils.RelativePadding;
  import com.google.android.material.motion.MaterialBackHandler;
-@@ -1687,6 +1689,19 @@
+@@ -1778,6 +1780,19 @@
    }
  
    @Nullable
@@ -201,7 +158,7 @@ diff -ruN a/com/google/android/material/bottomsheet/BottomSheetBehavior.java b/c
    @VisibleForTesting
    View findScrollingChild(View view) {
      if (view.getVisibility() != View.VISIBLE) {
-@@ -1695,6 +1710,12 @@
+@@ -1786,6 +1801,12 @@
      if (view.isNestedScrollingEnabled()) {
        return view;
      }
@@ -215,24 +172,28 @@ diff -ruN a/com/google/android/material/bottomsheet/BottomSheetBehavior.java b/c
        ViewGroup group = (ViewGroup) view;
        for (int i = 0, count = group.getChildCount(); i < count; i++) {
 diff -ruN a/com/google/android/material/card/MaterialCardViewHelper.java b/com/google/android/material/card/MaterialCardViewHelper.java
---- a/com/google/android/material/card/MaterialCardViewHelper.java	2025-03-24 18:37:42.000000000 +0300
-+++ b/com/google/android/material/card/MaterialCardViewHelper.java	2025-03-25 18:33:48.279741686 +0300
-@@ -158,7 +158,7 @@
+--- a/com/google/android/material/card/MaterialCardViewHelper.java	2025-10-22 19:46:00.000000000 +0300
++++ b/com/google/android/material/card/MaterialCardViewHelper.java	2025-08-22 13:49:17.147908135 +0300
+@@ -166,7 +166,7 @@
      foregroundContentDrawable = new MaterialShapeDrawable();
-     setShapeAppearanceModel(shapeAppearanceModelBuilder.build());
+     setShapeAppearance(shapeAppearanceModelBuilder.build());
  
 -    iconFadeAnimInterpolator =
 +    iconFadeAnimInterpolator = card.isInEditMode() ? AnimationUtils.LINEAR_INTERPOLATOR :
          MotionUtils.resolveThemeInterpolator(
              materialCardView.getContext(),
              R.attr.motionEasingLinearInterpolator,
-@@ -222,10 +222,15 @@
+@@ -230,7 +230,7 @@
  
      materialCardView.setBackgroundInternal(insetDrawable(bgDrawable));
      fgDrawable =
 -        shouldUseClickableForeground() ? getClickableForeground() : foregroundContentDrawable;
 +        shouldUseClickableForeground() ? getClickableForeground() : getForegroundContentDrawable();
      materialCardView.setForeground(insetDrawable(fgDrawable));
+ 
+     // Card corner radius overrides the shape appearance in precedence.
+@@ -252,6 +252,11 @@
+     }
    }
  
 +  @NonNull
@@ -243,7 +204,7 @@ diff -ruN a/com/google/android/material/card/MaterialCardViewHelper.java b/com/g
    boolean isBackgroundOverwritten() {
      return isBackgroundOverwritten;
    }
-@@ -301,7 +306,7 @@
+@@ -327,7 +332,7 @@
    void updateClickable() {
      Drawable previousFgDrawable = fgDrawable;
      fgDrawable =
@@ -253,8 +214,8 @@ diff -ruN a/com/google/android/material/card/MaterialCardViewHelper.java b/com/g
        updateInsetForeground(fgDrawable);
      }
 diff -ruN a/com/google/android/material/floatingactionbutton/FloatingActionButtonImpl.java b/com/google/android/material/floatingactionbutton/FloatingActionButtonImpl.java
---- a/com/google/android/material/floatingactionbutton/FloatingActionButtonImpl.java	2025-03-24 18:37:42.000000000 +0300
-+++ b/com/google/android/material/floatingactionbutton/FloatingActionButtonImpl.java	2025-03-25 18:36:11.207475133 +0300
+--- a/com/google/android/material/floatingactionbutton/FloatingActionButtonImpl.java	2025-10-22 19:46:00.000000000 +0300
++++ b/com/google/android/material/floatingactionbutton/FloatingActionButtonImpl.java	2025-03-25 18:36:11.000000000 +0300
 @@ -177,21 +177,19 @@
      }
      shapeDrawable.initializeElevationOverlay(view.getContext());
@@ -285,8 +246,8 @@ diff -ruN a/com/google/android/material/floatingactionbutton/FloatingActionButto
    }
  
 diff -ruN a/com/google/android/material/materialswitch/res/values/dimens.xml b/com/google/android/material/materialswitch/res/values/dimens.xml
---- a/com/google/android/material/materialswitch/res/values/dimens.xml	2025-03-24 18:37:42.000000000 +0300
-+++ b/com/google/android/material/materialswitch/res/values/dimens.xml	2025-01-07 08:14:20.998573006 +0300
+--- a/com/google/android/material/materialswitch/res/values/dimens.xml	2025-10-22 19:46:00.000000000 +0300
++++ b/com/google/android/material/materialswitch/res/values/dimens.xml	2025-01-07 08:14:20.000000000 +0300
 @@ -16,9 +16,9 @@
    -->
  
@@ -301,8 +262,8 @@ diff -ruN a/com/google/android/material/materialswitch/res/values/dimens.xml b/c
    <dimen name="mtrl_switch_text_padding">16dp</dimen>
  </resources>
 diff -ruN a/com/google/android/material/snackbar/Snackbar.java b/com/google/android/material/snackbar/Snackbar.java
---- a/com/google/android/material/snackbar/Snackbar.java	2025-03-24 18:37:42.000000000 +0300
-+++ b/com/google/android/material/snackbar/Snackbar.java	2025-03-16 15:37:14.871545725 +0300
+--- a/com/google/android/material/snackbar/Snackbar.java	2025-10-22 19:46:00.000000000 +0300
++++ b/com/google/android/material/snackbar/Snackbar.java	2025-03-16 15:37:14.000000000 +0300
 @@ -276,7 +276,7 @@
    }
  
@@ -324,14 +285,3 @@ diff -ruN a/com/google/android/material/snackbar/Snackbar.java b/com/google/andr
    /**
     * Sets the text color of the message specified in {@link #setText(CharSequence)} and {@link
     * #setText(int)}.
-diff -ruN a/com/google/android/material/tabs/TabLayout.java b/com/google/android/material/tabs/TabLayout.java
---- a/com/google/android/material/tabs/TabLayout.java	2025-03-24 18:37:42.000000000 +0300
-+++ b/com/google/android/material/tabs/TabLayout.java	2025-02-27 10:23:48.575050740 +0300
-@@ -259,6 +259,7 @@
- 
-   /** @hide */
-   @IntDef(value = {TAB_LABEL_VISIBILITY_UNLABELED, TAB_LABEL_VISIBILITY_LABELED})
-+  @Retention(RetentionPolicy.SOURCE)
-   public @interface LabelVisibility {}
- 
-   /**

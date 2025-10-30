@@ -30,6 +30,7 @@ COMMON_OPTIONS="
     --enable-demuxer=mp3
     --enable-demuxer=flac
     --enable-demuxer=ogg
+    --enable-demuxer=hls
     --enable-muxer=mp4
     --enable-encoder=aac
     --enable-swresample
@@ -39,13 +40,14 @@ COMMON_OPTIONS="
     --enable-pthreads
     --enable-swscale
     --enable-hwaccels
+    --enable-jni
     "
 
 TOOLCHAIN_PREFIX="${NDK_PATH}/toolchains/llvm/prebuilt/${HOST_PLATFORM}/bin"
 for decoder in "${ENABLED_DECODERS[@]}"; do
   COMMON_OPTIONS="${COMMON_OPTIONS} --enable-decoder=${decoder}"
 done
-cd "/home/umerov/ffmpeg"
+cd "$HOME/ffmpeg"
 ./configure \
   --libdir=android-libs/armeabi-v7a \
   --arch=arm \

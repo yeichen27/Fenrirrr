@@ -35,7 +35,7 @@ import dev.ragnarok.fenrir.model.Video
 import dev.ragnarok.fenrir.model.VideoWithOwner
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.orZero
-import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.with
+import dev.ragnarok.fenrir.picasso.PicassoInstance
 import dev.ragnarok.fenrir.requireNonNull
 import dev.ragnarok.fenrir.safeAllIsNullOrEmpty
 import dev.ragnarok.fenrir.settings.CurrentTheme
@@ -46,6 +46,8 @@ import dev.ragnarok.fenrir.util.ViewUtils.displayAvatar
 import dev.ragnarok.fenrir.view.AspectRatioImageView
 import dev.ragnarok.fenrir.view.VideoServiceIcons.getIconByType
 import dev.ragnarok.fenrir.view.emoji.EmojiconTextView
+import dev.ragnarok.fenrir.view.natives.animation.AnimatedShapeableImageView
+import dev.ragnarok.fenrir.view.natives.animation.AspectRatioAnimatedShapeableImageView
 
 class NewsfeedMentionsAdapter(
     private val context: Context, private var data: List<NewsfeedComment>,
@@ -58,6 +60,8 @@ class NewsfeedMentionsAdapter(
     }
     private val colorTextSecondary: Int = CurrentTheme.getSecondaryTextColorCode(context)
     private val iconColorActive: Int = CurrentTheme.getColorPrimary(context)
+
+    private val isAutoPlayVideo = Settings.get().main().isAutoplay_video_on_posts
     private var actionListener: ActionListener? = null
     fun setActionListener(actionListener: ActionListener?) {
         this.actionListener = actionListener
@@ -131,7 +135,7 @@ class NewsfeedMentionsAdapter(
             )
         }, {
             holder.creatorAvatar.visibility = View.GONE
-            with().cancelRequest(holder.creatorAvatar)
+            PicassoInstance.with().cancelRequest(holder.creatorAvatar)
         })
         addOwnerAvatarClickHandling(holder.ownerAvatar, topic.ownerId)
         holder.ownerName.text = owner.fullName
@@ -164,7 +168,7 @@ class NewsfeedMentionsAdapter(
         }
         val photoUrl = photo.getUrlForSize(PhotoSize.X, true)
         if (photoUrl.nonNullNoEmpty()) {
-            with()
+            PicassoInstance.with()
                 .load(photoUrl)
                 .into(holder.image)
         }
@@ -187,12 +191,44 @@ class NewsfeedMentionsAdapter(
         } else {
             holder.service.visibility = View.GONE
         }
-        if (video.image.nonNullNoEmpty()) {
-            with()
+        val videoImage = video.image
+        val trailerUrl = video.trailer
+        if (isAutoPlayVideo == 1 && trailerUrl.nonNullNoEmpty() || isAutoPlayVideo == 2) {
+            PicassoInstance.with().cancelRequest(holder.image)
+            holder.image.setDecoderCallback(object :
+                AnimatedShapeableImageView.OnDecoderInit {
+                override fun onLoaded(success: Boolean) {
+                    if (!success) {
+                        if (videoImage.nonNullNoEmpty()) {
+                            PicassoInstance.with()
+                                .load(videoImage)
+                                .placeholder(R.drawable.background_gray)
+                                .tag(Constants.PICASSO_TAG)
+                                .into(holder.image)
+                        } else {
+                            PicassoInstance.with().cancelRequest(holder.image)
+                        }
+                    }
+                }
+            })
+            if (isAutoPlayVideo == 2) {
+                holder.image.fromVKVideo(
+                    video, true
+                )
+            } else if (trailerUrl.nonNullNoEmpty()) {
+                holder.image.fromNet(
+                    (video.ownerId.toString() + "_" + video.id.toString()),
+                    trailerUrl,
+                    Utils.createOkHttp(Constants.GIF_TIMEOUT, true),
+                    true
+                )
+            }
+        } else if (video.image.nonNullNoEmpty()) {
+            PicassoInstance.with()
                 .load(video.image)
                 .into(holder.image)
         } else {
-            with()
+            PicassoInstance.with()
                 .cancelRequest(holder.image)
         }
         holder.image.setOnClickListener {
@@ -222,7 +258,7 @@ class NewsfeedMentionsAdapter(
             holder.commentAttachmentHolder,
             true,
             null,
-            null, null
+            null
         )
         displayAvatar(
             holder.commentAvatar,
@@ -262,7 +298,7 @@ class NewsfeedMentionsAdapter(
             holder.postAttachmentsHolder,
             false,
             null,
-            null, null
+            null
         )
         attachmentsViewBinder.displayCopyHistory(
             post.getCopyHierarchy(),
@@ -403,7 +439,7 @@ class NewsfeedMentionsAdapter(
         val datitime: TextView = itemView.findViewById(R.id.video_datetime)
         val viewsCounter: TextView = itemView.findViewById(R.id.video_views_counter)
         val service: ImageView = itemView.findViewById(R.id.video_service)
-        val image: ImageView = itemView.findViewById(R.id.video_image)
+        val image: AspectRatioAnimatedShapeableImageView = itemView.findViewById(R.id.video_image)
         val duration: TextView = itemView.findViewById(R.id.video_lenght)
         val avatar: ImageView = itemView.findViewById(R.id.video_owner_avatar)
         val ownerName: TextView = itemView.findViewById(R.id.video_owner_name)

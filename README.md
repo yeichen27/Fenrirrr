@@ -13,10 +13,11 @@
 
 <b>Инструкция по сборке:</b><br>
 Требуется:<br>
-  1. Android Studio Otter 2025.2.1 или выше. Kotlin 2.2.*<br>
+  1. Android Studio Otter 2 Feature Drop 2025.2.2 или выше. Kotlin 2.2.*<br>
   2. Android SDK 36.1<br>
   3. Android NDK 29.0.14206865<br>
   4. CMake 4.1.2<br>
+  5. diffutils
   
   Если не работает музыка в Fenrir Kate, обновите kate_receipt_gms_token в app.build_config.<br>
   Взять токен можно из Kate Mobile Extra Mod<br>
@@ -42,12 +43,6 @@
   4. Выберите flavor - fenrir или kate и Debug или Release и соберите apk :)<br>
 
 Локальный медиа сервер https://github.com/umerov1999/FenrirMediaServer/releases <br>
-
-<b>Старые репозитории:</b>
-
-  1. https://github.com/umerov1999/Old_Fenrir-for-VK Release 1<br>
-  2. https://github.com/umerov1999/Old2_Fenrir-for-VK Release 2<br>
-  3. https://github.com/umerov1999/Fenrir-for-VK Финальный релиз<br>
 
 # FileGallery
 Просмотр фото, видео, аудио, тэги<br>

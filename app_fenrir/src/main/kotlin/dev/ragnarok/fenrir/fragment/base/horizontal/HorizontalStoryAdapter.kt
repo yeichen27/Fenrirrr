@@ -11,7 +11,6 @@ import dev.ragnarok.fenrir.model.Story
 import dev.ragnarok.fenrir.picasso.transforms.RoundTransformation
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.ViewUtils.displayAvatar
-import java.util.Calendar
 
 class HorizontalStoryAdapter(data: MutableList<Story>) :
     RecyclerBindableAdapter<Story, HorizontalStoryAdapter.Holder>(data) {
@@ -30,7 +29,7 @@ class HorizontalStoryAdapter(data: MutableList<Story>) :
                 viewHolder.expires.visibility = View.VISIBLE
                 viewHolder.expires.setText(R.string.is_expired)
             } else {
-                val exp = (item.expires - Calendar.getInstance().timeInMillis / 1000) / 3600
+                val exp = (item.expires - System.currentTimeMillis() / 1000) / 3600
                 if (exp <= 0) {
                     viewHolder.expires.visibility = View.INVISIBLE
                 } else {

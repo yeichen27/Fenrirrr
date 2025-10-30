@@ -436,8 +436,19 @@ internal class MainSettings(context: Context) : IMainSettings {
         } catch (_: Exception) {
             Constants.AUDIO_PLAYER_SERVICE_IDLE
         }
-    override val isAutoplay_gif: Boolean
-        get() = getPreferences(app).getBoolean("autoplay_gif", true)
+
+    override val isAutoplay_video_on_posts: Int
+        get() = try {
+            if (!FenrirNative.isNativeLoaded) {
+                0
+            } else {
+                getPreferences(app).getString("autoplay_video_on_posts", "2")?.trim()?.toInt()
+                    ?: 0
+            }
+        } catch (_: Exception) {
+            0
+        }
+
     override val isStrip_news_repost: Boolean
         get() = getPreferences(app).getBoolean("strip_news_repost", false)
     override val isCommunities_in_page_search: Boolean

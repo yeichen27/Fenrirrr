@@ -28,11 +28,9 @@ static inline std::string av_make_error_str_animation(int errnum) {
 #undef av_err2str
 #define av_err2str(errnum) av_make_error_str_animation(errnum).c_str()
 
-/*
 inline void print_ffmpeg_error(int error) {
-    __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, "%s\n", av_err2str(error));
+    LOGE("%s\n", av_err2str(error));
 }
-*/
 
 class VideoInfo {
 public:
@@ -44,6 +42,10 @@ public:
         if (fmt_ctx) {
             avformat_close_input(&fmt_ctx);
             fmt_ctx = nullptr;
+        }
+        if (options) {
+            av_dict_free(&options);
+            options = nullptr;
         }
         if (frame) {
             av_frame_free(&frame);
@@ -95,6 +97,7 @@ public:
     }
 
     AVFormatContext *fmt_ctx = nullptr;
+    AVDictionary *options = nullptr;
     char *src = nullptr;
     int video_stream_idx = -1;
     AVStream *video_stream = nullptr;
@@ -202,8 +205,12 @@ jlong createDecoder_animation(JNIEnv *env, jstring src,
         env->ReleaseStringUTFChars(src, srcString);
     }
 
-    if (avformat_open_input(&info->fmt_ctx, info->src, nullptr, nullptr) < 0) {
+    //av_dict_set(&info->options, "protocol_whitelist", "file,http,https", 0);
+
+    int ret = 0;
+    if ((ret = avformat_open_input(&info->fmt_ctx, info->src, nullptr, nullptr)) < 0) {
         LOGE("can't open source file %s", info->src);
+        print_ffmpeg_error(ret);
         delete info;
         return 0;
     }

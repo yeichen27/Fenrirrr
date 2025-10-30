@@ -839,10 +839,17 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 titleRes = R.string.new_loading_dialog
             }
 
-            switch("autoplay_gif") {
-                defaultValue = true
+            singleChoice(
+                "autoplay_video_on_posts",
+                selItems(
+                    R.array.array_autoplay_video_on_posts_names,
+                    R.array.array_autoplay_video_on_posts_items
+                ),
+                parentFragmentManager
+            ) {
                 dependency = "enable_native"
-                titleRes = R.string.autoplay_gif
+                initialSelection = "2"
+                titleRes = R.string.autoplay_video_on_posts
             }
 
             singleChoice(

@@ -75,6 +75,12 @@
         <item>Поворот</item>
     </string-array>
 
+    <string-array name="array_autoplay_video_on_posts_names">
+        <item>Выключить.</item>
+        <item>Только GIF (кэширование)</item>
+        <item>Всё видео в постах (по сети)</item>
+    </string-array>
+
     <string-array name="array_accounts_input">
         <item>VK Android</item>
         <item>Kate</item>
@@ -1485,7 +1491,7 @@
     <string name="call_reached">Завершён</string>
     <string name="marketer">Написать продавцу</string>
     <string name="not_update_dialogs">Обновлять диалоги вручную</string>
-    <string name="autoplay_gif">Автовоспроизведение GIF</string>
+    <string name="autoplay_video_on_posts">Проигрывать видео в постах</string>
     <string name="select_icon">Выберите иконку:</string>
     <string name="default_icon">Стандартная</string>
     <string name="dynamic_icon">Динамическая Android 12</string>

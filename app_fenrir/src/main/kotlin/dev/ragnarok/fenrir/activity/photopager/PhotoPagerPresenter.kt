@@ -46,7 +46,6 @@ import dev.ragnarok.fenrir.util.DownloadWorkUtils.makeLegalFilename
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 import java.io.File
-import java.util.Calendar
 import kotlin.math.abs
 
 open class PhotoPagerPresenter internal constructor(
@@ -415,7 +414,7 @@ open class PhotoPagerPresenter internal constructor(
                 view?.showError("Can't create directory $dir")
                 return
             }
-        } else dir.setLastModified(Calendar.getInstance().timeInMillis)
+        } else dir.setLastModified(System.currentTimeMillis())
         val photo = current
         if (photo.albumId == -311) {
             var path = photo.text
@@ -453,7 +452,7 @@ open class PhotoPagerPresenter internal constructor(
                     view?.showError("Can't create directory $dir_final")
                     return
                 }
-            } else dir_final.setLastModified(Calendar.getInstance().timeInMillis)
+            } else dir_final.setLastModified(System.currentTimeMillis())
             dir = dir_final
         }
         val url = photo.getUrlForSize(PhotoSize.W, true)

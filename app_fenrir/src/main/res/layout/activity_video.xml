@@ -45,7 +45,7 @@
             android:stateListAnimator="@animator/clicked" />
     </com.google.android.material.appbar.MaterialToolbar>
 
-    <dev.ragnarok.fenrir.view.natives.animation.AnimatedShapeableImageView
+    <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/item_timeline_image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

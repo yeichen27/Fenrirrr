@@ -16,7 +16,14 @@ interface IShortVideoPagerView : IMvpView, IErrorView, IToastView {
     fun setToolbarTitle(@StringRes titleRes: Int, vararg params: Any?)
     fun setToolbarSubtitle(shortVideo: Video, account_id: Long, isPlaySpeed: Boolean)
     fun onShare(shortVideo: Video, account_id: Long)
-    fun configHolder(adapterPosition: Int, progress: Boolean, aspectRatioW: Int, aspectRatioH: Int)
+    fun configHolder(
+        adapterPosition: Int,
+        progress: Boolean,
+        playing: Boolean,
+        aspectRatioW: Int,
+        aspectRatioH: Int
+    )
+
     fun onNext()
     fun requestWriteExternalStoragePermission()
     fun showMessage(@StringRes message: Int, error: Boolean)

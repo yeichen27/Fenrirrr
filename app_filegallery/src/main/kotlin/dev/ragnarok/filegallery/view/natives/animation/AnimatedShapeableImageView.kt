@@ -207,25 +207,38 @@ open class AnimatedShapeableImageView @JvmOverloads constructor(
                 tmpFade == true,
                 object : AnimatedFileDrawable.DecoderListener {
                     override fun onError() {
+                        clearAnimationDrawable(
+                            callSuper = true,
+                            clearState = true,
+                            cancelTask = true
+                        )
                         decoderCallback?.onLoaded(false)
                     }
 
+                    override fun onSuccess() {
+                        if (animatedDrawable?.isDecoded != true) {
+                            clearAnimationDrawable(
+                                callSuper = true,
+                                clearState = true,
+                                cancelTask = true
+                            )
+                            decoderCallback?.onLoaded(animatedDrawable?.isDecoded == true)
+                            return
+                        }
+                        decoderCallback?.onLoaded(animatedDrawable?.isDecoded == true)
+                        tmpFade = false
+                        animatedDrawable?.setAllowDecodeSingleFrame(true)
+                        setSuperImageDrawable(animatedDrawable)
+                        if (isPlaying == true) {
+                            playAnimation()
+                        }
+                    }
+
                 })
-            decoderCallback?.onLoaded(animatedDrawable?.isDecoded == true)
-            if (animatedDrawable?.isDecoded != true) {
-                clearAnimationDrawable(callSuper = true, clearState = true, cancelTask = true)
-                return
-            }
-            tmpFade = false
-            animatedDrawable?.setAllowDecodeSingleFrame(true)
-            super.setImageDrawable(animatedDrawable)
-            if (isPlaying == true) {
-                playAnimation()
-            }
         }
     }
 
-    fun fromFile(file: File) {
+    fun fromFile(file: File, autoPlay: Boolean) {
         if (!FenrirNative.isNativeLoaded || !file.exists()) {
             decoderCallback?.onLoaded(false)
             return
@@ -236,6 +249,25 @@ open class AnimatedShapeableImageView @JvmOverloads constructor(
         clearAnimationDrawable(callSuper = true, clearState = true, cancelTask = true)
         loadedFrom = LoadedFrom.FILE
         filePathTmp = file.absolutePath
+        isPlaying = autoPlay
+        tmpFade = false
+        if (attachedToWindow) {
+            createAnimationDrawable()
+        }
+    }
+
+    fun fromFile(file: String, autoPlay: Boolean) {
+        if (!FenrirNative.isNativeLoaded || file.isEmpty()) {
+            decoderCallback?.onLoaded(false)
+            return
+        }
+        if (filePathTmp == file && loadedFrom == LoadedFrom.FILE) {
+            return
+        }
+        clearAnimationDrawable(callSuper = true, clearState = true, cancelTask = true)
+        loadedFrom = LoadedFrom.FILE
+        filePathTmp = file
+        isPlaying = autoPlay
         tmpFade = false
         if (attachedToWindow) {
             createAnimationDrawable()
@@ -314,6 +346,10 @@ open class AnimatedShapeableImageView @JvmOverloads constructor(
     override fun setImageDrawable(dr: Drawable?) {
         super.setImageDrawable(dr)
         clearAnimationDrawable(callSuper = false, clearState = true, cancelTask = true)
+    }
+
+    fun setSuperImageDrawable(dr: Drawable?) {
+        super.setImageDrawable(dr)
     }
 
     override fun setImageBitmap(bm: Bitmap?) {

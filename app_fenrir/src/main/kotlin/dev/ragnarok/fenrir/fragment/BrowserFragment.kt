@@ -46,7 +46,6 @@ import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 import dev.ragnarok.fenrir.util.toast.CustomToast
 import java.io.File
 import java.net.URL
-import java.util.Calendar
 
 class BrowserFragment : BaseFragment(), MenuProvider, BackPressCallback,
     View.OnCreateContextMenuListener {
@@ -145,7 +144,7 @@ class BrowserFragment : BaseFragment(), MenuProvider, BackPressCallback,
                         ?.showToastError("Can't create directory $dir_final")
                     return
                 }
-            } else dir_final.setLastModified(Calendar.getInstance().timeInMillis)
+            } else dir_final.setLastModified(System.currentTimeMillis())
             dir = dir_final
         }
         DownloadWorkUtils.doDownloadPhoto(
@@ -202,7 +201,7 @@ class BrowserFragment : BaseFragment(), MenuProvider, BackPressCallback,
                             ?.showToastError("Can't create directory $dir")
                         return@show
                     }
-                } else dir.setLastModified(Calendar.getInstance().timeInMillis)
+                } else dir.setLastModified(System.currentTimeMillis())
                 downloadResult(
                     DownloadWorkUtils.makeLegalFilename(
                         (DownloadWorkUtils.fixStart(owner) ?: typeRes),

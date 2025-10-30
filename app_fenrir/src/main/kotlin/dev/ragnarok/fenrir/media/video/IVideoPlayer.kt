@@ -2,6 +2,7 @@ package dev.ragnarok.fenrir.media.video
 
 import android.content.Context
 import android.view.SurfaceHolder
+import android.view.TextureView
 import dev.ragnarok.fenrir.model.InternalVideoSize
 import dev.ragnarok.fenrir.model.ProxyConfig
 import dev.ragnarok.fenrir.model.VideoSize
@@ -24,6 +25,7 @@ interface IVideoPlayer {
     val bufferPercentage: Int
     val bufferPosition: Long
     fun setSurfaceHolder(holder: SurfaceHolder?)
+    fun setTextureView(view: TextureView?)
     val isPlaybackSpeed: Boolean
     fun togglePlaybackSpeed()
     fun addVideoSizeChangeListener(listener: IVideoSizeChangeListener)

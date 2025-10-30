@@ -104,7 +104,6 @@ class AttachmentsViewBinder(
         containers: AttachmentsHolder,
         postsAsLinks: Boolean,
         messageId: Int?,
-        peerId: Long?,
         holderPosition: Int?
     ) {
         if (attachments == null) {
@@ -131,8 +130,7 @@ class AttachmentsViewBinder(
             displayVoiceMessages(
                 attachments.voiceMessages,
                 containers.voiceMessageRoot,
-                messageId,
-                peerId
+                messageId
             )
             displayDocs(attachments.getDocLinks(postsAsLinks, true), containers.vgDocs)
             if (containers.vgStickers != null) {
@@ -151,8 +149,7 @@ class AttachmentsViewBinder(
     private fun displayVoiceMessages(
         voices: ArrayList<VoiceMessage>?,
         container: ViewGroup?,
-        messageId: Int?,
-        peerId: Long?
+        messageId: Int?
     ) {
         if (voices.isNullOrEmpty() || container == null) {
             if (container?.isNotEmpty() == true) {
@@ -163,7 +160,7 @@ class AttachmentsViewBinder(
         }
         container.visibility = View.VISIBLE
         val i = voices.size - container.childCount
-        for (j in 0 until i) {
+        (0 until i).forEach { _ ->
             val itemView =
                 LayoutInflater.from(mContext).inflate(R.layout.item_voice_message, container, false)
             val holder = VoiceHolder(itemView)
@@ -177,7 +174,7 @@ class AttachmentsViewBinder(
             val root = container.getChildAt(g) as ViewGroup? ?: continue
             val holder = root.tag as VoiceHolder? ?: continue
             val voice = voices[g]
-            bindVoiceHolder(holder, voice, messageId, peerId)
+            bindVoiceHolder(holder, voice, messageId)
         }
     }
 
@@ -269,8 +266,7 @@ class AttachmentsViewBinder(
     private fun bindVoiceHolder(
         holder: VoiceHolder,
         voice: VoiceMessage,
-        messageId: Int?,
-        peerId: Long?
+        messageId: Int?
     ) {
         val voiceMessageId = voice.id
         mVoiceSharedHolders.put(voiceMessageId, holder)
@@ -410,10 +406,10 @@ class AttachmentsViewBinder(
         }
         container.visibility = View.VISIBLE
         val i = posts.size - container.childCount
-        for (j in 0 until i) {
+        (0 until i).forEach { _ ->
             val itemView = LayoutInflater.from(container.context).inflate(layout, container, false)
             val holder = CopyHolder(itemView as ViewGroup, mAttachmentsActionCallback)
-            itemView.setTag(holder)
+            itemView.tag = holder
             if (!reduce) {
                 holder.bodyView.autoLinkMask = Linkify.WEB_URLS
                 holder.bodyView.movementMethod = LinkMovementMethod.getInstance()
@@ -464,7 +460,6 @@ class AttachmentsViewBinder(
                 check.attachmentsHolder,
                 false,
                 null,
-                null,
                 null
             )
         }
@@ -481,7 +476,7 @@ class AttachmentsViewBinder(
         }
         container.visibility = View.VISIBLE
         val i = users.size - container.childCount
-        for (j in 0 until i) {
+        (0 until i).forEach { _ ->
             val itemView = LayoutInflater.from(container.context).inflate(layout, container, false)
             val holder = FriendsPostViewHolder(itemView, mAttachmentsActionCallback)
             itemView.tag = holder
@@ -538,7 +533,7 @@ class AttachmentsViewBinder(
         }
         fwdContainer.visibility = View.VISIBLE
         val i = fwds.size - fwdContainer.childCount
-        for (j in 0 until i) {
+        (0 until i).forEach { _ ->
             val localView = LayoutInflater.from(fwdContainer.context)
                 .inflate(R.layout.item_forward_message, fwdContainer, false)
             fwdContainer.addView(localView)
@@ -606,7 +601,6 @@ class AttachmentsViewBinder(
                 attachmentContainers,
                 postsAsLinks,
                 message.getObjectId(),
-                message.peerId,
                 null
             )
         }
@@ -622,7 +616,7 @@ class AttachmentsViewBinder(
         }
         root.visibility = View.VISIBLE
         val i = docs.size - root.childCount
-        for (j in 0 until i) {
+        (0 until i).forEach { _ ->
             root.addView(LayoutInflater.from(mContext).inflate(R.layout.item_document, root, false))
         }
         if (root.childCount > docs.size) {
@@ -859,7 +853,7 @@ class AttachmentsViewBinder(
                         post.attachments,
                         attachmentsHolder,
                         false,
-                        null, null, null
+                        null, null
                     )
                 }
 
@@ -886,7 +880,7 @@ class AttachmentsViewBinder(
                         comment.attachments,
                         attachmentsHolder,
                         false,
-                        null, null, null
+                        null, null
                     )
                 }
 
@@ -960,7 +954,7 @@ class AttachmentsViewBinder(
         }
         root.visibility = View.VISIBLE
         val i = bigLinks.size - root.childCount
-        for (j in 0 until i) {
+        (0 until i).forEach { _ ->
             root.addView(LayoutInflater.from(mContext).inflate(R.layout.item_big_link, root, false))
         }
         if (root.childCount > bigLinks.size) {
@@ -1036,7 +1030,7 @@ class AttachmentsViewBinder(
         }
         root.visibility = View.VISIBLE
         val i = articles.size - root.childCount
-        for (j in 0 until i) {
+        (0 until i).forEach { _ ->
             root.addView(LayoutInflater.from(mContext).inflate(R.layout.item_article, root, false))
         }
         if (root.childCount > articles.size) {

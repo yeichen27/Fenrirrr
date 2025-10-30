@@ -12,7 +12,6 @@ import android.os.Bundle
 import android.util.SparseArray
 import android.view.LayoutInflater
 import android.view.MotionEvent
-import android.view.SurfaceHolder
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -21,6 +20,7 @@ import android.widget.TextView
 import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
+import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.util.size
 import androidx.core.view.WindowInsetsControllerCompat
@@ -78,7 +78,6 @@ import dev.ragnarok.fenrir.view.TouchImageView
 import dev.ragnarok.fenrir.view.natives.animation.ThorVGLottieView
 import dev.ragnarok.fenrir.view.pager.WeakPicassoLoadCallback
 import java.lang.ref.WeakReference
-import java.util.Calendar
 
 class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>(),
     IStoryPagerView, PlaceProvider, AppStyleable {
@@ -374,14 +373,18 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
             val progressVisible = isCurrent && preparing
             holder?.setProgressVisible(progressVisible)
             holder?.setSurfaceVisible(if (isCurrent && !preparing) View.VISIBLE else View.GONE)
+            holder?.setPreviewVisible(if (isCurrent && !preparing) View.GONE else View.VISIBLE)
         }
     }
 
     override fun attachDisplayToPlayer(adapterPosition: Int, storyPlayer: IStoryPlayer?) {
         val holder = findByPosition(adapterPosition)
+        /*
         if (holder?.isSurfaceReady == true) {
-            storyPlayer?.setDisplay(holder.mSurfaceHolder)
+            storyPlayer?.setVideoSurfaceHolder(holder.mSurfaceHolder)
         }
+         */
+        storyPlayer?.setVideoTextureView(holder?.mSurfaceView)
     }
 
     override fun setToolbarTitle(@StringRes titleRes: Int, vararg params: Any?) {
@@ -406,7 +409,7 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
         }
         if (story.expires <= 0) mExpires?.visibility = View.GONE else {
             mExpires?.visibility = View.VISIBLE
-            val exp = (story.expires - Calendar.getInstance().timeInMillis / 1000) / 3600
+            val exp = (story.expires - System.currentTimeMillis() / 1000) / 3600
             mExpires?.text = getString(
                 R.string.expires,
                 exp.toString(),
@@ -453,6 +456,7 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
     override fun configHolder(
         adapterPosition: Int,
         progress: Boolean,
+        playing: Boolean,
         aspectRatioW: Int,
         aspectRatioH: Int
     ) {
@@ -460,6 +464,8 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
         holder?.setProgressVisible(progress)
         holder?.setAspectRatio(aspectRatioW, aspectRatioH)
         holder?.setSurfaceVisible(if (progress) View.GONE else View.VISIBLE)
+        holder?.setPreviewVisible(if (playing) View.GONE else View.VISIBLE)
+        presenter?.fireSurfaceCreated(adapterPosition)
     }
 
     override fun onDestroy() {
@@ -490,19 +496,24 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
 
     open class MultiHolder internal constructor(rootView: View) :
         RecyclerView.ViewHolder(rootView) {
-        lateinit var mSurfaceHolder: SurfaceHolder
+        //lateinit var mSurfaceHolder: SurfaceHolder
+        lateinit var mSurfaceView: ExpandableSurfaceView
+        lateinit var mPreviewView: AppCompatImageView
+        /*
         open val isSurfaceReady: Boolean
             get() = false
+         */
 
         open fun setProgressVisible(visible: Boolean) {}
         open fun setAspectRatio(w: Int, h: Int) {}
         open fun setSurfaceVisible(Vis: Int) {}
+        open fun setPreviewVisible(Vis: Int) {}
         open fun bindTo(story: Story) {}
     }
 
-    private inner class Holder(rootView: View) : MultiHolder(rootView), SurfaceHolder.Callback {
-        val mSurfaceView: ExpandableSurfaceView = rootView.findViewById(R.id.videoSurface)
-        val mProgressBar: ThorVGLottieView
+    private inner class Holder(rootView: View) : MultiHolder(rootView) {
+        val mProgressBar: ThorVGLottieView = rootView.findViewById(R.id.preparing_progress_bar)
+        /*
         override var isSurfaceReady = false
         override fun surfaceCreated(holder: SurfaceHolder) {
             isSurfaceReady = true
@@ -513,6 +524,7 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
         override fun surfaceDestroyed(holder: SurfaceHolder) {
             isSurfaceReady = false
         }
+         */
 
         override fun setProgressVisible(visible: Boolean) {
             mProgressBar.visibility = if (visible) View.VISIBLE else View.GONE
@@ -543,10 +555,23 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
             mSurfaceView.visibility = Vis
         }
 
+        override fun setPreviewVisible(Vis: Int) {
+            mPreviewView.visibility = Vis
+        }
+
+        override fun bindTo(story: Story) {
+            mSurfaceView.visibility = View.VISIBLE
+            PicassoInstance.with().cancelRequest(mPreviewView)
+            PicassoInstance.with()
+                .load(story.video?.image)
+                .into(mPreviewView)
+        }
+
         init {
-            mSurfaceHolder = mSurfaceView.holder
-            mSurfaceHolder.addCallback(this)
-            mProgressBar = rootView.findViewById(R.id.preparing_progress_bar)
+            mSurfaceView = rootView.findViewById(R.id.videoSurface)
+            mPreviewView = rootView.findViewById(R.id.image_view)
+            //mSurfaceHolder = mSurfaceView.holder
+            //mSurfaceHolder.addCallback(this)
             mSurfaceView.setOnClickListener { toggleFullscreen() }
         }
     }
@@ -712,10 +737,8 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
 
         override fun onBindViewHolder(holder: MultiHolder, position: Int) {
             presenter?.let {
-                if (!it.isStoryIsVideo(position)) {
-                    it.getStory(position)?.let { s ->
-                        holder.bindTo(s)
-                    }
+                it.getStory(position)?.let { s ->
+                    holder.bindTo(s)
                 }
             }
         }

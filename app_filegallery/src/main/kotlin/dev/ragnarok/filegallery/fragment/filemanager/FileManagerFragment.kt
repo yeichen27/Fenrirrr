@@ -59,7 +59,6 @@ import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.toMain
 import dev.ragnarok.filegallery.view.MySearchView
 import dev.ragnarok.filegallery.view.natives.animation.ThorVGLottieView
 import java.io.File
-import java.util.Calendar
 
 class FileManagerFragment : BaseMvpFragment<FileManagerPresenter, IFileManagerView>(),
     IFileManagerView, ClickListener, BackPressCallback, CanBackPressedCallback,
@@ -295,7 +294,7 @@ class FileManagerFragment : BaseMvpFragment<FileManagerPresenter, IFileManagerVi
 
     override fun onUpdateTimeFile(item: FileItem) {
         val tmp = File(item.file_path ?: return)
-        if (tmp.setLastModified(Calendar.getInstance().timeInMillis)) {
+        if (tmp.setLastModified(System.currentTimeMillis())) {
             showMessage(R.string.success)
             presenter?.loadFiles(
                 back = false, caches = false,

@@ -5,7 +5,6 @@ import androidx.core.net.toUri
 import androidx.media3.common.C
 import androidx.media3.common.MediaLibraryInfo
 import androidx.media3.common.PlaybackException
-import androidx.media3.common.util.Assertions
 import androidx.media3.common.util.Util
 import androidx.media3.datasource.BaseDataSource
 import androidx.media3.datasource.DataSourceException
@@ -80,13 +79,10 @@ class OkHttpDataSource internal constructor(
     }
 
     override fun setRequestProperty(name: String, value: String) {
-        Assertions.checkNotNull(name)
-        Assertions.checkNotNull(value)
         requestProperties[name] = value
     }
 
     override fun clearRequestProperty(name: String) {
-        Assertions.checkNotNull(name)
         requestProperties.remove(name)
     }
 
@@ -130,7 +126,7 @@ class OkHttpDataSource internal constructor(
             }
             val errorResponseBody: ByteArray = try {
                 val buffer = Buffer()
-                Assertions.checkNotNull(responseByteStream).readAll(buffer)
+                checkNotNull(responseByteStream).readAll(buffer)
                 buffer.readByteArray()
             } catch (_: IOException) {
                 Util.EMPTY_BYTE_ARRAY

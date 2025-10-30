@@ -35,6 +35,7 @@ import dev.ragnarok.fenrir.model.PhotoSize
 import dev.ragnarok.fenrir.module.FenrirNative
 import dev.ragnarok.fenrir.module.parcel.ParcelFlags
 import dev.ragnarok.fenrir.module.parcel.ParcelNative
+import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.place.Place
 import dev.ragnarok.fenrir.place.PlaceProvider
 import dev.ragnarok.fenrir.settings.CurrentTheme.getNavigationBarColor
@@ -54,6 +55,8 @@ class GifPagerActivity : AbsDocumentPreviewActivity<GifPagerPresenter, IGifPager
     private var mButtonsRoot: View? = null
     private var mButtonAddOrDelete: CircleCounterButton? = null
     private var mFullscreen = false
+
+    private val isAutoPlayVideo = Settings.get().main().isAutoplay_video_on_posts
 
     @get:LayoutRes
     override val noMainContentView: Int
@@ -290,13 +293,21 @@ class GifPagerActivity : AbsDocumentPreviewActivity<GifPagerPresenter, IGifPager
         }
 
         override fun onBindViewHolder(holder: Holder, position: Int) {
-            holder.mGifView.fromAnimationNet(
-                data[position].ownerId.toString() + "_" + data[position].id.toString(),
-                data[position].videoPreview?.src,
-                data[position].getPreviewWithSize(PhotoSize.W, false),
-                Utils.createOkHttp(Constants.GIF_TIMEOUT, true),
-                true
-            )
+            val videoUrl = data[position].videoPreview?.src
+            if (isAutoPlayVideo == 2 && videoUrl.nonNullNoEmpty()) {
+                holder.mGifView.fromAnimationFile(
+                    videoUrl,
+                    true
+                )
+            } else {
+                holder.mGifView.fromAnimationNet(
+                    data[position].ownerId.toString() + "_" + data[position].id.toString(),
+                    videoUrl,
+                    data[position].getPreviewWithSize(PhotoSize.W, false),
+                    Utils.createOkHttp(Constants.GIF_TIMEOUT, true),
+                    true
+                )
+            }
         }
 
         override fun getItemCount(): Int {

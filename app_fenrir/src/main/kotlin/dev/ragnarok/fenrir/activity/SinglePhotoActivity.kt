@@ -54,7 +54,6 @@ import java.io.File
 import java.lang.ref.WeakReference
 import java.text.DateFormat
 import java.text.SimpleDateFormat
-import java.util.Calendar
 import java.util.Date
 
 class SinglePhotoActivity : NoMainActivity(), PlaceProvider, AppStyleable {
@@ -221,7 +220,7 @@ class SinglePhotoActivity : NoMainActivity(), PlaceProvider, AppStyleable {
                     ?.showToastError("Can't create directory $dir")
                 return
             }
-        } else dir.setLastModified(Calendar.getInstance().timeInMillis)
+        } else dir.setLastModified(System.currentTimeMillis())
         if (prefix != null && Settings.get().main().isPhoto_to_user_dir) {
             val dir_final = File(dir.absolutePath + "/" + prefix)
             if (!dir_final.isDirectory) {
@@ -231,7 +230,7 @@ class SinglePhotoActivity : NoMainActivity(), PlaceProvider, AppStyleable {
                         ?.showToastError("Can't create directory $dir")
                     return
                 }
-            } else dir_final.setLastModified(Calendar.getInstance().timeInMillis)
+            } else dir_final.setLastModified(System.currentTimeMillis())
             dir = dir_final
         }
         val DOWNLOAD_DATE_FORMAT: DateFormat =

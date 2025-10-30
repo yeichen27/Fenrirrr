@@ -16,7 +16,14 @@ interface IStoryPagerView : IMvpView, IErrorView, IToastView {
     fun setToolbarTitle(@StringRes titleRes: Int, vararg params: Any?)
     fun setToolbarSubtitle(story: Story, account_id: Long, isPlaySpeed: Boolean)
     fun onShare(story: Story, account_id: Long)
-    fun configHolder(adapterPosition: Int, progress: Boolean, aspectRatioW: Int, aspectRatioH: Int)
+    fun configHolder(
+        adapterPosition: Int,
+        progress: Boolean,
+        playing: Boolean,
+        aspectRatioW: Int,
+        aspectRatioH: Int
+    )
+
     fun onNext()
     fun requestWriteExternalStoragePermission()
     fun downloadPhoto(url: String, dir: String, file: String)

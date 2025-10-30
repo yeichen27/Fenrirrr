@@ -109,7 +109,7 @@ class CommentContainer : LinearLayout {
         }
         visibility = VISIBLE
         val i = comments.size - childCount
-        for (j in 0 until i) {
+        (0 until i).forEach { _ ->
             val itemView =
                 LayoutInflater.from(context).inflate(R.layout.item_comment_container, this, false)
             val holder = CommentHolder(itemView, onHashTagClickListener)
@@ -144,7 +144,7 @@ class CommentContainer : LinearLayout {
                     comment.attachments,
                     check.attachmentContainers,
                     true,
-                    null, null, null
+                    null, null
                 )
             }
             check.tvOwnerName.text = comment.fullAuthorName

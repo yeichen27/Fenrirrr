@@ -39,7 +39,6 @@ import java.io.File
 import java.io.FileOutputStream
 import java.text.DateFormat
 import java.text.SimpleDateFormat
-import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
@@ -139,7 +138,7 @@ object DownloadWorkUtils {
         val dir_final = File(Path)
         return if (!dir_final.isDirectory) {
             dir_final.mkdirs()
-        } else dir_final.setLastModified(Calendar.getInstance().timeInMillis)
+        } else dir_final.setLastModified(System.currentTimeMillis())
     }
 
     private fun toExternalDownloader(context: Context, url: String, file: DownloadInfo) {
@@ -167,7 +166,7 @@ object DownloadWorkUtils {
     private fun default_file_exist(context: Context, file: DownloadInfo): Boolean {
         val Temp = File(file.build())
         if (Temp.exists()) {
-            if (Temp.setLastModified(Calendar.getInstance().timeInMillis)) {
+            if (Temp.setLastModified(System.currentTimeMillis())) {
                 context.sendBroadcast(
                     @Suppress("deprecation")
                     Intent(
@@ -186,7 +185,7 @@ object DownloadWorkUtils {
         file.buildFilename()
         val Temp = File(file.build())
         if (Temp.exists()) {
-            if (Temp.setLastModified(Calendar.getInstance().timeInMillis)) {
+            if (Temp.setLastModified(System.currentTimeMillis())) {
                 context.sendBroadcast(
                     @Suppress("deprecation")
                     Intent(
