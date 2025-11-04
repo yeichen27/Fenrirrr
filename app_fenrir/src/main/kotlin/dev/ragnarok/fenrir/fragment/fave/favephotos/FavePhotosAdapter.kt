@@ -60,10 +60,7 @@ class FavePhotosAdapter(context: Context, private var data: List<Photo>) :
                 viewHolder.current.startAnimation()
             } else {
                 viewHolder.current.visibility = View.GONE
-                viewHolder.current.clearAnimationDrawable(
-                    callSuper = true, clearState = true,
-                    cancelTask = true
-                )
+                viewHolder.current.releaseAnimation()
             }
         }
         with()

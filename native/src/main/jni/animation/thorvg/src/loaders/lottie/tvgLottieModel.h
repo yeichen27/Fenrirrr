@@ -396,19 +396,19 @@ struct LottieFont
         tvg::free(style);
         tvg::free(family);
         tvg::free(name);
-        tvg::free(data.b64src);
+        tvg::free(b64src);
     }
 
-    struct {
+    union {
         char* b64src = nullptr;
-        uint32_t size = 0;
-    } data;
+        char* path;
+    };
 
     Array<LottieGlyph*> chars;
     char* name = nullptr;
     char* family = nullptr;
     char* style = nullptr;
-    size_t dataSize = 0;
+    uint32_t size = 0;
     float ascent = 0.0f;
     Origin origin = Local;
 
@@ -871,20 +871,18 @@ struct LottieGradientStroke : LottieGradient, LottieStroke
 };
 
 
-struct LottieImage : LottieObject, LottieRenderPooler<tvg::Picture>
+struct LottieImage : LottieObject
 {
     LottieBitmap data;
-    bool updated = false;
+    bool resolved = false;
 
     void override(LottieProperty* prop, bool release = false) override
     {
         if (release) data.release();
         data.copy(*static_cast<LottieBitmap*>(prop), false);
-        update();
     }
 
     void prepare();
-    void update();
 };
 
 

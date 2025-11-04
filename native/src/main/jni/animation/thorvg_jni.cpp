@@ -100,7 +100,7 @@ Java_dev_ragnarok_fenrir_module_animation_thorvg_ThorVGSVGRender_createBitmapNat
                                               "svg", nullptr, true);
     if (result != tvg::Result::Success) {
         delete canvas;
-        delete picture;
+        tvg::Paint::rel(picture);
         return;
     }
     float scale;
@@ -135,11 +135,16 @@ Java_dev_ragnarok_fenrir_module_animation_thorvg_ThorVGSVGRender_createBitmapNat
             tvg::Result::Success) {
             AndroidBitmap_unlockPixels(env, bitmap);
             delete canvas;
-            delete picture;
+            tvg::Paint::rel(picture);
             return;
         }
 
-        canvas->push(picture);
+        if (canvas->push(picture) != tvg::Result::Success) {
+            AndroidBitmap_unlockPixels(env, bitmap);
+            delete canvas;
+            tvg::Paint::rel(picture);
+            return;
+        }
         if (canvas->draw() == tvg::Result::Success) {
             canvas->sync();
         }
@@ -478,10 +483,14 @@ Java_dev_ragnarok_fenrir_module_animation_thorvg_ThorVGLottie2Gif_lottie2gif(JNI
                         tvg::ColorSpace::ABGR8888S);
 
     if (!transparent) {
-        auto bg = tvg::Shape::gen();
-        bg->appendRect(0, 0, (float) w, (float) h);
-        bg->fill(((bgColor >> 16) & 0xff), ((bgColor >> 8) & 0xff), (bgColor & 0xff));
-        info.canvas->push(bg);
+        auto bgBackgroundShape = tvg::Shape::gen();
+        bgBackgroundShape->appendRect(0, 0, (float) w, (float) h);
+        bgBackgroundShape->fill(((bgColor >> 16) & 0xff), ((bgColor >> 8) & 0xff),
+                                (bgColor & 0xff));
+        if (info.canvas->push(bgBackgroundShape) != tvg::Result::Success) {
+            tvg::Paint::rel(bgBackgroundShape);
+            return false;
+        }
     }
 
     info.canvas->push(info.animation->picture());

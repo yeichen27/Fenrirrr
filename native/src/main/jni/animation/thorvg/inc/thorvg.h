@@ -54,6 +54,11 @@ protected: \
 public: \
     Impl* pImpl
 
+#define _TVG_DECLARE_PRIVATE_DERIVE(A) \
+    _TVG_DECLARE_PRIVATE(A); \
+protected: \
+    ~A() {}
+
 #define _TVG_DISABLE_CTOR(A) \
     A() = delete; \
     ~A() = delete
@@ -345,9 +350,10 @@ struct Matrix
  */
 class TVG_API Paint
 {
-public:
+protected:
     virtual ~Paint();
 
+public:
     /**
      * @brief Retrieves the parent paint object.
      *
@@ -676,6 +682,18 @@ public:
      * @note Experimental API
      */
     uint32_t id = 0;
+
+    /**
+     * @brief Safely releases a Paint object.
+     *
+     * This is the counterpart to the `gen()` API, and releases the given Paint object safely, 
+     * handling @c nullptr and managing ownership properly.
+     *
+     * @param[in] paint A Paint object to release.
+     *
+     * @since 1.0
+     */
+    static void rel(Paint* paint) noexcept;
 
     _TVG_DECLARE_PRIVATE_BASE(Paint);
 };
@@ -1465,7 +1483,12 @@ public:
     /**
      * @brief Creates a new Shape object.
      *
-     * @return A new Shape object.
+     * This function allocates and returns a new Shape instance.
+     * To properly destroy the Shape object, use @ref Paint::rel().
+     *
+     * @return A pointer to the newly created Shape object.
+     *
+     * @see Paint::rel()
      */
     static Shape* gen() noexcept;
 
@@ -1480,7 +1503,7 @@ public:
      */
     Type type() const noexcept override;
 
-    _TVG_DECLARE_PRIVATE(Shape);
+    _TVG_DECLARE_PRIVATE_DERIVE(Shape);
 };
 
 
@@ -1661,7 +1684,12 @@ public:
     /**
      * @brief Creates a new Picture object.
      *
-     * @return A new Picture object.
+     * This function allocates and returns a new Picture instance.
+     * To properly destroy the Picture object, use @ref Paint::rel().
+     *
+     * @return A pointer to the newly created Picture object.
+     *
+     * @see Paint::rel()
      */
     static Picture* gen() noexcept;
 
@@ -1677,7 +1705,7 @@ public:
     Type type() const noexcept override;
 
     _TVG_DECLARE_ACCESSOR(Animation);
-    _TVG_DECLARE_PRIVATE(Picture);
+    _TVG_DECLARE_PRIVATE_DERIVE(Picture);
 };
 
 
@@ -1766,7 +1794,12 @@ public:
     /**
      * @brief Creates a new Scene object.
      *
-     * @return A new Scene object.
+     * This function allocates and returns a new Scene instance.
+     * To properly destroy the Scene object, use @ref Paint::rel().
+     *
+     * @return A pointer to the newly created Scene object.
+     *
+     * @see Paint::rel()
      */
     static Scene* gen() noexcept;
 
@@ -1781,7 +1814,7 @@ public:
      */
     Type type() const noexcept override;
 
-    _TVG_DECLARE_PRIVATE(Scene);
+    _TVG_DECLARE_PRIVATE_DERIVE(Scene);
 };
 
 
@@ -2028,7 +2061,12 @@ public:
     /**
      * @brief Creates a new Text object.
      *
-     * @return A new Text object.
+     * This function allocates and returns a new Text instance.
+     * To properly destroy the Text object, use @ref Paint::rel().
+     *
+     * @return A pointer to the newly created Text object.
+     *
+     * @see Paint::rel()
      *
      * @since 0.15
      */
@@ -2045,7 +2083,7 @@ public:
      */
     Type type() const noexcept override;
 
-    _TVG_DECLARE_PRIVATE(Text);
+    _TVG_DECLARE_PRIVATE_DERIVE(Text);
 };
 
 

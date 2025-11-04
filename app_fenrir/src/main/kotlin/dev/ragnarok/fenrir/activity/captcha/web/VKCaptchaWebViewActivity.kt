@@ -87,10 +87,7 @@ internal class VKCaptchaWebViewActivity : AppCompatActivity() {
         } else if (mLoadingProgressBarLoaded) {
             mLoadingProgressBarLoaded = false
             mLoadingProgressBar.visibility = View.GONE
-            mLoadingProgressBar.clearAnimationDrawable(
-                callSuper = true, clearState = true,
-                cancelTask = true
-            )
+            mLoadingProgressBar.releaseAnimation()
         }
     }
 

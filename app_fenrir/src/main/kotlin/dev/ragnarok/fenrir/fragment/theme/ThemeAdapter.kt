@@ -85,10 +85,7 @@ class ThemeAdapter(private var data: List<ThemeValue>, context: Context) :
                 )
                 holder.selected.startAnimation()
             } else {
-                holder.selected.clearAnimationDrawable(
-                    callSuper = true, clearState = true,
-                    cancelTask = true
-                )
+                holder.selected.releaseAnimation()
             }
         } else {
             if (isSelected) {
@@ -124,10 +121,7 @@ class ThemeAdapter(private var data: List<ThemeValue>, context: Context) :
                 )
                 holder.selected.startAnimation()
             } else {
-                holder.selected.clearAnimationDrawable(
-                    callSuper = true, clearState = true,
-                    cancelTask = true
-                )
+                holder.selected.releaseAnimation()
             }
         } else {
             if (isSelected) {

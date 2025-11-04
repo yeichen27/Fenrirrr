@@ -416,7 +416,7 @@ void LottieBuilder::appendRect(Shape* shape, Point& pos, Point& size, float r, b
 
     if (ctx->offset) {
         ctx->offset->modifyRect(SHAPE(temp)->rs.path, SHAPE(shape)->rs.path);
-        delete(temp);
+        Paint::rel(temp);
     }
 }
 
@@ -899,21 +899,22 @@ void LottieBuilder::updateSolid(LottieLayer* layer)
 void LottieBuilder::updateImage(LottieGroup* layer)
 {
     auto image = static_cast<LottieImage*>(layer->children.first());
-    auto picture = image->pooling(true);
-    layer->scene->push(picture);
-    if (image->updated) return;
+    auto picture = image->data.picture;
 
-    if (image->data.size > 0) picture->load((const char*)image->data.b64Data, image->data.size, image->data.mimeType);
-    else if (resolver && resolver->func(picture, image->data.path, resolver->data)) {}
-    else picture->load(image->data.path);
+    //resolve an image asset if need
+    if (resolver && !image->resolved) {
+        resolver->func(picture, image->data.path, resolver->data);
+        picture->size(image->data.width, image->data.height);
+        image->resolved = true;
+    }
 
-    picture->size(image->data.width, image->data.height);
-    image->updated = true;
+    //LottieImage can be shared among other layers
+    layer->scene->push(picture->refCnt() == 1 ? picture : picture->duplicate());
 }
 
 
 //TODO: unify with the updateText() building logic
-static void _fontText(TextDocument& doc, Scene* scene)
+static void _fontText(LottieFont* font, TextDocument& doc, Scene* scene, const AssetResolver* resolver)
 {
     auto delim = "\r\n\3";
     auto size = doc.size * 75.0f; //1 pt = 1/72; 1 in = 96 px; -> 72/96 = 0.75
@@ -926,9 +927,10 @@ static void _fontText(TextDocument& doc, Scene* scene)
     auto cnt = 0;
     while (token) {
         auto txt = Text::gen();
-        if (txt->font(doc.name) != Result::Success) {
-            txt->font(nullptr);  //fallback to any available font
-        }
+        if (txt->font(doc.name) == Result::Success) {}
+        else if (resolver && resolver->func(txt, font->path, resolver->data)) {}
+        else txt->font(nullptr);  //fallback to any available font
+
         txt->size(size);
         txt->text(token);
         txt->fill(doc.color.r, doc.color.g, doc.color.b);
@@ -952,7 +954,7 @@ void LottieBuilder::updateText(LottieLayer* layer, float frameNo)
     if (!p || !text->font) return;
 
     if (text->font->origin != LottieFont::Origin::Local || text->font->chars.empty()) {
-        _fontText(doc, layer->scene);
+        _fontText(text->font, doc, layer->scene, resolver);
         return;
     }
 
@@ -1182,8 +1184,8 @@ void LottieBuilder::updateText(LottieLayer* layer, float frameNo)
         }
     }
 
-    delete(scene);
-    delete(textGroup);
+    Paint::rel(scene);
+    Paint::rel(textGroup);
 }
 
 
@@ -1259,7 +1261,7 @@ bool LottieBuilder::updateMatte(LottieComposition* comp, float frameNo, Scene* s
         layer->scene->mask(target->scene, layer->matteType);
     } else if (layer->matteType == MaskMethod::Alpha || layer->matteType == MaskMethod::Luma) {
         //matte target is not exist. alpha blending definitely bring an invisible result
-        delete(layer->scene);
+        Paint::rel(layer->scene);
         layer->scene = nullptr;
         return false;
     }

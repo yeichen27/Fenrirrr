@@ -130,10 +130,7 @@ class StickersAdapter(private val context: Context, private val stickers: Sticke
     override fun onViewRecycled(holder: RecyclerView.ViewHolder) {
         super.onViewRecycled(holder)
         if (holder is StickerAnimatedHolder) {
-            holder.animation.clearAnimationDrawable(
-                callSuper = true, clearState = true,
-                cancelTask = true
-            )
+            holder.animation.releaseAnimation()
         }
     }
 

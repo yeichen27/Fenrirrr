@@ -108,10 +108,7 @@ class AccountAdapter(
                 )
                 holder.active.startAnimation()
             } else {
-                holder.active.clearAnimationDrawable(
-                    callSuper = true, clearState = true,
-                    cancelTask = true
-                )
+                holder.active.releaseAnimation()
             }
         } else {
             if (isCurrent) {

@@ -268,7 +268,15 @@ class TouchImageView @JvmOverloads constructor(
         })
     }
 
-    fun clearAnimationDrawable(callSuper: Boolean, clearState: Boolean, cancelTask: Boolean) {
+    fun releaseAnimation() {
+        clearAnimationDrawable(callSuper = true, clearState = true, cancelTask = true)
+    }
+
+    internal fun clearAnimationDrawable(
+        callSuper: Boolean,
+        clearState: Boolean,
+        cancelTask: Boolean
+    ) {
         if (cancelTask) {
             mDisposable.cancel()
         }
@@ -337,7 +345,7 @@ class TouchImageView @JvmOverloads constructor(
         }
     }
 
-    fun setSuperImageDrawable(dr: Drawable?) {
+    internal fun setSuperImageDrawable(dr: Drawable?) {
         super.setImageDrawable(dr)
     }
 

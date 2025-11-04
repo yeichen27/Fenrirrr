@@ -216,10 +216,7 @@ class UserWallFragment : AbsWallFragment<IUserWallView, UserWallPresenter>(), IU
             }
         } else {
             mHeaderHolder?.blacklisted?.visibility = View.GONE
-            mHeaderHolder?.blacklisted?.clearAnimationDrawable(
-                callSuper = true, clearState = true,
-                cancelTask = true
-            )
+            mHeaderHolder?.blacklisted?.releaseAnimation()
         }
         mHeaderHolder?.blacklisted?.visibility = if (user.blacklisted) View.VISIBLE else View.GONE
 

@@ -256,7 +256,15 @@ class ThorVGLottieView @JvmOverloads constructor(context: Context, attrs: Attrib
         animatedDrawable?.resume()
     }
 
-    fun clearAnimationDrawable(callSuper: Boolean, clearState: Boolean, cancelTask: Boolean) {
+    fun releaseAnimation() {
+        clearAnimationDrawable(callSuper = true, clearState = true, cancelTask = true)
+    }
+
+    private fun clearAnimationDrawable(
+        callSuper: Boolean,
+        clearState: Boolean,
+        cancelTask: Boolean
+    ) {
         if (cancelTask) {
             mDisposable.cancel()
         }

@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     id("java")
-    id("org.jetbrains.kotlin.jvm") version "2.2.20"
+    id("org.jetbrains.kotlin.jvm") version "2.2.21"
 }
 
 group = "dev.umerov.ksp"
@@ -17,7 +17,7 @@ dependencies {
     implementation("androidx.annotation:annotation:1.9.1")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.9.0")
 
-    implementation("com.google.devtools.ksp:symbol-processing-api:2.2.20-2.0.3")
+    implementation("com.google.devtools.ksp:symbol-processing-api:2.2.21-2.0.4")
 }
 
 kotlin {

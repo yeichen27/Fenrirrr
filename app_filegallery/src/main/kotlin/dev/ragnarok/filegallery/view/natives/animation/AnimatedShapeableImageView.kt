@@ -274,7 +274,15 @@ open class AnimatedShapeableImageView @JvmOverloads constructor(
         }
     }
 
-    fun clearAnimationDrawable(callSuper: Boolean, clearState: Boolean, cancelTask: Boolean) {
+    fun releaseAnimation() {
+        clearAnimationDrawable(callSuper = true, clearState = true, cancelTask = true)
+    }
+
+    internal fun clearAnimationDrawable(
+        callSuper: Boolean,
+        clearState: Boolean,
+        cancelTask: Boolean
+    ) {
         if (cancelTask) {
             mDisposable.cancel()
         }
@@ -348,7 +356,7 @@ open class AnimatedShapeableImageView @JvmOverloads constructor(
         clearAnimationDrawable(callSuper = false, clearState = true, cancelTask = true)
     }
 
-    fun setSuperImageDrawable(dr: Drawable?) {
+    internal fun setSuperImageDrawable(dr: Drawable?) {
         super.setImageDrawable(dr)
     }
 

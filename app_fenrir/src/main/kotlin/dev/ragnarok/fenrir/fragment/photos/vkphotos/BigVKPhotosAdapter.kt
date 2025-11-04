@@ -132,10 +132,7 @@ class BigVKPhotosAdapter(
                 holder.current.startAnimation()
             } else {
                 holder.current.visibility = View.GONE
-                holder.current.clearAnimationDrawable(
-                    callSuper = true, clearState = true,
-                    cancelTask = true
-                )
+                holder.current.releaseAnimation()
             }
         }
         holder.setSelected(photoWrapper.isSelected)

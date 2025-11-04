@@ -1860,10 +1860,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
             )
             emptyAnimation?.startAnimation()
         } else {
-            emptyAnimation?.clearAnimationDrawable(
-                callSuper = true, clearState = true,
-                cancelTask = true
-            )
+            emptyAnimation?.releaseAnimation()
         }
     }
 

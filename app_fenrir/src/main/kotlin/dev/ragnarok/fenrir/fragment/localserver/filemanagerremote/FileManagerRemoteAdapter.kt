@@ -460,10 +460,7 @@ class FileManagerRemoteAdapter(private var context: Context, private var data: L
                 holder.current.startAnimation()
             } else {
                 holder.current.visibility = View.GONE
-                holder.current.clearAnimationDrawable(
-                    callSuper = true, clearState = true,
-                    cancelTask = true
-                )
+                holder.current.releaseAnimation()
             }
         }
         holder.fileInfo.setBackgroundColor(messageBubbleColor)
@@ -658,10 +655,7 @@ class FileManagerRemoteAdapter(private var context: Context, private var data: L
                 holder.current.startAnimation()
             } else {
                 holder.current.visibility = View.GONE
-                holder.current.clearAnimationDrawable(
-                    callSuper = true, clearState = true,
-                    cancelTask = true
-                )
+                holder.current.releaseAnimation()
             }
         }
         holder.fileInfo.setBackgroundColor(messageBubbleColor)

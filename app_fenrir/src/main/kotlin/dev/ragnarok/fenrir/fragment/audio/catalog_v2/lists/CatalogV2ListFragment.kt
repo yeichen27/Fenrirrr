@@ -161,19 +161,13 @@ class CatalogV2ListFragment : BaseMvpFragment<CatalogV2ListPresenter, ICatalogV2
         animLoad = ObjectAnimator.ofFloat(loading, View.ALPHA, 0.0f).setDuration(1000)
         animLoad?.addListener(object : StubAnimatorListener() {
             override fun onAnimationEnd(animation: Animator) {
-                loading?.clearAnimationDrawable(
-                    callSuper = true, clearState = true,
-                    cancelTask = true
-                )
+                loading?.releaseAnimation()
                 loading?.visibility = View.GONE
                 loading?.alpha = 1f
             }
 
             override fun onAnimationCancel(animation: Animator) {
-                loading?.clearAnimationDrawable(
-                    callSuper = true, clearState = true,
-                    cancelTask = true
-                )
+                loading?.releaseAnimation()
                 loading?.visibility = View.GONE
                 loading?.alpha = 1f
             }

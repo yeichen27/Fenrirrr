@@ -53,10 +53,7 @@ class LocalServerPhotosAdapter(private val mContext: Context, private var data: 
                 viewHolder.current.startAnimation()
             } else {
                 viewHolder.current.visibility = View.GONE
-                viewHolder.current.clearAnimationDrawable(
-                    callSuper = true, clearState = true,
-                    cancelTask = true
-                )
+                viewHolder.current.releaseAnimation()
             }
         }
         val targetUrl = photo.getUrlForSize(PhotoSize.X, false)

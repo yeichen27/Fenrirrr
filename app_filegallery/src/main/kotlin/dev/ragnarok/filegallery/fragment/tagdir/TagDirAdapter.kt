@@ -134,10 +134,7 @@ class TagDirAdapter(context: Context, private var data: List<TagDir>) :
                 holder.current.startAnimation()
             } else {
                 holder.current.visibility = View.GONE
-                holder.current.clearAnimationDrawable(
-                    callSuper = true, clearState = true,
-                    cancelTask = true
-                )
+                holder.current.releaseAnimation()
             }
         }
 
@@ -211,10 +208,7 @@ class TagDirAdapter(context: Context, private var data: List<TagDir>) :
                 holder.current.startAnimation()
             } else {
                 holder.current.visibility = View.GONE
-                holder.current.clearAnimationDrawable(
-                    callSuper = true, clearState = true,
-                    cancelTask = true
-                )
+                holder.current.releaseAnimation()
             }
         }
 

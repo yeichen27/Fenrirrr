@@ -139,10 +139,7 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
             )
             mHelper?.startAnimation()
             helpDisposable += delayTaskFlow(5000).toMain {
-                mHelper?.clearAnimationDrawable(
-                    callSuper = true, clearState = true,
-                    cancelTask = true
-                )
+                mHelper?.releaseAnimation()
                 mHelper?.visibility = View.GONE
             }
         } else {
@@ -274,10 +271,7 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
         } else if (mLoadingProgressBarLoaded) {
             mLoadingProgressBarLoaded = false
             mLoadingProgressBar?.visibility = View.GONE
-            mLoadingProgressBar?.clearAnimationDrawable(
-                callSuper = true, clearState = true,
-                cancelTask = true
-            )
+            mLoadingProgressBar?.releaseAnimation()
         }
     }
 
@@ -540,10 +534,7 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
                 )
                 mProgressBar.startAnimation()
             } else {
-                mProgressBar.clearAnimationDrawable(
-                    callSuper = true, clearState = true,
-                    cancelTask = true
-                )
+                mProgressBar.releaseAnimation()
             }
         }
 
@@ -616,19 +607,13 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
                 val k = ObjectAnimator.ofFloat(progress, View.ALPHA, 0.0f).setDuration(1000)
                 k.addListener(object : StubAnimatorListener() {
                     override fun onAnimationEnd(animation: Animator) {
-                        progress.clearAnimationDrawable(
-                            callSuper = true, clearState = true,
-                            cancelTask = true
-                        )
+                        progress.releaseAnimation()
                         progress.visibility = View.GONE
                         progress.alpha = 1f
                     }
 
                     override fun onAnimationCancel(animation: Animator) {
-                        progress.clearAnimationDrawable(
-                            callSuper = true, clearState = true,
-                            cancelTask = true
-                        )
+                        progress.releaseAnimation()
                         progress.visibility = View.GONE
                         progress.alpha = 1f
                     }
@@ -636,10 +621,7 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
                 k.start()
             } else if (mAnimationLoaded && !mLoadingNow) {
                 mAnimationLoaded = false
-                progress.clearAnimationDrawable(
-                    callSuper = true, clearState = true,
-                    cancelTask = true
-                )
+                progress.releaseAnimation()
                 progress.visibility = View.GONE
             } else if (mLoadingNow) {
                 animationDispose += delayTaskFlow(300).toMain {

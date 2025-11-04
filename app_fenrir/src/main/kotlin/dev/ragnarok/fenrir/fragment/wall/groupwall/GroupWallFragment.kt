@@ -213,10 +213,7 @@ class GroupWallFragment : AbsWallFragment<IGroupWallView, GroupWallPresenter>(),
             }
         } else {
             mHeaderHolder?.blacklisted?.visibility = View.GONE
-            mHeaderHolder?.blacklisted?.clearAnimationDrawable(
-                callSuper = true, clearState = true,
-                cancelTask = true
-            )
+            mHeaderHolder?.blacklisted?.releaseAnimation()
         }
         mHeaderHolder?.blacklisted?.visibility =
             if (community.isBlacklisted) View.VISIBLE else View.GONE

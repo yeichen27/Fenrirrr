@@ -225,19 +225,13 @@ class LocalJsonToChatFragment :
             val k = ObjectAnimator.ofFloat(mLoadingProgressBar, View.ALPHA, 0.0f).setDuration(1000)
             k.addListener(object : StubAnimatorListener() {
                 override fun onAnimationEnd(animation: Animator) {
-                    mLoadingProgressBar?.clearAnimationDrawable(
-                        callSuper = true, clearState = true,
-                        cancelTask = true
-                    )
+                    mLoadingProgressBar?.releaseAnimation()
                     mLoadingProgressBar?.visibility = View.GONE
                     mLoadingProgressBar?.alpha = 1f
                 }
 
                 override fun onAnimationCancel(animation: Animator) {
-                    mLoadingProgressBar?.clearAnimationDrawable(
-                        callSuper = true, clearState = true,
-                        cancelTask = true
-                    )
+                    mLoadingProgressBar?.releaseAnimation()
                     mLoadingProgressBar?.visibility = View.GONE
                     mLoadingProgressBar?.alpha = 1f
                 }

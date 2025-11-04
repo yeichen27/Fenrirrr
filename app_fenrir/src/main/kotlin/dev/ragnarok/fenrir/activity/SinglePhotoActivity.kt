@@ -279,19 +279,13 @@ class SinglePhotoActivity : NoMainActivity(), PlaceProvider, AppStyleable {
                 val k = ObjectAnimator.ofFloat(progress, View.ALPHA, 0.0f).setDuration(1000)
                 k.addListener(object : StubAnimatorListener() {
                     override fun onAnimationEnd(animation: Animator) {
-                        progress.clearAnimationDrawable(
-                            callSuper = true, clearState = true,
-                            cancelTask = true
-                        )
+                        progress.releaseAnimation()
                         progress.visibility = View.GONE
                         progress.alpha = 1f
                     }
 
                     override fun onAnimationCancel(animation: Animator) {
-                        progress.clearAnimationDrawable(
-                            callSuper = true, clearState = true,
-                            cancelTask = true
-                        )
+                        progress.releaseAnimation()
                         progress.visibility = View.GONE
                         progress.alpha = 1f
                     }
@@ -299,10 +293,7 @@ class SinglePhotoActivity : NoMainActivity(), PlaceProvider, AppStyleable {
                 k.start()
             } else if (mAnimationLoaded && !mLoadingNow) {
                 mAnimationLoaded = false
-                progress.clearAnimationDrawable(
-                    callSuper = true, clearState = true,
-                    cancelTask = true
-                )
+                progress.releaseAnimation()
                 progress.visibility = View.GONE
             } else if (mLoadingNow) {
                 animationDispose += delayTaskFlow(300).toMain {

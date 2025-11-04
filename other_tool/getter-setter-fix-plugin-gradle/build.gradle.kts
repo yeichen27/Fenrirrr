@@ -1,9 +1,8 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    id("java")
     id("org.jetbrains.kotlin.jvm") version "2.2.21"
-    id("org.jetbrains.intellij.platform") version "2.10.2"
+    id("org.jetbrains.intellij.platform") version "2.10.4"
 }
 
 group = "dev.ragnarok"
@@ -22,7 +21,6 @@ dependencies {
         intellijIdeaCommunity("2025.2.1")
         pluginVerifier()
         zipSigner()
-        instrumentationTools()
     }
 }
 
