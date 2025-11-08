@@ -55,16 +55,16 @@ class FcmListenerService : FirebaseMessagingService() {
             Logger.d(TAG, "Invalid push registration on VK")
             return
         }
-        if (Settings.get().main().isDump_fcm && PushType.ERASE != pushType) {
-            if (Constants.IS_DEBUG) {
-                Logger.d(
-                    TAG,
-                    "onMessage, from: " + message.from + ", pushType: " + pushType + ", data: " + kJsonPretty.encodeToString(
-                        MapSerializer(String.serializer(), String.serializer()),
-                        message.data
-                    )
+        if (Constants.IS_DEBUG) {
+            Logger.d(
+                TAG,
+                "onMessage, from: " + message.from + ", pushType: " + pushType + ", data: " + kJsonPretty.encodeToString(
+                    MapSerializer(String.serializer(), String.serializer()),
+                    message.data
                 )
-            }
+            )
+        }
+        if (Settings.get().main().isDump_fcm && PushType.ERASE != pushType) {
             PersistentLogger.logThrowable(
                 "Push received",
                 Exception(

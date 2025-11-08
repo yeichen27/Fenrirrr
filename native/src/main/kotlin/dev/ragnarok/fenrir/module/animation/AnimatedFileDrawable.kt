@@ -46,7 +46,7 @@ class AnimatedFileDrawable(
         endTimeSeconds: Float
     ): Int
 
-    private external fun seekToMs(ptr: Long, ms: Long, precise: Boolean)
+    private external fun seekToMs(ptr: Long, ms: Long, params: IntArray, precise: Boolean)
     private external fun getFrameAtTime(
         ptr: Long,
         ms: Long,
@@ -177,7 +177,7 @@ class AnimatedFileDrawable(
                         val pSeekTo = pendingSeekTo
                         synchronized(sync) { pendingSeekTo = -1 }
                         seekWas = true
-                        seekToMs(nativePtr, pSeekTo, true)
+                        seekToMs(nativePtr, pSeekTo, metaData, true)
                     }
                     backgroundBitmap?.let {
                         lastFrameDecodeTime = System.currentTimeMillis()
@@ -259,7 +259,7 @@ class AnimatedFileDrawable(
             return null
         }
         if (!precise) {
-            seekToMs(nativePtr, ms, false)
+            seekToMs(nativePtr, ms, metaData, false)
         }
         if (backgroundBitmap == null) {
             backgroundBitmap = createBitmap(

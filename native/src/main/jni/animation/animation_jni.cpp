@@ -345,10 +345,18 @@ Java_dev_ragnarok_fenrir_module_animation_AnimatedFileDrawable_prepareToSeek(JNI
     info->seeking = true;
 }
 
+void push_time(JNIEnv *env, VideoInfo *info, jintArray data) {
+    jint *dataArr = env->GetIntArrayElements(data, nullptr);
+    dataArr[3] = (jint) ((double) (1000 * info->frame->best_effort_timestamp) *
+                         av_q2d(info->video_stream->time_base));
+    env->ReleaseIntArrayElements(data, dataArr, 0);
+}
+
 extern "C" JNIEXPORT void JNICALL
-Java_dev_ragnarok_fenrir_module_animation_AnimatedFileDrawable_seekToMs(JNIEnv *, jobject,
+Java_dev_ragnarok_fenrir_module_animation_AnimatedFileDrawable_seekToMs(JNIEnv *env, jobject,
                                                                         jlong ptr,
                                                                         jlong ms,
+                                                                        jintArray data,
                                                                         jboolean precise) {
     if (ptr == 0) {
         return;
@@ -364,6 +372,7 @@ Java_dev_ragnarok_fenrir_module_animation_AnimatedFileDrawable_seekToMs(JNIEnv *
     } else {
         avcodec_flush_buffers(info->video_dec_ctx);
         if (!precise) {
+            push_time(env, info, data);
             return;
         }
         bool got_frame = false;
@@ -396,15 +405,18 @@ Java_dev_ragnarok_fenrir_module_animation_AnimatedFileDrawable_seekToMs(JNIEnv *
                 info->pkt->size = 0;
                 ret = decode_packet_animation(info, got_frame);
                 if (ret < 0) {
+                    push_time(env, info, data);
                     return;
                 }
                 if (!got_frame) {
                     av_seek_frame(info->fmt_ctx, info->video_stream_idx, 0,
                                   AVSEEK_FLAG_BACKWARD | AVSEEK_FLAG_FRAME);
+                    push_time(env, info, data);
                     return;
                 }
             }
             if (ret < 0) {
+                push_time(env, info, data);
                 return;
             }
             if (got_frame) {
@@ -421,16 +433,22 @@ Java_dev_ragnarok_fenrir_module_animation_AnimatedFileDrawable_seekToMs(JNIEnv *
                 }
                 av_frame_unref(info->frame);
                 if (finished) {
+                    push_time(env, info, data);
                     return;
                 }
             }
             tries--;
         }
     }
+    push_time(env, info, data);
 }
 
 void writeFrameToBitmap_animation(JNIEnv *env, VideoInfo *info, jintArray data, jobject bitmap,
                                   jint stride) {
+    if (env->IsSameObject(bitmap, nullptr)) {
+        push_time(env, info, data);
+        return;
+    }
     jint *dataArr = env->GetIntArrayElements(data, nullptr);
     int32_t wantedWidth;
     int32_t wantedHeight;
@@ -685,19 +703,17 @@ Java_dev_ragnarok_fenrir_module_animation_AnimatedFileDrawable_getVideoFrame(JNI
                      info->src);
                 return 0;
             }
-            if (!preview && !got_frame) {
-                if (info->has_decoded_frames) {
-                    int64_t start_from = 0;
-                    if (start_time > 0) {
-                        start_from = (int64_t) (start_time / av_q2d(info->video_stream->time_base));
-                    }
-                    if ((ret = av_seek_frame(info->fmt_ctx, info->video_stream_idx, start_from,
-                                             AVSEEK_FLAG_BACKWARD | AVSEEK_FLAG_FRAME)) < 0) {
-                        LOGE("can't seek to begin of file %s, %s", info->src, av_err2str(ret));
-                        return 0;
-                    } else {
-                        avcodec_flush_buffers(info->video_dec_ctx);
-                    }
+            if (!preview && !got_frame && info->has_decoded_frames) {
+                int64_t start_from = 0;
+                if (start_time > 0) {
+                    start_from = (int64_t) (start_time / av_q2d(info->video_stream->time_base));
+                }
+                if ((ret = av_seek_frame(info->fmt_ctx, info->video_stream_idx, start_from,
+                                         AVSEEK_FLAG_BACKWARD | AVSEEK_FLAG_FRAME)) < 0) {
+                    LOGE("can't seek to begin of file %s, %s", info->src, av_err2str(ret));
+                    return 0;
+                } else {
+                    avcodec_flush_buffers(info->video_dec_ctx);
                 }
             }
         }
@@ -714,6 +730,7 @@ Java_dev_ragnarok_fenrir_module_animation_AnimatedFileDrawable_getVideoFrame(JNI
                 writeFrameToBitmap_animation(env, info, data, bitmap, stride);
             }
             info->has_decoded_frames = true;
+            push_time(env, info, data);
             av_frame_unref(info->frame);
             return 1;
         }
