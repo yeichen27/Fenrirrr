@@ -2,7 +2,7 @@
 # APP
 developerBuild = "true"
 
-agpVersion = "9.0.0-alpha14"
+agpVersion = "8.13.1"
 appCompileSDK = "36.1"
 appBuildTools = "36.1.0"
 appNdk = "29.0.14206865"
@@ -58,17 +58,17 @@ firebaseComponentsVersion = "19.0.0"
 firebaseAnnotationsVersion = "17.0.0"
 playServicesTasksVersion = "18.4.0"
 playServicesBase = "18.9.0"
-autoValueVersion = "1.11.0"
+autoValueVersion = "1.11.1"
 
 # Common Libraries
 gmsServicesVersion = "4.4.4"
 kotlinVersion = "2.2.21"
 kotlinCoroutines = "1.10.2"
 kotlinSerializer = "1.9.0"
-okhttpLibraryVersion = "5.3.0"
-okioVersion = "3.16.2"
+okhttpLibraryVersion = "5.3.1"
+okioVersion = "3.16.3"
 guavaVersion = "33.5.0-android"
-errorProneVersion = "2.43.0"
+errorProneVersion = "2.44.0"
 checkerQualAndroidVersion = "3.52.0"
 jspecifyAnnotationVersion = "1.0.0"
 desugarLibraryVersion = "2.1.5"
@@ -160,5 +160,6 @@ desugarjdklibs = { group = "com.android.tools", name = "desugar_jdk_libs", versi
 #com.android.tools.build:gradle
 android-application = { id = "com.android.application", version.ref = "agpVersion" }
 android-library = { id = "com.android.library", version.ref = "agpVersion" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlinVersion" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinVersion" }
 gms-services = { id = "com.google.gms.google-services", version.ref = "gmsServicesVersion" }

@@ -4,6 +4,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
 }
 
 fun isDevelopBuild() = libs.versions.developerBuild.get().toBoolean()
@@ -64,23 +65,23 @@ android {
         encoding = "utf-8"
     }
 
+    kotlin {
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_21)
+            freeCompilerArgs.addAll(
+                setOf(
+                    "-opt-in=kotlin.contracts.ExperimentalContracts",
+                    "-opt-in=kotlinx.coroutines.DelicateCoroutinesApi"
+                )
+            )
+        }
+    }
+
     externalNativeBuild {
         cmake {
             version = libs.versions.appCMake.get()
             path = file("src/main/jni/CMakeLists.txt")
         }
-    }
-}
-
-kotlin {
-    compilerOptions {
-        jvmTarget.set(JvmTarget.JVM_21)
-        freeCompilerArgs.addAll(
-            setOf(
-                "-opt-in=kotlin.contracts.ExperimentalContracts",
-                "-opt-in=kotlinx.coroutines.DelicateCoroutinesApi"
-            )
-        )
     }
 }
 

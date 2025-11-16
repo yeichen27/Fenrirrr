@@ -18,7 +18,7 @@ dependencyResolutionManagement {
 }
 
 //https://github.com/esensar/kotlinx-serialization-msgpack
-//keytool -printcert -jarfile *.apk
+//apksigner verify --print-certs *.apk
 
 rootProject.name = "Fenrir VK"
 include(
