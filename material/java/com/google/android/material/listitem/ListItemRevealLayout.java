@@ -15,16 +15,20 @@
  */
 package com.google.android.material.listitem;
 
+import com.google.android.material.R;
+
+import static com.google.android.material.theme.overlay.MaterialThemeOverlay.wrap;
 import static java.lang.Math.max;
 
 import android.content.Context;
+import androidx.appcompat.widget.TintTypedArray;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import com.google.android.material.animation.AnimationUtils;
+import com.google.android.material.internal.ThemeEnforcement;
 import java.lang.ref.WeakReference;
 
 /**
@@ -50,27 +54,48 @@ public class ListItemRevealLayout extends ViewGroup implements RevealableListIte
   private int[] originalChildHeights;
   @Nullable private WeakReference<View> siblingSwipeableView;
 
-
-  // TODO:b/443149411 - Make the min child width customizable
-  private static final int MIN_CHILD_WIDTH = 15;
+  private int minChildWidth;
+  private int originalWidthMeasureSpec = UNSET;
+  private int originalHeightMeasureSpec = UNSET;
 
   public ListItemRevealLayout(Context context) {
     this(context, null);
   }
 
   public ListItemRevealLayout(Context context, AttributeSet attrs) {
-    this(context, attrs, 0);
+    this(context, attrs, R.attr.listItemRevealLayoutStyle);
   }
 
   public ListItemRevealLayout(Context context, AttributeSet attrs, int defStyleAttr) {
-    super(context, attrs, defStyleAttr);
+    this(context, attrs, defStyleAttr, R.style.Widget_Material3_ListItemRevealLayout);
+  }
+
+  public ListItemRevealLayout(
+      Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+    super(wrap(context, attrs, defStyleAttr, defStyleRes), attrs, defStyleAttr);
+    // Ensure we are using the correctly themed context rather than the context that was passed in.
+    context = getContext();
     setClipToPadding(false);
+
+    TintTypedArray attributes =
+        ThemeEnforcement.obtainTintedStyledAttributes(
+            context, attrs, R.styleable.ListItemRevealLayout, defStyleAttr, defStyleRes);
+
+    minChildWidth =
+        attributes.getDimensionPixelSize(
+            R.styleable.ListItemRevealLayout_minChildWidth,
+            getResources().getDimensionPixelSize(R.dimen.m3_list_reveal_min_child_width));
+    attributes.recycle();
   }
 
   @Override
   protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
     int childCount = getChildCount();
-    if (intrinsicWidth == UNSET) {
+    if (shouldRemeasureIntrinsicSizes(originalHeightMeasureSpec, heightMeasureSpec, intrinsicHeight)
+        || shouldRemeasureIntrinsicSizes(
+            originalWidthMeasureSpec, widthMeasureSpec, intrinsicWidth)) {
+      originalHeightMeasureSpec = heightMeasureSpec;
+      originalWidthMeasureSpec = widthMeasureSpec;
       measureIntrinsicSize(widthMeasureSpec, heightMeasureSpec);
       // At this point all the children are measured and we have our intrinsic sizes, so we can
       // go through and save the original intrinsic child sizes
@@ -141,6 +166,26 @@ public class ListItemRevealLayout extends ViewGroup implements RevealableListIte
     }
   }
 
+  private boolean shouldRemeasureIntrinsicSizes(
+      int originalMeasureSpec, int newMeasureSpec, int intrinsicSize) {
+    // We only want to measure the intrinsic size if we don't know it yet, OR if the measure spec
+    // has changed and it might be different than the existing intrinsic measured size. We assume
+    // that if the MeasureSpec mode is UNSPECIFIED, we can use the existing intrinsic sizes. This
+    // is to prevent unnecessary re-measuring when our parent continually gives us an unspecified
+    // measure spec.
+    if (intrinsicSize == UNSET) {
+      return true;
+    }
+    if (originalMeasureSpec == newMeasureSpec) {
+      return false;
+    }
+    int mode = MeasureSpec.getMode(newMeasureSpec);
+    // We don't want to re-measure if the new measure spec is UNSPECIFIED, or if it's EXACTLY
+    // the same as the intrinsic size.
+    return mode != MeasureSpec.UNSPECIFIED
+        && (mode != MeasureSpec.EXACTLY || MeasureSpec.getSize(newMeasureSpec) != intrinsicSize);
+  }
+
   void measureIntrinsicSize(int widthMeasureSpec, int heightMeasureSpec) {
     int totalWidth = 0;
     int maxHeight = 0;
@@ -207,11 +252,11 @@ public class ListItemRevealLayout extends ViewGroup implements RevealableListIte
         child.measure(
             MeasureSpec.makeMeasureSpec(
                 AnimationUtils.lerp(
-                    max(originalChildWidths[i], MIN_CHILD_WIDTH), MIN_CHILD_WIDTH, progress),
+                    max(originalChildWidths[i], minChildWidth), minChildWidth, progress),
                 MeasureSpec.EXACTLY),
             MeasureSpec.makeMeasureSpec(originalChildHeights[i], MeasureSpec.EXACTLY));
         final MarginLayoutParams lp = (MarginLayoutParams) child.getLayoutParams();
-        targetWidthMinusLastChild += lp.leftMargin + lp.rightMargin + MIN_CHILD_WIDTH;
+        targetWidthMinusLastChild += lp.leftMargin + lp.rightMargin + minChildWidth;
       }
       View lastChild = getChildAt(lastVisibleChildIndex);
       final MarginLayoutParams lp = (MarginLayoutParams) lastChild.getLayoutParams();
@@ -249,7 +294,7 @@ public class ListItemRevealLayout extends ViewGroup implements RevealableListIte
         continue;
       }
       // We want to keep the intrinsic child ratios the same
-      int childWidth = max(MIN_CHILD_WIDTH, (int) (originalChildWidths[i] * ratio));
+      int childWidth = max(minChildWidth, (int) (originalChildWidths[i] * ratio));
       child.measure(
           MeasureSpec.makeMeasureSpec(childWidth, MeasureSpec.EXACTLY),
           MeasureSpec.makeMeasureSpec(originalChildHeights[i], MeasureSpec.EXACTLY));
@@ -298,15 +343,6 @@ public class ListItemRevealLayout extends ViewGroup implements RevealableListIte
   @Override
   protected LayoutParams generateLayoutParams(LayoutParams p) {
     return new MarginLayoutParams(p);
-  }
-
-  @Override
-  public void setLayoutParams(@NonNull LayoutParams params) {
-    if (getLayoutParams() != null && params.width != getLayoutParams().width) {
-      // If not equal to previous layout params width, reset intrinsic width
-      resetIntrinsicWidth();
-    }
-    super.setLayoutParams(params);
   }
 
   /**
@@ -361,6 +397,27 @@ public class ListItemRevealLayout extends ViewGroup implements RevealableListIte
       }
     }
     return null;
+  }
+
+  /**
+   * Sets the minimum width, in pixels, that the children of ListItemRevealLayout can be measured to
+   * be.
+   */
+  public void setMinChildWidth(@Px int minChildWidth) {
+    if (this.minChildWidth == minChildWidth) {
+      return;
+    }
+    this.minChildWidth = minChildWidth;
+    requestLayout();
+  }
+
+  /**
+   * Sets the minimum width, in pixels, that the children of ListItemRevealLayout can be measured to
+   * be.
+   */
+  @Px
+  public int getMinChildWidth() {
+    return minChildWidth;
   }
 
   @Nullable

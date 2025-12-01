@@ -9,13 +9,21 @@
         <item name="colorPrimary">#A4C9FF</item>
         <item name="colorControlNormal">#C4C6CF</item>
         <item name="colorSecondary">#BCC7DB</item>
-        <item name="colorOnPrimary">#00315F</item>
-        <item name="colorOnPrimaryContainer">#D3E3FF</item>
-        <item name="colorPrimaryContainer">#16477D</item>
-        <item name="colorPrimaryInverse">#346096</item>
-        <item name="colorOnSecondary">#263140</item>
-        <item name="colorOnSecondaryContainer">#D8E3F8</item>
-        <item name="colorSecondaryContainer">#3D4758</item>
+        <item name="colorOnPrimary">#0E1C2E</item>
+        <item name="colorOnPrimaryContainer">#E9EBF0</item>
+        <item name="colorOnPrimaryFixed">#000C21</item>
+        <item name="colorOnPrimaryFixedVariant">#213042</item>
+        <item name="colorPrimaryContainer">#213042</item>
+        <item name="colorPrimaryFixed">#E9EBF0</item>
+        <item name="colorPrimaryFixedDim">#CDD7E5</item>
+        <item name="colorPrimaryInverse">#3A495B</item>
+        <item name="colorOnSecondary">#0C0D0E</item>
+        <item name="colorOnSecondaryContainer">#E1E2E4</item>
+        <item name="colorOnSecondaryFixed">#040505</item>
+        <item name="colorOnSecondaryFixedVariant">#191A1B</item>
+        <item name="colorSecondaryContainer">#191A1B</item>
+        <item name="colorSecondaryFixed">#E1E2E4</item>
+        <item name="colorSecondaryFixedDim">#AFB0B2</item>
     </style>
 
     <style name="ImageTextDialog" parent="Theme.Material3.Dark.Dialog">
@@ -32,17 +40,24 @@
         <item name="colorPrimary">#A4C9FF</item>
         <item name="colorControlNormal">#C4C6CF</item>
         <item name="colorSecondary">#BCC7DB</item>
-        <item name="colorOnPrimary">#00315F</item>
-        <item name="colorOnPrimaryContainer">#D3E3FF</item>
-        <item name="colorPrimaryContainer">#16477D</item>
-        <item name="colorPrimaryInverse">#346096</item>
-        <item name="colorOnSecondary">#263140</item>
-        <item name="colorOnSecondaryContainer">#D8E3F8</item>
-        <item name="colorSecondaryContainer">#3D4758</item>
+        <item name="colorOnPrimary">#0E1C2E</item>
+        <item name="colorOnPrimaryContainer">#E9EBF0</item>
+        <item name="colorOnPrimaryFixed">#000C21</item>
+        <item name="colorOnPrimaryFixedVariant">#213042</item>
+        <item name="colorPrimaryContainer">#213042</item>
+        <item name="colorPrimaryFixed">#E9EBF0</item>
+        <item name="colorPrimaryFixedDim">#CDD7E5</item>
+        <item name="colorPrimaryInverse">#3A495B</item>
+        <item name="colorOnSecondary">#0C0D0E</item>
+        <item name="colorOnSecondaryContainer">#E1E2E4</item>
+        <item name="colorOnSecondaryFixed">#040505</item>
+        <item name="colorOnSecondaryFixedVariant">#191A1B</item>
+        <item name="colorSecondaryContainer">#191A1B</item>
+        <item name="colorSecondaryFixed">#E1E2E4</item>
+        <item name="colorSecondaryFixedDim">#AFB0B2</item>
     </style>
 
     <style name="ImageDialogAnimation" parent="android:Animation.Dialog">
-
         <item name="android:windowEnterAnimation">@anim/image_dialog_enter</item>
         <item name="android:windowExitAnimation">@anim/image_dialog_exit</item>
 
@@ -100,5 +115,4 @@
         <item name="android:textStyle">bold</item>
         <item name="android:textSize">@dimen/ucrop_text_size_controls_text</item>
     </style>
-
 </resources>

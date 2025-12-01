@@ -49,6 +49,8 @@ fun SQLiteDatabase.query(tableName: String, columns: Array<String>): Cursor =
 
 fun Cursor.getInt(columnName: String): Int = getInt(getColumnIndexOrThrow(columnName))
 
+fun Cursor.getFloat(columnName: String): Float = getFloat(getColumnIndexOrThrow(columnName))
+
 fun Cursor.getLong(columnName: String): Long = getLong(getColumnIndexOrThrow(columnName))
 
 fun Cursor.getBoolean(columnName: String): Boolean =
@@ -514,11 +516,110 @@ fun Parcel.getBoolean(): Boolean {
     return readByte() != 0.toByte()
 }
 
+fun Parcel.writeIntList(list: List<Int>?) {
+    val isNull = list == null
+    putBoolean(isNull)
+    if (isNull) {
+        return
+    }
+    val size = list.size
+    writeInt(size)
+    for (i in list) {
+        writeInt(i)
+    }
+}
+
+fun Parcel.readIntArrayList(): ArrayList<Int>? {
+    val isNull = getBoolean()
+    if (isNull) {
+        return null
+    }
+    val size = readInt()
+    val list: ArrayList<Int> = ArrayList(size)
+    (0 until size).forEach { _ ->
+        list.add(readInt())
+    }
+    return list
+}
+
+fun Parcel.writeIntStringMap(map: Map<Int, String>?) {
+    val isNull = map == null
+    putBoolean(isNull)
+    if (isNull) {
+        return
+    }
+    val size = map.size
+    writeInt(size)
+    for ((key, value) in map) {
+        writeInt(key)
+        writeString(value)
+    }
+}
+
+fun Parcel.readIntStringMap(): Map<Int, String>? {
+    val isNull = getBoolean()
+    if (isNull) {
+        return null
+    }
+    val size = readInt()
+    val map: MutableMap<Int, String> = HashMap(size)
+    (0 until size).forEach { _ ->
+        val key = readInt()
+        val value = readString() ?: return@forEach
+        map[key] = value
+    }
+    return map
+}
+
+fun Parcel.writeObjectDouble(value: Double?) {
+    writeInt(if (value == null) 1 else 0)
+    if (value != null) {
+        writeDouble(value)
+    }
+}
+
+fun Parcel.readObjectDouble(): Double? {
+    val isNull = getBoolean()
+    return if (!isNull) {
+        readDouble()
+    } else null
+}
+
+fun Parcel.writeObjectInteger(value: Int?) {
+    writeInt(if (value == null) 1 else 0)
+    if (value != null) {
+        writeInt(value)
+    }
+}
+
+fun Parcel.readObjectInteger(): Int? {
+    val isNull = getBoolean()
+    return if (!isNull) {
+        readInt()
+    } else null
+}
+
+fun Parcel.writeObjectLong(value: Long?) {
+    writeInt(if (value == null) 1 else 0)
+    if (value != null) {
+        writeLong(value)
+    }
+}
+
+fun Parcel.readObjectLong(): Long? {
+    val isNull = getBoolean()
+    return if (!isNull) {
+        readLong()
+    } else null
+}
+
 inline fun <reified T> MutableList<T>.swap(index1: Int, index2: Int) {
     val tmp = this[index1]
     this[index1] = this[index2]
     this[index2] = tmp
 }
+
+fun CharSequence?.orEmpty(): CharSequence = this ?: ""
 
 @ColorInt
 fun String.toColor(): Int {

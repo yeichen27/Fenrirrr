@@ -3,8 +3,8 @@ package dev.ragnarok.fenrir.fragment.search.options
 import android.os.Parcel
 import android.os.Parcelable
 import dev.ragnarok.fenrir.orZero
-import dev.ragnarok.fenrir.util.ParcelUtils.readObjectInteger
-import dev.ragnarok.fenrir.util.ParcelUtils.writeObjectInteger
+import dev.ragnarok.fenrir.readObjectInteger
+import dev.ragnarok.fenrir.writeObjectInteger
 
 class SimpleNumberOption : BaseOption {
     var value: Int? = null
@@ -20,12 +20,12 @@ class SimpleNumberOption : BaseOption {
     }
 
     internal constructor(parcel: Parcel) : super(parcel) {
-        value = readObjectInteger(parcel)
+        value = parcel.readObjectInteger()
     }
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
         super.writeToParcel(dest, flags)
-        writeObjectInteger(dest, value)
+        dest.writeObjectInteger(value)
     }
 
     override fun equals(other: Any?): Boolean {

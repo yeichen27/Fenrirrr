@@ -3,8 +3,8 @@ package dev.ragnarok.fenrir.model
 import android.os.Parcel
 import android.os.Parcelable
 import androidx.annotation.DrawableRes
-import dev.ragnarok.fenrir.util.ParcelUtils.readObjectInteger
-import dev.ragnarok.fenrir.util.ParcelUtils.writeObjectInteger
+import dev.ragnarok.fenrir.readObjectInteger
+import dev.ragnarok.fenrir.writeObjectInteger
 
 class Icon : Parcelable {
     @DrawableRes
@@ -17,7 +17,7 @@ class Icon : Parcelable {
     }
 
     internal constructor(parcel: Parcel) {
-        res = readObjectInteger(parcel)
+        res = parcel.readObjectInteger()
         url = parcel.readString()
     }
 
@@ -29,7 +29,7 @@ class Icon : Parcelable {
     }
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
-        writeObjectInteger(dest, res)
+        dest.writeObjectInteger(res)
         dest.writeString(url)
     }
 

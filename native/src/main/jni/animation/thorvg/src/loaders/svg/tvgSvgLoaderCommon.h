@@ -30,6 +30,8 @@
 
 using SvgColor = tvg::RGB;
 
+#define STR_AS(A, B) !strcmp((A), (B))
+
 struct Box
 {
     float x, y, w, h;
@@ -544,7 +546,6 @@ struct SvgNode
         SvgFilterNode filter;
         SvgGaussianBlurNode gaussianBlur;
     } node;
-    ~SvgNode();
 };
 
 struct SvgParser

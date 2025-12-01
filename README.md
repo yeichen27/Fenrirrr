@@ -17,7 +17,7 @@
   2. Android SDK 36.1<br>
   3. Android NDK 29.0.14206865<br>
   4. CMake 4.1.2<br>
-  5. diffutils
+  5. Diffutils
   
   Если не работает музыка в Fenrir Kate, обновите kate_receipt_gms_token в app.build_config.<br>
   Взять токен можно из Kate Mobile Extra Mod<br>

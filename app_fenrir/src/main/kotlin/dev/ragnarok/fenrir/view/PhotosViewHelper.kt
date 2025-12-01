@@ -101,6 +101,7 @@ class PhotosViewHelper internal constructor(
                         AnimatedShapeableImageView.OnDecoderInit {
                         override fun onLoaded(success: Boolean) {
                             if (!success) {
+                                holder.ivPlay.visibility = View.VISIBLE
                                 if (url.nonNullNoEmpty()) {
                                     PicassoInstance.with()
                                         .load(url)
@@ -112,6 +113,8 @@ class PhotosViewHelper internal constructor(
                                     PicassoInstance.with().cancelRequest(holder.vgVideo)
                                     tmpV.visibility = View.GONE
                                 }
+                            } else {
+                                holder.ivPlay.visibility = View.GONE
                             }
                         }
                     })
@@ -361,6 +364,6 @@ class PhotosViewHelper internal constructor(
             itemView.findViewById(R.id.item_video_album_image)
         val tvTitle: TextView = itemView.findViewById(R.id.item_video_album_title)
         val tvDelay: TextView = itemView.findViewById(R.id.item_video_album_count)
-
+        val ivPlay: ImageView = itemView.findViewById(R.id.item_video_play)
     }
 }

@@ -16,6 +16,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.net.toUri
 import androidx.core.view.MenuProvider
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -94,6 +95,8 @@ class VideoPreviewFragment : BaseMvpFragment<VideoPreviewPresenter, IVideoPrevie
     private var mAddedDate: TextView? = null
     private var mTransformation: Transformation? = null
     private var mOwnerGroup: ViewGroup? = null
+    private var mVideoPlayButton: AppCompatImageView? = null
+    private var mVideoPlayIcon: AppCompatImageView? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -186,6 +189,9 @@ class VideoPreviewFragment : BaseMvpFragment<VideoPreviewPresenter, IVideoPrevie
         mRootView?.findViewById<View>(R.id.try_again_button)?.setOnClickListener {
             presenter?.fireTryAgainClick()
         }
+
+        mVideoPlayButton = mRootView?.findViewById(R.id.item_video_play_button)
+        mVideoPlayIcon = mRootView?.findViewById(R.id.item_video_play_icon)
         return mRootView
     }
 
@@ -269,6 +275,8 @@ class VideoPreviewFragment : BaseMvpFragment<VideoPreviewPresenter, IVideoPrevie
                     AnimatedShapeableImageView.OnDecoderInit {
                     override fun onLoaded(success: Boolean) {
                         if (!success) {
+                            mVideoPlayButton?.visibility = View.VISIBLE
+                            mVideoPlayIcon?.visibility = View.VISIBLE
                             if (imageUrl.nonNullNoEmpty()) {
                                 with()
                                     .load(imageUrl)
@@ -278,6 +286,9 @@ class VideoPreviewFragment : BaseMvpFragment<VideoPreviewPresenter, IVideoPrevie
                             } else {
                                 with().cancelRequest(pp)
                             }
+                        } else {
+                            mVideoPlayButton?.visibility = View.GONE
+                            mVideoPlayIcon?.visibility = View.GONE
                         }
                     }
                 })

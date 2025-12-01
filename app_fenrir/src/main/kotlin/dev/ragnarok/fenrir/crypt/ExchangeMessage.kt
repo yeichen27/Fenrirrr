@@ -4,8 +4,8 @@ import android.os.Parcel
 import android.os.Parcelable
 import dev.ragnarok.fenrir.kJson
 import dev.ragnarok.fenrir.orZero
-import dev.ragnarok.fenrir.util.ParcelUtils.readObjectInteger
-import dev.ragnarok.fenrir.util.ParcelUtils.writeObjectInteger
+import dev.ragnarok.fenrir.readObjectInteger
+import dev.ragnarok.fenrir.writeObjectInteger
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -61,7 +61,7 @@ class ExchangeMessage : Parcelable {
         @SessionState val s = parcel.readInt()
         senderSessionState = s
         errorCode = parcel.readInt()
-        @KeyLocationPolicy val klp = readObjectInteger(parcel)
+        @KeyLocationPolicy val klp = parcel.readObjectInteger()
         keyLocationPolicy = klp
     }
 
@@ -88,7 +88,7 @@ class ExchangeMessage : Parcelable {
         dest.writeString(aesKey)
         dest.writeInt(senderSessionState)
         dest.writeInt(errorCode)
-        writeObjectInteger(dest, keyLocationPolicy)
+        dest.writeObjectInteger(keyLocationPolicy)
     }
 
     class Builder(

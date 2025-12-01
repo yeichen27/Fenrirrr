@@ -4,8 +4,8 @@ import android.content.Context
 import android.os.Parcel
 import android.os.Parcelable
 import androidx.annotation.StringRes
-import dev.ragnarok.fenrir.util.ParcelUtils.readObjectInteger
-import dev.ragnarok.fenrir.util.ParcelUtils.writeObjectInteger
+import dev.ragnarok.fenrir.readObjectInteger
+import dev.ragnarok.fenrir.writeObjectInteger
 
 class Text : Parcelable {
     @StringRes
@@ -21,7 +21,7 @@ class Text : Parcelable {
     }
 
     internal constructor(parcel: Parcel) {
-        res = readObjectInteger(parcel)
+        res = parcel.readObjectInteger()
         text = parcel.readString()
     }
 
@@ -34,7 +34,7 @@ class Text : Parcelable {
     }
 
     override fun writeToParcel(parcel: Parcel, i: Int) {
-        writeObjectInteger(parcel, res)
+        parcel.writeObjectInteger(res)
         parcel.writeString(text)
     }
 

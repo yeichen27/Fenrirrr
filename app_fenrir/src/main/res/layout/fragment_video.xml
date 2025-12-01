@@ -90,6 +90,7 @@
                             app:dominantMeasurement="width" />
 
                         <androidx.appcompat.widget.AppCompatImageView
+                            android:id="@+id/item_video_play_button"
                             android:layout_width="56dp"
                             android:layout_height="56dp"
                             android:layout_gravity="center"
@@ -98,6 +99,7 @@
                             android:stateListAnimator="@animator/clicked" />
 
                         <androidx.appcompat.widget.AppCompatImageView
+                            android:id="@+id/item_video_play_icon"
                             android:layout_width="40dp"
                             android:layout_height="40dp"
                             android:layout_gravity="center"

@@ -43,7 +43,7 @@ class DefaultErrorActivity : AppCompatActivity() {
                     }
                 }).build()
         )
-        setContentView(R.layout.crash_error_activity)
+        setContentView(R.layout.activity_crash_error)
         findViewById<MaterialButton>(R.id.crash_error_activity_restart_button).setOnClickListener {
             CrashUtils.restartApplication(
                 this

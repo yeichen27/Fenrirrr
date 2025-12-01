@@ -3,9 +3,9 @@ package dev.ragnarok.filegallery.upload
 import android.net.Uri
 import android.os.Parcel
 import android.os.Parcelable
+import dev.ragnarok.filegallery.readObjectLong
 import dev.ragnarok.filegallery.readTypedObjectCompat
-import dev.ragnarok.filegallery.util.ParcelUtils.readObjectLong
-import dev.ragnarok.filegallery.util.ParcelUtils.writeObjectLong
+import dev.ragnarok.filegallery.writeObjectLong
 import dev.ragnarok.filegallery.writeTypedObjectCompat
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.random.Random
@@ -58,7 +58,7 @@ open class Upload : Parcelable {
         status = parcel.readInt()
         progress = parcel.readInt()
         errorText = parcel.readString()
-        fileId = readObjectLong(parcel)
+        fileId = parcel.readObjectLong()
     }
 
     fun setAutoCommit(autoCommit: Boolean): Upload {
@@ -91,7 +91,7 @@ open class Upload : Parcelable {
         parcel.writeInt(status)
         parcel.writeInt(progress)
         parcel.writeString(errorText)
-        writeObjectLong(parcel, fileId)
+        parcel.writeObjectLong(fileId)
     }
 
     fun setFileUri(fileUri: Uri?): Upload {

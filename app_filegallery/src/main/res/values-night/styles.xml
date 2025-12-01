@@ -8,16 +8,24 @@
     </style>
 
     <style name="App.DayNight" parent="Base.App.DayNight.Specific">
-        <item name="colorPrimary">#448AFF</item>
-        <item name="colorControlNormal">#448AFF</item>
-        <item name="colorSecondary">#1E88E5</item>
-        <item name="colorOnPrimary">#0C1B32</item>
-        <item name="colorPrimaryContainer">#1B2E4A</item>
-        <item name="colorPrimaryInverse">#304767</item>
-        <item name="colorOnPrimaryContainer">#E3EAF8</item>
-        <item name="colorOnSecondary">#121417</item>
-        <item name="colorSecondaryContainer">#222427</item>
-        <item name="colorOnSecondaryContainer">#E4E9F0</item>
+        <item name="colorPrimary">#A4C9FF</item>
+        <item name="colorControlNormal">#C4C6CF</item>
+        <item name="colorSecondary">#BCC7DB</item>
+        <item name="colorOnPrimary">#0E1C2E</item>
+        <item name="colorOnPrimaryContainer">#E9EBF0</item>
+        <item name="colorOnPrimaryFixed">#000C21</item>
+        <item name="colorOnPrimaryFixedVariant">#213042</item>
+        <item name="colorPrimaryContainer">#213042</item>
+        <item name="colorPrimaryFixed">#E9EBF0</item>
+        <item name="colorPrimaryFixedDim">#CDD7E5</item>
+        <item name="colorPrimaryInverse">#3A495B</item>
+        <item name="colorOnSecondary">#0C0D0E</item>
+        <item name="colorOnSecondaryContainer">#D8E3F8</item>
+        <item name="colorOnSecondaryFixed">#040505</item>
+        <item name="colorOnSecondaryFixedVariant">#191A1B</item>
+        <item name="colorSecondaryContainer">#3D4758</item>
+        <item name="colorSecondaryFixed">#E1E2E4</item>
+        <item name="colorSecondaryFixedDim">#AFB0B2</item>
         <item name="android:colorBackground">@color/night</item>
         <item name="badgeStyle">@style/Theme.BadgeStyle</item>
         <item name="materialCardViewStyle">@style/Theme.MaterialCardView</item>
@@ -53,55 +61,11 @@
         </item>
         <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButton</item>
         <item name="fab_player">@style/Theme.FloatingActionButtonAudio</item>
-
         <item name="dividerColor">#313131</item>
-
         <item name="toast_background">#FFFFFF</item>
-
         <item name="messages_background_color">#151515</item>
-
         <item name="message_bubble_color">#313131</item>
-
         <item name="bottomSheetDialogTheme">@style/CustomBottomSheetDialog</item>
-    </style>
-
-    <style name="App.DayNight.Violet" parent="App.DayNight">
-        <item name="colorPrimary">#9800FF</item>
-        <item name="colorControlNormal">#9800FF</item>
-        <item name="colorSecondary">#8500FF</item>
-        <item name="colorOnPrimary">#1F092F</item>
-        <item name="colorOnPrimaryContainer">#EFDCF9</item>
-        <item name="colorPrimaryContainer">#331948</item>
-        <item name="colorPrimaryInverse">#4C2D65</item>
-        <item name="colorOnSecondary">#141119</item>
-        <item name="colorOnSecondaryContainer">#EADCF6</item>
-        <item name="colorSecondaryContainer">#24202A</item>
-    </style>
-
-    <style name="App.DayNight.VioletGray" parent="App.DayNight">
-        <item name="colorPrimary">#9800FF</item>
-        <item name="colorControlNormal">#9800FF</item>
-        <item name="colorSecondary">#444444</item>
-        <item name="colorOnPrimary">#1E0A30</item>
-        <item name="colorOnPrimaryContainer">#EEDCFA</item>
-        <item name="colorPrimaryContainer">#311A49</item>
-        <item name="colorPrimaryInverse">#492E66</item>
-        <item name="colorOnSecondary">#000000</item>
-        <item name="colorOnSecondaryContainer">#585858</item>
-        <item name="colorSecondaryContainer">#181818</item>
-    </style>
-
-    <style name="App.DayNight.OldIce" parent="App.DayNight">
-        <item name="colorPrimary">#448AFF</item>
-        <item name="colorControlNormal">#448AFF</item>
-        <item name="colorSecondary">#82B1FF</item>
-        <item name="colorOnPrimary">#0C1B32</item>
-        <item name="colorPrimaryContainer">#1B2E4A</item>
-        <item name="colorPrimaryInverse">#304767</item>
-        <item name="colorOnPrimaryContainer">#E3EAF8</item>
-        <item name="colorOnSecondary">#121417</item>
-        <item name="colorSecondaryContainer">#222427</item>
-        <item name="colorOnSecondaryContainer">#E4E9F0</item>
     </style>
 
     <style name="App.DayNight.Ice" parent="App.DayNight">
@@ -110,11 +74,19 @@
         <item name="colorSecondary">#1E88E5</item>
         <item name="colorOnPrimary">#0C1B32</item>
         <item name="colorOnPrimaryContainer">#E3EAF8</item>
+        <item name="colorOnPrimaryFixed">#000B21</item>
+        <item name="colorOnPrimaryFixedVariant">#1B2E4A</item>
         <item name="colorPrimaryContainer">#1B2E4A</item>
+        <item name="colorPrimaryFixed">#E3EAF8</item>
+        <item name="colorPrimaryFixedDim">#C1D5F3</item>
         <item name="colorPrimaryInverse">#304767</item>
         <item name="colorOnSecondary">#0C1012</item>
         <item name="colorOnSecondaryContainer">#DEEAF4</item>
+        <item name="colorOnSecondaryFixed">#040708</item>
+        <item name="colorOnSecondaryFixedVariant">#222427</item>
         <item name="colorSecondaryContainer">#222427</item>
+        <item name="colorSecondaryFixed">#DEEAF4</item>
+        <item name="colorSecondaryFixedDim">#AEB9C2</item>
     </style>
 
     <style name="App.DayNight.IceGreen" parent="App.DayNight">
@@ -123,11 +95,19 @@
         <item name="colorSecondary">#4CAF50</item>
         <item name="colorOnPrimary">#0C1B32</item>
         <item name="colorOnPrimaryContainer">#E3EAF8</item>
+        <item name="colorOnPrimaryFixed">#000B21</item>
+        <item name="colorOnPrimaryFixedVariant">#1B2E4A</item>
         <item name="colorPrimaryContainer">#1B2E4A</item>
+        <item name="colorPrimaryFixed">#E3EAF8</item>
+        <item name="colorPrimaryFixedDim">#C1D5F3</item>
         <item name="colorPrimaryInverse">#304767</item>
         <item name="colorOnSecondary">#030403</item>
         <item name="colorOnSecondaryContainer">#B6C0B7</item>
+        <item name="colorOnSecondaryFixed">#000000</item>
+        <item name="colorOnSecondaryFixedVariant">#1E231E</item>
         <item name="colorSecondaryContainer">#1E231E</item>
+        <item name="colorSecondaryFixed">#B6C0B7</item>
+        <item name="colorSecondaryFixedDim">#8A938A</item>
     </style>
 
     <style name="App.DayNight.BlueRed" parent="App.DayNight">
@@ -136,11 +116,19 @@
         <item name="colorSecondary">#FF0000</item>
         <item name="colorOnPrimary">#0C1B32</item>
         <item name="colorOnPrimaryContainer">#E3EAF8</item>
+        <item name="colorOnPrimaryFixed">#000B21</item>
+        <item name="colorOnPrimaryFixedVariant">#1B2E4A</item>
         <item name="colorPrimaryContainer">#1B2E4A</item>
+        <item name="colorPrimaryFixed">#E3EAF8</item>
+        <item name="colorPrimaryFixedDim">#C1D5F3</item>
         <item name="colorPrimaryInverse">#304767</item>
         <item name="colorOnSecondary">#191213</item>
         <item name="colorOnSecondaryContainer">#F8E2E2</item>
+        <item name="colorOnSecondaryFixed">#0D0708</item>
+        <item name="colorOnSecondaryFixedVariant">#2A2122</item>
         <item name="colorSecondaryContainer">#2A2122</item>
+        <item name="colorSecondaryFixed">#F8E2E2</item>
+        <item name="colorSecondaryFixedDim">#DDC6C6</item>
     </style>
 
     <style name="App.DayNight.VioletIce" parent="App.DayNight">
@@ -149,37 +137,82 @@
         <item name="colorSecondary">#50F2C4</item>
         <item name="colorOnPrimary">#111333</item>
         <item name="colorOnPrimaryContainer">#E8E8F4</item>
+        <item name="colorOnPrimaryFixed">#050523</item>
+        <item name="colorOnPrimaryFixedVariant">#242749</item>
         <item name="colorPrimaryContainer">#242749</item>
+        <item name="colorPrimaryFixed">#E8E8F4</item>
+        <item name="colorPrimaryFixedDim">#CDCFEE</item>
         <item name="colorPrimaryInverse">#3B3F63</item>
         <item name="colorOnSecondary">#0F1512</item>
         <item name="colorOnSecondaryContainer">#E0F1EC</item>
+        <item name="colorOnSecondaryFixed">#050A08</item>
+        <item name="colorOnSecondaryFixedVariant">#1D2421</item>
         <item name="colorSecondaryContainer">#1D2421</item>
+        <item name="colorSecondaryFixed">#E0F1EC</item>
+        <item name="colorSecondaryFixedDim">#BACAC5</item>
+    </style>
+
+    <style name="App.DayNight.OldIce" parent="App.DayNight">
+        <item name="colorPrimary">#448AFF</item>
+        <item name="colorControlNormal">#448AFF</item>
+        <item name="colorSecondary">#82B1FF</item>
+        <item name="colorOnPrimary">#0C1B32</item>
+        <item name="colorOnPrimaryContainer">#E3EAF8</item>
+        <item name="colorOnPrimaryFixed">#000B21</item>
+        <item name="colorOnPrimaryFixedVariant">#1B2E4A</item>
+        <item name="colorPrimaryContainer">#1B2E4A</item>
+        <item name="colorPrimaryFixed">#E3EAF8</item>
+        <item name="colorPrimaryFixedDim">#C1D5F3</item>
+        <item name="colorPrimaryInverse">#304767</item>
+        <item name="colorOnSecondary">#121417</item>
+        <item name="colorOnSecondaryContainer">#E4E9F0</item>
+        <item name="colorOnSecondaryFixed">#070A0C</item>
+        <item name="colorOnSecondaryFixedVariant">#222427</item>
+        <item name="colorSecondaryContainer">#222427</item>
+        <item name="colorSecondaryFixed">#E4E9F0</item>
+        <item name="colorSecondaryFixedDim">#C8CDD4</item>
     </style>
 
     <style name="App.DayNight.Cold" parent="App.DayNight">
         <item name="colorPrimary">#A4C9FF</item>
         <item name="colorControlNormal">#C4C6CF</item>
         <item name="colorSecondary">#BCC7DB</item>
-        <item name="colorOnPrimary">#00315F</item>
-        <item name="colorOnPrimaryContainer">#D3E3FF</item>
-        <item name="colorPrimaryContainer">#16477D</item>
-        <item name="colorPrimaryInverse">#346096</item>
-        <item name="colorOnSecondary">#263140</item>
+        <item name="colorOnPrimary">#0E1C2E</item>
+        <item name="colorOnPrimaryContainer">#E9EBF0</item>
+        <item name="colorOnPrimaryFixed">#000C21</item>
+        <item name="colorOnPrimaryFixedVariant">#213042</item>
+        <item name="colorPrimaryContainer">#213042</item>
+        <item name="colorPrimaryFixed">#E9EBF0</item>
+        <item name="colorPrimaryFixedDim">#CDD7E5</item>
+        <item name="colorPrimaryInverse">#3A495B</item>
+        <item name="colorOnSecondary">#0C0D0E</item>
         <item name="colorOnSecondaryContainer">#D8E3F8</item>
+        <item name="colorOnSecondaryFixed">#040505</item>
+        <item name="colorOnSecondaryFixedVariant">#191A1B</item>
         <item name="colorSecondaryContainer">#3D4758</item>
+        <item name="colorSecondaryFixed">#E1E2E4</item>
+        <item name="colorSecondaryFixedDim">#AFB0B2</item>
     </style>
 
     <style name="App.DayNight.ColdGreen" parent="App.DayNight">
         <item name="colorPrimary">#BDCF76</item>
         <item name="colorControlNormal">#C7C7B8</item>
         <item name="colorSecondary">#C4CAA8</item>
-        <item name="colorOnPrimary">#293500</item>
-        <item name="colorOnPrimaryContainer">#D9EB90</item>
-        <item name="colorPrimaryContainer">#3F4C00</item>
-        <item name="colorPrimaryInverse">#556518</item>
-        <item name="colorOnSecondary">#2E331B</item>
+        <item name="colorOnPrimary">#141905</item>
+        <item name="colorOnPrimaryContainer">#C1C3BB</item>
+        <item name="colorOnPrimaryFixed">#090E00</item>
+        <item name="colorOnPrimaryFixedVariant">#252912</item>
+        <item name="colorPrimaryContainer">#252912</item>
+        <item name="colorPrimaryFixed">#C1C3BB</item>
+        <item name="colorPrimaryFixedDim">#B4B9A2</item>
+        <item name="colorPrimaryInverse">#3A3E25</item>
+        <item name="colorOnSecondary">#0B0B09</item>
         <item name="colorOnSecondaryContainer">#E1E6C3</item>
+        <item name="colorOnSecondaryFixed">#040402</item>
+        <item name="colorOnSecondaryFixedVariant">#444930</item>
         <item name="colorSecondaryContainer">#444930</item>
+        <item name="colorSecondaryFixed">#E1E6C3</item>
+        <item name="colorSecondaryFixedDim">#A8AAA2</item>
     </style>
 
     <style name="App.DayNight.CoffeePistachio" parent="App.DayNight">
@@ -188,24 +221,40 @@
         <item name="colorSecondary">#BEDAC3</item>
         <item name="colorOnPrimary">#20140B</item>
         <item name="colorOnPrimaryContainer">#D2CFCD</item>
+        <item name="colorOnPrimaryFixed">#150900</item>
+        <item name="colorOnPrimaryFixedVariant">#32251B</item>
         <item name="colorPrimaryContainer">#32251B</item>
+        <item name="colorPrimaryFixed">#D2CFCD</item>
+        <item name="colorPrimaryFixedDim">#C7BDB6</item>
         <item name="colorPrimaryInverse">#493A31</item>
-        <item name="colorOnSecondary">#0C0E0C</item>
-        <item name="colorOnSecondaryContainer">#E0E3E1</item>
-        <item name="colorSecondaryContainer">#191A19</item>
+        <item name="colorOnSecondary">#090908</item>
+        <item name="colorOnSecondaryContainer">#D0D0CF</item>
+        <item name="colorOnSecondaryFixed">#030202</item>
+        <item name="colorOnSecondaryFixedVariant">#2c2c29</item>
+        <item name="colorSecondaryContainer">#2c2c29</item>
+        <item name="colorSecondaryFixed">#D0D0CF</item>
+        <item name="colorSecondaryFixedDim">#A1A19F</item>
     </style>
 
     <style name="App.DayNight.ColdGold" parent="App.DayNight">
         <item name="colorPrimary">#9BA0FC</item>
         <item name="colorControlNormal">#9BA0FC</item>
         <item name="colorSecondary">#CAAF92</item>
-        <item name="colorOnPrimary">#0D1B2D</item>
-        <item name="colorOnPrimaryContainer">#E5E9EE</item>
-        <item name="colorPrimaryContainer">#202F41</item>
-        <item name="colorPrimaryInverse">#38485A</item>
-        <item name="colorOnSecondary">#161513</item>
+        <item name="colorOnPrimary">#12142F</item>
+        <item name="colorOnPrimaryContainer">#E7E7EE</item>
+        <item name="colorOnPrimaryFixed">#050522</item>
+        <item name="colorOnPrimaryFixedVariant">#252843</item>
+        <item name="colorPrimaryContainer">#252843</item>
+        <item name="colorPrimaryFixed">#E7E7EE</item>
+        <item name="colorPrimaryFixedDim">#CDCFE5</item>
+        <item name="colorPrimaryInverse">#3D405D</item>
+        <item name="colorOnSecondary">#0A0909</item>
         <item name="colorOnSecondaryContainer">#EDECE7</item>
+        <item name="colorOnSecondaryFixed">#030302</item>
+        <item name="colorOnSecondaryFixedVariant">#302F2C</item>
         <item name="colorSecondaryContainer">#302F2C</item>
+        <item name="colorSecondaryFixed">#EDECE7</item>
+        <item name="colorSecondaryFixedDim">#A6A3A0</item>
     </style>
 
     <style name="App.DayNight.Fire" parent="App.DayNight">
@@ -214,11 +263,19 @@
         <item name="colorSecondary">#FFA726</item>
         <item name="colorOnPrimary">#2F1F09</item>
         <item name="colorOnPrimaryContainer">#F9EFDC</item>
+        <item name="colorOnPrimaryFixed">#1E1200</item>
+        <item name="colorOnPrimaryFixedVariant">#483319</item>
         <item name="colorPrimaryContainer">#483319</item>
+        <item name="colorPrimaryFixed">#F9EFDC</item>
+        <item name="colorPrimaryFixedDim">#F9DCB5</item>
         <item name="colorPrimaryInverse">#654C2D</item>
         <item name="colorOnSecondary">#191511</item>
         <item name="colorOnSecondaryContainer">#F4EBDE</item>
+        <item name="colorOnSecondaryFixed">#0C0907</item>
+        <item name="colorOnSecondaryFixedVariant">#292420</item>
         <item name="colorSecondaryContainer">#292420</item>
+        <item name="colorSecondaryFixed">#F4EBDE</item>
+        <item name="colorSecondaryFixedDim">#D8CFC2</item>
     </style>
 
     <style name="App.DayNight.Red" parent="App.DayNight">
@@ -227,26 +284,42 @@
         <item name="colorSecondary">#F44336</item>
         <item name="colorOnPrimary">#341212</item>
         <item name="colorOnPrimaryContainer">#FDE5E2</item>
+        <item name="colorOnPrimaryFixed">#230604</item>
+        <item name="colorOnPrimaryFixedVariant">#4C2324</item>
         <item name="colorPrimaryContainer">#4C2324</item>
+        <item name="colorPrimaryFixed">#FDE5E2</item>
+        <item name="colorPrimaryFixedDim">#FFC4C5</item>
         <item name="colorPrimaryInverse">#6A393B</item>
         <item name="colorOnSecondary">#161010</item>
         <item name="colorOnSecondaryContainer">#F5E4E3</item>
+        <item name="colorOnSecondaryFixed">#0B0607</item>
+        <item name="colorOnSecondaryFixedVariant">#261F1F</item>
         <item name="colorSecondaryContainer">#261F1F</item>
+        <item name="colorSecondaryFixed">#F5E4E3</item>
+        <item name="colorSecondaryFixedDim">#D0C0BE</item>
     </style>
 
     <style name="App.DayNight.Contrast" parent="App.DayNight">
         <item name="colorPrimary">#FFFFFF</item>
         <item name="colorControlNormal">#777777</item>
         <item name="colorSecondary">#777777</item>
-        <item name="colorOnPrimary">#000000</item>
-        <item name="colorOnSecondary">#FFFFFF</item>
         <item name="white_color_contrast_fix">#000000</item>
         <item name="black_color_contrast_fix">#000000</item>
+        <item name="colorOnPrimary">#281818</item>
         <item name="colorOnPrimaryContainer">#ECECEC</item>
+        <item name="colorOnPrimaryFixed">#1D0807</item>
+        <item name="colorOnPrimaryFixedVariant">#3A2C2D</item>
         <item name="colorPrimaryContainer">#3A2C2D</item>
+        <item name="colorPrimaryFixed">#ECECEC</item>
+        <item name="colorPrimaryFixedDim">#D9D9D9</item>
         <item name="colorPrimaryInverse">#524646</item>
-        <item name="colorOnSecondaryContainer">#868686</item>
-        <item name="colorSecondaryContainer">#1B1B1B</item>
+        <item name="colorOnSecondary">#151414</item>
+        <item name="colorOnSecondaryContainer">#EAEAEA</item>
+        <item name="colorOnSecondaryFixed">#0A0909</item>
+        <item name="colorOnSecondaryFixedVariant">#252424</item>
+        <item name="colorSecondaryContainer">#252424</item>
+        <item name="colorSecondaryFixed">#EAEAEA</item>
+        <item name="colorSecondaryFixedDim">#CECECE</item>
     </style>
 
     <style name="App.DayNight.RedViolet" parent="App.DayNight">
@@ -255,11 +328,40 @@
         <item name="colorSecondary">#9800FF</item>
         <item name="colorOnPrimary">#2E120F</item>
         <item name="colorOnPrimaryContainer">#EEDDDA</item>
+        <item name="colorOnPrimaryFixed">#1E0603</item>
+        <item name="colorOnPrimaryFixedVariant">#462220</item>
         <item name="colorPrimaryContainer">#462220</item>
+        <item name="colorPrimaryFixed">#EEDDDA</item>
+        <item name="colorPrimaryFixedDim">#EDC2BF</item>
         <item name="colorPrimaryInverse">#633735</item>
         <item name="colorOnSecondary">#151119</item>
         <item name="colorOnSecondaryContainer">#EBDCF6</item>
+        <item name="colorOnSecondaryFixed">#09070C</item>
+        <item name="colorOnSecondaryFixedVariant">#242029</item>
         <item name="colorSecondaryContainer">#242029</item>
+        <item name="colorSecondaryFixed">#EBDCF6</item>
+        <item name="colorSecondaryFixedDim">#CFC0DA</item>
+    </style>
+
+    <style name="App.DayNight.Violet" parent="App.DayNight">
+        <item name="colorPrimary">#9800FF</item>
+        <item name="colorControlNormal">#9800FF</item>
+        <item name="colorSecondary">#8500FF</item>
+        <item name="colorOnPrimary">#1F092F</item>
+        <item name="colorOnPrimaryContainer">#EFDCF9</item>
+        <item name="colorOnPrimaryFixed">#12001E</item>
+        <item name="colorOnPrimaryFixedVariant">#331948</item>
+        <item name="colorPrimaryContainer">#331948</item>
+        <item name="colorPrimaryFixed">#EFDCF9</item>
+        <item name="colorPrimaryFixedDim">#DCB5F9</item>
+        <item name="colorPrimaryInverse">#4C2D65</item>
+        <item name="colorOnSecondary">#141119</item>
+        <item name="colorOnSecondaryContainer">#EADCF6</item>
+        <item name="colorOnSecondaryFixed">#09070D</item>
+        <item name="colorOnSecondaryFixedVariant">#24202A</item>
+        <item name="colorSecondaryContainer">#24202A</item>
+        <item name="colorSecondaryFixed">#EADCF6</item>
+        <item name="colorSecondaryFixedDim">#CEC0DB</item>
     </style>
 
     <style name="App.DayNight.YellowViolet" parent="App.DayNight">
@@ -268,11 +370,19 @@
         <item name="colorSecondary">#8500FF</item>
         <item name="colorOnPrimary">#2F1F09</item>
         <item name="colorOnPrimaryContainer">#F9EFDC</item>
+        <item name="colorOnPrimaryFixed">#1E1200</item>
+        <item name="colorOnPrimaryFixedVariant">#483319</item>
         <item name="colorPrimaryContainer">#483319</item>
+        <item name="colorPrimaryFixed">#F9EFDC</item>
+        <item name="colorPrimaryFixedDim">#F9DCB5</item>
         <item name="colorPrimaryInverse">#654C2D</item>
         <item name="colorOnSecondary">#141119</item>
         <item name="colorOnSecondaryContainer">#EADCF6</item>
+        <item name="colorOnSecondaryFixed">#09070D</item>
+        <item name="colorOnSecondaryFixedVariant">#24202A</item>
         <item name="colorSecondaryContainer">#24202A</item>
+        <item name="colorSecondaryFixed">#EADCF6</item>
+        <item name="colorSecondaryFixedDim">#CEC0DB</item>
     </style>
 
     <style name="App.DayNight.NeonYellowIce" parent="App.DayNight">
@@ -281,11 +391,19 @@
         <item name="colorSecondary">#04D9FF</item>
         <item name="colorOnPrimary">#161B04</item>
         <item name="colorOnPrimaryContainer">#C7CEB6</item>
+        <item name="colorOnPrimaryFixed">#0A0F00</item>
+        <item name="colorOnPrimaryFixedVariant">#282D0F</item>
         <item name="colorPrimaryContainer">#282D0F</item>
+        <item name="colorPrimaryFixed">#C7CEB6</item>
+        <item name="colorPrimaryFixedDim">#BEC893</item>
         <item name="colorPrimaryInverse">#3E451F</item>
         <item name="colorOnSecondary">#101717</item>
         <item name="colorOnSecondaryContainer">#DBEFF3</item>
+        <item name="colorOnSecondaryFixed">#060B0B</item>
+        <item name="colorOnSecondaryFixedVariant">#1F2728</item>
         <item name="colorSecondaryContainer">#1F2728</item>
+        <item name="colorSecondaryFixed">#DBEFF3</item>
+        <item name="colorSecondaryFixedDim">#BFD3D7</item>
     </style>
 
     <style name="App.DayNight.FuxiaNeonYellow" parent="App.DayNight">
@@ -294,11 +412,19 @@
         <item name="colorSecondary">#CFFF04</item>
         <item name="colorOnPrimary">#2E0920</item>
         <item name="colorOnPrimaryContainer">#F4E2EC</item>
+        <item name="colorOnPrimaryFixed">#1F0011</item>
+        <item name="colorOnPrimaryFixedVariant">#451835</item>
         <item name="colorPrimaryContainer">#451835</item>
+        <item name="colorPrimaryFixed">#F4E2EC</item>
+        <item name="colorPrimaryFixedDim">#ECC0DC</item>
         <item name="colorPrimaryInverse">#5F2E4F</item>
         <item name="colorOnSecondary">#161710</item>
         <item name="colorOnSecondaryContainer">#EEF3DB</item>
+        <item name="colorOnSecondaryFixed">#0B0B06</item>
+        <item name="colorOnSecondaryFixedVariant">#27281F</item>
         <item name="colorSecondaryContainer">#27281F</item>
+        <item name="colorSecondaryFixed">#EEF3DB</item>
+        <item name="colorSecondaryFixedDim">#D2D7BF</item>
     </style>
 
     <style name="App.DayNight.FuxiaNeonViolet" parent="App.DayNight">
@@ -307,11 +433,19 @@
         <item name="colorSecondary">#BC13FE</item>
         <item name="colorOnPrimary">#330E16</item>
         <item name="colorOnPrimaryContainer">#F7E4E6</item>
+        <item name="colorOnPrimaryFixed">#220207</item>
+        <item name="colorOnPrimaryFixedVariant">#4B1E29</item>
         <item name="colorPrimaryContainer">#4B1E29</item>
+        <item name="colorPrimaryFixed">#F7E4E6</item>
+        <item name="colorPrimaryFixedDim">#F4C4CF</item>
         <item name="colorPrimaryInverse">#683340</item>
         <item name="colorOnSecondary">#151018</item>
         <item name="colorOnSecondaryContainer">#ECDCF4</item>
+        <item name="colorOnSecondaryFixed">#09060C</item>
+        <item name="colorOnSecondaryFixedVariant">#251F29</item>
         <item name="colorSecondaryContainer">#251F29</item>
+        <item name="colorSecondaryFixed">#ECDCF4</item>
+        <item name="colorSecondaryFixedDim">#D0BFD7</item>
     </style>
 
     <style name="App.DayNight.Green" parent="App.DayNight">
@@ -320,11 +454,40 @@
         <item name="colorSecondary">#4CAF50</item>
         <item name="colorOnPrimary">#000000</item>
         <item name="colorOnPrimaryContainer">#747F70</item>
-        <item name="colorPrimaryContainer">#11220B</item>
+        <item name="colorOnPrimaryFixed">#000000</item>
+        <item name="colorOnPrimaryFixedVariant">#030602</item>
+        <item name="colorPrimaryContainer">#030602</item>
+        <item name="colorPrimaryFixed">#747F70</item>
+        <item name="colorPrimaryFixedDim">#697F5D</item>
         <item name="colorPrimaryInverse">#0F170B</item>
         <item name="colorOnSecondary">#030403</item>
         <item name="colorOnSecondaryContainer">#B6C0B7</item>
+        <item name="colorOnSecondaryFixed">#000000</item>
+        <item name="colorOnSecondaryFixedVariant">#1E231E</item>
         <item name="colorSecondaryContainer">#1E231E</item>
+        <item name="colorSecondaryFixed">#B6C0B7</item>
+        <item name="colorSecondaryFixedDim">#8A938A</item>
+    </style>
+
+    <style name="App.DayNight.VioletGray" parent="App.DayNight">
+        <item name="colorPrimary">#9800FF</item>
+        <item name="colorControlNormal">#9800FF</item>
+        <item name="colorSecondary">#444444</item>
+        <item name="colorOnPrimary">#1F092F</item>
+        <item name="colorOnPrimaryContainer">#EFDCF9</item>
+        <item name="colorOnPrimaryFixed">#12001E</item>
+        <item name="colorOnPrimaryFixedVariant">#331948</item>
+        <item name="colorPrimaryContainer">#331948</item>
+        <item name="colorPrimaryFixed">#EFDCF9</item>
+        <item name="colorPrimaryFixedDim">#DCB5F9</item>
+        <item name="colorPrimaryInverse">#4C2D65</item>
+        <item name="colorOnSecondary">#000000</item>
+        <item name="colorOnSecondaryContainer">#585858</item>
+        <item name="colorOnSecondaryFixed">#000000</item>
+        <item name="colorOnSecondaryFixedVariant">#262626</item>
+        <item name="colorSecondaryContainer">#262626</item>
+        <item name="colorSecondaryFixed">#585858</item>
+        <item name="colorSecondaryFixedDim">#363636</item>
     </style>
 
     <style name="App.DayNight.PinkGray" parent="App.DayNight">
@@ -333,11 +496,19 @@
         <item name="colorSecondary">#444444</item>
         <item name="colorOnPrimary">#320C1A</item>
         <item name="colorOnPrimaryContainer">#F7E4E9</item>
+        <item name="colorOnPrimaryFixed">#22000B</item>
+        <item name="colorOnPrimaryFixedVariant">#4A1C2D</item>
         <item name="colorPrimaryContainer">#4A1C2D</item>
+        <item name="colorPrimaryFixed">#F7E4E9</item>
+        <item name="colorPrimaryFixedDim">#F2C3D4</item>
         <item name="colorPrimaryInverse">#663246</item>
         <item name="colorOnSecondary">#000000</item>
         <item name="colorOnSecondaryContainer">#585858</item>
-        <item name="colorSecondaryContainer">#181818</item>
+        <item name="colorOnSecondaryFixed">#000000</item>
+        <item name="colorOnSecondaryFixedVariant">#262626</item>
+        <item name="colorSecondaryContainer">#262626</item>
+        <item name="colorSecondaryFixed">#585858</item>
+        <item name="colorSecondaryFixedDim">#363636</item>
     </style>
 
     <style name="App.DayNight.Gray" parent="App.DayNight">
@@ -345,12 +516,20 @@
         <item name="colorControlNormal">#444444</item>
         <item name="colorSecondary">#777777</item>
         <item name="colorOnPrimary">#FFFFFF</item>
-        <item name="colorOnPrimaryContainer">#3F3F3F</item>
+        <item name="colorOnPrimaryContainer">#7D7D7D</item>
+        <item name="colorOnPrimaryFixed">#000000</item>
+        <item name="colorOnPrimaryFixedVariant">#000000</item>
         <item name="colorPrimaryContainer">#151515</item>
+        <item name="colorPrimaryFixed">#7D7D7D</item>
+        <item name="colorPrimaryFixedDim">#393939</item>
         <item name="colorPrimaryInverse">#000000</item>
         <item name="colorOnSecondary">#FFFFFF</item>
         <item name="colorOnSecondaryContainer">#868686</item>
-        <item name="colorSecondaryContainer">#181818</item>
+        <item name="colorOnSecondaryFixed">#000000</item>
+        <item name="colorOnSecondaryFixedVariant">#262626</item>
+        <item name="colorSecondaryContainer">#262626</item>
+        <item name="colorSecondaryFixed">#868686</item>
+        <item name="colorSecondaryFixedDim">#606060</item>
     </style>
 
     <style name="App.DayNight.Orange" parent="App.DayNight">
@@ -359,11 +538,19 @@
         <item name="colorSecondary">#FF6F00</item>
         <item name="colorOnPrimary">#33170E</item>
         <item name="colorOnPrimaryContainer">#FAE9E1</item>
+        <item name="colorOnPrimaryFixed">#220A00</item>
+        <item name="colorOnPrimaryFixedVariant">#4C291F</item>
         <item name="colorPrimaryContainer">#4C291F</item>
+        <item name="colorPrimaryFixed">#FAE9E1</item>
+        <item name="colorPrimaryFixedDim">#FACFC1</item>
         <item name="colorPrimaryInverse">#694034</item>
         <item name="colorOnSecondary">#191411</item>
         <item name="colorOnSecondaryContainer">#F7E8DD</item>
+        <item name="colorOnSecondaryFixed">#0D0907</item>
+        <item name="colorOnSecondaryFixedVariant">#2A2320</item>
         <item name="colorSecondaryContainer">#2A2320</item>
+        <item name="colorSecondaryFixed">#F7E8DD</item>
+        <item name="colorSecondaryFixedDim">#DBCCC1</item>
     </style>
 
     <style name="App.DayNight.OrangeGray" parent="App.DayNight">
@@ -372,11 +559,19 @@
         <item name="colorSecondary">#777777</item>
         <item name="colorOnPrimary">#33170E</item>
         <item name="colorOnPrimaryContainer">#FAE9E1</item>
+        <item name="colorOnPrimaryFixed">#220A00</item>
+        <item name="colorOnPrimaryFixedVariant">#4C291F</item>
         <item name="colorPrimaryContainer">#4C291F</item>
+        <item name="colorPrimaryFixed">#FAE9E1</item>
+        <item name="colorPrimaryFixedDim">#FACFC1</item>
         <item name="colorPrimaryInverse">#694034</item>
         <item name="colorOnSecondary">#000000</item>
         <item name="colorOnSecondaryContainer">#868686</item>
-        <item name="colorSecondaryContainer">#181818</item>
+        <item name="colorOnSecondaryFixed">#000000</item>
+        <item name="colorOnSecondaryFixedVariant">#262626</item>
+        <item name="colorSecondaryContainer">#262626</item>
+        <item name="colorSecondaryFixed">#868686</item>
+        <item name="colorSecondaryFixedDim">#606060</item>
     </style>
 
     <style name="App.DayNight.Lineage" parent="App.DayNight">
@@ -385,11 +580,19 @@
         <item name="colorSecondary">#63FFDE</item>
         <item name="colorOnPrimary">#000000</item>
         <item name="colorOnPrimaryContainer">#6F797A</item>
+        <item name="colorOnPrimaryFixed">#000000</item>
+        <item name="colorOnPrimaryFixedVariant">#010505</item>
         <item name="colorPrimaryContainer">#010505</item>
+        <item name="colorPrimaryFixed">#6F797A</item>
+        <item name="colorPrimaryFixedDim">#5C7475</item>
         <item name="colorPrimaryInverse">#091414</item>
         <item name="colorOnSecondary">#111715</item>
         <item name="colorOnSecondaryContainer">#E1F0EC</item>
+        <item name="colorOnSecondaryFixed">#070C0A</item>
+        <item name="colorOnSecondaryFixedVariant">#212825</item>
         <item name="colorSecondaryContainer">#212825</item>
+        <item name="colorSecondaryFixed">#E1F0EC</item>
+        <item name="colorSecondaryFixedDim">#C4D4D0</item>
     </style>
 
     <style name="App.DayNight.Ice.Amoled" parent="App.DayNight.Ice">
@@ -755,11 +958,19 @@
         <item name="colorSecondary">#FF9800</item>
         <item name="colorOnPrimary">#341212</item>
         <item name="colorOnPrimaryContainer">#F8E7E5</item>
+        <item name="colorOnPrimaryFixed">#230604</item>
+        <item name="colorOnPrimaryFixedVariant">#4C2324</item>
         <item name="colorPrimaryContainer">#4C2324</item>
+        <item name="colorPrimaryFixed">#F8E7E5</item>
+        <item name="colorPrimaryFixedDim">#F6C9CA</item>
         <item name="colorPrimaryInverse">#6A393B</item>
         <item name="colorOnSecondary">#191511</item>
         <item name="colorOnSecondaryContainer">#F6EBDC</item>
+        <item name="colorOnSecondaryFixed">#0C0907</item>
+        <item name="colorOnSecondaryFixedVariant">#292420</item>
         <item name="colorSecondaryContainer">#292420</item>
+        <item name="colorSecondaryFixed">#F6EBDC</item>
+        <item name="colorSecondaryFixedDim">#DACFC0</item>
     </style>
 
 </resources>

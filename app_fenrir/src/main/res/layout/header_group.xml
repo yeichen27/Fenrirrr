@@ -169,7 +169,7 @@
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/header_group_primary_button"
-                        style="@style/MyOutlinedButton"
+                        style="@style/MyOutlinedHeaderButton"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"

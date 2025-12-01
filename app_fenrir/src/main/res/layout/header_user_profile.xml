@@ -184,7 +184,7 @@
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/subscribe_btn"
-                        style="@style/MyOutlinedButton"
+                        style="@style/MyOutlinedHeaderButton"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -214,7 +214,7 @@
                     style="?button_secondary"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
+                    android:layout_marginStart="32dp"
                     android:insetTop="3dp"
                     android:insetBottom="3dp"
                     android:minWidth="24dp"

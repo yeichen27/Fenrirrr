@@ -8,8 +8,8 @@ import dev.ragnarok.fenrir.fragment.search.options.SimpleBooleanOption
 import dev.ragnarok.fenrir.fragment.search.options.SimpleNumberOption
 import dev.ragnarok.fenrir.fragment.search.options.SimpleTextOption
 import dev.ragnarok.fenrir.fragment.search.options.SpinnerOption
-import dev.ragnarok.fenrir.util.ParcelUtils.readObjectLong
-import dev.ragnarok.fenrir.util.ParcelUtils.writeObjectLong
+import dev.ragnarok.fenrir.readObjectLong
+import dev.ragnarok.fenrir.writeObjectLong
 
 class PeopleSearchCriteria : BaseSearchCriteria {
     var groupId: Long? = null
@@ -146,12 +146,12 @@ class PeopleSearchCriteria : BaseSearchCriteria {
     }
 
     internal constructor(parcel: Parcel) : super(parcel) {
-        groupId = readObjectLong(parcel)
+        groupId = parcel.readObjectLong()
     }
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
         super.writeToParcel(dest, flags)
-        writeObjectLong(dest, groupId)
+        dest.writeObjectLong(groupId)
     }
 
     override fun describeContents(): Int {

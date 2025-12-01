@@ -2,8 +2,8 @@ package dev.ragnarok.fenrir.fragment.search.criteria
 
 import android.os.Parcel
 import android.os.Parcelable
-import dev.ragnarok.fenrir.util.ParcelUtils.readObjectLong
-import dev.ragnarok.fenrir.util.ParcelUtils.writeObjectLong
+import dev.ragnarok.fenrir.readObjectLong
+import dev.ragnarok.fenrir.writeObjectLong
 
 class MessageSearchCriteria : BaseSearchCriteria {
     var peerId: Long? = null
@@ -15,7 +15,7 @@ class MessageSearchCriteria : BaseSearchCriteria {
     }
 
     internal constructor(parcel: Parcel) : super(parcel) {
-        peerId = readObjectLong(parcel)
+        peerId = parcel.readObjectLong()
     }
 
     fun setPeerId(peerId: Long?): MessageSearchCriteria {
@@ -25,7 +25,7 @@ class MessageSearchCriteria : BaseSearchCriteria {
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
         super.writeToParcel(dest, flags)
-        writeObjectLong(dest, peerId)
+        dest.writeObjectLong(peerId)
     }
 
     override fun describeContents(): Int {

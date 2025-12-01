@@ -7,7 +7,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
 }
 
-//1.14.0-alpha06
+//1.14.0-alpha07
 
 fun isDevelopBuild() = libs.versions.developerBuild.get().toBoolean()
 fun Provider<String>.asInt() = get().toInt()

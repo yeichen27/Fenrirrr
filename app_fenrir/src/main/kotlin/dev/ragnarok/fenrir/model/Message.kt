@@ -8,10 +8,10 @@ import dev.ragnarok.fenrir.api.model.interfaces.Identificable
 import dev.ragnarok.fenrir.getBoolean
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.putBoolean
+import dev.ragnarok.fenrir.readIntStringMap
 import dev.ragnarok.fenrir.readTypedObjectCompat
-import dev.ragnarok.fenrir.util.ParcelUtils.readIntStringMap
-import dev.ragnarok.fenrir.util.ParcelUtils.writeIntStringMap
 import dev.ragnarok.fenrir.util.Utils.safeCountOf
+import dev.ragnarok.fenrir.writeIntStringMap
 import dev.ragnarok.fenrir.writeTypedObjectCompat
 
 class Message : AbsModel, Identificable, ISelectable {
@@ -130,7 +130,7 @@ class Message : AbsModel, Identificable, ISelectable {
         actionUser = ParcelableOwnerWrapper.readOwner(parcel)
         sender = ParcelableOwnerWrapper.readOwner(parcel)
         randomId = parcel.readLong()
-        extras = readIntStringMap(parcel)
+        extras = parcel.readIntStringMap()
         forwardMessagesCount = parcel.readInt()
         isHasAttachments = parcel.getBoolean()
         updateTime = parcel.readLong()
@@ -422,7 +422,7 @@ class Message : AbsModel, Identificable, ISelectable {
         ParcelableOwnerWrapper.writeOwner(parcel, flags, actionUser)
         ParcelableOwnerWrapper.writeOwner(parcel, flags, sender)
         parcel.writeLong(randomId)
-        writeIntStringMap(parcel, extras)
+        parcel.writeIntStringMap(extras)
         parcel.writeInt(forwardMessagesCount)
         parcel.putBoolean(isHasAttachments)
         parcel.writeLong(updateTime)

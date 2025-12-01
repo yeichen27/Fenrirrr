@@ -8,9 +8,9 @@ import dev.ragnarok.fenrir.model.AbsModel
 import dev.ragnarok.fenrir.model.AbsModelType
 import dev.ragnarok.fenrir.picasso.Content_Local
 import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.buildUriForPicasso
+import dev.ragnarok.fenrir.readObjectLong
 import dev.ragnarok.fenrir.readTypedObjectCompat
-import dev.ragnarok.fenrir.util.ParcelUtils.readObjectLong
-import dev.ragnarok.fenrir.util.ParcelUtils.writeObjectLong
+import dev.ragnarok.fenrir.writeObjectLong
 import dev.ragnarok.fenrir.writeTypedObjectCompat
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.random.Random
@@ -65,7 +65,7 @@ open class Upload : AbsModel, Identificable {
         status = parcel.readInt()
         progress = parcel.readInt()
         errorText = parcel.readString()
-        fileId = readObjectLong(parcel)
+        fileId = parcel.readObjectLong()
     }
 
     fun setAutoCommit(autoCommit: Boolean): Upload {
@@ -116,7 +116,7 @@ open class Upload : AbsModel, Identificable {
         parcel.writeInt(status)
         parcel.writeInt(progress)
         parcel.writeString(errorText)
-        writeObjectLong(parcel, fileId)
+        parcel.writeObjectLong(fileId)
     }
 
     fun setFileUri(fileUri: Uri?): Upload {
