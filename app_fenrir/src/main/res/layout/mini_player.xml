@@ -3,11 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="1dp"
+    android:layout_marginTop="4dp"
     android:layout_marginBottom="10dp"
-    android:elevation="3dp"
-    android:orientation="horizontal"
-    android:paddingTop="4dp">
+    android:orientation="horizontal">
 
     <FrameLayout
         android:id="@+id/item_audio_play"
@@ -19,8 +17,8 @@
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/item_audio_play_cover"
-            android:layout_width="42dp"
-            android:layout_height="42dp"
+            android:layout_width="39dp"
+            android:layout_height="39dp"
             android:contentDescription="@string/play" />
 
         <androidx.appcompat.widget.AppCompatImageView
@@ -50,7 +48,9 @@
             android:focusableInTouchMode="true"
             android:marqueeRepeatLimit="marquee_forever"
             android:scrollHorizontally="true"
-            android:singleLine="true" />
+            android:singleLine="true"
+            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+            android:textSize="14sp" />
 
         <dev.ragnarok.fenrir.view.CustomSeekBar
             android:id="@+id/seek_player_pos"
@@ -73,7 +73,7 @@
         android:background="?attr/selectableItemBackgroundBorderless"
         android:backgroundTint="?colorSurface"
         android:contentDescription="@string/open_full_player"
-        android:padding="8dp"
+        android:padding="7dp"
         android:scaleType="centerInside"
         android:src="@drawable/ic_outline_keyboard_arrow_up"
         app:tint="?colorPrimary" />
@@ -87,7 +87,7 @@
         android:background="?attr/selectableItemBackgroundBorderless"
         android:backgroundTint="?colorSurface"
         android:contentDescription="@string/close"
-        android:padding="8dp"
+        android:padding="7dp"
         android:scaleType="centerInside"
         android:src="@drawable/ic_outline_keyboard_arrow_down"
         app:tint="?colorPrimary" />
