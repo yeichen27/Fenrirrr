@@ -5,7 +5,7 @@ import android.os.Parcelable
 import kotlinx.serialization.Serializable
 
 @Serializable
-class LinearLayoutManager_SavedState : Parcelable {
+class LinearLayoutManagerSavedState : Parcelable {
     @JvmField
     var mAnchorPosition = 0
 
@@ -22,7 +22,7 @@ class LinearLayoutManager_SavedState : Parcelable {
         mAnchorLayoutFromEnd = parcel.readInt() != 0
     }
 
-    constructor(other: LinearLayoutManager_SavedState) {
+    constructor(other: LinearLayoutManagerSavedState) {
         mAnchorPosition = other.mAnchorPosition
         mAnchorOffset = other.mAnchorOffset
         mAnchorLayoutFromEnd = other.mAnchorLayoutFromEnd
@@ -46,19 +46,19 @@ class LinearLayoutManager_SavedState : Parcelable {
         dest.writeInt(if (mAnchorLayoutFromEnd) 1 else 0)
     }
 
-    companion object CREATOR : Parcelable.Creator<LinearLayoutManager_SavedState> {
-        override fun createFromParcel(parcel: Parcel): LinearLayoutManager_SavedState {
-            return LinearLayoutManager_SavedState(parcel)
+    companion object CREATOR : Parcelable.Creator<LinearLayoutManagerSavedState> {
+        override fun createFromParcel(parcel: Parcel): LinearLayoutManagerSavedState {
+            return LinearLayoutManagerSavedState(parcel)
         }
 
-        override fun newArray(size: Int): Array<LinearLayoutManager_SavedState?> {
+        override fun newArray(size: Int): Array<LinearLayoutManagerSavedState?> {
             return arrayOfNulls(size)
         }
     }
 }
 
 @Serializable
-class StaggeredGridLayoutManager_SavedState : Parcelable {
+class StaggeredGridLayoutManagerSavedState : Parcelable {
     @JvmField
     var mAnchorPosition = 0
 
@@ -95,13 +95,15 @@ class StaggeredGridLayoutManager_SavedState : Parcelable {
         mVisibleAnchorPosition = parcel.readInt()
         mSpanOffsetsSize = parcel.readInt()
         if (mSpanOffsetsSize > 0) {
-            mSpanOffsets = IntArray(mSpanOffsetsSize)
-            parcel.readIntArray(mSpanOffsets!!)
+            val tmpSpanOffsets = IntArray(mSpanOffsetsSize)
+            parcel.readIntArray(tmpSpanOffsets)
+            mSpanOffsets = tmpSpanOffsets
         }
         mSpanLookupSize = parcel.readInt()
         if (mSpanLookupSize > 0) {
-            mSpanLookup = IntArray(mSpanLookupSize)
-            parcel.readIntArray(mSpanLookup!!)
+            val tmpSpanLookup = IntArray(mSpanLookupSize)
+            parcel.readIntArray(tmpSpanLookup)
+            mSpanLookup = tmpSpanLookup
         }
         mReverseLayout = parcel.readInt() != 0
         mAnchorLayoutFromEnd = parcel.readInt() != 0
@@ -111,7 +113,7 @@ class StaggeredGridLayoutManager_SavedState : Parcelable {
         mFullSpanItems = fullSpanItems
     }
 
-    constructor(other: StaggeredGridLayoutManager_SavedState) {
+    constructor(other: StaggeredGridLayoutManagerSavedState) {
         mSpanOffsetsSize = other.mSpanOffsetsSize
         mAnchorPosition = other.mAnchorPosition
         mVisibleAnchorPosition = other.mVisibleAnchorPosition
@@ -162,13 +164,13 @@ class StaggeredGridLayoutManager_SavedState : Parcelable {
 
     companion object {
         @JvmField
-        val CREATOR: Parcelable.Creator<StaggeredGridLayoutManager_SavedState> =
-            object : Parcelable.Creator<StaggeredGridLayoutManager_SavedState> {
-                override fun createFromParcel(parcel: Parcel): StaggeredGridLayoutManager_SavedState {
-                    return StaggeredGridLayoutManager_SavedState(parcel)
+        val CREATOR: Parcelable.Creator<StaggeredGridLayoutManagerSavedState> =
+            object : Parcelable.Creator<StaggeredGridLayoutManagerSavedState> {
+                override fun createFromParcel(parcel: Parcel): StaggeredGridLayoutManagerSavedState {
+                    return StaggeredGridLayoutManagerSavedState(parcel)
                 }
 
-                override fun newArray(size: Int): Array<StaggeredGridLayoutManager_SavedState?> {
+                override fun newArray(size: Int): Array<StaggeredGridLayoutManagerSavedState?> {
                     return arrayOfNulls(size)
                 }
             }
@@ -201,15 +203,16 @@ class FullSpanItem : Parcelable {
         mHasUnwantedGapAfter = parcel.readInt() != 0
         val spanCount = parcel.readInt()
         if (spanCount > 0) {
-            mGapPerSpan = IntArray(spanCount)
-            parcel.readIntArray(mGapPerSpan!!)
+            val tmpGapPerSpan = IntArray(spanCount)
+            parcel.readIntArray(tmpGapPerSpan)
+            mGapPerSpan = tmpGapPerSpan
         }
     }
 
     constructor()
 
     fun getGapForSpan(spanIndex: Int): Int {
-        return if (mGapPerSpan == null) 0 else mGapPerSpan!![spanIndex]
+        return mGapPerSpan?.get(spanIndex) ?: 0
     }
 
     override fun describeContents(): Int {

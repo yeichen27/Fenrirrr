@@ -21,6 +21,7 @@ import dev.ragnarok.filegallery.model.tags.TagOwner
 import dev.ragnarok.filegallery.nonNullNoEmpty
 import dev.ragnarok.filegallery.orZero
 import dev.ragnarok.filegallery.toColor
+import dev.ragnarok.filegallery.util.AppTextUtils.pluralNumerical
 
 class TagOwnerAdapter(private var data: List<TagOwner>, private val context: Context) :
     RecyclerView.Adapter<TagOwnerAdapter.Holder>() {
@@ -28,21 +29,6 @@ class TagOwnerAdapter(private var data: List<TagOwner>, private val context: Con
     private var clickListener: ClickListener? = null
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
         return Holder(LayoutInflater.from(context).inflate(R.layout.item_tag_owner, parent, false))
-    }
-
-    private fun fixNumerical(num: Int): String? {
-        if (num < 0) {
-            return null
-        }
-        val preLastDigit = num % 100 / 10
-        if (preLastDigit == 1) {
-            return context.getString(R.string.tag_count_c, num)
-        }
-        return when (num % 10) {
-            1 -> context.getString(R.string.tag_count_a, num)
-            2, 3, 4 -> context.getString(R.string.tag_count_b, num)
-            else -> context.getString(R.string.tag_count_c, num)
-        }
     }
 
     private fun createGradientImage(width: Int, height: Int, owner_id: Long): Bitmap {
@@ -131,7 +117,13 @@ class TagOwnerAdapter(private var data: List<TagOwner>, private val context: Con
             holder.tvTitle.visibility = View.VISIBLE
             holder.tvTitle.text = item.name
         }
-        holder.tvPath.text = fixNumerical(item.count)
+        holder.tvPath.text = pluralNumerical(
+            context,
+            item.count,
+            R.string.tag_count_a,
+            R.string.tag_count_b,
+            R.string.tag_count_c
+        )
         holder.itemView.setOnClickListener {
             clickListener?.onTagOwnerClick(holder.bindingAdapterPosition, item)
         }

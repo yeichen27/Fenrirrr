@@ -20,6 +20,7 @@ import android.hardware.camera2.params.DynamicRangeProfiles;
 
 import androidx.annotation.RequiresApi;
 import androidx.camera.core.DynamicRange;
+import androidx.camera.core.Logger;
 import androidx.core.util.Preconditions;
 
 import org.jspecify.annotations.NonNull;
@@ -31,6 +32,8 @@ import java.util.Set;
 
 @RequiresApi(33)
 class DynamicRangesCompatApi33Impl implements DynamicRangesCompat.DynamicRangeProfilesCompatImpl {
+    private static final String TAG  = "DynamicRangesCompatApi33Impl";
+
     private final DynamicRangeProfiles mDynamicRangeProfiles;
 
     DynamicRangesCompatApi33Impl(@NonNull Object dynamicRangeProfiles) {
@@ -65,9 +68,13 @@ class DynamicRangesCompatApi33Impl implements DynamicRangesCompat.DynamicRangePr
         return mDynamicRangeProfiles;
     }
 
-    private static @NonNull DynamicRange profileToDynamicRange(long profile) {
-        return Preconditions.checkNotNull(DynamicRangeConversions.profileToDynamicRange(profile),
-                "Dynamic range profile cannot be converted to a DynamicRange object: " + profile);
+    private static @Nullable DynamicRange profileToDynamicRange(long profile) {
+        DynamicRange dynamicRange = DynamicRangeConversions.profileToDynamicRange(profile);
+        if (dynamicRange == null) {
+            Logger.w(TAG, "Dynamic range profile cannot be converted to a DynamicRange object: "
+                    + profile);
+        }
+        return dynamicRange;
     }
 
     private @Nullable Long dynamicRangeToFirstSupportedProfile(@NonNull DynamicRange dynamicRange) {
@@ -82,7 +89,10 @@ class DynamicRangesCompatApi33Impl implements DynamicRangesCompat.DynamicRangePr
         }
         Set<DynamicRange> dynamicRangeSet = new HashSet<>(profileSet.size());
         for (long profile : profileSet) {
-            dynamicRangeSet.add(profileToDynamicRange(profile));
+            DynamicRange dynamicRange = profileToDynamicRange(profile);
+            if (dynamicRange != null) {
+                dynamicRangeSet.add(dynamicRange);
+            }
         }
         return Collections.unmodifiableSet(dynamicRangeSet);
     }

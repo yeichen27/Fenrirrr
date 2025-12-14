@@ -1,6 +1,7 @@
 package dev.ragnarok.fenrir.util
 
 import android.content.Context
+import androidx.annotation.StringRes
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.link.internal.OwnerLinkSpanFactory
 import java.math.BigDecimal
@@ -223,5 +224,26 @@ object AppTextUtils {
             }
         }
         return Utils.join(POINT, tmp)
+    }
+
+    fun pluralNumerical(
+        context: Context,
+        num: Int,
+        @StringRes a: Int,
+        @StringRes b: Int,
+        @StringRes c: Int
+    ): String? {
+        if (num < 0) {
+            return null
+        }
+        val preLastDigit = num % 100 / 10
+        if (preLastDigit == 1) {
+            return context.getString(c, num)
+        }
+        return when (num % 10) {
+            1 -> context.getString(a, num)
+            2, 3, 4 -> context.getString(b, num)
+            else -> context.getString(c, num)
+        }
     }
 }

@@ -2,7 +2,7 @@ package dev.ragnarok.fenrir.fragment.localserver.filemanagerremote
 
 import android.os.Bundle
 import android.os.Parcelable
-import androidx.recyclerview.widget.LinearLayoutManager_SavedState
+import androidx.recyclerview.widget.LinearLayoutManagerSavedState
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.base.RxSupportPresenter
 import dev.ragnarok.fenrir.model.Audio
@@ -277,7 +277,7 @@ class FileManagerRemotePresenter(
                 view?.notifyAllChanged()
                 directoryScrollPositions.remove(buildPath())?.let { scroll ->
                     view?.restoreScroll(scroll)
-                } ?: view?.restoreScroll(LinearLayoutManager_SavedState())
+                } ?: view?.restoreScroll(LinearLayoutManagerSavedState())
             }, {
                 view?.onError(it)
                 isLoading = false

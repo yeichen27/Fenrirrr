@@ -13,7 +13,7 @@
 
 <b>Инструкция по сборке:</b><br>
 Требуется:<br>
-  1. Android Studio Otter 2 Feature Drop 2025.2.2 или выше. Kotlin 2.2.*<br>
+  1. Android Studio Otter 3 Feature Drop 2025.2.3 или выше. Kotlin 2.3.*<br>
   2. Android SDK 36.1<br>
   3. Android NDK 29.0.14206865<br>
   4. CMake 4.1.2<br>

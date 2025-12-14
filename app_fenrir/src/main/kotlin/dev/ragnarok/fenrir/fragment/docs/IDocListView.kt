@@ -27,6 +27,7 @@ interface IDocListView : IMvpView, IErrorView, IToastView {
     fun displayFilterData(filters: MutableList<DocFilter>)
     fun notifyFiltersChanged()
     fun setAdapterType(imagesOnly: Boolean)
-
     fun onMenuClick(index: Int, doc: Document, isMy: Boolean)
+    fun onShareDocument(accountId: Long, document: Document)
+    fun onOpenDocumentOwnerWall(accountId: Long, ownerId: Long)
 }

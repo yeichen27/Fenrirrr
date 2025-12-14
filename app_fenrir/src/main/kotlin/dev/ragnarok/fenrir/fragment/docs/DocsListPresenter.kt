@@ -1,26 +1,16 @@
 package dev.ragnarok.fenrir.fragment.docs
 
-import android.app.Activity
-import android.content.Context
 import android.os.Bundle
 import android.widget.Toast
 import androidx.core.net.toUri
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dev.ragnarok.fenrir.Includes
 import dev.ragnarok.fenrir.R
-import dev.ragnarok.fenrir.activity.SendAttachmentsActivity.Companion.startForSendAttachments
 import dev.ragnarok.fenrir.domain.IDocsInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
-import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.Option
-import dev.ragnarok.fenrir.model.AbsModel
 import dev.ragnarok.fenrir.model.DocFilter
 import dev.ragnarok.fenrir.model.Document
-import dev.ragnarok.fenrir.model.EditingPostType
 import dev.ragnarok.fenrir.model.LocalPhoto
-import dev.ragnarok.fenrir.model.menu.options.DocsOption
-import dev.ragnarok.fenrir.place.PlaceFactory.getOwnerWallPlace
-import dev.ragnarok.fenrir.place.PlaceUtil.goToPostCreation
 import dev.ragnarok.fenrir.upload.IUploadManager
 import dev.ragnarok.fenrir.upload.IUploadManager.IProgressUpdate
 import dev.ragnarok.fenrir.upload.Upload
@@ -34,7 +24,6 @@ import dev.ragnarok.fenrir.util.Pair
 import dev.ragnarok.fenrir.util.Utils.findIndexById
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import dev.ragnarok.fenrir.util.Utils.intValueIn
-import dev.ragnarok.fenrir.util.Utils.shareLink
 import dev.ragnarok.fenrir.util.coroutines.CompositeJob
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.sharedFlowToMain
@@ -105,54 +94,34 @@ class DocsListPresenter(
         }
     }
 
-    fun onMenuSelect(context: Context, index: Int, doc: Document, option: Option) {
-        when (option.id) {
-            DocsOption.open_item_doc -> fireDocClick(doc)
-            DocsOption.share_item_doc -> share(context, doc)
-            DocsOption.add_item_doc -> {
-                val docsInteractor = InteractorFactory.createDocsInteractor()
-                val accessKey = doc.accessKey
-                appendJob(
-                    docsInteractor.add(
-                        accountId,
-                        doc.id,
-                        doc.ownerId,
-                        accessKey
-                    )
-                        .fromIOToMain({
-                            view?.customToast?.setDuration(
-                                Toast.LENGTH_LONG
-                            )?.showToastSuccessBottom(R.string.added)
-                        }) { t ->
-                            showError(getCauseIfRuntime(t))
-                        })
-            }
-
-            DocsOption.delete_item_doc -> MaterialAlertDialogBuilder(context)
-                .setTitle(R.string.remove_confirm)
-                .setMessage(R.string.doc_remove_confirm_message)
-                .setPositiveButton(R.string.button_yes) { _, _ ->
-                    doRemove(
-                        doc,
-                        index
-                    )
-                }
-                .setNegativeButton(R.string.cancel, null)
-                .show()
-
-            DocsOption.go_to_owner_doc -> getOwnerWallPlace(
+    fun fireAddDocument(doc: Document) {
+        val docsInteractor = InteractorFactory.createDocsInteractor()
+        val accessKey = doc.accessKey
+        appendJob(
+            docsInteractor.add(
                 accountId,
+                doc.id,
                 doc.ownerId,
-                null
-            ).tryOpenWith(context)
-        }
+                accessKey
+            )
+                .fromIOToMain({
+                    view?.customToast?.setDuration(
+                        Toast.LENGTH_LONG
+                    )?.showToastSuccessBottom(R.string.added)
+                }) { t ->
+                    showError(getCauseIfRuntime(t))
+                })
+    }
+
+    fun fireDocumentShare(doc: Document) {
+        view?.onShareDocument(accountId, doc)
     }
 
     fun fireMenuClick(index: Int, doc: Document) {
         view?.onMenuClick(index, doc, isMy)
     }
 
-    private fun doRemove(doc: Document, index: Int) {
+    fun fireRemove(doc: Document, index: Int) {
         appendJob(
             docsInteractor.delete(accountId, doc.id, doc.ownerId)
                 .fromIOToMain({
@@ -161,33 +130,8 @@ class DocsListPresenter(
                 }) { })
     }
 
-    internal fun share(context: Context, document: Document) {
-        val items = arrayOf(
-            getString(R.string.share_link),
-            getString(R.string.repost_send_message),
-            getString(R.string.repost_to_wall)
-        )
-        MaterialAlertDialogBuilder(context)
-            .setItems(items) { _, i ->
-                when (i) {
-                    0 -> shareLink(
-                        (context as Activity),
-                        String.format("vk.ru/doc%s_%s", document.ownerId, document.id),
-                        document.title
-                    )
-
-                    1 -> startForSendAttachments(context, accountId, document)
-                    2 -> postToMyWall(context, document)
-                }
-            }
-            .setCancelable(true)
-            .setTitle(R.string.share_document_title)
-            .show()
-    }
-
-    private fun postToMyWall(context: Context, document: Document) {
-        val models: List<AbsModel> = listOf(document)
-        goToPostCreation((context as Activity), accountId, accountId, EditingPostType.TEMP, models)
+    fun fireOpenDocumentOwnerWall(ownerId: Long) {
+        view?.onOpenDocumentOwnerWall(accountId, ownerId)
     }
 
     private val isMy: Boolean

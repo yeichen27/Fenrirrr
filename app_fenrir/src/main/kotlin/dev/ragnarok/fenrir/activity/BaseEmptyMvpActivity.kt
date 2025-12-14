@@ -124,6 +124,7 @@ abstract class BaseEmptyMvpActivity<P : AbsPresenter<V>, V : IMvpView> :
     override fun dismissProgressDialog() {
         if (mLoadingProgressDialog?.isShowing == true) {
             mLoadingProgressDialog?.cancel()
+            mLoadingProgressDialog = null
         }
     }
 

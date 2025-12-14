@@ -18,7 +18,6 @@ import dev.ragnarok.fenrir.model.WriteText
 import dev.ragnarok.fenrir.upload.UploadDestination
 
 interface IChatView : IBasicMessageListView, IErrorView, IToastView {
-
     fun setupLoadUpHeaderState(@LoadMoreState state: Int)
     fun displayDraftMessageAttachmentsCount(count: Int)
     fun displayDraftMessageText(text: String?)
@@ -116,4 +115,6 @@ interface IChatView : IBasicMessageListView, IErrorView, IToastView {
     fun copyToClipBoard(link: String)
 
     fun openPollCreationWindow(accountId: Long, ownerId: Long)
+
+    fun setupKeepScreenOn(keep: Boolean)
 }

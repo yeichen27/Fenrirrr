@@ -3,7 +3,7 @@ package dev.ragnarok.fenrir.api.model
 /**
  * Application Access Permissions
  *
- * @see [http://vk.ru/dev/permissions](http://vk.ru/dev/permissions)
+ * @see [https://vk.ru/dev/permissions](https://vk.ru/dev/permissions)
  */
 object VKScopes {
     /**
@@ -89,7 +89,7 @@ object VKScopes {
     const val STATS = "stats"
 
     /**
-     * Access to advanced methods for [Ads API](http://vk.ru/dev/ads).
+     * Access to advanced methods for [Ads API](https://vk.ru/dev/ads).
      */
     const val ADS = "ads"
 

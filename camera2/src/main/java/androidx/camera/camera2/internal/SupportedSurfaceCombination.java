@@ -790,6 +790,11 @@ public final class SupportedSurfaceCombination {
                     useCasesPriorityOrder, isStrictFpsRequired);
         }
 
+        Logger.d(TAG, "getSuggestedStreamSpecifications:" +
+                " isPreviewStabilizationOn = " + isPreviewStabilizationOn +
+                ", mIsPreviewStabilizationSupported = " + mIsPreviewStabilizationSupported +
+                ", isFeatureComboInvocation = " + isFeatureComboInvocation);
+
         // Ensure preview stabilization is supported by the camera.
         if (isPreviewStabilizationOn && !mIsPreviewStabilizationSupported) {
             // TODO: b/422055796 - Handle this for non-feature-combo code flows, probably better to

@@ -35,15 +35,83 @@
     <item name="contentPaddingLeft">16dp</item>
     <item name="contentPaddingRight">16dp</item>
     <item name="swipeToPrimaryActionEnabled">false</item>
-  </style>
-
-  <style name="Widget.Material3.ListItemRevealLayout" parent="">
-    <item name="enforceMaterialTheme">true</item>
-    <item name="minChildWidth">@dimen/m3_list_reveal_min_child_width</item>
+    <item name="swipeEnabled">true</item>
   </style>
 
   <style name="Widget.Material3.ListItemCardView.Segmented">
     <item name="cardBackgroundColor">@color/m3_segmented_list_item_background_color_selector</item>
+  </style>
+
+  <style name="Widget.Material3.ListItemRevealLayout" parent="">
+    <item name="enforceMaterialTheme">true</item>
+    <item name="materialThemeOverlay">@style/ThemeOverlay.Material3.ListItemRevealLayout</item>
+    <item name="minChildWidth">@dimen/m3_list_reveal_min_child_width</item>
+  </style>
+
+  <style name="Widget.Material3Expressive.ListItemRevealLayout" parent="Widget.Material3.ListItemRevealLayout">
+    <item name="materialThemeOverlay">@style/ThemeOverlay.Material3Expressive.ListItemRevealLayout</item>
+  </style>
+
+  <style name="ThemeOverlay.Material3.ListItemRevealLayout">
+    <item name="materialIconButtonStyle">@style/Widget.Material3.Button.IconButton.ListItemRevealLayout</item>
+    <item name="materialIconButtonFilledStyle">@style/Widget.Material3.Button.IconButton.Filled.ListItemRevealLayout</item>
+    <item name="materialIconButtonFilledTonalStyle">@style/Widget.Material3.Button.IconButton.Filled.Tonal.ListItemRevealLayout</item>
+    <item name="materialIconButtonOutlinedStyle">@style/Widget.Material3.Button.IconButton.Outlined.ListItemRevealLayout</item>
+  </style>
+
+  <style name="ThemeOverlay.Material3Expressive.ListItemRevealLayout">
+    <item name="materialIconButtonStyle">@style/Widget.Material3Expressive.Button.IconButton.ListItemRevealLayout</item>
+    <item name="materialIconButtonFilledStyle">@style/Widget.Material3Expressive.Button.IconButton.Filled.ListItemRevealLayout</item>
+    <item name="materialIconButtonFilledTonalStyle">@style/Widget.Material3Expressive.Button.IconButton.Tonal.ListItemRevealLayout</item>
+    <item name="materialIconButtonOutlinedStyle">@style/Widget.Material3Expressive.Button.IconButton.Outlined.ListItemRevealLayout</item>
+  </style>
+
+  <style name="Widget.Material3.Button.IconButton.ListItemRevealLayout">
+    <item name="iconGravity">textStart</item>
+    <item name="android:insetLeft">0dp</item>
+    <item name="android:insetRight">0dp</item>
+  </style>
+
+  <style name="Widget.Material3.Button.IconButton.Filled.ListItemRevealLayout">
+    <item name="iconGravity">textStart</item>
+    <item name="android:insetLeft">0dp</item>
+    <item name="android:insetRight">0dp</item>
+  </style>
+
+  <style name="Widget.Material3.Button.IconButton.Filled.Tonal.ListItemRevealLayout">
+    <item name="iconGravity">textStart</item>
+    <item name="android:insetLeft">0dp</item>
+    <item name="android:insetRight">0dp</item>
+  </style>
+
+  <style name="Widget.Material3.Button.IconButton.Outlined.ListItemRevealLayout">
+    <item name="iconGravity">textStart</item>
+    <item name="android:insetLeft">0dp</item>
+    <item name="android:insetRight">0dp</item>
+  </style>
+
+  <style name="Widget.Material3Expressive.Button.IconButton.ListItemRevealLayout">
+    <item name="iconGravity">textStart</item>
+    <item name="android:insetLeft">0dp</item>
+    <item name="android:insetRight">0dp</item>
+  </style>
+
+  <style name="Widget.Material3Expressive.Button.IconButton.Filled.ListItemRevealLayout">
+    <item name="iconGravity">textStart</item>
+    <item name="android:insetLeft">0dp</item>
+    <item name="android:insetRight">0dp</item>
+  </style>
+
+  <style name="Widget.Material3Expressive.Button.IconButton.Tonal.ListItemRevealLayout">
+    <item name="iconGravity">textStart</item>
+    <item name="android:insetLeft">0dp</item>
+    <item name="android:insetRight">0dp</item>
+  </style>
+
+  <style name="Widget.Material3Expressive.Button.IconButton.Outlined.ListItemRevealLayout">
+    <item name="iconGravity">textStart</item>
+    <item name="android:insetLeft">0dp</item>
+    <item name="android:insetRight">0dp</item>
   </style>
 
   <style name="ShapeAppearance.Material3.ListItem.First" parent="">
@@ -80,10 +148,16 @@
   <!-- Styles for List item content. -->
   <style name="Widget.Material3.ImageView.ListItem.LeadingIcon" parent="android:Widget">
     <item name="tint">@color/m3_list_item_leading_icon_color_selector</item>
+    <item name="android:importantForAccessibility">no</item>
+    <item name="android:focusable">false</item>
+    <item name="android:clickable">false</item>
   </style>
 
   <style name="Widget.Material3.ImageView.ListItem.TrailingIcon" parent="android:Widget">
     <item name="tint">@color/m3_list_item_trailing_icon_color_selector</item>
+    <item name="android:importantForAccessibility">no</item>
+    <item name="android:focusable">false</item>
+    <item name="android:clickable">false</item>
   </style>
 
   <style name="Widget.Material3.ShapeableImageView.ListItem.LeadingImage" parent="Widget.MaterialComponents.ShapeableImageView">
@@ -114,7 +188,6 @@
   <style name="Widget.Material3.Checkbox.ListItem" parent="Widget.Material3.CompoundButton.CheckBox">
     <item name="android:focusable">false</item>
     <item name="android:clickable">false</item>
-    <item name="android:importantForAccessibility">no</item>
     <item name="android:background">@null</item>
     <item name="buttonTint">@color/m3_list_item_checkbox_button_tint_selector</item>
   </style>
@@ -122,7 +195,6 @@
   <style name="Widget.Material3.Switch.ListItem" parent="Widget.Material3.CompoundButton.MaterialSwitch">
     <item name="android:focusable">false</item>
     <item name="android:clickable">false</item>
-    <item name="android:importantForAccessibility">no</item>
     <item name="android:background">@null</item>
     <item name="trackTint">@color/m3_list_item_switch_track_tint_selector</item>
   </style>
@@ -130,7 +202,6 @@
   <style name="Widget.Material3.RadioButton.ListItem" parent="Widget.Material3.CompoundButton.RadioButton">
     <item name="android:focusable">false</item>
     <item name="android:clickable">false</item>
-    <item name="android:importantForAccessibility">no</item>
     <item name="android:background">@null</item>
     <item name="buttonTint">@color/m3_list_item_radio_button_tint_selector</item>
   </style>

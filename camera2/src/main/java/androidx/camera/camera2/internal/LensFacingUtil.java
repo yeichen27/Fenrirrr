@@ -21,11 +21,13 @@ import android.hardware.camera2.CameraMetadata;
 import androidx.annotation.OptIn;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ExperimentalLensFacing;
+import androidx.camera.core.Logger;
 
 /**
  * Contains utility methods related to lens facing.
  */
 public class LensFacingUtil {
+    private static final String TAG = "LensFacingUtil";
 
     // Do not allow instantiation.
     private LensFacingUtil() {
@@ -51,9 +53,9 @@ public class LensFacingUtil {
             case CameraMetadata.LENS_FACING_EXTERNAL:
                 return CameraSelector.LENS_FACING_EXTERNAL;
             default:
-                throw new IllegalArgumentException(
-                        "The given lens facing integer: " + lensFacingInteger
-                                + " can not be recognized.");
+                Logger.w(TAG, "The given lens facing integer: " + lensFacingInteger +
+                        " can not be recognized.");
+                return CameraSelector.LENS_FACING_UNKNOWN;
         }
     }
 
@@ -75,8 +77,9 @@ public class LensFacingUtil {
             case CameraSelector.LENS_FACING_EXTERNAL:
                 return CameraMetadata.LENS_FACING_EXTERNAL;
             default:
-                throw new IllegalArgumentException(
-                        "The given lens facing: " + lensFacing + " can not be recognized.");
+                Logger.w(TAG, "The given lens facing: " + lensFacing +
+                        " can not be recognized.");
+                return -1;
         }
     }
 }

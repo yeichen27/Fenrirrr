@@ -123,6 +123,7 @@ abstract class BaseMvpBottomSheetDialogFragment<P : AbsPresenter<V>, V : IMvpVie
     override fun dismissProgressDialog() {
         if (mLoadingProgressDialog?.isShowing == true) {
             mLoadingProgressDialog?.cancel()
+            mLoadingProgressDialog = null
         }
     }
 

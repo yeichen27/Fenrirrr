@@ -285,7 +285,10 @@
 
     <string name="wall_post_view">(ЗАПИСЬ НА СТЕНЕ)</string>
 
-    <string name="repost_title">Отправка записи</string>
+    <string name="repost_post_title">Поделиться постом</string>
+    <string name="repost_video_title">Поделиться видео</string>
+    <string name="repost_photo_title">Поделиться фото</string>
+    <string name="repost_document_title">Поделиться документом</string>
     <string name="repost_send_message">Отправить сообщением</string>
     <string name="repost_to_wall">На стену</string>
     <string name="pin">Закрепить</string>
@@ -724,7 +727,6 @@
     <string name="wiki_page">Вики-страница</string>
     <string name="title">Название: %1$s</string>
     <string name="browser">Браузер</string>
-    <string name="share_document_title">Поделиться документом</string>
     <string name="deleted">Удалено</string>
     <string name="remove_confirm">Подтвердите удаление</string>
     <string name="doc_remove_confirm_message">Вы действительно хотите удалить этот документ? Это действие нельзя отменить.</string>
@@ -756,7 +758,6 @@
     <string name="markets_dimensions">Размеры: %1$s</string>
     <string name="videos_count">%1$d видео</string>
     <string name="communities">Сообщества</string>
-    <string name="share_photo_title">Поделиться фотографией</string>
     <string name="save_yourself">Сохранить в альбом</string>
     <string name="photo_saved_yourself">Сохранено в альбом “Сохраненные фотографии”</string>
     <string name="documents">Документы</string>

@@ -192,8 +192,8 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
                     cv.put(ShortcutsColumns.COVER, i.cover)
                     insert(ShortcutsColumns.TABLENAME, null, cv)
                 }
-                emit(true)
             }
+            emit(true)
         }
     }
 
@@ -217,8 +217,8 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
                     cv.put(ReactionsColumns.STATIC, i.static)
                     insert(ReactionsColumns.TABLENAME, null, cv)
                 }
-                emit(true)
             }
+            emit(true)
         }
     }
 
@@ -398,8 +398,8 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
                     cv.put(AudiosColumns.IS_HQ, i.isHq)
                     insert(AudiosColumns.TABLENAME, null, cv)
                 }
-                emit(true)
             }
+            emit(true)
         }
     }
 
@@ -450,8 +450,8 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
                     val id = insert(FeedOwnersColumns.TABLENAME, null, cv)
                     i.setId(id)
                 }
-                emit(true)
             }
+            emit(true)
         }
     }
 

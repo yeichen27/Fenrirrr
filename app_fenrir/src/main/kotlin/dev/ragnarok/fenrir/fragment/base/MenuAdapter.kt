@@ -1,4 +1,4 @@
-package dev.ragnarok.fenrir.fragment.videos.videopreview
+package dev.ragnarok.fenrir.fragment.base
 
 import android.content.Context
 import android.view.LayoutInflater

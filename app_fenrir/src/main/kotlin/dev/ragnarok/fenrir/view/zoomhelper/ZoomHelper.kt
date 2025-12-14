@@ -556,7 +556,7 @@ class ZoomHelper {
         /**
          * Set view to be zoomable
          */
-        fun addZoomableView(view: View) = view.setTag(R.id.zoomable, Object())
+        fun addZoomableView(view: View) = view.setTag(R.id.zoomable, Any())
 
         /**
          * Set view to be zoomable
@@ -565,7 +565,7 @@ class ZoomHelper {
          */
         fun addZoomableView(view: View, tag: Any?) {
             var vt = tag
-            if (vt == null) vt = Object()
+            if (vt == null) vt = Any()
             view.setTag(R.id.zoomable, vt)
         }
 
@@ -592,7 +592,7 @@ class ZoomHelper {
          * skip layout and all layout's zoomable children
          */
         private fun skipLayout(view: View, skip: Boolean) =
-            view.setTag(R.id.skip_zoom_layout, if (skip) Object() else null)
+            view.setTag(R.id.skip_zoom_layout, if (skip) Any() else null)
     }
 
 }

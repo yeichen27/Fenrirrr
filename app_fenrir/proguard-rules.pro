@@ -1,4 +1,6 @@
 -dontobfuscate
+-dontoptimize
+-keepattributes SourceFile,LineNumberTable
 
 # Disable the annoying "Parameter specified as non-null is null" exceptions
 -assumenosideeffects class kotlin.jvm.internal.Intrinsics {
@@ -8,8 +10,7 @@
 -keep public class * extends java.lang.Exception
 
 # BASE APP
--keep class dev.ragnarok.fenrir.** { *; }
--keep class dev.ragnarok.filegallery.** { *; }
+-keep class dev.ragnarok.** { *; }
 
 
 #Native Library

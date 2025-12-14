@@ -4,7 +4,7 @@ import android.annotation.SuppressLint
 import android.os.Environment
 import android.os.Parcelable
 import androidx.core.net.toUri
-import androidx.recyclerview.widget.LinearLayoutManager_SavedState
+import androidx.recyclerview.widget.LinearLayoutManagerSavedState
 import dev.ragnarok.fenrir.module.parcel.ParcelFlags
 import dev.ragnarok.fenrir.module.parcel.ParcelNative
 import dev.ragnarok.filegallery.Includes
@@ -324,7 +324,7 @@ class FileManagerPresenter(
             view?.notifyAllChanged()
             directoryScrollPositions.remove(path.absolutePath)?.let { scroll ->
                 view?.restoreScroll(scroll)
-            } ?: view?.restoreScroll(LinearLayoutManager_SavedState())
+            } ?: view?.restoreScroll(LinearLayoutManagerSavedState())
             if (back && fileList.isEmpty() || !back) {
                 loadFiles(
                     back = false, caches = false, fromCache = true
@@ -334,7 +334,7 @@ class FileManagerPresenter(
                 view?.resolveLoading(isLoading)
             }
         }, {
-            view?.restoreScroll(LinearLayoutManager_SavedState())
+            view?.restoreScroll(LinearLayoutManagerSavedState())
             view?.showThrowable(it)
             loadFiles(
                 back = false, caches = false, fromCache = true

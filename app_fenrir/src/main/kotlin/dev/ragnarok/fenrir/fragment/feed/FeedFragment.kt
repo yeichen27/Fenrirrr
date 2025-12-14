@@ -13,10 +13,10 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager_SavedState
+import androidx.recyclerview.widget.LinearLayoutManagerSavedState
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import androidx.recyclerview.widget.StaggeredGridLayoutManager_SavedState
+import androidx.recyclerview.widget.StaggeredGridLayoutManagerSavedState
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.BaseTransientBottomBar
@@ -352,13 +352,13 @@ class FeedFragment : PlaceSupportMvpFragment<FeedPresenter, IFeedView>(), IFeedV
             when (mFeedLayoutManager) {
                 is LinearLayoutManager -> {
                     val savedState =
-                        kJson.decodeFromString(LinearLayoutManager_SavedState.serializer(), state)
+                        kJson.decodeFromString(LinearLayoutManagerSavedState.serializer(), state)
                     mFeedLayoutManager?.onRestoreInstanceState(savedState)
                 }
 
                 is StaggeredGridLayoutManager -> {
                     val savedState = kJson.decodeFromString(
-                        StaggeredGridLayoutManager_SavedState.serializer(),
+                        StaggeredGridLayoutManagerSavedState.serializer(),
                         state
                     )
                     mFeedLayoutManager?.onRestoreInstanceState(savedState)
@@ -372,15 +372,15 @@ class FeedFragment : PlaceSupportMvpFragment<FeedPresenter, IFeedView>(), IFeedV
         val json: String = when (mFeedLayoutManager) {
             is LinearLayoutManager -> {
                 kJson.encodeToString(
-                    LinearLayoutManager_SavedState.serializer(),
-                    parcelable as LinearLayoutManager_SavedState
+                    LinearLayoutManagerSavedState.serializer(),
+                    parcelable as LinearLayoutManagerSavedState
                 )
             }
 
             is StaggeredGridLayoutManager -> {
                 kJson.encodeToString(
-                    StaggeredGridLayoutManager_SavedState.serializer(),
-                    parcelable as StaggeredGridLayoutManager_SavedState
+                    StaggeredGridLayoutManagerSavedState.serializer(),
+                    parcelable as StaggeredGridLayoutManagerSavedState
                 )
             }
 

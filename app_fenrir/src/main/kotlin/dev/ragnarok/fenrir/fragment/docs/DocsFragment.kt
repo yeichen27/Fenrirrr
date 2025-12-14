@@ -13,24 +13,33 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.ActivityUtils.supportToolbarFor
 import dev.ragnarok.fenrir.activity.DualTabPhotoActivity.Companion.createIntent
+import dev.ragnarok.fenrir.activity.SendAttachmentsActivity.Companion.startForSendAttachments
+import dev.ragnarok.fenrir.dialog.PostShareDialog.Methods
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
+import dev.ragnarok.fenrir.fragment.base.MenuAdapter
 import dev.ragnarok.fenrir.fragment.base.RecyclerBindableAdapter
 import dev.ragnarok.fenrir.fragment.base.horizontal.HorizontalOptionsAdapter
 import dev.ragnarok.fenrir.getParcelableArrayListExtraCompat
 import dev.ragnarok.fenrir.listener.OnSectionResumeCallback
 import dev.ragnarok.fenrir.listener.PicassoPauseOnScrollListener
 import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.ModalBottomSheetDialogFragment
+import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.Option
 import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.OptionRequest
+import dev.ragnarok.fenrir.model.AbsModel
 import dev.ragnarok.fenrir.model.DocFilter
 import dev.ragnarok.fenrir.model.Document
+import dev.ragnarok.fenrir.model.EditingPostType
 import dev.ragnarok.fenrir.model.LocalPhoto
 import dev.ragnarok.fenrir.model.PhotoSize
+import dev.ragnarok.fenrir.model.Text
+import dev.ragnarok.fenrir.model.menu.Item
 import dev.ragnarok.fenrir.model.menu.options.DocsOption
 import dev.ragnarok.fenrir.model.selection.FileManagerSelectableSource
 import dev.ragnarok.fenrir.model.selection.LocalPhotosSelectableSource
@@ -39,9 +48,12 @@ import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.place.Place
 import dev.ragnarok.fenrir.place.PlaceFactory.getDocPreviewPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getGifPagerPlace
+import dev.ragnarok.fenrir.place.PlaceFactory.getOwnerWallPlace
+import dev.ragnarok.fenrir.place.PlaceUtil.goToPostCreation
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.upload.Upload
 import dev.ragnarok.fenrir.util.AppPerms.requestPermissionsAbs
+import dev.ragnarok.fenrir.util.Utils.shareLink
 import dev.ragnarok.fenrir.util.ViewUtils.setupSwipeRefreshLayoutWithCurrentTheme
 import dev.ragnarok.fenrir.view.navigation.AbsNavigationView
 
@@ -264,6 +276,30 @@ class DocsFragment : BaseMvpFragment<DocsListPresenter, IDocListView>(), IDocLis
         mImagesOnly = imagesOnly
     }
 
+    private fun onMenuSelect(index: Int, doc: Document, option: Option) {
+        when (option.id) {
+            DocsOption.open_item_doc -> presenter?.fireDocClick(doc)
+            DocsOption.share_item_doc -> presenter?.fireDocumentShare(doc)
+            DocsOption.add_item_doc -> {
+                presenter?.fireAddDocument(doc)
+            }
+
+            DocsOption.delete_item_doc -> MaterialAlertDialogBuilder(requireActivity())
+                .setTitle(R.string.remove_confirm)
+                .setMessage(R.string.doc_remove_confirm_message)
+                .setPositiveButton(R.string.button_yes) { _, _ ->
+                    presenter?.fireRemove(
+                        doc,
+                        index
+                    )
+                }
+                .setNegativeButton(R.string.cancel, null)
+                .show()
+
+            DocsOption.go_to_owner_doc -> presenter?.fireOpenDocumentOwnerWall(doc.ownerId)
+        }
+    }
+
     override fun onMenuClick(index: Int, doc: Document, isMy: Boolean) {
         val menus = ModalBottomSheetDialogFragment.Builder()
         menus.add(
@@ -315,8 +351,63 @@ class DocsFragment : BaseMvpFragment<DocsListPresenter, IDocListView>(), IDocLis
             childFragmentManager,
             "docs_options"
         ) { _, option ->
-            presenter?.onMenuSelect(requireActivity(), index, doc, option)
+            onMenuSelect(index, doc, option)
         }
+    }
+
+    private fun postToMyWall(accountId: Long, document: Document) {
+        val models: List<AbsModel> = listOf(document)
+        goToPostCreation((context as Activity), accountId, accountId, EditingPostType.TEMP, models)
+    }
+
+    override fun onShareDocument(
+        accountId: Long,
+        document: Document
+    ) {
+        val items: MutableList<Item> = ArrayList()
+        items.add(Item(Methods.SHARE_LINK, Text(R.string.share_link)).setIcon(R.drawable.web))
+        items.add(
+            Item(
+                Methods.SEND_MESSAGE,
+                Text(R.string.repost_send_message)
+            ).setIcon(R.drawable.share)
+        )
+        items.add(
+            Item(
+                Methods.REPOST_YOURSELF,
+                Text(R.string.repost_to_wall)
+            ).setIcon(R.drawable.ic_outline_share)
+        )
+
+        val mAdapter = MenuAdapter(requireActivity(), items, true)
+        MaterialAlertDialogBuilder(requireActivity())
+            .setTitle(R.string.repost_document_title)
+            .setAdapter(mAdapter) { _, which ->
+                when (items[which].key) {
+                    Methods.SHARE_LINK -> shareLink(
+                        requireActivity(),
+                        String.format("vk.ru/doc%s_%s", document.ownerId, document.id),
+                        document.title
+                    )
+
+                    Methods.SEND_MESSAGE -> startForSendAttachments(
+                        requireActivity(),
+                        accountId,
+                        document
+                    )
+
+                    Methods.REPOST_YOURSELF -> postToMyWall(accountId, document)
+                }
+            }
+            .setNegativeButton(R.string.button_cancel, null).show()
+    }
+
+    override fun onOpenDocumentOwnerWall(accountId: Long, ownerId: Long) {
+        getOwnerWallPlace(
+            accountId,
+            ownerId,
+            null
+        ).tryOpenWith(requireActivity())
     }
 
     override fun getPresenterFactory(saveInstanceState: Bundle?) = DocsListPresenter(

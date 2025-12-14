@@ -35,6 +35,7 @@ import dev.ragnarok.filegallery.place.PlaceFactory.getPlayerPlace
 import dev.ragnarok.filegallery.settings.CurrentTheme
 import dev.ragnarok.filegallery.settings.Settings
 import dev.ragnarok.filegallery.toColor
+import dev.ragnarok.filegallery.util.AppTextUtils.pluralNumerical
 import dev.ragnarok.filegallery.util.Utils
 import dev.ragnarok.filegallery.util.coroutines.CancelableJob
 import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.fromIOToMain
@@ -134,21 +135,6 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
 
     override fun getItemViewType(position: Int): Int {
         return data[position].type
-    }
-
-    private fun fixNumerical(context: Context, num: Int): String? {
-        if (num < 0) {
-            return null
-        }
-        val preLastDigit = num % 100 / 10
-        if (preLastDigit == 1) {
-            return context.getString(R.string.files_count_c, num)
-        }
-        return when (num % 10) {
-            1 -> context.getString(R.string.files_count_a, num)
-            2, 3, 4 -> context.getString(R.string.files_count_b, num)
-            else -> context.getString(R.string.files_count_c, num)
-        }
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
@@ -435,9 +421,12 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
         holder.fileName.text = item.file_name
         holder.tagged.visibility = if (item.isHasTag) View.VISIBLE else View.GONE
         holder.fileDetails.text =
-            if (item.type != FileType.folder) Utils.BytesToSize(item.size) else fixNumerical(
+            if (item.type != FileType.folder) Utils.BytesToSize(item.size) else pluralNumerical(
                 holder.fileDetails.context,
-                item.size.toInt()
+                item.size.toInt(),
+                R.string.files_count_a,
+                R.string.files_count_b,
+                R.string.files_count_c
             )
         holder.itemView.setOnClickListener {
             val t = Audio()
@@ -642,9 +631,12 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
         holder.fileName.text = item.file_name
         holder.tagged.visibility = if (item.isHasTag) View.VISIBLE else View.GONE
         holder.fileDetails.text =
-            if (item.type != FileType.folder) Utils.BytesToSize(item.size) else fixNumerical(
+            if (item.type != FileType.folder) Utils.BytesToSize(item.size) else pluralNumerical(
                 holder.fileDetails.context,
-                item.size.toInt()
+                item.size.toInt(),
+                R.string.files_count_a,
+                R.string.files_count_b,
+                R.string.files_count_c
             )
         holder.itemView.setOnClickListener {
             clickListener?.onClick(holder.bindingAdapterPosition, item)

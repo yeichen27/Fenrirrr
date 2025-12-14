@@ -126,6 +126,7 @@ abstract class BaseMvpFragment<P : AbsPresenter<V>, V : IMvpView> : AbsMvpFragme
     override fun dismissProgressDialog() {
         if (mLoadingProgressDialog?.isShowing == true) {
             mLoadingProgressDialog?.cancel()
+            mLoadingProgressDialog = null
         }
     }
 

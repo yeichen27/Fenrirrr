@@ -382,6 +382,8 @@ Java_dev_ragnarok_fenrir_module_animation_AnimatedFileDrawable_seekToMs(JNIEnv *
                 ret = av_read_frame(info->fmt_ctx, info->pkt);
                 if (ret >= 0) {
                     info->backup_pkt_buffer();
+                } else if (ret == AVERROR_EOF) {
+                    return;
                 }
             }
 
@@ -561,6 +563,8 @@ jint getFrameAtTime_animation(JNIEnv *env, jlong ptr, jlong ms,
                 ret = av_read_frame(info->fmt_ctx, info->pkt);
                 if (ret >= 0) {
                     info->backup_pkt_buffer();
+                } else if (ret == AVERROR_EOF) {
+                    return 0;
                 }
             }
 
@@ -674,6 +678,8 @@ Java_dev_ragnarok_fenrir_module_animation_AnimatedFileDrawable_getVideoFrame(JNI
                 } else {
                     info->backup_pkt_buffer();
                 }
+            } else if (ret == AVERROR_EOF) {
+                return 0;
             }
         }
 

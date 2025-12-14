@@ -171,7 +171,7 @@ public class StaggeredGridLayoutManager extends RecyclerView.LayoutManager imple
      * SavedState is not handled until a layout happens. This is where we keep it until next
      * layout.
      */
-    private StaggeredGridLayoutManager_SavedState mPendingSavedState;
+    private StaggeredGridLayoutManagerSavedState mPendingSavedState;
 
     /**
      * Re-used measurement specs. updated by onLayout.
@@ -1218,8 +1218,8 @@ public class StaggeredGridLayoutManager extends RecyclerView.LayoutManager imple
 
     @Override
     public void onRestoreInstanceState(Parcelable state) {
-        if (state instanceof StaggeredGridLayoutManager_SavedState) {
-            mPendingSavedState = (StaggeredGridLayoutManager_SavedState) state;
+        if (state instanceof StaggeredGridLayoutManagerSavedState) {
+            mPendingSavedState = (StaggeredGridLayoutManagerSavedState) state;
             if (mPendingScrollPosition != RecyclerView.NO_POSITION) {
                 mPendingSavedState.invalidateAnchorPositionInfo();
                 mPendingSavedState.invalidateSpanInfo();
@@ -1233,9 +1233,9 @@ public class StaggeredGridLayoutManager extends RecyclerView.LayoutManager imple
     @Override
     public Parcelable onSaveInstanceState() {
         if (mPendingSavedState != null) {
-            return new StaggeredGridLayoutManager_SavedState(mPendingSavedState);
+            return new StaggeredGridLayoutManagerSavedState(mPendingSavedState);
         }
-        StaggeredGridLayoutManager_SavedState state = new StaggeredGridLayoutManager_SavedState();
+        StaggeredGridLayoutManagerSavedState state = new StaggeredGridLayoutManagerSavedState();
         state.mReverseLayout = mReverseLayout;
         state.mAnchorLayoutFromEnd = mLastLayoutFromEnd;
         state.mLastLayoutRTL = mLastLayoutRTL;

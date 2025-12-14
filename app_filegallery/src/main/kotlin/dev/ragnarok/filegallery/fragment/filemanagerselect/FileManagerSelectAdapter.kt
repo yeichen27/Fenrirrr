@@ -1,6 +1,5 @@
 package dev.ragnarok.filegallery.fragment.filemanagerselect
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +11,7 @@ import dev.ragnarok.filegallery.Constants
 import dev.ragnarok.filegallery.R
 import dev.ragnarok.filegallery.model.FileItemSelect
 import dev.ragnarok.filegallery.picasso.PicassoInstance
+import dev.ragnarok.filegallery.util.AppTextUtils.pluralNumerical
 import dev.ragnarok.filegallery.util.Utils
 
 class FileManagerSelectAdapter(private var data: List<FileItemSelect>) :
@@ -44,21 +44,6 @@ class FileManagerSelectAdapter(private var data: List<FileItemSelect>) :
         return if (data[position].isDir) 0 else 1
     }
 
-    private fun fixNumerical(context: Context, num: Int): String? {
-        if (num < 0) {
-            return null
-        }
-        val preLastDigit = num % 100 / 10
-        if (preLastDigit == 1) {
-            return context.getString(R.string.files_count_c, num)
-        }
-        return when (num % 10) {
-            1 -> context.getString(R.string.files_count_a, num)
-            2, 3, 4 -> context.getString(R.string.files_count_b, num)
-            else -> context.getString(R.string.files_count_c, num)
-        }
-    }
-
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         onBindFileHolder(holder as FileHolder, position)
     }
@@ -68,9 +53,12 @@ class FileManagerSelectAdapter(private var data: List<FileItemSelect>) :
 
         holder.fileName.text = item.file_name
         holder.fileDetails.text =
-            if (!item.isDir) Utils.BytesToSize(item.size) else fixNumerical(
+            if (!item.isDir) Utils.BytesToSize(item.size) else pluralNumerical(
                 holder.fileDetails.context,
-                item.size.toInt()
+                item.size.toInt(),
+                R.string.files_count_a,
+                R.string.files_count_b,
+                R.string.files_count_c
             )
         PicassoInstance.with()
             .load("thumb_file://${item.file_path}").tag(Constants.PICASSO_TAG)

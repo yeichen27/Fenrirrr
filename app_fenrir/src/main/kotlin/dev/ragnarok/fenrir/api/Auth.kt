@@ -39,11 +39,11 @@ object Auth {
         return url
     }
 
-    //http://vk.ru/dev/permission
+    //https://vk.ru/dev/permission
     //return "notify,friends,photos,audio,video,stories,pages,status,notes,messages,wall,offline,docs,groups,notifications,stats,email,market";
 
     val scope: String
-        get() =//http://vk.ru/dev/permission
+        get() =//https://vk.ru/dev/permission
             //return "notify,friends,photos,audio,video,stories,pages,status,notes,messages,wall,offline,docs,groups,notifications,stats,email,market";
             if (Constants.DEFAULT_ACCOUNT_TYPE == AccountType.KATE) {
                 "notify,friends,photos,audio,video,docs,status,notes,pages,wall,groups,messages,offline,notifications,stories"

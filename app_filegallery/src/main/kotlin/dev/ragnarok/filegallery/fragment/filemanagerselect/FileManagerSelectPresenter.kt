@@ -2,7 +2,7 @@ package dev.ragnarok.filegallery.fragment.filemanagerselect
 
 import android.os.Environment
 import android.os.Parcelable
-import androidx.recyclerview.widget.LinearLayoutManager_SavedState
+import androidx.recyclerview.widget.LinearLayoutManagerSavedState
 import dev.ragnarok.filegallery.fragment.base.RxSupportPresenter
 import dev.ragnarok.filegallery.model.FileItemSelect
 import dev.ragnarok.filegallery.settings.Settings
@@ -156,7 +156,7 @@ class FileManagerSelectPresenter(
             view?.notifyAllChanged()
             directoryScrollPositions.remove(path.absolutePath)?.let { scroll ->
                 view?.restoreScroll(scroll)
-            } ?: view?.restoreScroll(LinearLayoutManager_SavedState())
+            } ?: view?.restoreScroll(LinearLayoutManagerSavedState())
         }, {
             view?.showThrowable(it)
             isLoading = false

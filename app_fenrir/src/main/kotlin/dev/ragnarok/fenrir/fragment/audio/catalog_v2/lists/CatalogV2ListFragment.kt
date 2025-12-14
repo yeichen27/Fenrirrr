@@ -210,9 +210,9 @@ class CatalogV2ListFragment : BaseMvpFragment<CatalogV2ListPresenter, ICatalogV2
                     dev.ragnarok.fenrir_common.R.raw.s_loading,
                     intArrayOf(
                         0x333333,
-                        CurrentTheme.getColorPrimary(requireActivity()),
+                        CurrentTheme.getColorPrimary(activity),
                         0x777777,
-                        CurrentTheme.getColorSecondary(requireActivity())
+                        CurrentTheme.getColorSecondary(activity)
                     )
                 )
                 loading?.startAnimation()

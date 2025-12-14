@@ -34,6 +34,7 @@ import dev.ragnarok.fenrir.place.PlaceFactory.getPlayerPlace
 import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.toColor
+import dev.ragnarok.fenrir.util.AppTextUtils.pluralNumerical
 import dev.ragnarok.fenrir.util.DownloadWorkUtils
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.coroutines.CancelableJob
@@ -128,21 +129,6 @@ class FileManagerRemoteAdapter(private var context: Context, private var data: L
 
     override fun getItemViewType(position: Int): Int {
         return data[position].type
-    }
-
-    private fun fixNumerical(context: Context, num: Int): String? {
-        if (num < 0) {
-            return null
-        }
-        val preLastDigit = num % 100 / 10
-        if (preLastDigit == 1) {
-            return context.getString(R.string.files_count_c, num)
-        }
-        return when (num % 10) {
-            1 -> context.getString(R.string.files_count_a, num)
-            2, 3, 4 -> context.getString(R.string.files_count_b, num)
-            else -> context.getString(R.string.files_count_c, num)
-        }
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
@@ -479,9 +465,12 @@ class FileManagerRemoteAdapter(private var context: Context, private var data: L
             })
         holder.fileName.text = item.file_name
         holder.fileDetails.text =
-            if (item.type != FileType.folder) Utils.BytesToSize(item.size) else fixNumerical(
+            if (item.type != FileType.folder) Utils.BytesToSize(item.size) else pluralNumerical(
                 holder.fileDetails.context,
-                item.size.toInt()
+                item.size.toInt(),
+                R.string.files_count_a,
+                R.string.files_count_b,
+                R.string.files_count_c
             )
         holder.itemView.setOnClickListener {
             val t = Audio()
@@ -666,9 +655,12 @@ class FileManagerRemoteAdapter(private var context: Context, private var data: L
             .into(holder.icon)
         holder.fileName.text = item.file_name
         holder.fileDetails.text =
-            if (item.type != FileType.folder) Utils.BytesToSize(item.size) else fixNumerical(
+            if (item.type != FileType.folder) Utils.BytesToSize(item.size) else pluralNumerical(
                 holder.fileDetails.context,
-                item.size.toInt()
+                item.size.toInt(),
+                R.string.files_count_a,
+                R.string.files_count_b,
+                R.string.files_count_c
             )
         holder.itemView.setOnClickListener {
             clickListener?.onClick(holder.bindingAdapterPosition, item)

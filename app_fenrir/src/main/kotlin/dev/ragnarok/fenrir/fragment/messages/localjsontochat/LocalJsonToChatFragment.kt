@@ -245,9 +245,9 @@ class LocalJsonToChatFragment :
                     dev.ragnarok.fenrir_common.R.raw.loading,
                     intArrayOf(
                         0x000000,
-                        CurrentTheme.getColorPrimary(requireActivity()),
+                        CurrentTheme.getColorPrimary(activity),
                         0x777777,
-                        CurrentTheme.getColorSecondary(requireActivity())
+                        CurrentTheme.getColorSecondary(activity)
                     )
                 )
                 mLoadingProgressBar?.startAnimation()

@@ -1,7 +1,7 @@
 package dev.ragnarok.filegallery.fragment.localserver.filemanagerremote
 
 import android.os.Parcelable
-import androidx.recyclerview.widget.LinearLayoutManager_SavedState
+import androidx.recyclerview.widget.LinearLayoutManagerSavedState
 import dev.ragnarok.fenrir.module.parcel.ParcelFlags
 import dev.ragnarok.fenrir.module.parcel.ParcelNative
 import dev.ragnarok.filegallery.Includes
@@ -250,7 +250,7 @@ class FileManagerRemotePresenter : RxSupportPresenter<IFileManagerRemoteView>() 
                 view?.notifyAllChanged()
                 directoryScrollPositions.remove(buildPath())?.let { scroll ->
                     view?.restoreScroll(scroll)
-                } ?: view?.restoreScroll(LinearLayoutManager_SavedState())
+                } ?: view?.restoreScroll(LinearLayoutManagerSavedState())
             }, {
                 view?.showThrowable(it)
                 isLoading = false

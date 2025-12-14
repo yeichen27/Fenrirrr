@@ -444,9 +444,9 @@ class WallPostFragment : PlaceSupportMvpFragment<WallPostPresenter, IWallPostVie
                     dev.ragnarok.fenrir_common.R.raw.s_loading,
                     intArrayOf(
                         0x333333,
-                        CurrentTheme.getColorPrimary(requireActivity()),
+                        CurrentTheme.getColorPrimary(activity),
                         0x777777,
-                        CurrentTheme.getColorSecondary(requireActivity())
+                        CurrentTheme.getColorSecondary(activity)
                     )
                 )
                 loading?.startAnimation()

@@ -1,6 +1,7 @@
 package dev.ragnarok.filegallery.util
 
 import android.content.Context
+import androidx.annotation.StringRes
 import dev.ragnarok.filegallery.R
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -50,5 +51,26 @@ object AppTextUtils {
                 SHORT_DATE.format(DATE)
             )
         } else FULL_LITTLE_DATE.format(DATE)
+    }
+
+    fun pluralNumerical(
+        context: Context,
+        num: Int,
+        @StringRes a: Int,
+        @StringRes b: Int,
+        @StringRes c: Int
+    ): String? {
+        if (num < 0) {
+            return null
+        }
+        val preLastDigit = num % 100 / 10
+        if (preLastDigit == 1) {
+            return context.getString(c, num)
+        }
+        return when (num % 10) {
+            1 -> context.getString(a, num)
+            2, 3, 4 -> context.getString(b, num)
+            else -> context.getString(c, num)
+        }
     }
 }

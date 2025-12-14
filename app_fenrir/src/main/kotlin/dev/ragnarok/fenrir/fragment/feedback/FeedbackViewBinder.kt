@@ -533,7 +533,7 @@ class FeedbackViewBinder(
                 AppTextUtils.getDateFromUnixTime(parent?.date.orZero())
             )
         } else {
-            OwnerLinkSpanFactory.getTextWithCollapseOwnerLinks(parent?.text)?.let { reduce(it) }
+            OwnerLinkSpanFactory.getTextWithCollapseOwnerLinks(parent.text)?.let { reduce(it) }
                 ?: ""
         }
         val parentLink = Link.startOf(action.length)
@@ -583,7 +583,7 @@ class FeedbackViewBinder(
                 AppTextUtils.getDateFromUnixTime(parent?.date.orZero())
             )
         } else {
-            OwnerLinkSpanFactory.getTextWithCollapseOwnerLinks(parent?.text)?.let { reduce(it) }
+            OwnerLinkSpanFactory.getTextWithCollapseOwnerLinks(parent.text)?.let { reduce(it) }
                 ?: ""
         }
         val parentLink = Link.startOf(action.length)
@@ -681,7 +681,7 @@ class FeedbackViewBinder(
                 AppTextUtils.getDateFromUnixTime(parent?.date.orZero())
             )
         } else {
-            OwnerLinkSpanFactory.getTextWithCollapseOwnerLinks(parent?.text)?.let { reduce(it) }
+            OwnerLinkSpanFactory.getTextWithCollapseOwnerLinks(parent.text)?.let { reduce(it) }
                 ?: ""
         }
         val parentLink = Link.startOf(action.length)
@@ -1000,7 +1000,7 @@ class FeedbackViewBinder(
                 AppTextUtils.getDateFromUnixTime(comment?.date.orZero())
             )
         } else {
-            OwnerLinkSpanFactory.getTextWithCollapseOwnerLinks(comment?.text)?.let { reduce(it) }
+            OwnerLinkSpanFactory.getTextWithCollapseOwnerLinks(comment.text)?.let { reduce(it) }
                 ?: ""
         }
         val commentLink = Link.startOf(0)
@@ -1048,7 +1048,7 @@ class FeedbackViewBinder(
                 AppTextUtils.getDateFromUnixTime(comment?.date.orZero())
             )
         } else {
-            OwnerLinkSpanFactory.getTextWithCollapseOwnerLinks(comment?.text)?.let { reduce(it) }
+            OwnerLinkSpanFactory.getTextWithCollapseOwnerLinks(comment.text)?.let { reduce(it) }
                 ?: ""
         }
         val commentLink = Link.startOf(0)
@@ -1098,7 +1098,7 @@ class FeedbackViewBinder(
                 AppTextUtils.getDateFromUnixTime(comment?.date.orZero())
             )
         } else {
-            OwnerLinkSpanFactory.getTextWithCollapseOwnerLinks(comment?.text)?.let { reduce(it) }
+            OwnerLinkSpanFactory.getTextWithCollapseOwnerLinks(comment.text)?.let { reduce(it) }
                 ?: ""
         }
         val commentLink = Link.startOf(0)
@@ -1161,7 +1161,7 @@ class FeedbackViewBinder(
                 AppTextUtils.getDateFromUnixTime(comment?.date.orZero())
             )
         } else {
-            OwnerLinkSpanFactory.getTextWithCollapseOwnerLinks(comment?.text)?.let { reduce(it) }
+            OwnerLinkSpanFactory.getTextWithCollapseOwnerLinks(comment.text)?.let { reduce(it) }
                 ?: ""
         }
         val commentLink = Link.startOf(0)

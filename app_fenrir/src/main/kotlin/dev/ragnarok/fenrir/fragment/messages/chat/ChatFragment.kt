@@ -25,6 +25,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
@@ -869,7 +870,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
             emptyAvatar?.visibility = View.GONE
             toolbarAvatar?.let {
                 PicassoInstance.with()
-                    .load(peer?.avaUrl)
+                    .load(peer.avaUrl)
                     .transform(RoundTransformation())
                     .into(it)
             }
@@ -1358,6 +1359,14 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
     override fun openPollCreationWindow(accountId: Long, ownerId: Long) {
         CreatePollDialogFragment.newInstance(accountId, ownerId, true)
             .show(parentFragmentManager, "poll_edit")
+    }
+
+    override fun setupKeepScreenOn(keep: Boolean) {
+        if (keep) {
+            requireActivity().window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        } else {
+            requireActivity().window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        }
     }
 
     internal fun onEditCameraClick() {

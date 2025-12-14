@@ -21,6 +21,7 @@ import dev.ragnarok.fenrir.db.model.entity.FeedOwnersEntity
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.toColor
+import dev.ragnarok.fenrir.util.AppTextUtils.pluralNumerical
 
 class FeedOwnerListAdapter(private var data: List<FeedOwnersEntity>, private val context: Context) :
     RecyclerView.Adapter<FeedOwnerListAdapter.Holder>() {
@@ -30,21 +31,6 @@ class FeedOwnerListAdapter(private var data: List<FeedOwnersEntity>, private val
         return Holder(
             LayoutInflater.from(context).inflate(R.layout.item_feed_owner_list, parent, false)
         )
-    }
-
-    private fun fixNumerical(num: Int): String? {
-        if (num < 0) {
-            return null
-        }
-        val preLastDigit = num % 100 / 10
-        if (preLastDigit == 1) {
-            return context.getString(R.string.owner_count_c, num)
-        }
-        return when (num % 10) {
-            1 -> context.getString(R.string.owner_count_a, num)
-            2, 3, 4 -> context.getString(R.string.owner_count_b, num)
-            else -> context.getString(R.string.owner_count_c, num)
-        }
     }
 
     private fun createGradientImage(width: Int, height: Int, owner_id: Long): Bitmap {
@@ -133,7 +119,13 @@ class FeedOwnerListAdapter(private var data: List<FeedOwnersEntity>, private val
             holder.tvTitle.visibility = View.VISIBLE
             holder.tvTitle.text = item.title
         }
-        holder.tvCount.text = fixNumerical(item.ownersIds?.size.orZero())
+        holder.tvCount.text = pluralNumerical(
+            context,
+            item.ownersIds?.size.orZero(),
+            R.string.owner_count_a,
+            R.string.owner_count_b,
+            R.string.owner_count_c
+        )
         holder.itemView.setOnClickListener {
             clickListener?.onFeedOwnerListClick(item)
         }

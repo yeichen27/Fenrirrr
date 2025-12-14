@@ -138,7 +138,6 @@ class ChatPresenter(
     accountId: Long, private val messagesOwnerId: Long,
     initialPeer: Peer, config: ChatConfig, savedInstanceState: Bundle?
 ) : AbsMessageListPresenter<IChatView>(accountId, savedInstanceState) {
-
     private var peer: Peer
     private var subtitle: String? = null
     private val audioRecordWrapper: AudioRecordWrapper = AudioRecordWrapper.Builder(App.instance)
@@ -207,6 +206,8 @@ class ChatPresenter(
     private var currentPhotoCameraUri: Uri? = null
 
     private var generatedId: Long
+
+    private var isKeepScreenOn = false
 
     init {
         if (savedInstanceState == null) {
@@ -1235,6 +1236,7 @@ class ChatPresenter(
                 )
             }
         }
+        resolveKeepScreenOn()
     }
 
     private fun resolveRecordPauseButton() {
@@ -1595,12 +1597,17 @@ class ChatPresenter(
         checkLongpoll()
         Processors.realtimeMessages
             .registerNotificationsInterceptor(generatedId, Pair.create(messagesOwnerId, peerId))
+        resolveKeepScreenOn()
     }
 
     override fun onGuiPaused() {
         super.onGuiPaused()
         checkLongpoll()
         Processors.realtimeMessages.unregisterNotificationsInterceptor(generatedId)
+        if (isKeepScreenOn) {
+            view?.setupKeepScreenOn(false)
+            isKeepScreenOn = false
+        }
     }
 
     private fun tryToRestoreDraftMessage(ignoreBody: Boolean) {
@@ -2836,6 +2843,13 @@ class ChatPresenter(
 
     fun fireDeleteSuper(ids: ArrayList<Message>) {
         deleteSentImpl(ids, 2)
+    }
+
+    private fun resolveKeepScreenOn() {
+        if (isKeepScreenOn != isRecordingNow) {
+            isKeepScreenOn = isRecordingNow
+            view?.setupKeepScreenOn(isKeepScreenOn)
+        }
     }
 
     fun fireDeleteForMeClick(ids: ArrayList<Message>) {

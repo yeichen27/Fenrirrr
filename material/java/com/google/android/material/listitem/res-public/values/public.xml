@@ -21,12 +21,17 @@
 
   <public name="state_swiped" type="attr" />
   <public name="minChildWidth" type="attr"/>
+  <public name="swipeToPrimaryActionEnabled" type="attr"/>
+  <public name="swipeEnabled" type="attr"/>
 
   <public name="Widget.Material3.ListItemLayout" type="style"/>
   <public name="ThemeOverlay.Material3.ListItemLayout.Segmented" type="style"/>
   <public name="Widget.Material3.ListItemCardView" type="style"/>
   <public name="Widget.Material3.ListItemCardView.Segmented" type="style"/>
   <public name="Widget.Material3.ListItemRevealLayout" type="style"/>
+  <public name="Widget.Material3Expressive.ListItemRevealLayout" type="style"/>
+  <public name="ThemeOverlay.Material3.ListItemRevealLayout" type="style"/>
+  <public name="ThemeOverlay.Material3Expressive.ListItemRevealLayout" type="style"/>
   <public name="ShapeAppearance.Material3.ListItem.First" type="style"/>
   <public name="ShapeAppearance.Material3.ListItem.Middle" type="style"/>
   <public name="ShapeAppearance.Material3.ListItem.Last" type="style"/>
@@ -42,6 +47,14 @@
   <public name="Widget.Material3.Checkbox.ListItem" type="style"/>
   <public name="Widget.Material3.Switch.ListItem" type="style"/>
   <public name="Widget.Material3.RadioButton.ListItem" type="style"/>
+  <public name="Widget.Material3.Button.IconButton.ListItemRevealLayout" type="style"/>
+  <public name="Widget.Material3.Button.IconButton.Filled.ListItemRevealLayout" type="style"/>
+  <public name="Widget.Material3.Button.IconButton.Filled.Tonal.ListItemRevealLayout" type="style"/>
+  <public name="Widget.Material3.Button.IconButton.Outlined.ListItemRevealLayout" type="style"/>
+  <public name="Widget.Material3Expressive.Button.IconButton.ListItemRevealLayout" type="style"/>
+  <public name="Widget.Material3Expressive.Button.IconButton.Filled.ListItemRevealLayout" type="style"/>
+  <public name="Widget.Material3Expressive.Button.IconButton.Tonal.ListItemRevealLayout" type="style"/>
+  <public name="Widget.Material3Expressive.Button.IconButton.Outlined.ListItemRevealLayout" type="style"/>
 
   <public name="listItemShapeAppearanceSingle" type="attr"/>
   <public name="listItemShapeAppearanceFirst" type="attr"/>

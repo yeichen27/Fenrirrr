@@ -14,7 +14,7 @@ abstract class AbsPresenter<V : IMvpView> : IPresenter<V> {
      * но при перевороте его вьюв был уничтожен, но не был заново создан, ибо фрагмент не в топе
      * контейнера и не added)
      */
-    private var viewReference: WeakReference<V> = WeakReference<V>(null)
+    private var viewReference: WeakReference<V> = WeakReference(null)
 
     private var isGuiReady: Boolean = false
 
@@ -100,7 +100,7 @@ abstract class AbsPresenter<V : IMvpView> : IPresenter<V> {
     }
 
     override fun detachViewHost() {
-        viewReference = WeakReference<V>(null)
+        viewReference = WeakReference(null)
         onViewHostDetached()
     }
 

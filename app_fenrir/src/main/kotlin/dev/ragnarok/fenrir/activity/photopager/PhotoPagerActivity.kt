@@ -53,8 +53,10 @@ import dev.ragnarok.fenrir.activity.slidr.Slidr
 import dev.ragnarok.fenrir.activity.slidr.model.SlidrConfig
 import dev.ragnarok.fenrir.activity.slidr.model.SlidrListener
 import dev.ragnarok.fenrir.activity.slidr.model.SlidrPosition
+import dev.ragnarok.fenrir.dialog.PostShareDialog.Methods
 import dev.ragnarok.fenrir.domain.ILikesInteractor
 import dev.ragnarok.fenrir.fragment.audio.AudioPlayerFragment
+import dev.ragnarok.fenrir.fragment.base.MenuAdapter
 import dev.ragnarok.fenrir.fragment.base.horizontal.ImageListAdapter
 import dev.ragnarok.fenrir.getParcelableArrayListCompat
 import dev.ragnarok.fenrir.getParcelableCompat
@@ -64,7 +66,9 @@ import dev.ragnarok.fenrir.model.EditingPostType
 import dev.ragnarok.fenrir.model.Photo
 import dev.ragnarok.fenrir.model.PhotoSize
 import dev.ragnarok.fenrir.model.PhotoTags
+import dev.ragnarok.fenrir.model.Text
 import dev.ragnarok.fenrir.model.TmpSource
+import dev.ragnarok.fenrir.model.menu.Item
 import dev.ragnarok.fenrir.module.FenrirNative
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.picasso.PicassoInstance
@@ -687,27 +691,37 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
     }
 
     override fun sharePhoto(accountId: Long, photo: Photo) {
-        val items = arrayOf(
-            getString(R.string.share_link),
-            getString(R.string.repost_send_message),
-            getString(R.string.repost_to_wall)
+        val items: MutableList<Item> = ArrayList()
+        items.add(Item(Methods.SHARE_LINK, Text(R.string.share_link)).setIcon(R.drawable.web))
+        items.add(
+            Item(
+                Methods.SEND_MESSAGE,
+                Text(R.string.repost_send_message)
+            ).setIcon(R.drawable.share)
         )
+        items.add(
+            Item(
+                Methods.REPOST_YOURSELF,
+                Text(R.string.repost_to_wall)
+            ).setIcon(R.drawable.ic_outline_share)
+        )
+
+        val mAdapter = MenuAdapter(this, items, true)
         MaterialAlertDialogBuilder(this)
-            .setItems(items) { _, i ->
-                when (i) {
-                    0 -> Utils.shareLink(this, photo.generateWebLink(), photo.text)
-                    1 -> SendAttachmentsActivity.startForSendAttachments(
+            .setTitle(R.string.repost_photo_title)
+            .setAdapter(mAdapter) { _, which ->
+                when (items[which].key) {
+                    Methods.SHARE_LINK -> Utils.shareLink(this, photo.generateWebLink(), photo.text)
+                    Methods.SEND_MESSAGE -> SendAttachmentsActivity.startForSendAttachments(
                         this,
                         accountId,
                         photo
                     )
 
-                    2 -> presenter?.firePostToMyWallClick()
+                    Methods.REPOST_YOURSELF -> presenter?.firePostToMyWallClick()
                 }
             }
-            .setCancelable(true)
-            .setTitle(R.string.share_photo_title)
-            .show()
+            .setNegativeButton(R.string.button_cancel, null).show()
     }
 
     override fun postToMyWall(photo: Photo, accountId: Long) {

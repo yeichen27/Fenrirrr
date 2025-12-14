@@ -128,7 +128,7 @@ public class LinearLayoutManager extends RecyclerView.LayoutManager implements
 
     private boolean mRecycleChildrenOnDetach;
 
-    LinearLayoutManager_SavedState mPendingSavedState = null;
+    LinearLayoutManagerSavedState mPendingSavedState = null;
 
     /**
      * Re-used variable to keep anchor information on re-layout.
@@ -315,9 +315,9 @@ public class LinearLayoutManager extends RecyclerView.LayoutManager implements
     @SuppressLint("UnknownNullness") // b/240775049: Cannot annotate properly
     public Parcelable onSaveInstanceState() {
         if (mPendingSavedState != null) {
-            return new LinearLayoutManager_SavedState(mPendingSavedState);
+            return new LinearLayoutManagerSavedState(mPendingSavedState);
         }
-        LinearLayoutManager_SavedState state = new LinearLayoutManager_SavedState();
+        LinearLayoutManagerSavedState state = new LinearLayoutManagerSavedState();
         if (getChildCount() > 0) {
             ensureLayoutState();
             boolean didLayoutFromEnd = mLastStackFromEnd ^ mShouldReverseLayout;
@@ -342,8 +342,8 @@ public class LinearLayoutManager extends RecyclerView.LayoutManager implements
     @Override
     @SuppressLint("UnknownNullness") // b/240775049: Cannot annotate properly
     public void onRestoreInstanceState(Parcelable state) {
-        if (state instanceof LinearLayoutManager_SavedState) {
-            mPendingSavedState = (LinearLayoutManager_SavedState) state;
+        if (state instanceof LinearLayoutManagerSavedState) {
+            mPendingSavedState = (LinearLayoutManagerSavedState) state;
             if (mPendingScrollPosition != RecyclerView.NO_POSITION) {
                 mPendingSavedState.invalidateAnchor();
             }

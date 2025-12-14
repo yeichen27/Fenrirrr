@@ -20,14 +20,18 @@ import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.ActivityUtils.supportToolbarFor
 import dev.ragnarok.fenrir.activity.SendAttachmentsActivity.Companion.startForSendAttachments
+import dev.ragnarok.fenrir.dialog.PostShareDialog.Methods
 import dev.ragnarok.fenrir.domain.IDocsInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.base.BaseFragment
+import dev.ragnarok.fenrir.fragment.base.MenuAdapter
 import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.model.AbsModel
 import dev.ragnarok.fenrir.model.Document
 import dev.ragnarok.fenrir.model.EditingPostType
 import dev.ragnarok.fenrir.model.PhotoSize
+import dev.ragnarok.fenrir.model.Text
+import dev.ragnarok.fenrir.model.menu.Item
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.with
 import dev.ragnarok.fenrir.place.PlaceFactory.getOwnerWallPlace
@@ -279,22 +283,39 @@ class DocPreviewFragment : BaseFragment(), MenuProvider {
     }
 
     private fun share() {
-        val items = arrayOf(
-            getString(R.string.share_link),
-            getString(R.string.repost_send_message),
-            getString(R.string.repost_to_wall)
+        val items: MutableList<Item> = ArrayList()
+        items.add(Item(Methods.SHARE_LINK, Text(R.string.share_link)).setIcon(R.drawable.web))
+        items.add(
+            Item(
+                Methods.SEND_MESSAGE,
+                Text(R.string.repost_send_message)
+            ).setIcon(R.drawable.share)
         )
+        items.add(
+            Item(
+                Methods.REPOST_YOURSELF,
+                Text(R.string.repost_to_wall)
+            ).setIcon(R.drawable.ic_outline_share)
+        )
+
+        val mAdapter = MenuAdapter(requireActivity(), items, true)
         MaterialAlertDialogBuilder(requireActivity())
-            .setItems(items) { _, i ->
-                when (i) {
-                    0 -> shareLink(requireActivity(), genLink(), document?.title)
-                    1 -> document?.let { startForSendAttachments(requireActivity(), accountId, it) }
-                    2 -> postToMyWall()
+            .setTitle(R.string.repost_document_title)
+            .setAdapter(mAdapter) { _, which ->
+                when (items[which].key) {
+                    Methods.SHARE_LINK -> shareLink(requireActivity(), genLink(), document?.title)
+                    Methods.SEND_MESSAGE -> document?.let {
+                        startForSendAttachments(
+                            requireActivity(),
+                            accountId,
+                            it
+                        )
+                    }
+
+                    Methods.REPOST_YOURSELF -> postToMyWall()
                 }
             }
-            .setCancelable(true)
-            .setTitle(R.string.share_document_title)
-            .show()
+            .setNegativeButton(R.string.button_cancel, null).show()
     }
 
     private fun postToMyWall() {

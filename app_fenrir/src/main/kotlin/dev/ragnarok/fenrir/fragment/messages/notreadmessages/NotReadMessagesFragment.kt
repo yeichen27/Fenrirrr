@@ -430,14 +430,14 @@ class NotReadMessagesFragment :
             EmptyAvatar?.visibility = View.GONE
             Avatar?.let {
                 with()
-                    .load(peer?.avaUrl)
+                    .load(peer.avaUrl)
                     .transform(RoundTransformation())
                     .into(it)
             }
         } else {
             Avatar?.let { with().cancelRequest(it) }
             if (!peer?.getTitle().isNullOrEmpty()) {
-                var name = peer?.getTitle()
+                var name = peer.getTitle()
                 EmptyAvatar?.visibility = View.VISIBLE
                 if (name?.length.orZero() > 2) name = name?.substring(0, 2)
                 name = name?.trim()

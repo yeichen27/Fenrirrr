@@ -7,7 +7,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.domain.Repository.owners
-import dev.ragnarok.fenrir.fragment.videos.videopreview.MenuAdapter
+import dev.ragnarok.fenrir.fragment.base.MenuAdapter
 import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.model.Post
 import dev.ragnarok.fenrir.model.Text
@@ -20,7 +20,7 @@ class PostShareDialog : DialogFragment() {
     private val compositeJob = CompositeJob()
     private var mAccountId = 0L
     private var mPost: Post? = null
-    private var mAdapter: MenuAdapter? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mAccountId = requireArguments().getLong(Extra.ACCOUNT_ID)
@@ -65,9 +65,9 @@ class PostShareDialog : DialogFragment() {
                 ).setIcon(R.drawable.ic_outline_share)
             )
         }
-        mAdapter = MenuAdapter(requireActivity(), items, true)
+        val mAdapter = MenuAdapter(requireActivity(), items, true)
         val builder = MaterialAlertDialogBuilder(requireActivity())
-            .setTitle(R.string.repost_title)
+            .setTitle(R.string.repost_post_title)
             .setAdapter(mAdapter) { _, which -> onItemClick(items[which]) }
             .setNegativeButton(R.string.button_cancel, null)
         val iAmOwnerAndAuthor = mPost?.ownerId == mAccountId && mPost?.authorId == mAccountId
@@ -95,7 +95,7 @@ class PostShareDialog : DialogFragment() {
                                     .setExtra(owner.ownerId)
                             )
                         }
-                        mAdapter?.notifyDataSetChanged()
+                        mAdapter.notifyDataSetChanged()
                     }
             )
         }

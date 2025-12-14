@@ -26,7 +26,9 @@ import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.DualTabPhotoActivity.Companion.createIntent
 import dev.ragnarok.fenrir.activity.SendAttachmentsActivity.Companion.startForSendAttachments
+import dev.ragnarok.fenrir.dialog.PostShareDialog.Methods
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
+import dev.ragnarok.fenrir.fragment.base.MenuAdapter
 import dev.ragnarok.fenrir.fragment.docs.DocsUploadAdapter
 import dev.ragnarok.fenrir.getParcelableExtraCompat
 import dev.ragnarok.fenrir.listener.EndlessRecyclerOnScrollListener
@@ -36,7 +38,9 @@ import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.ModalBottomSheetDialog
 import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.OptionRequest
 import dev.ragnarok.fenrir.model.EditingPostType
 import dev.ragnarok.fenrir.model.LocalVideo
+import dev.ragnarok.fenrir.model.Text
 import dev.ragnarok.fenrir.model.Video
+import dev.ragnarok.fenrir.model.menu.Item
 import dev.ragnarok.fenrir.model.selection.FileManagerSelectableSource
 import dev.ragnarok.fenrir.model.selection.LocalVideosSelectableSource
 import dev.ragnarok.fenrir.model.selection.Sources
@@ -483,58 +487,53 @@ class VideosFragment : BaseMvpFragment<VideosListPresenter, IVideosListView>(), 
     }
 
     override fun displayShareDialog(accountId: Long, video: Video, canPostToMyWall: Boolean) {
-        val items: Array<String> = if (canPostToMyWall) {
-            if (!video.private) {
-                arrayOf(
-                    getString(R.string.share_link),
-                    getString(R.string.repost_send_message),
-                    getString(R.string.repost_to_wall)
-                )
-            } else {
-                arrayOf(getString(R.string.repost_send_message), getString(R.string.repost_to_wall))
-            }
-        } else {
-            if (!video.private) {
-                arrayOf(getString(R.string.share_link), getString(R.string.repost_send_message))
-            } else {
-                arrayOf(getString(R.string.repost_send_message))
-            }
+        val items: MutableList<Item> = ArrayList()
+        if (!video.private) {
+            items.add(Item(Methods.SHARE_LINK, Text(R.string.share_link)).setIcon(R.drawable.web))
         }
-        MaterialAlertDialogBuilder(requireActivity())
-            .setItems(items) { _, i ->
-                if (video.private) {
-                    when (i) {
-                        0 -> startForSendAttachments(requireActivity(), accountId, video)
-                        1 -> goToPostCreation(
-                            requireActivity(),
-                            accountId,
-                            accountId,
-                            EditingPostType.TEMP,
-                            listOf(video)
-                        )
-                    }
-                } else {
-                    when (i) {
-                        0 -> shareLink(
-                            requireActivity(),
-                            "https://vk.ru/video" + video.ownerId + "_" + video.id,
-                            video.title
-                        )
 
-                        1 -> startForSendAttachments(requireActivity(), accountId, video)
-                        2 -> goToPostCreation(
-                            requireActivity(),
-                            accountId,
-                            accountId,
-                            EditingPostType.TEMP,
-                            listOf(video)
-                        )
-                    }
+        items.add(
+            Item(
+                Methods.SEND_MESSAGE,
+                Text(R.string.repost_send_message)
+            ).setIcon(R.drawable.share)
+        )
+
+        if (canPostToMyWall) {
+            items.add(
+                Item(
+                    Methods.REPOST_YOURSELF,
+                    Text(R.string.repost_to_wall)
+                ).setIcon(R.drawable.ic_outline_share)
+            )
+        }
+        val mAdapter = MenuAdapter(requireActivity(), items, true)
+        MaterialAlertDialogBuilder(requireActivity())
+            .setTitle(R.string.repost_video_title)
+            .setAdapter(mAdapter) { _, which ->
+                when (items[which].key) {
+                    Methods.SHARE_LINK -> shareLink(
+                        requireActivity(),
+                        "https://vk.ru/video" + video.ownerId + "_" + video.id,
+                        video.title
+                    )
+
+                    Methods.SEND_MESSAGE -> startForSendAttachments(
+                        requireActivity(),
+                        accountId,
+                        video
+                    )
+
+                    Methods.REPOST_YOURSELF -> goToPostCreation(
+                        requireActivity(),
+                        accountId,
+                        accountId,
+                        EditingPostType.TEMP,
+                        listOf(video)
+                    )
                 }
             }
-            .setCancelable(true)
-            .setTitle(R.string.repost_title)
-            .show()
+            .setNegativeButton(R.string.button_cancel, null).show()
     }
 
     override fun showSuccessToast() {

@@ -70,7 +70,7 @@ class M3U8 {
                         while (br.readLine().also { line = it } != null) {
                             line = line?.trim()
                             line ?: continue
-                            val property = checkProperty(line ?: return@flow)
+                            val property = checkProperty(line)
                             newurl = if (property == null) {
                                 0
                             } else if (property.type == "EXT-X-STREAM-INF") {
@@ -108,7 +108,7 @@ class M3U8 {
                     while (br.readLine().also { line = it } != null) {
                         line = line?.trim()
                         line ?: continue
-                        val property = checkProperty(line ?: return@use)
+                        val property = checkProperty(line)
                         if (property != null) {
                             if (property.type == "FILE") {
                                 val tsUrl = URL(mediaURL, line)
@@ -208,7 +208,7 @@ class M3U8 {
                 do {
                     line = br.readLine()?.trim()
                     line ?: continue
-                    val property = checkProperty(line ?: return@use)
+                    val property = checkProperty(line)
                     if (property != null) {
                         if (property.type == "EXT-X-KEY") {
                             if ("NONE" == property.properties?.get("METHOD")) {
