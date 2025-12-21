@@ -4,10 +4,8 @@
 
 package kotlinx.serialization.json.internal.lexer
 
-import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 
-@OptIn(ExperimentalSerializationApi::class)
 internal fun StringJsonLexer(json: Json, source: String) =
     if (!json.configuration.allowComments) StringJsonLexer(source) else StringJsonLexerWithComments(
         source

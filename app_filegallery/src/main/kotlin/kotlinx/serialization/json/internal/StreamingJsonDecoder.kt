@@ -17,6 +17,7 @@ import kotlinx.serialization.encoding.CompositeDecoder.Companion.UNKNOWN_NAME
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.findPolymorphicSerializer
 import kotlinx.serialization.internal.AbstractPolymorphicSerializer
+import kotlinx.serialization.internal.missingFieldExceptionWithNewMessage
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonDecoder
 import kotlinx.serialization.json.JsonElement
@@ -103,10 +104,9 @@ internal open class StreamingJsonDecoder(
             // Add "at path" if and only if we've just caught an exception and it hasn't been augmented yet
             if (e.message?.contains("at path") == true) throw e
             // NB: we could've use some additional flag marker or augment the stacktrace, but it seemed to be as too much of a burden
-            throw MissingFieldException(
-                e.missingFields,
-                e.message + " at path: " + lexer.path.getPath(),
-                e
+            throw missingFieldExceptionWithNewMessage(
+                e,
+                e.message + " at path: " + lexer.path.getPath()
             )
         }
     }

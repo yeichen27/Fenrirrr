@@ -2,11 +2,8 @@
  * Copyright 2017-2022 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
  */
 
-@file:OptIn(ExperimentalSerializationApi::class)
-
 package kotlinx.serialization.json.internal
 
-import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 
 internal fun Composer(sb: InternalJsonWriter, json: Json): Composer =

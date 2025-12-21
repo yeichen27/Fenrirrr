@@ -534,11 +534,7 @@ class JsonBuilder internal constructor(json: Json) {
      * Specifies indent string to use with [prettyPrint] mode.
      * Only whitespace characters are allowed: ' ', '\n', '\r' or '\t'.
      * 4 spaces by default.
-     *
-     * Experimentality note: this API is experimental because
-     * it is not clear whether this option has compelling use-cases.
      */
-    @ExperimentalSerializationApi
     var prettyPrintIndent: String = json.configuration.prettyPrintIndent
 
     /**
@@ -646,7 +642,6 @@ class JsonBuilder internal constructor(json: Json) {
      * json.decodeFromString<CaseSensitiveEnum>("ONE")
      * ```
      */
-    @ExperimentalSerializationApi
     var decodeEnumsCaseInsensitive: Boolean = json.configuration.decodeEnumsCaseInsensitive
 
     /**
@@ -655,7 +650,6 @@ class JsonBuilder internal constructor(json: Json) {
      * Does not affect encoding.
      * `false` by default.
      */
-    @ExperimentalSerializationApi
     var allowTrailingComma: Boolean = json.configuration.allowTrailingComma
 
     /**
@@ -671,7 +665,6 @@ class JsonBuilder internal constructor(json: Json) {
      *
      *  `false` by default.
      */
-    @ExperimentalSerializationApi
     var allowComments: Boolean = json.configuration.allowComments
 
     /**

@@ -136,6 +136,7 @@ struct TextImpl : Text
     {
         if (fm.wrap == mode) return;
         fm.wrap = mode;
+        updated = true;
         impl.mark(RenderUpdateFlag::Path);
     }
 
@@ -143,6 +144,16 @@ struct TextImpl : Text
     {
         fm.box = {w, h};
         updated = true;
+    }
+
+    Result spacing(float letter, float line)
+    {
+        if (letter < 0.0f || line < 0.0f) return Result::InvalidArguments;
+
+        fm.spacing = {letter, line};
+        updated = true;
+
+        return Result::Success;
     }
 
     bool update(RenderMethod* renderer, const Matrix& transform, Array<RenderData>& clips, uint8_t opacity, RenderUpdateFlag flag, TVG_UNUSED bool clipper)

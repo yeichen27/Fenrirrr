@@ -124,7 +124,6 @@ fun JsonObjectBuilder.put(key: String, value: String?): JsonElement? =
  *
  * Returns the previous value associated with [key], or `null` if the key was not present.
  */
-@ExperimentalSerializationApi
 @Suppress("UNUSED_PARAMETER") // allows to call `put("key", null)`
 fun JsonObjectBuilder.put(key: String, value: Nothing?): JsonElement? = put(key, JsonNull)
 
@@ -185,7 +184,6 @@ fun JsonArrayBuilder.add(value: String?): Boolean = add(JsonPrimitive(value))
  *
  * Always returns `true` similarly to [ArrayList] specification.
  */
-@ExperimentalSerializationApi
 @Suppress("UNUSED_PARAMETER") // allows to call `add(null)`
 fun JsonArrayBuilder.add(value: Nothing?): Boolean = add(JsonNull)
 

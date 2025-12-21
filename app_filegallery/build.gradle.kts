@@ -17,7 +17,6 @@ android {
         aidl = true
         buildConfig = true
     }
-
     packaging {
         jniLibs {
             useLegacyPackaging = true
@@ -103,7 +102,8 @@ kotlin {
                 "-opt-in=kotlinx.serialization.internal.CoreFriendModuleApi",
                 "-opt-in=kotlinx.serialization.SealedSerializationApi",
                 "-opt-in=kotlinx.serialization.InternalSerializationApi",
-                "-opt-in=kotlin.RequiresOptIn", "-opt-in=kotlin.ExperimentalStdlibApi"
+                "-opt-in=kotlin.RequiresOptIn",
+                "-opt-in=kotlin.ExperimentalStdlibApi"
             )
         )
     }

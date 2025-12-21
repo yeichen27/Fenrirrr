@@ -4,7 +4,6 @@
 
 package kotlinx.serialization.json.internal
 
-import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonConfiguration
 import kotlinx.serialization.json.JsonElement
@@ -24,7 +23,6 @@ import kotlinx.serialization.json.internal.lexer.TC_OTHER
 import kotlinx.serialization.json.internal.lexer.TC_STRING
 import kotlinx.serialization.json.internal.lexer.tokenDescription
 
-@OptIn(ExperimentalSerializationApi::class)
 internal class JsonTreeReader(
     configuration: JsonConfiguration,
     private val lexer: AbstractJsonLexer

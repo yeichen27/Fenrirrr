@@ -3,6 +3,7 @@ package dev.ragnarok.fenrir.fragment.audio.local.audioslocal
 import android.animation.Animator
 import android.animation.ObjectAnimator
 import android.content.Context
+import android.content.Intent
 import android.media.MediaMetadataRetriever
 import android.provider.BaseColumns
 import android.provider.MediaStore
@@ -126,6 +127,46 @@ class AudioLocalRecyclerAdapter(private val mContext: Context, private var data:
         }
     }
 
+    private fun updateAudioTime(url: String): Flow<Boolean> {
+        return flow {
+            val cursor = mContext.contentResolver.query(
+                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                arrayOf(MediaStore.MediaColumns.DATA),
+                BaseColumns._ID + "=? ",
+                arrayOf(url.toUri().lastPathSegment),
+                null
+            )
+            if (cursor != null && cursor.moveToFirst()) {
+                val fl =
+                    cursor.getString(MediaStore.MediaColumns.DATA)
+                cursor.close()
+                if (fl.nonNullNoEmpty()) {
+                    val file = File(fl)
+                    if (file.exists()) {
+                        if (file.setLastModified(System.currentTimeMillis())) {
+                            mContext.sendBroadcast(
+                                @Suppress("deprecation")
+                                Intent(
+                                    Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
+                                    file.toUri()
+                                )
+                            )
+                            emit(true)
+                        } else {
+                            throw Throwable("Can't update time")
+                        }
+                    } else {
+                        throw Throwable("Can't find file")
+                    }
+                } else {
+                    throw Throwable("Can't find file")
+                }
+            } else {
+                throw Throwable("Can't find file")
+            }
+        }
+    }
+
     private fun getLocalBitrate(url: String?) {
         if (url.isNullOrEmpty()) {
             return
@@ -234,6 +275,14 @@ class AudioLocalRecyclerAdapter(private val mContext: Context, private var data:
                 true
             )
         )
+        menus.add(
+            OptionRequest(
+                AudioLocalOption.update_time_item_audio,
+                mContext.getString(R.string.update_time),
+                R.drawable.ic_recent,
+                false
+            )
+        )
         menus.header(
             Utils.firstNonEmptyString(audio.artist, " ") + " - " + audio.title,
             R.drawable.song,
@@ -301,6 +350,28 @@ class AudioLocalRecyclerAdapter(private val mContext: Context, private var data:
                     }
                 } catch (e: Exception) {
                     createCustomToast(mContext, null)?.showToastError(e.localizedMessage)
+                }
+
+                AudioLocalOption.update_time_item_audio -> {
+                    audio.url?.let { it ->
+                        audioListDisposable += updateAudioTime(it).fromIOToMain(
+                            {
+                                CustomSnackbars.createCustomSnackbars(view)
+                                    ?.setDurationSnack(Snackbar.LENGTH_LONG)
+                                    ?.coloredSnack(
+                                        R.string.success,
+                                        "#AA48BE2D".toColor(), false
+                                    )
+                                    ?.show()
+                            },
+                            {
+                                createCustomToast(
+                                    mContext,
+                                    null
+                                )?.showToastError(it.localizedMessage)
+                            }
+                        )
+                    }
                 }
 
                 else -> {}

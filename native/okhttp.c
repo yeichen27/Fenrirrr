@@ -129,10 +129,14 @@ static int okhttp_close(URLContext *h) {
     //if (ff_jni_exception_check(env, 1, c->thiz) < 0) {
         //ret = AVERROR_EXTERNAL;
     //}
-    (*env)->DeleteGlobalRef(env, c->jarray);
-    c->jarray = NULL;
-    (*env)->DeleteGlobalRef(env, c->thiz);
-    c->thiz = NULL;
+    if (c->jarray) {
+        (*env)->DeleteGlobalRef(env, c->jarray);
+        c->jarray = NULL;
+    }
+    if (c->thiz) {
+        (*env)->DeleteGlobalRef(env, c->thiz);
+        c->thiz = NULL;
+    }
     ff_jni_reset_jfields(env, &c->jfields, jfields_okhttp_mapping, 1, c);
 
     return ret;
@@ -187,9 +191,7 @@ static int okhttp_open(URLContext *h, const char *uri, int flags, AVDictionary *
     headers = ff_jni_utf_chars_to_jstring(env, c->headers, c);
 
     if (!headers) {
-        LOGI("failed get headers\n");
-        //ret = AVERROR_EXTERNAL;
-        //goto done;
+        LOGI("no http headers, skipping...\n");
     }
 
 
@@ -256,17 +258,38 @@ static int okhttp_open(URLContext *h, const char *uri, int flags, AVDictionary *
 
     done:
 
-    (*env)->DeleteLocalRef(env, meta_map);
-    (*env)->DeleteLocalRef(env, array);
-    (*env)->DeleteLocalRef(env, object);
-    (*env)->DeleteLocalRef(env, mime_type);
-    (*env)->DeleteLocalRef(env, url);
+    if (meta_map) {
+        (*env)->DeleteLocalRef(env, meta_map);
+    }
+    if (array) {
+        (*env)->DeleteLocalRef(env, array);
+    }
+    if (object) {
+        (*env)->DeleteLocalRef(env, object);
+    }
+    if (mime_type) {
+        (*env)->DeleteLocalRef(env, mime_type);
+    }
+    if (url) {
+        (*env)->DeleteLocalRef(env, url);
+    }
+
     if (headers) {
         (*env)->DeleteLocalRef(env, headers);
     }
 
+    if (ret < 0) {
+        if (c->jarray) {
+            (*env)->DeleteGlobalRef(env, c->jarray);
+            c->jarray = NULL;
+        }
+        if (c->thiz) {
+            (*env)->DeleteGlobalRef(env, c->thiz);
+            c->thiz = NULL;
+        }
+        ff_jni_reset_jfields(env, &c->jfields, jfields_okhttp_mapping, 1, c);
+    }
     return ret;
-
 }
 
 

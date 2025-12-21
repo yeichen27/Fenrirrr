@@ -4,7 +4,6 @@
 
 package kotlinx.serialization.json.internal.lexer
 
-import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.internal.CharArrayPoolBatchSize
 import kotlinx.serialization.json.internal.InternalJsonReader
@@ -37,7 +36,6 @@ internal class ArrayAsSequence(internal val buffer: CharArray) : CharSequence {
     override fun toString(): String = substring(0, length)
 }
 
-@OptIn(ExperimentalSerializationApi::class)
 internal fun ReaderJsonLexer(
     json: Json,
     reader: InternalJsonReader,

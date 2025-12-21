@@ -11,6 +11,7 @@ import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.descriptors.SerialKind
 import kotlinx.serialization.descriptors.StructureKind
 import kotlinx.serialization.encoding.CompositeDecoder
+import kotlinx.serialization.internal.jsonCachedSerialNames
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonIgnoreUnknownKeys
 import kotlinx.serialization.json.JsonNames
@@ -25,7 +26,7 @@ private fun SerialDescriptor.buildDeserializationNamesMap(json: Json): Map<Strin
     fun MutableMap<String, Int>.putOrThrow(name: String, index: Int) {
         val entity = if (kind == SerialKind.ENUM) "enum value" else "property"
         if (name in this) {
-            throw JsonException(
+            throw JsonDecodingException(
                 "The suggested name '$name' for $entity ${getElementName(index)} is already one of the names for $entity " +
                         "${getElementName(getValue(name))} in ${this@buildDeserializationNamesMap}"
             )
@@ -73,9 +74,15 @@ internal fun SerialDescriptor.serializationNamesIndices(
     strategy: JsonNamingStrategy
 ): Array<String> =
     json.schemaCache.getOrPut(this, JsonSerializationNamesKey) {
+        val trackingSet = mutableSetOf<String>()
         Array(elementsCount) { i ->
             val baseName = getElementName(i)
-            strategy.serialNameForJson(this, i, baseName)
+            val name = strategy.serialNameForJson(this, i, baseName)
+            if (!trackingSet.add(name)) throw JsonEncodingException(
+                "The transformed name '$name' for property $baseName already exists " +
+                        "in ${this@serializationNamesIndices}"
+            )
+            name
         }
     }
 
@@ -85,6 +92,15 @@ internal fun SerialDescriptor.getJsonElementName(json: Json, index: Int): String
         json,
         strategy
     )[index]
+}
+
+// Emits only names used for encoding, i.e. from naming strategy, but not from @JsonNames
+internal fun SerialDescriptor.getJsonEncodedNames(json: Json): Set<String> {
+    val strategy = namingStrategy(json)
+    return if (strategy == null) jsonCachedSerialNames() else serializationNamesIndices(
+        json,
+        strategy
+    ).toSet()
 }
 
 internal fun SerialDescriptor.namingStrategy(json: Json) =
@@ -100,7 +116,6 @@ private fun Json.decodeCaseInsensitive(descriptor: SerialDescriptor) =
  * Serves same purpose as [SerialDescriptor.getElementIndex] but respects [JsonNames] annotation
  * and [JsonConfiguration] settings.
  */
-@OptIn(ExperimentalSerializationApi::class)
 internal fun SerialDescriptor.getJsonNameIndex(json: Json, name: String): Int {
     if (json.decodeCaseInsensitive(this)) {
         return getJsonNameIndexSlowPath(json, name.lowercase())

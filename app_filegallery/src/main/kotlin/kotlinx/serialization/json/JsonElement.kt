@@ -6,7 +6,6 @@
 
 package kotlinx.serialization.json
 
-import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.descriptors.SerialDescriptor
@@ -72,7 +71,6 @@ fun JsonPrimitive(value: Number?): JsonPrimitive {
  *
  * The value will be encoded as a JSON number.
  */
-@ExperimentalSerializationApi
 fun JsonPrimitive(value: UByte): JsonPrimitive = JsonPrimitive(value.toULong())
 
 /**
@@ -80,7 +78,6 @@ fun JsonPrimitive(value: UByte): JsonPrimitive = JsonPrimitive(value.toULong())
  *
  * The value will be encoded as a JSON number.
  */
-@ExperimentalSerializationApi
 fun JsonPrimitive(value: UShort): JsonPrimitive = JsonPrimitive(value.toULong())
 
 /**
@@ -88,7 +85,6 @@ fun JsonPrimitive(value: UShort): JsonPrimitive = JsonPrimitive(value.toULong())
  *
  * The value will be encoded as a JSON number.
  */
-@ExperimentalSerializationApi
 fun JsonPrimitive(value: UInt): JsonPrimitive = JsonPrimitive(value.toULong())
 
 /**
@@ -97,7 +93,6 @@ fun JsonPrimitive(value: UInt): JsonPrimitive = JsonPrimitive(value.toULong())
  * The value will be encoded as a JSON number.
  */
 @SuppressAnimalSniffer // Long.toUnsignedString(long)
-@ExperimentalSerializationApi
 fun JsonPrimitive(value: ULong): JsonPrimitive = JsonUnquotedLiteral(value.toString())
 
 /** Creates a [JsonPrimitive] from the given string. */
@@ -107,7 +102,6 @@ fun JsonPrimitive(value: String?): JsonPrimitive {
 }
 
 /** Creates [JsonNull]. */
-@ExperimentalSerializationApi
 @Suppress("FunctionName", "UNUSED_PARAMETER") // allows to call `JsonPrimitive(null)`
 fun JsonPrimitive(value: Nothing?): JsonNull = JsonNull
 
@@ -129,7 +123,6 @@ fun JsonPrimitive(value: Nothing?): JsonNull = JsonNull
  * @see JsonPrimitive is the preferred method for encoding JSON primitives.
  * @throws JsonEncodingException if `value == "null"`
  */
-@ExperimentalSerializationApi
 @Suppress("FunctionName")
 fun JsonUnquotedLiteral(value: String?): JsonPrimitive {
     return when (value) {
