@@ -523,7 +523,7 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
         CustomSnackbars.createCustomSnackbars(view)?.let {
             val snack = it.setDurationSnack(BaseTransientBottomBar.LENGTH_LONG).coloredSnack(
                 ErrorLocalizer.localizeThrowable(Includes.provideApplicationContext(), throwable),
-                "#eeff0000".toColor(), true
+                "#ff0000".toColor(), true
             )
             if (throwable !is ApiException && throwable !is SocketTimeoutException && throwable !is UnknownHostException) {
                 snack.setAction(R.string.more_info) {
@@ -822,7 +822,7 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
         } catch (_: ActivityNotFoundException) {
             CustomSnackbars.createCustomSnackbars(view, mPlayPauseButton)
                 ?.setDurationSnack(Snackbar.LENGTH_LONG)
-                ?.coloredSnack(R.string.no_system_equalizer, "#eeff0000".toColor(), false)?.show()
+                ?.coloredSnack(R.string.no_system_equalizer, "#ff0000".toColor(), false)?.show()
         }
     }
 

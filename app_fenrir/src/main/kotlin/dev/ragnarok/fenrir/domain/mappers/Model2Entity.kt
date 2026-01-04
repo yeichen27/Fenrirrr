@@ -858,6 +858,7 @@ object Model2Entity {
             .setY(model2entityNullable(sizes.y))
             .setZ(model2entityNullable(sizes.z))
             .setW(model2entityNullable(sizes.w))
+            .setBase(model2entityNullable(sizes.base))
             .setK(model2entityNullable(sizes.k))
             .setL(model2entityNullable(sizes.l))
     }

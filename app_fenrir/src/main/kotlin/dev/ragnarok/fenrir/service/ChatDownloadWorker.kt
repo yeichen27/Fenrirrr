@@ -287,7 +287,7 @@ class ChatDownloadWorker(context: Context, workerParams: WorkerParameters) :
                     if (att.photo != null) {
                         atcontent = Apply(
                             "<#ORIGINAL_IMAGE_LINK#>",
-                            att.photo?.getUrlForSize(PhotoSize.W, false),
+                            att.photo?.getUrlForSize(PhotoSize.BASE, false),
                             atcontent
                         )
                         atcontent = Apply(
@@ -295,7 +295,7 @@ class ChatDownloadWorker(context: Context, workerParams: WorkerParameters) :
                             att.photo?.getUrlForSize(PhotoSize.Y, false),
                             atcontent
                         )
-                    } else if (att.video != null) {
+                    } else {
                         atcontent = Apply(
                             "<#ORIGINAL_IMAGE_LINK#>",
                             "https://vk.ru/video" + att.video?.ownerId + "_" + att.video?.id,
@@ -327,7 +327,7 @@ class ChatDownloadWorker(context: Context, workerParams: WorkerParameters) :
                     var atcontent = Image
                     atcontent = Apply(
                         "<#ORIGINAL_IMAGE_LINK#>",
-                        att.getUrlForSize(PhotoSize.W, false),
+                        att.getUrlForSize(PhotoSize.BASE, false),
                         atcontent
                     )
                     atcontent =

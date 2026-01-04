@@ -43,7 +43,6 @@ import dev.ragnarok.fenrir.db.model.entity.SchoolEntity
 import dev.ragnarok.fenrir.db.model.entity.StickerDboEntity
 import dev.ragnarok.fenrir.db.model.entity.StickerDboEntity.AnimationEntity
 import dev.ragnarok.fenrir.db.model.entity.StickerSetEntity
-import dev.ragnarok.fenrir.db.model.entity.StickersKeywordsEntity
 import dev.ragnarok.fenrir.db.model.entity.StoryDboEntity
 import dev.ragnarok.fenrir.db.model.entity.TopicDboEntity
 import dev.ragnarok.fenrir.db.model.entity.UniversityEntity
@@ -105,7 +104,6 @@ import dev.ragnarok.fenrir.model.School
 import dev.ragnarok.fenrir.model.SimplePrivacy
 import dev.ragnarok.fenrir.model.Sticker
 import dev.ragnarok.fenrir.model.StickerSet
-import dev.ragnarok.fenrir.model.StickersKeywords
 import dev.ragnarok.fenrir.model.Story
 import dev.ragnarok.fenrir.model.Topic
 import dev.ragnarok.fenrir.model.University
@@ -853,20 +851,13 @@ object Entity2Model {
 
     fun map(entity: StickerSetEntity): StickerSet {
         return StickerSet(
+            entity.id,
             mapAll(entity.icon, Entity2Model::map),
             mapAll(entity.stickers) {
                 buildStickerFromDbo(it)
             },
             entity.title
         )
-    }
-
-    fun map(entity: StickersKeywordsEntity): StickersKeywords {
-        return StickersKeywords(
-            entity.keywords,
-            mapAll(entity.stickers) {
-                buildStickerFromDbo(it)
-            })
     }
 
     fun map(entity: StickerDboEntity.Img): Sticker.Image {
@@ -1320,6 +1311,7 @@ object Entity2Model {
             .setY(entity2modelNullable(dbo.y))
             .setZ(entity2modelNullable(dbo.z))
             .setW(entity2modelNullable(dbo.w))
+            .setBase(entity2modelNullable(dbo.base))
             .setK(entity2modelNullable(dbo.k))
             .setL(entity2modelNullable(dbo.l))
     }

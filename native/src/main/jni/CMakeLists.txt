@@ -3,13 +3,13 @@ project(fenrir_jni C CXX ASM)
 
 if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
     set(CMAKE_CXX_FLAGS "-std=c++23 -DANDROID -g -DDEBUG_PLATFORM")
-    set(CMAKE_C_FLAGS "-std=c23 -w -DANDROID -D_LARGEFILE_SOURCE=1 -g -DDEBUG_PLATFORM")
+    set(CMAKE_C_FLAGS "-std=c23 -w -DANDROID -D_LARGEFILE_SOURCE -g -DDEBUG_PLATFORM")
     set(OPTIMIZE_NORMAL "-O0")
     set(OPTIMIZE_FAST "-O0")
     set(SYM_VISIBILITY "")
 else ()
     set(CMAKE_CXX_FLAGS "-std=c++23 -DANDROID -DFENRIR_NATIVE_LOG_DISABLED -ffunction-sections -fdata-sections -fmerge-all-constants")
-    set(CMAKE_C_FLAGS "-std=c23 -w -DANDROID -DFENRIR_NATIVE_LOG_DISABLED -D_LARGEFILE_SOURCE=1 -ffunction-sections -fdata-sections -fmerge-all-constants")
+    set(CMAKE_C_FLAGS "-std=c23 -w -DANDROID -DFENRIR_NATIVE_LOG_DISABLED -D_LARGEFILE_SOURCE -ffunction-sections -fdata-sections -fmerge-all-constants")
     set(OPTIMIZE_NORMAL "-Os")
     set(OPTIMIZE_FAST "-O3")
     set(SYM_VISIBILITY "-fvisibility=hidden")
@@ -81,7 +81,7 @@ add_library(thorvg STATIC
         animation/thorvg/src/common/tvgStr.cpp)
 
 target_compile_options(thorvg PRIVATE
-        -DTVG_STATIC=1 -DBIG_ENDIAN_COLORS -fno-exceptions -ffast-math ${OPTIMIZE_NORMAL} -fno-rtti -fno-unwind-tables -fno-asynchronous-unwind-tables -Woverloaded-virtual -Wno-unused-parameter -Wno-nan-infinity-disabled ${SYM_VISIBILITY})
+        -DTVG_STATIC -DBIG_ENDIAN_COLORS -fno-exceptions -ffast-math ${OPTIMIZE_NORMAL} -fno-rtti -fno-unwind-tables -fno-asynchronous-unwind-tables -Woverloaded-virtual -Wno-unused-parameter -Wno-nan-infinity-disabled ${SYM_VISIBILITY})
 target_include_directories(thorvg PRIVATE
         animation/thorvg/inc
         animation/thorvg/src/renderer
@@ -154,6 +154,7 @@ add_library(opus STATIC
         audio/opus/libopus/src/opus_multistream_encoder.c
         audio/opus/libopus/src/opus_multistream_decoder.c
         audio/opus/libopus/src/repacketizer.c
+        audio/opus/libopus/src/qext_compare.c
         audio/opus/libopus/src/analysis.c
         audio/opus/libopus/src/extensions.c
         audio/opus/libopus/src/mlp.c
@@ -273,6 +274,7 @@ add_library(opus STATIC
         audio/opus/libopus/celt/laplace.c
         audio/opus/libopus/celt/mathops.c
         audio/opus/libopus/celt/mdct.c
+        audio/opus/libopus/celt/mini_kfft.c
         audio/opus/libopus/celt/modes.c
         audio/opus/libopus/celt/pitch.c
         audio/opus/libopus/celt/celt_lpc.c
@@ -285,7 +287,6 @@ add_library(opus STATIC
 if (${ANDROID_ABI} STREQUAL "armeabi-v7a" OR ${ANDROID_ABI} STREQUAL "arm64-v8a")
     target_compile_definitions(opus PRIVATE
             OPUS_HAVE_RTCD OPUS_ARM_ASM)
-
     target_sources(opus PRIVATE
             audio/opus/libopus/celt/arm/celt_neon_intr.c
             audio/opus/libopus/celt/arm/pitch_neon_intr.c
@@ -365,18 +366,33 @@ add_library(common STATIC
         audio/taglib/toolkit/tversionnumber.cpp
         audio/taglib/toolkit/tzlib.cpp
         compress/lz4/lz4.c
+        compress/zlib/arch/generic/adler32_c.c
+        compress/zlib/arch/generic/chunkset_c.c
+        compress/zlib/arch/generic/compare256_c.c
+        compress/zlib/arch/generic/crc32_braid_c.c
+        compress/zlib/arch/generic/crc32_chorba_c.c
+        compress/zlib/arch/generic/slide_hash_c.c
         compress/zlib/adler32.c
         compress/zlib/compress.c
+        compress/zlib/cpu_features.c
         compress/zlib/crc32.c
+        compress/zlib/crc32_braid_comb.c
         compress/zlib/deflate.c
-        compress/zlib/gzclose.c
+        compress/zlib/deflate_fast.c
+        compress/zlib/deflate_huff.c
+        compress/zlib/deflate_medium.c
+        compress/zlib/deflate_quick.c
+        compress/zlib/deflate_rle.c
+        compress/zlib/deflate_slow.c
+        compress/zlib/deflate_stored.c
+        compress/zlib/functable.c
         compress/zlib/gzlib.c
         compress/zlib/gzread.c
         compress/zlib/gzwrite.c
         compress/zlib/infback.c
-        compress/zlib/inffast.c
         compress/zlib/inflate.c
         compress/zlib/inftrees.c
+        compress/zlib/insert_string.c
         compress/zlib/trees.c
         compress/zlib/uncompr.c
         compress/zlib/zutil.c
@@ -426,6 +442,8 @@ target_include_directories(common
         audio/taglib/utf8/utf8
         compress/lz4
         compress/zlib
+        compress/zlib/arch/arm
+        compress/zlib/arch/generic
         compress/zstd
         compress/zstd/common
         compress/zstd/compress
@@ -433,7 +451,35 @@ target_include_directories(common
         compress/zstd/dictBuilder)
 
 target_compile_options(common PRIVATE
-        ${OPTIMIZE_FAST} -DZSTD_MULTITHREAD=1 -DZSTD_LEGACY_SUPPORT=0 -DHAVE_ZLIB=1 -DTAGLIB_STATIC=1 -funroll-loops -fno-strict-aliasing -fno-math-errno -Wno-unused-parameter -Wno-unused-variable ${SYM_VISIBILITY})
+        ${OPTIMIZE_FAST} -DZSTD_MULTITHREAD -DZSTD_LEGACY_SUPPORT=0 -DHAVE_ZLIB -DHAVE_ATTRIBUTE_ALIGNED -DHAVE_BUILTIN_ASSUME_ALIGNED -DHAVE_BUILTIN_CTZ -DHAVE_BUILTIN_CTZLL -DHAVE_CPUID_GNU -DHAVE_VISIBILITY_HIDDEN -DHAVE_VISIBILITY_INTERNAL -DWITH_GZFILEOP -DWITH_OPTIM -DZLIBNG_NATIVE_API -D_LARGEFILE64_SOURCE -D__USE_LARGEFILE64 -DTAGLIB_STATIC -funroll-loops -fno-strict-aliasing -fno-math-errno -Wno-unused-parameter -Wno-unused-variable ${SYM_VISIBILITY})
+
+if (${ANDROID_ABI} STREQUAL "arm64-v8a")
+    target_compile_definitions(common PRIVATE ARM_FEATURES ARM_NEON ARM_CRC32 ARM_NEON_HASLD4 HAVE_SYS_AUXV_H)
+    target_sources(common PRIVATE
+            compress/zlib/arch/arm/adler32_neon.c
+            compress/zlib/arch/arm/arm_features.c
+            compress/zlib/arch/arm/chunkset_neon.c
+            compress/zlib/arch/arm/compare256_neon.c
+            compress/zlib/arch/arm/crc32_armv8.c
+            compress/zlib/arch/arm/slide_hash_neon.c)
+elseif (${ANDROID_ABI} STREQUAL "armeabi-v7a")
+    target_compile_definitions(common PRIVATE ARM_FEATURES ARM_NEON ARM_NEON_HASLD4)
+    target_sources(common PRIVATE
+            compress/zlib/arch/arm/adler32_neon.c
+            compress/zlib/arch/arm/arm_features.c
+            compress/zlib/arch/arm/chunkset_neon.c
+            compress/zlib/arch/arm/compare256_neon.c
+            compress/zlib/arch/arm/crc32_armv8.c
+            compress/zlib/arch/arm/slide_hash_neon.c)
+else()
+    target_compile_definitions(common PRIVATE X86_FEATURES X86_SSE2 WITHOUT_CHORBA_SSE)
+    target_sources(common PRIVATE
+            compress/zlib/arch/x86/chorba_sse2.c
+            compress/zlib/arch/x86/chunkset_sse2.c
+            compress/zlib/arch/x86/compare256_sse2.c
+            compress/zlib/arch/x86/slide_hash_sse2.c
+            compress/zlib/arch/x86/x86_features.c)
+endif ()
 
 add_library(fenrir_jni
         SHARED
@@ -498,4 +544,4 @@ target_link_libraries(fenrir_jni
         PRIVATE libyuv
         PRIVATE opus)
 
-target_link_options(fenrir_jni PRIVATE "-Wl,-z,max-page-size=16384")
+target_link_options(fenrir_jni PRIVATE "-Wl,-z,max-page-size=16384,--build-id=none")

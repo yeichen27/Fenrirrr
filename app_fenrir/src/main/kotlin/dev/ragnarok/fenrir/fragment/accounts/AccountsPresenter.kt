@@ -271,7 +271,7 @@ class AccountsPresenter(savedInstanceState: Bundle?) :
                     )
                 }, { it2 ->
                     it2.localizedMessage?.let {
-                        view?.showColoredSnack(it, "#eeff0000".toColor())
+                        view?.showColoredSnack(it, "#ff0000".toColor())
                     }
                 })
         )
@@ -290,11 +290,11 @@ class AccountsPresenter(savedInstanceState: Bundle?) :
                 user.maxSquareAvatar ?: VKApiUser.CAMERA_50
             ).fromIOToMain(
                 {
-                    view?.showColoredSnack(R.string.success, "#AA48BE2D".toColor())
+                    view?.showColoredSnack(R.string.success, "#48BE2D".toColor())
                 }
             ) { t ->
                 t.localizedMessage?.let {
-                    view?.showColoredSnack(it, "#eeff0000".toColor())
+                    view?.showColoredSnack(it, "#ff0000".toColor())
                 }
             })
     }
@@ -442,7 +442,7 @@ class AccountsPresenter(savedInstanceState: Bundle?) :
                             isCurrent = false,
                             needSave = false
                         )
-                        view?.showColoredSnack(R.string.success, "#AA48BE2D".toColor())
+                        view?.showColoredSnack(R.string.success, "#48BE2D".toColor())
 
                         if (hasPrimitive(elem, "login")) {
                             Settings.get().accounts().storeLogin(
@@ -603,7 +603,7 @@ class AccountsPresenter(savedInstanceState: Bundle?) :
                                 isCurrent = true,
                                 needSave = false
                             )
-                            view?.showColoredSnack(R.string.refreshing_token, "#AA48BE2D".toColor())
+                            view?.showColoredSnack(R.string.refreshing_token, "#48BE2D".toColor())
                             appendJob(
                                 accountsInteractor.getExchangeToken(it.user_id).fromIOToMain { t ->
                                     t.token.nonNullNoEmpty { st ->
@@ -631,7 +631,7 @@ class AccountsPresenter(savedInstanceState: Bundle?) :
 
                                                     view?.showColoredSnack(
                                                         R.string.success,
-                                                        "#AA48BE2D".toColor()
+                                                        "#48BE2D".toColor()
                                                     )
                                                 }, { e ->
                                                     view?.showThrowable(e)

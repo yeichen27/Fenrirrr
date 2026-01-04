@@ -5,8 +5,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 class VKApiStickersKeywords {
-    @SerialName("user_stickers")
-    var user_stickers: List<VKApiSticker?>? = null
+    @SerialName("stickers")
+    var stickers: List<VKApiStickerNotFull?>? = null
 
     @SerialName("words")
     var words: List<String?>? = null

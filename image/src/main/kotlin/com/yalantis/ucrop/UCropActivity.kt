@@ -2,6 +2,7 @@ package com.yalantis.ucrop
 
 import android.content.Intent
 import android.graphics.Bitmap.CompressFormat
+import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.graphics.drawable.Animatable
@@ -21,6 +22,8 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
+import androidx.activity.SystemBarStyle
+import androidx.activity.enableEdgeToEdge
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.annotation.IdRes
@@ -30,6 +33,8 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.core.view.MenuProvider
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.transition.AutoTransition
 import androidx.transition.Transition
 import androidx.transition.TransitionManager
@@ -113,6 +118,7 @@ class UCropActivity : AppCompatActivity(), MenuProvider {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setupSystemBars()
         setContentView(R.layout.ucrop_activity_photobox)
         addMenuProvider(this, this)
         val intent = intent
@@ -120,6 +126,13 @@ class UCropActivity : AppCompatActivity(), MenuProvider {
         setImageData(intent)
         setInitialState()
         addBlockingView()
+    }
+
+    private fun setupSystemBars() {
+        val statusBarStyle = SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT)
+        val navigationBarStyle = SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT)
+
+        enableEdgeToEdge(statusBarStyle, navigationBarStyle)
     }
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -133,7 +146,7 @@ class UCropActivity : AppCompatActivity(), MenuProvider {
                 menuItemLoaderIcon.mutate()
                 menuItemLoaderIcon.colorFilter =
                     PorterDuffColorFilter(mToolbarWidgetColor, PorterDuff.Mode.SRC_ATOP)
-                menuItemLoader.setIcon(menuItemLoaderIcon)
+                menuItemLoader.icon = menuItemLoaderIcon
             } catch (e: IllegalStateException) {
                 Log.i(
                     TAG,
@@ -152,13 +165,13 @@ class UCropActivity : AppCompatActivity(), MenuProvider {
             menuItemCropIcon.mutate()
             menuItemCropIcon.colorFilter =
                 PorterDuffColorFilter(mToolbarWidgetColor, PorterDuff.Mode.SRC_ATOP)
-            menuItemCrop.setIcon(menuItemCropIcon)
+            menuItemCrop.icon = menuItemCropIcon
         }
     }
 
     override fun onPrepareMenu(menu: Menu) {
-        menu.findItem(R.id.menu_crop).setVisible(!mShowLoader)
-        menu.findItem(R.id.menu_loader).setVisible(mShowLoader)
+        menu.findItem(R.id.menu_crop).isVisible = !mShowLoader
+        menu.findItem(R.id.menu_loader).isVisible = mShowLoader
     }
 
     override fun onMenuItemSelected(item: MenuItem): Boolean {
@@ -313,8 +326,8 @@ class UCropActivity : AppCompatActivity(), MenuProvider {
         )
 
         // Aspect ratio options
-        val aspectRatioX = intent.getFloatExtra(UCrop.EXTRA_ASPECT_RATIO_X, 0f)
-        val aspectRatioY = intent.getFloatExtra(UCrop.EXTRA_ASPECT_RATIO_Y, 0f)
+        val aspectRatioX = intent.getFloatExtra(UCrop.EXTRA_ASPECT_RATIO_X, -1f)
+        val aspectRatioY = intent.getFloatExtra(UCrop.EXTRA_ASPECT_RATIO_Y, -1f)
         val aspectRationSelectedByDefault =
             intent.getIntExtra(UCrop.Options.EXTRA_ASPECT_RATIO_SELECTED_BY_DEFAULT, 0)
         val aspectRatioList = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -326,13 +339,16 @@ class UCropActivity : AppCompatActivity(), MenuProvider {
             @Suppress("deprecation")
             intent.getParcelableArrayListExtra(UCrop.Options.EXTRA_ASPECT_RATIO_OPTIONS)
         }
-        if (aspectRatioX > 0 && aspectRatioY > 0) {
+        if (aspectRatioX >= 0 && aspectRatioY >= 0) {
             mWrapperStateAspectRatio?.visibility = View.GONE
-            mGestureCropImageView?.targetAspectRatio = aspectRatioX / aspectRatioY
-        } else if (aspectRatioList != null && aspectRationSelectedByDefault < aspectRatioList.size) {
+            val targetAspectRatio = aspectRatioX / aspectRatioY
             mGestureCropImageView?.targetAspectRatio =
-                aspectRatioList[aspectRationSelectedByDefault].aspectRatioX /
-                        aspectRatioList[aspectRationSelectedByDefault].aspectRatioY
+                if (targetAspectRatio.isNaN()) CropImageView.SOURCE_IMAGE_ASPECT_RATIO else targetAspectRatio
+        } else if (aspectRatioList != null && aspectRationSelectedByDefault < aspectRatioList.size) {
+            val targetAspectRatio =
+                aspectRatioList[aspectRationSelectedByDefault].aspectRatioX / aspectRatioList[aspectRationSelectedByDefault].aspectRatioY
+            mGestureCropImageView?.targetAspectRatio =
+                if (targetAspectRatio.isNaN()) CropImageView.SOURCE_IMAGE_ASPECT_RATIO else targetAspectRatio
         } else {
             mGestureCropImageView?.targetAspectRatio = CropImageView.SOURCE_IMAGE_ASPECT_RATIO
         }
@@ -398,6 +414,20 @@ class UCropActivity : AppCompatActivity(), MenuProvider {
             mLayoutAspectRatio = findViewById(R.id.layout_aspect_ratio)
             mLayoutRotate = findViewById(R.id.layout_rotate_wheel)
             mLayoutScale = findViewById(R.id.layout_scale_wheel)
+            val controlsWrapper = findViewById<View>(R.id.controls_wrapper)
+            val wrapperStatesHeight =
+                getResources().getDimensionPixelSize(R.dimen.ucrop_height_wrapper_states)
+            ViewCompat.setOnApplyWindowInsetsListener(controlsWrapper.findViewById(R.id.wrapper_states)) { view, windowInsets ->
+                val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+                view.setPaddingRelative(insets.left, 0, insets.right, insets.bottom)
+                val layoutParams = view.layoutParams
+                val newWrapperStatesHeight = wrapperStatesHeight + insets.bottom
+                if (layoutParams.height != newWrapperStatesHeight) {
+                    layoutParams.height = newWrapperStatesHeight
+                    view.setLayoutParams(layoutParams)
+                }
+                windowInsets
+            }
             setupAspectRatioWidget(intent)
             setupRotateWidget()
             setupScaleWidget()
@@ -410,6 +440,12 @@ class UCropActivity : AppCompatActivity(), MenuProvider {
      */
     private fun setupAppBar() {
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
+
+        ViewCompat.setOnApplyWindowInsetsListener(toolbar) { view, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            view.setPaddingRelative(insets.left, insets.top, insets.right, 0)
+            windowInsets
+        }
 
         // Set all of the Toolbar coloring
         toolbar.setBackgroundColor(mToolbarColor)

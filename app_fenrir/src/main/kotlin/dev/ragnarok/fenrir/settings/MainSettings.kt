@@ -560,16 +560,16 @@ internal class MainSettings(context: Context) : IMainSettings {
         getPreferences(app).edit { putLong("last_sticker_sets_sync_custom_$accountId", time) }
     }
 
-    override fun get_last_sticker_keywords_sync(accountId: Long): Long {
-        return getPreferences(app).getLong("last_sticker_keywords_sync_$accountId", -1)
+    override fun get_stickers_version_hash(accountId: Long): String? {
+        return getPreferences(app).getString("stickers_version_hash_$accountId", null)
     }
 
     override fun get_last_reaction_assets_sync(accountId: Long): Long {
         return getPreferences(app).getLong("last_reaction_assets_sync_$accountId", -1)
     }
 
-    override fun set_last_sticker_keywords_sync(accountId: Long, time: Long) {
-        getPreferences(app).edit { putLong("last_sticker_keywords_sync_$accountId", time) }
+    override fun set_stickers_version_hash(accountId: Long, hash: String?) {
+        getPreferences(app).edit { putString("stickers_version_hash_$accountId", hash) }
     }
 
     override fun set_last_reaction_assets_sync(accountId: Long, time: Long) {
@@ -584,8 +584,8 @@ internal class MainSettings(context: Context) : IMainSettings {
         getPreferences(app).edit { remove("last_sticker_sets_sync_custom_$accountId") }
     }
 
-    override fun del_last_sticker_keywords_sync(accountId: Long) {
-        getPreferences(app).edit { remove("last_sticker_keywords_sync_$accountId") }
+    override fun del_stickers_version_hash(accountId: Long) {
+        getPreferences(app).edit { remove("stickers_version_hash_$accountId") }
     }
 
     override fun del_last_reaction_assets_sync(accountId: Long) {

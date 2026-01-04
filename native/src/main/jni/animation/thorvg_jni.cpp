@@ -10,7 +10,7 @@
 #include <utime.h>
 #include <thorvg.h>
 #include <lz4.h>
-#include <zlib.h>
+#include <zlib-ng.h>
 #include <sys/stat.h>
 #include "fenrir_native.h"
 #include "tvgGifEncoder.h"
@@ -157,10 +157,10 @@ std::string doDecompressResource(size_t length, char *bytes, bool &orig) {
     orig = false;
     std::string data;
     if (length >= GZIP_HEADER_LENGTH && memcmp(bytes, GZIP_HEADER, GZIP_HEADER_LENGTH) == 0) {
-        z_stream zs;
+        zng_stream zs;
         memset(&zs, 0, sizeof(zs));
         const int MOD_GZIP_ZLIB_WINDOWSIZE = 15;
-        if (inflateInit2(&zs, MOD_GZIP_ZLIB_WINDOWSIZE + 16) != Z_OK) {
+        if (zng_inflateInit2(&zs, MOD_GZIP_ZLIB_WINDOWSIZE + 16) != Z_OK) {
             return "";
         }
 
@@ -173,13 +173,13 @@ std::string doDecompressResource(size_t length, char *bytes, bool &orig) {
         do {
             zs.next_out = reinterpret_cast<Bytef *>(outBuffer.data());
             zs.avail_out = (uInt) outBuffer.size();
-            ret = inflate(&zs, 0);
+            ret = zng_inflate(&zs, Z_NO_FLUSH);
             if (data.size() < zs.total_out) {
                 data.append(outBuffer.data(), zs.total_out - data.size());
             }
 
         } while (ret == Z_OK);
-        inflateEnd(&zs);
+        zng_inflateEnd(&zs);
         if (ret != Z_STREAM_END) {
             return "";
         }

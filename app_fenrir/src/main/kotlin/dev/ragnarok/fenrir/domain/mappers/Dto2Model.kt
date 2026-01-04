@@ -639,6 +639,7 @@ object Dto2Model {
                     PhotoSizeDto.Type.Y -> sizes.setY(dto2model(dto))
                     PhotoSizeDto.Type.Z -> sizes.setZ(dto2model(dto))
                     PhotoSizeDto.Type.W -> sizes.setW(dto2model(dto))
+                    PhotoSizeDto.Type.BASE -> sizes.setBase(dto2model(dto))
                     PhotoSizeDto.Type.O -> sizes.setO(dto2model(dto))
                     PhotoSizeDto.Type.P -> sizes.setP(dto2model(dto))
                     PhotoSizeDto.Type.Q -> sizes.setQ(dto2model(dto))

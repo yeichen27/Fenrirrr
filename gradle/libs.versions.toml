@@ -2,7 +2,7 @@
 # APP
 developerBuild = "true"
 
-agpVersion = "9.0.0-rc01"
+agpVersion = "9.0.0-rc02"
 appCompileSDK = "36.1"
 appBuildTools = "36.1.0"
 appNdk = "29.0.14206865"

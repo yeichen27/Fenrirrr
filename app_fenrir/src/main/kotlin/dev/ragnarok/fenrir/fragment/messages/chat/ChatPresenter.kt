@@ -920,7 +920,7 @@ class ChatPresenter(
         }
         stickersWordsDisplayDisposable +=
             stickersInteractor.getKeywordsStickers(accountId, s.trim())
-                .delayedFlow(500)
+                .delayedFlow(800)
                 .fromIOToMain { stickers -> view?.updateStickers(stickers) }
     }
 

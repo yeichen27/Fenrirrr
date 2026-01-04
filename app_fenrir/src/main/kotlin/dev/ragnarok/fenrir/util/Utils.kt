@@ -245,17 +245,6 @@ object Utils {
         return false
     }
 
-    fun needReloadStickerKeywords(account_id: Long): Boolean {
-        Settings.get().main().get_last_sticker_keywords_sync(account_id).let {
-            if (it <= 0 || (System.currentTimeMillis() / 1000L) - it > 3600) {
-                Settings.get().main()
-                    .set_last_sticker_keywords_sync(account_id, System.currentTimeMillis() / 1000L)
-                return true
-            }
-        }
-        return false
-    }
-
     fun needFetchReactionAssets(account_id: Long): Boolean {
         Settings.get().main().get_last_reaction_assets_sync(account_id).let {
             if (it <= 0 || (System.currentTimeMillis() / 1000L) - it > 3600) {

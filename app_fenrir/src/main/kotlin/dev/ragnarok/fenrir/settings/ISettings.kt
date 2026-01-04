@@ -217,11 +217,11 @@ interface ISettings {
         fun set_last_sticker_sets_sync(accountId: Long, time: Long)
         fun get_last_sticker_sets_custom_sync(accountId: Long): Long
         fun set_last_sticker_sets_custom_sync(accountId: Long, time: Long)
-        fun get_last_sticker_keywords_sync(accountId: Long): Long
-        fun set_last_sticker_keywords_sync(accountId: Long, time: Long)
+        fun get_stickers_version_hash(accountId: Long): String?
+        fun set_stickers_version_hash(accountId: Long, hash: String?)
         fun del_last_sticker_sets_sync(accountId: Long)
         fun del_last_sticker_sets_custom_sync(accountId: Long)
-        fun del_last_sticker_keywords_sync(accountId: Long)
+        fun del_stickers_version_hash(accountId: Long)
         fun del_last_reaction_assets_sync(accountId: Long)
         fun set_last_reaction_assets_sync(accountId: Long, time: Long)
         fun get_last_reaction_assets_sync(accountId: Long): Long

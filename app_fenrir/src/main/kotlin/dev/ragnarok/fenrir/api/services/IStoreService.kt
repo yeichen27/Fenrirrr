@@ -6,6 +6,7 @@ import dev.ragnarok.fenrir.api.model.VKApiSticker
 import dev.ragnarok.fenrir.api.model.VKApiStickerSet
 import dev.ragnarok.fenrir.api.model.VKApiStickersKeywords
 import dev.ragnarok.fenrir.api.model.response.BaseResponse
+import dev.ragnarok.fenrir.api.model.response.HasNewStickersResponse
 import dev.ragnarok.fenrir.api.rest.IServiceRest
 import kotlinx.coroutines.flow.Flow
 
@@ -30,15 +31,40 @@ class IStoreService : IServiceRest() {
         )
     }
 
-    fun getStickersKeywords(): Flow<BaseResponse<Dictionary<VKApiStickersKeywords>>> {
+    fun getStickersKeywords(
+        chunk: Int,
+        chunksHash: String?
+    ): Flow<BaseResponse<Dictionary<VKApiStickersKeywords>>> {
         return rest.request(
             "store.getStickersKeywords",
             form(
-                "aliases" to 0,
-                "all_products" to 0,
-                "need_stickers" to 1
+                "aliases" to 1,
+                "all_products" to 1,
+                "need_stickers" to 0,
+                "chunk" to chunk,
+                "chunks_hash" to chunksHash
             ),
             dictionary(VKApiStickersKeywords.serializer())
+        )
+    }
+
+    fun hasNewStickers(): Flow<BaseResponse<HasNewStickersResponse>> {
+        return rest.request(
+            "store.hasNewItems",
+            form(
+                "type" to "stickers"
+            ),
+            base(HasNewStickersResponse.serializer())
+        )
+    }
+
+    fun getStickers(stickerIds: String?): Flow<BaseResponse<List<VKApiSticker>>> {
+        return rest.request(
+            "store.getStickers",
+            form(
+                "sticker_ids" to stickerIds
+            ),
+            baseList(VKApiSticker.serializer())
         )
     }
 }

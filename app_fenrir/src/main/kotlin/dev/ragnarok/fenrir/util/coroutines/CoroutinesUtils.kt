@@ -155,9 +155,12 @@ object CoroutinesUtils {
     }
 
     inline fun <reified T> Flow<T>.delayedFlow(timeMillis: Long): Flow<T> {
-        return map {
+        val t = this
+        return flow {
             delay(timeMillis)
-            it
+            if (isActive()) {
+                emit(t.single())
+            }
         }
     }
 
@@ -190,14 +193,15 @@ object CoroutinesUtils {
         crossinline needRepeat: () -> Boolean,
         delayMS: Long
     ): Flow<Boolean> {
-        return map {
+        val t = this
+        return flow {
             while (needRepeat() && isActive()) {
-                single()
+                t.single()
                 if (delayMS > 0) {
                     delay(delayMS)
                 }
             }
-            true
+            emit(true)
         }
     }
 
@@ -217,6 +221,9 @@ object CoroutinesUtils {
         val th = this
         return flow {
             for (i in th) {
+                if (!isActive()) {
+                    break
+                }
                 i.single()
             }
             emit(true)

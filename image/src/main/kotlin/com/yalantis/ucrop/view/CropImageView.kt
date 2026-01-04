@@ -75,7 +75,7 @@ open class CropImageView @JvmOverloads constructor(
             compressFormat, compressQuality,
             imageInputPath, imageOutputPath
         )
-        BitmapCropTask(context, viewBitmap, imageState, cropParameters, cropCallback)
+        BitmapCropTask(viewBitmap, imageState, cropParameters, cropCallback)
             .execute()
     }
 

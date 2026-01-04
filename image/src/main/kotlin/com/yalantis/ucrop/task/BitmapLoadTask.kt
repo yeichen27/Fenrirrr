@@ -146,7 +146,7 @@ class BitmapLoadTask(
 
         val inputUriScheme = mInputUriS.scheme
         Log.d(TAG, "Uri scheme: $inputUriScheme")
-        if ("content" == inputUriScheme) {
+        if (isContentUri(mInputUriS)) {
             try {
                 copyFile(mInputUriS, mOutputUri)
             } catch (e: NullPointerException) {
@@ -156,7 +156,7 @@ class BitmapLoadTask(
                 Log.e(TAG, "Copying failed", e)
                 throw e
             }
-        } else if ("file" != inputUriScheme) {
+        } else if (!isFileUri(mInputUriS)) {
             Log.e(TAG, "Invalid Uri scheme $inputUriScheme")
             throw IllegalArgumentException("Invalid Uri scheme$inputUriScheme")
         }
@@ -172,7 +172,13 @@ class BitmapLoadTask(
         var outputStream: OutputStream? = null
         try {
             inputStream = mContext.contentResolver.openInputStream(inputUri)
-            outputStream = FileOutputStream(outputUri.path)
+
+            outputStream = if (isContentUri(outputUri)) {
+                mContext.contentResolver.openOutputStream(outputUri)
+                    ?: throw NullPointerException("Output Uri is null - cannot copy image")
+            } else {
+                FileOutputStream(outputUri.path)
+            }
             if (inputStream == null) {
                 throw NullPointerException("InputStream for given input Uri is null")
             }
@@ -231,6 +237,16 @@ class BitmapLoadTask(
     }
 
     companion object {
+        internal fun isContentUri(uri: Uri): Boolean {
+            val schema = uri.scheme
+            return schema == "content"
+        }
+
+        internal fun isFileUri(uri: Uri): Boolean {
+            val schema = uri.scheme
+            return schema == "file"
+        }
+
         private const val TAG = "BitmapWorkerTask"
         private const val MAX_BITMAP_SIZE = 100 * 1024 * 1024 // 100 MB
     }

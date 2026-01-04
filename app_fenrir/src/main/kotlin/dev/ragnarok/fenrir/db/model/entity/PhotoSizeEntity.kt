@@ -42,6 +42,9 @@ class PhotoSizeEntity {
     var w: Size? = null
         private set
 
+    var base: Size? = null
+        private set
+
     fun setS(s: Size?): PhotoSizeEntity {
         this.s = s
         return this
@@ -99,6 +102,11 @@ class PhotoSizeEntity {
 
     fun setW(w: Size?): PhotoSizeEntity {
         this.w = w
+        return this
+    }
+
+    fun setBase(base: Size?): PhotoSizeEntity {
+        this.base = base
         return this
     }
 

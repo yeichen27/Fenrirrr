@@ -4,6 +4,7 @@ import dev.ragnarok.fenrir.api.model.CommentsDto
 import dev.ragnarok.fenrir.api.model.PhotoSizeDto
 import dev.ragnarok.fenrir.api.model.VKApiPhoto
 import dev.ragnarok.fenrir.kJson
+import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.orZero
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.jsonArray
@@ -68,6 +69,32 @@ class PhotoDtoAdapter : AbsDtoAdapter<VKApiPhoto>("VKApiPhoto") {
                         }
                         photo.width = photoSizeDto.width
                         photo.height = photoSizeDto.height
+                    }
+                }
+            }
+        }
+        if (hasObject(root, "orig_photo")) {
+            val origPhotoRoot = root["orig_photo"]
+            if (checkObject(origPhotoRoot)) {
+                val photoSizeDto: PhotoSizeDto =
+                    kJson.decodeFromJsonElement(
+                        PhotoSizeDto.serializer(),
+                        origPhotoRoot
+                    )
+                val url = photoSizeDto.url
+                val src = photoSizeDto.src
+                if (url.nonNullNoEmpty() || src.nonNullNoEmpty()) {
+                    if (photo.width < photoSizeDto.width || photo.height < photoSizeDto.height) {
+                        photo.width = photoSizeDto.width
+                        photo.height = photoSizeDto.height
+                    }
+                    for (i in photo.sizes.orEmpty()) {
+                        if (i.type == "base") {
+                            i.url = url
+                            i.width = photoSizeDto.width
+                            i.height = photoSizeDto.height
+                            i.src = src
+                        }
                     }
                 }
             }

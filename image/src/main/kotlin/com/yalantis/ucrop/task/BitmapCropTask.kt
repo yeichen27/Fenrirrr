@@ -1,7 +1,6 @@
 package com.yalantis.ucrop.task
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Bitmap.CompressFormat
 import android.graphics.Matrix
@@ -42,7 +41,6 @@ import kotlin.math.roundToInt
  * Finally new Bitmap object is created and saved to file.
  */
 class BitmapCropTask(
-    context: Context,
     private var mViewBitmap: Bitmap?,
     imageState: ImageState,
     cropParameters: CropParameters,

@@ -199,19 +199,19 @@ class CustomSnackbars private constructor(private val view: View, private var an
     }
 
     override fun showToastSuccessBottom(message: String?) {
-        coloredSnack(message, "#AA48BE2D".toColor(), false).show()
+        coloredSnack(message, "#48BE2D".toColor(), false).show()
     }
 
     override fun showToastSuccessBottom(@StringRes message: Int, vararg params: Any?) {
-        coloredSnack(message, "#AA48BE2D".toColor(), false, *params).show()
+        coloredSnack(message, "#48BE2D".toColor(), false, *params).show()
     }
 
     override fun showToastWarningBottom(message: String?) {
-        coloredSnack(message, "#AAED760E".toColor(), false).show()
+        coloredSnack(message, "#ED760E".toColor(), false).show()
     }
 
     override fun showToastWarningBottom(@StringRes message: Int, vararg params: Any?) {
-        coloredSnack(message, "#AAED760E".toColor(), false, *params).show()
+        coloredSnack(message, "#ED760E".toColor(), false, *params).show()
     }
 
     override fun showToastInfo(message: String?) {

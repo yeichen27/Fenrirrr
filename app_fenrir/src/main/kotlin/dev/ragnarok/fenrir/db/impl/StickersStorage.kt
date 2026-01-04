@@ -4,6 +4,7 @@ import android.content.ContentValues
 import android.database.Cursor
 import android.provider.BaseColumns
 import androidx.core.database.sqlite.transaction
+import dev.ragnarok.fenrir.api.model.VKApiStickerNotFull
 import dev.ragnarok.fenrir.db.TempDataHelper
 import dev.ragnarok.fenrir.db.column.StickerSetsColumns
 import dev.ragnarok.fenrir.db.column.StickerSetsCustomColumns
@@ -75,7 +76,7 @@ internal class StickersStorage(base: AppStorages) : AbsStorage(base), IStickersS
     override fun clearAccount(accountId: Long): Flow<Boolean> {
         Settings.get().main().del_last_sticker_sets_sync(accountId)
         Settings.get().main().del_last_sticker_sets_custom_sync(accountId)
-        Settings.get().main().del_last_sticker_keywords_sync(accountId)
+        Settings.get().main().del_stickers_version_hash(accountId)
         return flow {
             val db = TempDataHelper.helper.writableDatabase
             db.transaction {
@@ -171,7 +172,7 @@ internal class StickersStorage(base: AppStorages) : AbsStorage(base), IStickersS
         }
     }
 
-    override fun getKeywordsStickers(accountId: Long, s: String): Flow<List<StickerDboEntity>> {
+    override fun getKeywordsStickers(accountId: Long, s: String): Flow<List<VKApiStickerNotFull>> {
         return flow {
             val where = "${StickersKeywordsColumns.ACCOUNT_ID} = ?"
             val args = arrayOf(accountId.toString())
@@ -184,7 +185,7 @@ internal class StickersStorage(base: AppStorages) : AbsStorage(base), IStickersS
                 null,
                 null
             )
-            val stickers: MutableList<StickerDboEntity> = ArrayList(safeCountOf(cursor))
+            val stickers: MutableList<VKApiStickerNotFull> = ArrayList(safeCountOf(cursor))
             while (cursor.moveToNext()) {
                 if (!isActive() || stickers.size > 10) {
                     break
@@ -325,7 +326,10 @@ internal class StickersStorage(base: AppStorages) : AbsStorage(base), IStickersS
             entity.stickers.ifNonNull({
                 cv.put(
                     StickersKeywordsColumns.STICKERS,
-                    MsgPack.encodeToByteArrayEx(ListSerializer(StickerDboEntity.serializer()), it)
+                    MsgPack.encodeToByteArrayEx(
+                        ListSerializer(VKApiStickerNotFull.serializer()),
+                        it
+                    )
                 )
             }, {
                 cv.putNull(StickersKeywordsColumns.STICKERS)
@@ -394,7 +398,7 @@ internal class StickersStorage(base: AppStorages) : AbsStorage(base), IStickersS
                 ),
                 if (stickersJson == null) emptyList() else MsgPack.decodeFromByteArrayEx(
                     ListSerializer(
-                        StickerDboEntity.serializer()
+                        VKApiStickerNotFull.serializer()
                     ), stickersJson
                 ),
             )

@@ -263,7 +263,7 @@ class PostDownload(private val context: Context) {
                     if (att.photo != null) {
                         atcontent = Apply(
                             "<#ORIGINAL_IMAGE_LINK#>",
-                            att.photo?.getUrlForSize(PhotoSize.W, false),
+                            att.photo?.getUrlForSize(PhotoSize.BASE, false),
                             atcontent
                         )
                         atcontent = Apply(
@@ -271,7 +271,7 @@ class PostDownload(private val context: Context) {
                             att.photo?.getUrlForSize(PhotoSize.Y, false),
                             atcontent
                         )
-                    } else if (att.video != null) {
+                    } else {
                         atcontent = Apply(
                             "<#ORIGINAL_IMAGE_LINK#>",
                             "https://vk.ru/video" + att.video?.ownerId + "_" + att.video?.id,
@@ -303,7 +303,7 @@ class PostDownload(private val context: Context) {
                     var atcontent = Image
                     atcontent = Apply(
                         "<#ORIGINAL_IMAGE_LINK#>",
-                        att.getUrlForSize(PhotoSize.W, false),
+                        att.getUrlForSize(PhotoSize.BASE, false),
                         atcontent
                     )
                     atcontent =

@@ -322,7 +322,7 @@ class AudioLocalRecyclerAdapter(private val mContext: Context, private var data:
                                     ?.setDurationSnack(Snackbar.LENGTH_LONG)
                                     ?.coloredSnack(
                                         R.string.success,
-                                        "#AA48BE2D".toColor(), false
+                                        "#48BE2D".toColor(), false
                                     )
                                     ?.show()
                             },
@@ -343,7 +343,7 @@ class AudioLocalRecyclerAdapter(private val mContext: Context, private var data:
                         ) {
                             CustomSnackbars.createCustomSnackbars(view)
                                 ?.setDurationSnack(Snackbar.LENGTH_LONG)
-                                ?.coloredSnack(R.string.success, "#AA48BE2D".toColor(), false)
+                                ?.coloredSnack(R.string.success, "#48BE2D".toColor(), false)
                                 ?.show()
                             mClickListener?.onDelete(position)
                         }
@@ -360,7 +360,7 @@ class AudioLocalRecyclerAdapter(private val mContext: Context, private var data:
                                     ?.setDurationSnack(Snackbar.LENGTH_LONG)
                                     ?.coloredSnack(
                                         R.string.success,
-                                        "#AA48BE2D".toColor(), false
+                                        "#48BE2D".toColor(), false
                                     )
                                     ?.show()
                             },

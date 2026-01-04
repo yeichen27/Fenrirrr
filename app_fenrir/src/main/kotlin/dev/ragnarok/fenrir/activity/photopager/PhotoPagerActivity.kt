@@ -229,10 +229,11 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
 
         internal fun getTitleForPhotoSize(size: Int): String {
             return when (size) {
-                PhotoSize.X -> 604.toString() + "px"
-                PhotoSize.Y -> 807.toString() + "px"
-                PhotoSize.Z -> 1024.toString() + "px"
-                PhotoSize.W -> 2048.toString() + "px"
+                PhotoSize.X -> "604px"
+                PhotoSize.Y -> "807px"
+                PhotoSize.Z -> "1024px"
+                PhotoSize.W -> "2048px"
+                PhotoSize.BASE -> "Base"
                 else -> throw IllegalArgumentException("Unsupported size")
             }
         }
@@ -242,6 +243,7 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
             SIZES.put(2, PhotoSize.Y)
             SIZES.put(3, PhotoSize.Z)
             SIZES.put(4, PhotoSize.W)
+            SIZES.put(5, PhotoSize.BASE)
         }
     }
 

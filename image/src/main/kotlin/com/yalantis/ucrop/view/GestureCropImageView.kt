@@ -23,6 +23,7 @@ class GestureCropImageView : CropImageView {
     private var mGestureDetector: GestureDetector? = null
     var isRotateEnabled = true
     var isScaleEnabled = true
+    var isGestureEnabled = true
     var doubleTapScaleSteps = 5
 
     constructor(context: Context) : super(context)
@@ -49,7 +50,9 @@ class GestureCropImageView : CropImageView {
             mMidPntX = (event.getX(0) + event.getX(1)) / 2
             mMidPntY = (event.getY(0) + event.getY(1)) / 2
         }
-        mGestureDetector?.onTouchEvent(event)
+        if (isGestureEnabled) {
+            mGestureDetector?.onTouchEvent(event)
+        }
         if (isScaleEnabled) {
             mScaleDetector?.onTouchEvent(event)
         }

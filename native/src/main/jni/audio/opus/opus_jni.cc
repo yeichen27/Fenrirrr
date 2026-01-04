@@ -45,7 +45,7 @@ static jmethodID outputBufferInit;
 static const int kBytesPerIntPcmSample = 2;
 static const int kBytesPerFloatSample = 4;
 static const int kMaxOpusOutputPacketSizeSamples = 960 * 6;
-static int channelCount;
+static int kchannelCount;
 static int errorCode;
 static bool outputFloat = false;
 
@@ -53,7 +53,7 @@ DECODER_FUNC(jlong, opusInit, jint sampleRate, jint channelCount,
              jint numStreams, jint numCoupled, jint gain,
              jbyteArray jStreamMap) {
     int status = OPUS_INVALID_STATE;
-    ::channelCount = channelCount;
+    kchannelCount = channelCount;
     errorCode = 0;
     jbyte *streamMapBytes = env->GetByteArrayElements(jStreamMap, nullptr);
     auto *streamMap = reinterpret_cast<uint8_t *>(streamMapBytes);
@@ -88,7 +88,7 @@ DECODER_FUNC(jint, opusDecode, jlong jDecoder, jlong jTimeUs,
     const int byteSizePerSample =
             outputFloat ? kBytesPerFloatSample : kBytesPerIntPcmSample;
     const jint outputSize =
-            kMaxOpusOutputPacketSizeSamples * byteSizePerSample * channelCount;
+            kMaxOpusOutputPacketSizeSamples * byteSizePerSample * kchannelCount;
 
     env->CallObjectMethod(jOutputBuffer, outputBufferInit, jTimeUs, outputSize);
     if (env->ExceptionCheck()) {
@@ -120,7 +120,7 @@ DECODER_FUNC(jint, opusDecode, jlong jDecoder, jlong jTimeUs,
     // record error code
     errorCode = (sampleCount < 0) ? sampleCount : 0;
     return (sampleCount < 0) ? sampleCount
-                             : sampleCount * byteSizePerSample * channelCount;
+                             : sampleCount * byteSizePerSample * kchannelCount;
 }
 
 DECODER_FUNC(jint, opusSecureDecode, jlong jDecoder, jlong jTimeUs,

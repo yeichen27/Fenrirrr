@@ -47,9 +47,11 @@ import dev.ragnarok.fenrir.util.Utils.join
 import dev.ragnarok.fenrir.util.Utils.needReloadDialogs
 import dev.ragnarok.fenrir.util.coroutines.CompositeJob
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.dummy
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.emptyTaskFlow
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.hiddenIO
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.sharedFlowToMain
+import kotlinx.coroutines.flow.flatMapConcat
 
 class DialogsPresenter(
     accountId: Long,
@@ -271,32 +273,39 @@ class DialogsPresenter(
             }
 
             if (Utils.needReloadStickerSets(accountId)) {
-                stickerInteractor
-                    .receiveAndStoreStickerSets(accountId)
-                    .fromIOToMain(dummy()) {
+                if (Utils.isOfficialVKCurrent) {
+                    stickerInteractor.hasNewStickers(accountId).flatMapConcat {
+                        val curHash = Settings.get().main().get_stickers_version_hash(accountId)
+                        if (curHash == it.stickersVersionHash) {
+                            emptyTaskFlow()
+                        } else {
+                            Settings.get().main()
+                                .set_stickers_version_hash(accountId, it.stickersVersionHash)
+                            stickerInteractor
+                                .receiveAndStoreStickerSets(accountId)
+                        }
+                    }.fromIOToMain(dummy()) {
                         Settings.get().main().del_last_sticker_sets_sync(accountId)
                         if (Settings.get().main().isDeveloper_mode) {
                             showError(it)
                         }
                     }
+                } else {
+                    stickerInteractor
+                        .receiveAndStoreStickerSets(accountId)
+                        .fromIOToMain(dummy()) {
+                            Settings.get().main().del_last_sticker_sets_sync(accountId)
+                            if (Settings.get().main().isDeveloper_mode) {
+                                showError(it)
+                            }
+                        }
+                }
             }
             if (Utils.needReloadStickerSetsCustom(accountId)) {
                 stickerInteractor
                     .receiveAndStoreCustomStickerSets(accountId)
                     .fromIOToMain(dummy()) {
                         Settings.get().main().del_last_sticker_sets_custom_sync(accountId)
-                        if (Settings.get().main().isDeveloper_mode) {
-                            showError(it)
-                        }
-                    }
-            }
-            if (Settings.get()
-                    .main().isHint_stickers && Utils.needReloadStickerKeywords(accountId)
-            ) {
-                stickerInteractor
-                    .receiveAndStoreKeywordsStickers(accountId)
-                    .fromIOToMain(dummy()) {
-                        Settings.get().main().del_last_sticker_keywords_sync(accountId)
                         if (Settings.get().main().isDeveloper_mode) {
                             showError(it)
                         }

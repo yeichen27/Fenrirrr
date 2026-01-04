@@ -133,7 +133,7 @@ class Document : AbsModel, ParcelNative.ParcelableNative {
     }
 
     fun getMaxPreviewSize(excludeNonAspectRatio: Boolean): PhotoSizes.Size? {
-        return photoPreview?.getMaxSize(excludeNonAspectRatio)
+        return photoPreview?.getSize(PhotoSize.BASE, excludeNonAspectRatio)
     }
 
     fun setGraffiti(graffiti: Graffiti?): Document {

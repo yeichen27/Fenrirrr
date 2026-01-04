@@ -326,10 +326,10 @@ class UCrop private constructor(source: Uri, destination: Uri) {
             selectedByDefault: Int,
             vararg aspectRatio: AspectRatio?
         ): Options {
-            require(selectedByDefault <= aspectRatio.size) {
+            require(selectedByDefault < aspectRatio.size) {
                 String.format(
                     Locale.US,
-                    "Index [selectedByDefault = %d] cannot be higher than aspect ratio options count [count = %d].",
+                    "Index [selectedByDefault = %d] (0-based) cannot be higher or equal than aspect ratio options count [count = %d].",
                     selectedByDefault, aspectRatio.size
                 )
             }

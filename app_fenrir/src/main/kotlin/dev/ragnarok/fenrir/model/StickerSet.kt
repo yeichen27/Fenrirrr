@@ -3,6 +3,7 @@ package dev.ragnarok.fenrir.model
 import kotlin.math.abs
 
 class StickerSet(
+    val id: Int,
     val icon: List<Image>?,
     val stickers: List<Sticker>?,
     val title: String?

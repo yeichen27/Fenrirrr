@@ -1,3 +1,5 @@
 package dev.ragnarok.fenrir.db.model.entity
 
-class StickersKeywordsEntity(val keywords: List<String>, val stickers: List<StickerDboEntity>)
+import dev.ragnarok.fenrir.api.model.VKApiStickerNotFull
+
+class StickersKeywordsEntity(val keywords: List<String>, val stickers: List<VKApiStickerNotFull>)

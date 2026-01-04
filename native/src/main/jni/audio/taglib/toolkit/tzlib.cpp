@@ -28,7 +28,7 @@
 # include "config.h"
 
 #ifdef HAVE_ZLIB
-# include <zlib.h>
+# include <zlib-ng.h>
 # include "tstring.h"
 # include "tdebug.h"
 #endif
@@ -52,9 +52,9 @@ ByteVector zlib::decompress([[maybe_unused]] const ByteVector &data)
 {
 #ifdef HAVE_ZLIB
 
-  z_stream stream = {};
+  zng_stream stream = {};
 
-  if(inflateInit(&stream) != Z_OK) {
+  if(zng_inflateInit(&stream) != Z_OK) {
     debug("zlib::decompress() - Failed to initialize zlib.");
     return ByteVector();
   }
@@ -74,14 +74,14 @@ ByteVector zlib::decompress([[maybe_unused]] const ByteVector &data)
     stream.avail_out = static_cast<uInt>(chunkSize);
     stream.next_out  = reinterpret_cast<Bytef *>(outData.data() + offset);
 
-    if(const int result = inflate(&stream, Z_NO_FLUSH);
+    if(const int result = zng_inflate(&stream, Z_NO_FLUSH);
        result == Z_STREAM_ERROR ||
        result == Z_NEED_DICT ||
        result == Z_DATA_ERROR ||
        result == Z_MEM_ERROR)
     {
       if(result != Z_STREAM_ERROR)
-        inflateEnd(&stream);
+        zng_inflateEnd(&stream);
 
       debug("zlib::decompress() - Error reading compressed stream.");
       return ByteVector();
@@ -90,7 +90,7 @@ ByteVector zlib::decompress([[maybe_unused]] const ByteVector &data)
     outData.resize(outData.size() - stream.avail_out);
   } while(stream.avail_out == 0);
 
-  inflateEnd(&stream);
+    zng_inflateEnd(&stream);
 
   return outData;
 

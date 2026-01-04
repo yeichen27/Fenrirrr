@@ -408,12 +408,14 @@ class CommentsInteractor(
         val completable =
             startLooking(accountId, commented, tempData, startFromCommentId, continueToCommentId)
                 .repeatUntil({
+                    var ret = false
                     for (c in tempData.comments) {
                         if (continueToCommentId == c.id) {
-                            return@repeatUntil true
+                            ret = true
+                            break
                         }
                     }
-                    false
+                    ret
                 }, 100)
         return completable.flatMapConcat {
             transform(

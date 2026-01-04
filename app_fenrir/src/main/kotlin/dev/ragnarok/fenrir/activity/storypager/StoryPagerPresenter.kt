@@ -314,7 +314,7 @@ class StoryPagerPresenter(
             } else dir_final.setLastModified(System.currentTimeMillis())
             dir = dir_final
         }
-        val url = photo.getUrlForSize(PhotoSize.W, true)
+        val url = photo.getUrlForSize(PhotoSize.BASE, true)
         if (url != null) {
             view?.downloadPhoto(
                 url,

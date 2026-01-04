@@ -1674,6 +1674,7 @@ object Dto2Entity {
                     PhotoSizeDto.Type.Y -> sizes.setY(mapPhotoSize(dto))
                     PhotoSizeDto.Type.Z -> sizes.setZ(mapPhotoSize(dto))
                     PhotoSizeDto.Type.W -> sizes.setW(mapPhotoSize(dto))
+                    PhotoSizeDto.Type.BASE -> sizes.setBase(mapPhotoSize(dto))
                     PhotoSizeDto.Type.O -> sizes.setO(mapPhotoSize(dto))
                     PhotoSizeDto.Type.P -> sizes.setP(mapPhotoSize(dto))
                     PhotoSizeDto.Type.Q -> sizes.setQ(mapPhotoSize(dto))
