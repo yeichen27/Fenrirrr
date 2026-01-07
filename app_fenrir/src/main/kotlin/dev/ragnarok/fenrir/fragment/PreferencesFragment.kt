@@ -2,6 +2,7 @@ package dev.ragnarok.fenrir.fragment
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.Activity.RESULT_OK
 import android.app.Dialog
 import android.content.Context
@@ -1746,7 +1747,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                     true
                 }
                 onTextChanged {
-                    cleanCache(requireActivity(), false)
+                    cleanTmpFileCache(requireActivity(), false)
                     requireActivity().recreate()
                 }
             }
@@ -1770,7 +1771,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                     true
                 }
                 onTextChanged {
-                    cleanCache(requireActivity(), false)
+                    cleanTmpFileCache(requireActivity(), false)
                     requireActivity().recreate()
                 }
             }
@@ -1871,11 +1872,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                             .setTitle(R.string.select)
                             .setMessage(R.string.ask_account_cache_cleaner)
                             .setPositiveButton(R.string.button_yes) { _, _ ->
-                                DBHelper.removeDatabaseFor(requireActivity(), accountId)
-                                cleanCache(requireActivity(), true)
-                                Includes.stores.stickers().clearAccount(accountId).hiddenIO()
-                                Includes.stores.tempStore().clearReactionAssets(accountId)
-                                    .hiddenIO()
+                                cleanCache(requireActivity(), accountId, true)
                             }
                             .setNegativeButton(R.string.button_no, null)
                             .setCancelable(true).show()
@@ -1886,9 +1883,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 accentButtonPref("cache_cleaner") {
                     titleRes = R.string.cache_cleaner
                     onClick {
-                        TempDataHelper.helper.clear()
-                        cleanCache(requireActivity(), true)
-                        requireActivity().recreate()
+                        cleanCache(requireActivity(), accountId, false)
                         true
                     }
                 }
@@ -1909,7 +1904,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                     titleRes = R.string.limit_cache_images
                     onSelectionChange {
                         TempDataHelper.helper.clear()
-                        cleanCache(requireActivity(), true)
+                        cleanTmpFileCache(requireActivity(), true)
                         requireActivity().recreate()
                     }
                 }
@@ -2497,13 +2492,13 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 view.findViewById(R.id.text_rotation_speed)
             val textZoom: MaterialTextView = view.findViewById(R.id.text_zoom)
             val textBlur: MaterialTextView = view.findViewById(R.id.text_blur)
-            zoom.addOnChangeListener { slider, value, fromUser ->
+            zoom.addOnChangeListener { _, value, _ ->
                 textZoom.text = getString(R.string.rotate_scale, value.toInt())
             }
-            rotationSpeed.addOnChangeListener { slider, value, fromUser ->
+            rotationSpeed.addOnChangeListener { _, value, _ ->
                 textRotationSpeed.text = getString(R.string.rotate_speed, value.toInt())
             }
-            blur.addOnChangeListener { slider, value, fromUser ->
+            blur.addOnChangeListener { _, value, _ ->
                 textBlur.text = getString(R.string.player_blur, value.toInt())
             }
             val settings = Settings.get()
@@ -2647,7 +2642,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
             val textVerticalDistanceThreshold: MaterialTextView =
                 view.findViewById(R.id.text_vertical_distance_threshold)
 
-            verticalSensitive.addOnChangeListener { slider, value, fromUser ->
+            verticalSensitive.addOnChangeListener { _, value, fromUser ->
                 if (fromUser && value < 20) {
                     verticalSensitive.value = 20.0f
                     textVerticalSensitive.text = getString(R.string.slidr_sensitive, 20)
@@ -2656,7 +2651,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 }
             }
 
-            horizontalSensitive.addOnChangeListener { slider, value, fromUser ->
+            horizontalSensitive.addOnChangeListener { _, value, fromUser ->
                 if (fromUser && value < 20) {
                     horizontalSensitive.value = 20.0f
                     textHorizontalSensitive.text = getString(R.string.slidr_sensitive, 20)
@@ -2666,7 +2661,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 }
             }
 
-            verticalVelocityThreshold.addOnChangeListener { slider, value, fromUser ->
+            verticalVelocityThreshold.addOnChangeListener { _, value, fromUser ->
                 if (fromUser && value < 4) {
                     verticalVelocityThreshold.value = 4.0f
                     textVerticalVelocityThreshold.text =
@@ -2677,7 +2672,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 }
             }
 
-            horizontalVelocityThreshold.addOnChangeListener { slider, value, fromUser ->
+            horizontalVelocityThreshold.addOnChangeListener { _, value, fromUser ->
                 if (fromUser && value < 4) {
                     horizontalVelocityThreshold.value = 4.0f
                     textHorizontalVelocityThreshold.text =
@@ -2688,7 +2683,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 }
             }
 
-            verticalDistanceThreshold.addOnChangeListener { slider, value, fromUser ->
+            verticalDistanceThreshold.addOnChangeListener { _, value, fromUser ->
                 if (fromUser && value < 4) {
                     verticalDistanceThreshold.value = 4.0f
                     textVerticalDistanceThreshold.text =
@@ -2699,7 +2694,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 }
             }
 
-            horizontalDistanceThreshold.addOnChangeListener { slider, value, fromUser ->
+            horizontalDistanceThreshold.addOnChangeListener { _, value, fromUser ->
                 if (fromUser && value < 4) {
                     horizontalDistanceThreshold.value = 4.0f
                     textHorizontalDistanceThreshold.text =
@@ -2827,7 +2822,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
             return File(context.filesDir, if (light) "chat_light.jpg" else "chat_dark.jpg")
         }
 
-        fun cleanCache(context: Context, notify: Boolean) {
+        fun cleanTmpFileCache(context: Context, notify: Boolean) {
             try {
                 clear_cache()
                 var cache = File(context.cacheDir, "notif-cache")
@@ -2908,6 +2903,18 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 e.printStackTrace()
                 if (notify) createCustomToast(context, null)?.showToastError(e.localizedMessage)
             }
+        }
+
+        fun cleanCache(activity: Activity, accountId: Long, dropAccountDatabase: Boolean) {
+            if (dropAccountDatabase) {
+                DBHelper.removeDatabaseFor(activity, accountId)
+            }
+            TempDataHelper.helper.clear()
+            cleanTmpFileCache(activity, true)
+            Includes.stores.stickers().clearAccount(accountId).hiddenIO()
+            Includes.stores.tempStore().clearReactionAssets(accountId)
+                .hiddenIO()
+            activity.recreate()
         }
 
         internal fun checkBitmap(bitmap: Bitmap?): Bitmap? {

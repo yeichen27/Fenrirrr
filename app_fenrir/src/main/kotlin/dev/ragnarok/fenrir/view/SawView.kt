@@ -54,7 +54,7 @@ class SawView(context: Context, attrs: AttributeSet) : View(context, attrs) {
         val realToothWidth = width.toFloat() / count.toFloat()
         var offset = 0f
         var side = SIDE_DOWN
-        for (i in 0 until count) {
+        (0 until count).forEach { _ ->
             if (side == SIDE_DOWN) {
                 PATH.reset()
                 PATH.moveTo(offset, startH.toFloat())

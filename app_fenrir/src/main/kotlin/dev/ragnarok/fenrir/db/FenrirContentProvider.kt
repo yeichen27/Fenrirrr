@@ -648,7 +648,7 @@ class FenrirContentProvider : ContentProvider() {
                 GroupsColumns.FULL_TYPE + " AS " + RelationshipsColumns.FOREIGN_SUBJECT_GROUP_TYPE
 
             sMessagesProjectionMap = HashMap()
-            sMessagesProjectionMap[MessagesColumns._ID] = MessagesColumns.FULL_ID
+            sMessagesProjectionMap[BaseColumns._ID] = MessagesColumns.FULL_ID
             sMessagesProjectionMap[MessagesColumns.PEER_ID] = MessagesColumns.FULL_PEER_ID
             sMessagesProjectionMap[MessagesColumns.FROM_ID] = MessagesColumns.FULL_FROM_ID
             sMessagesProjectionMap[MessagesColumns.DATE] = MessagesColumns.FULL_DATE
@@ -1973,9 +1973,9 @@ class FenrirContentProvider : ContentProvider() {
             URI_MESSAGES_ID -> {
                 val id = uri.lastPathSegment
                 selection = if (selection.isNullOrEmpty()) {
-                    MessagesColumns._ID + " = " + id
+                    BaseColumns._ID + " = " + id
                 } else {
-                    selection + " AND " + MessagesColumns._ID + " = " + id
+                    selection + " AND " + BaseColumns._ID + " = " + id
                 }
                 tbName = MessagesColumns.TABLENAME
             }
@@ -2060,9 +2060,9 @@ class FenrirContentProvider : ContentProvider() {
             URI_MESSAGES_ID -> {
                 val id = uri.lastPathSegment
                 selection = if (selection.isNullOrEmpty()) {
-                    MessagesColumns._ID + " = " + id
+                    BaseColumns._ID + " = " + id
                 } else {
-                    selection + " AND " + MessagesColumns._ID + " = " + id
+                    selection + " AND " + BaseColumns._ID + " = " + id
                 }
                 tbName = MessagesColumns.TABLENAME
             }

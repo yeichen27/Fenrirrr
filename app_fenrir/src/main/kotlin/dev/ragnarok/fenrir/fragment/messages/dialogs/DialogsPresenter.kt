@@ -51,6 +51,7 @@ import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.emptyTaskFlow
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.hiddenIO
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.sharedFlowToMain
+import dev.ragnarok.fenrir.util.coroutines.StepMultipleFlowJob
 import kotlinx.coroutines.flow.flatMapConcat
 
 class DialogsPresenter(
@@ -251,30 +252,29 @@ class DialogsPresenter(
         if (accountId <= 0) {
             return
         }
+        val step = StepMultipleFlowJob()
         try {
             if (Utils.needReloadReactionAssets(accountId)) {
-                messagesInteractor
-                    .getReactionsAssets(accountId)
-                    .fromIOToMain({
-                        if (Utils.getReactionsAssets()[accountId] == null) {
-                            Utils.getReactionsAssets()[accountId] = HashMap()
-                        } else {
-                            Utils.getReactionsAssets()[accountId]?.clear()
-                        }
-                        for (i in it) {
-                            Utils.getReactionsAssets()[accountId]?.set(i.reaction_id, i)
-                        }
-                    }) {
-                        Settings.get().main().del_last_reaction_assets_sync(accountId)
-                        if (Settings.get().main().isDeveloper_mode) {
-                            showError(it)
-                        }
+                step.add(messagesInteractor.getReactionsAssets(accountId), {
+                    if (Utils.getReactionsAssets()[accountId] == null) {
+                        Utils.getReactionsAssets()[accountId] = HashMap()
+                    } else {
+                        Utils.getReactionsAssets()[accountId]?.clear()
                     }
+                    for (i in it) {
+                        Utils.getReactionsAssets()[accountId]?.set(i.reaction_id, i)
+                    }
+                }, {
+                    Settings.get().main().del_last_reaction_assets_sync(accountId)
+                    if (Settings.get().main().isDeveloper_mode) {
+                        showError(it)
+                    }
+                })
             }
 
             if (Utils.needReloadStickerSets(accountId)) {
                 if (Utils.isOfficialVKCurrent) {
-                    stickerInteractor.hasNewStickers(accountId).flatMapConcat {
+                    step.add(stickerInteractor.hasNewStickers(accountId).flatMapConcat {
                         val curHash = Settings.get().main().get_stickers_version_hash(accountId)
                         if (curHash == it.stickersVersionHash) {
                             emptyTaskFlow()
@@ -284,33 +284,37 @@ class DialogsPresenter(
                             stickerInteractor
                                 .receiveAndStoreStickerSets(accountId)
                         }
-                    }.fromIOToMain(dummy()) {
+                    }, dummy()) {
                         Settings.get().main().del_last_sticker_sets_sync(accountId)
+                        Settings.get().main().del_stickers_version_hash(accountId)
                         if (Settings.get().main().isDeveloper_mode) {
                             showError(it)
                         }
                     }
                 } else {
-                    stickerInteractor
-                        .receiveAndStoreStickerSets(accountId)
-                        .fromIOToMain(dummy()) {
-                            Settings.get().main().del_last_sticker_sets_sync(accountId)
-                            if (Settings.get().main().isDeveloper_mode) {
-                                showError(it)
-                            }
-                        }
-                }
-            }
-            if (Utils.needReloadStickerSetsCustom(accountId)) {
-                stickerInteractor
-                    .receiveAndStoreCustomStickerSets(accountId)
-                    .fromIOToMain(dummy()) {
-                        Settings.get().main().del_last_sticker_sets_custom_sync(accountId)
+                    step.add(
+                        stickerInteractor
+                            .receiveAndStoreStickerSets(accountId), dummy()
+                    ) {
+                        Settings.get().main().del_last_sticker_sets_sync(accountId)
                         if (Settings.get().main().isDeveloper_mode) {
                             showError(it)
                         }
                     }
+                }
             }
+            if (Utils.needReloadStickerSetsCustom(accountId)) {
+                step.add(
+                    stickerInteractor
+                        .receiveAndStoreCustomStickerSets(accountId), dummy()
+                ) {
+                    Settings.get().main().del_last_sticker_sets_custom_sync(accountId)
+                    if (Settings.get().main().isDeveloper_mode) {
+                        showError(it)
+                    }
+                }
+            }
+            step.fromIOToMain()
         } catch (e: Exception) {
             if (Settings.get().main().isDeveloper_mode) {
                 showError(e)

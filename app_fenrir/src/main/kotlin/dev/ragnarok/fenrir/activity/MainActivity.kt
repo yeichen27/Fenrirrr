@@ -57,7 +57,7 @@ import dev.ragnarok.fenrir.domain.impl.CountersInteractor
 import dev.ragnarok.fenrir.fragment.BrowserFragment
 import dev.ragnarok.fenrir.fragment.DocPreviewFragment
 import dev.ragnarok.fenrir.fragment.PreferencesFragment
-import dev.ragnarok.fenrir.fragment.PreferencesFragment.Companion.cleanCache
+import dev.ragnarok.fenrir.fragment.PreferencesFragment.Companion.cleanTmpFileCache
 import dev.ragnarok.fenrir.fragment.SecurityPreferencesFragment
 import dev.ragnarok.fenrir.fragment.accounts.processauthcode.ProcessAuthCodeFragment
 import dev.ragnarok.fenrir.fragment.attachments.commentcreate.CommentCreateFragment
@@ -503,7 +503,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                     }
                     Settings.get().main().appStoredVersionEqual
                     if (Settings.get().main().isDelete_cache_images) {
-                        cleanCache(this, false)
+                        cleanTmpFileCache(this, false)
                     }
                 }
                 updateNotificationCount(mAccountId)

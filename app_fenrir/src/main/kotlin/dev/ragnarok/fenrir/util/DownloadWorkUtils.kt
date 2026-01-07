@@ -27,6 +27,7 @@ import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.dialog.audioduplicate.AudioDuplicateDialog
 import dev.ragnarok.fenrir.domain.InteractorFactory
+import dev.ragnarok.fenrir.filePathToUrl
 import dev.ragnarok.fenrir.longpoll.AppNotificationChannels
 import dev.ragnarok.fenrir.longpoll.NotificationHelper
 import dev.ragnarok.fenrir.media.music.MusicPlaybackController
@@ -242,11 +243,14 @@ object DownloadWorkUtils {
         return MusicPlaybackController.tracksExist.isExistAllAudio(audioName)
     }
 
-    fun GetLocalTrackLink(audio: Audio): String {
+    fun GetLocalTrackLink(audio: Audio): String? {
         if (audio.url?.contains("file://") == true || audio.url?.contains("content://") == true)
-            return audio.url!!
-        return "file://" + Settings.get()
-            .main().musicDir + "/" + makeLegalFilename(audio.artist + " - " + audio.title, "mp3")
+            return audio.url
+        return (Settings.get()
+            .main().musicDir + "/" + makeLegalFilename(
+            audio.artist + " - " + audio.title,
+            "mp3"
+        )).filePathToUrl()
     }
 
     fun doSyncRemoteAudio(context: Context) {

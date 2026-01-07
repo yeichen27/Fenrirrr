@@ -108,7 +108,7 @@ object ShortcutUtils {
                 }, {
                     VKApiUser.CAMERA_50
                 }), title ?: ("id$ownerId")
-            ).map { its ->
+            ).map { _ ->
                 createWallShortcut(
                     context,
                     accountId,

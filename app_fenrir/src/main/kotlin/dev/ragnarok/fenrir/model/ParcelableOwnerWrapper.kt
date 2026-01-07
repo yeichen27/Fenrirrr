@@ -118,7 +118,7 @@ class ParcelableOwnerWrapper : Parcelable, ParcelNative.ParcelableNative {
             }
             val ownersCount = parcel.readInt()
             val owners: MutableList<Owner> = ArrayList(ownersCount)
-            for (i in 0 until ownersCount) {
+            (0 until ownersCount).forEach { _ ->
                 readOwner(parcel)?.let { owners.add(it) }
             }
             return owners
@@ -143,7 +143,7 @@ class ParcelableOwnerWrapper : Parcelable, ParcelNative.ParcelableNative {
             }
             val ownersCount = parcel.readInt()
             val owners: MutableList<Owner> = ArrayList(ownersCount)
-            for (i in 0 until ownersCount) {
+            (0 until ownersCount).forEach { _ ->
                 readOwner(parcel)?.let { owners.add(it) }
             }
             return owners

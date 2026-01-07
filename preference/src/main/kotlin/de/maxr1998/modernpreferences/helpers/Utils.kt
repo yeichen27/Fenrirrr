@@ -38,7 +38,7 @@ internal fun Slider.onSeek(callback: (Int, Boolean) -> Unit) {
         }
     })
 
-    addOnChangeListener { slider, value, fromUser ->
+    addOnChangeListener { _, value, fromUser ->
         if (fromUser) callback(value.toInt(), false)
     }
 }

@@ -20,8 +20,10 @@ import androidx.annotation.ColorInt
 import androidx.core.database.getBlobOrNull
 import androidx.core.database.getStringOrNull
 import androidx.core.graphics.toColorInt
+import androidx.core.net.toUri
 import kotlinx.serialization.json.Json
 import okhttp3.ResponseBody
+import java.io.File
 import java.io.Serializable
 import kotlin.contracts.contract
 
@@ -629,4 +631,17 @@ fun String.toColor(): Int {
         e.printStackTrace()
     }
     return Color.RED
+}
+
+fun String.filePathToUrl(filePrefixReplace: String? = null): String? {
+    try {
+        var path = File(this).toUri().toString()
+        if (filePrefixReplace.nonNullNoEmpty()) {
+            path = path.replaceFirst("file://", "$filePrefixReplace://")
+        }
+        return path
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+    return null
 }

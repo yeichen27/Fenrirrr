@@ -14,6 +14,7 @@ import com.squareup.picasso3.Picasso
 import dev.ragnarok.fenrir.module.FenrirNative
 import dev.ragnarok.filegallery.Constants
 import dev.ragnarok.filegallery.R
+import dev.ragnarok.filegallery.filePathToUrl
 import dev.ragnarok.filegallery.media.music.MusicPlaybackController
 import dev.ragnarok.filegallery.media.music.PlayerStatus
 import dev.ragnarok.filegallery.model.Audio
@@ -125,7 +126,7 @@ class TagDirAdapter(context: Context, private var data: List<TagDir>) :
         }
 
         PicassoInstance.with()
-            .load("thumb_file://${item.path}").tag(Constants.PICASSO_TAG)
+            .load(item.path?.filePathToUrl("thumb_file")).tag(Constants.PICASSO_TAG)
             .priority(Picasso.Priority.LOW)
             .into(holder.icon, object : Callback {
                 override fun onSuccess() {
@@ -202,7 +203,7 @@ class TagDirAdapter(context: Context, private var data: List<TagDir>) :
         }
 
         PicassoInstance.with()
-            .load("thumb_file://${item.path}").tag(Constants.PICASSO_TAG)
+            .load(item.path?.filePathToUrl("thumb_file")).tag(Constants.PICASSO_TAG)
             .priority(Picasso.Priority.LOW)
             .into(holder.icon)
         holder.fileName.text = item.name

@@ -4,6 +4,7 @@ import dev.ragnarok.fenrir.module.parcel.ParcelFlags
 import dev.ragnarok.fenrir.module.parcel.ParcelNative
 import dev.ragnarok.filegallery.Includes
 import dev.ragnarok.filegallery.db.interfaces.ISearchRequestHelperStorage
+import dev.ragnarok.filegallery.filePathToUrl
 import dev.ragnarok.filegallery.fragment.base.RxSupportPresenter
 import dev.ragnarok.filegallery.model.Audio
 import dev.ragnarok.filegallery.model.FileType
@@ -111,8 +112,8 @@ class TagDirPresenter(private val owner_id: Long) :
                 val photo = Photo()
                 photo.setId(i.fileNameHash)
                 photo.setOwnerId(i.filePathHash)
-                photo.setPhoto_url("file://" + i.path)
-                photo.setPreview_url("thumb_file://" + i.path)
+                photo.setPhoto_url(i.path?.filePathToUrl())
+                photo.setPreview_url(i.path?.filePathToUrl("thumb_file"))
                 photo.setLocal(true)
                 photo.setIsAnimation(i.type == FileType.video)
                 photo.setText(i.name)
@@ -126,7 +127,7 @@ class TagDirPresenter(private val owner_id: Long) :
             v.setId(item.fileNameHash)
             v.setOwnerId(item.filePathHash)
             v.setTitle(item.name)
-            v.setLink("file://" + item.path)
+            v.setLink(item.path?.filePathToUrl())
             view?.displayVideo(v)
         } else if (item.type == FileType.audio) {
             val list = tagDirData
@@ -143,8 +144,8 @@ class TagDirPresenter(private val owner_id: Long) :
                 val audio = Audio()
                 audio.setId(i.fileNameHash)
                 audio.setOwnerId(i.filePathHash)
-                audio.setUrl("file://" + i.path)
-                audio.setThumb_image("thumb_file://" + i.path)
+                audio.setUrl(i.path?.filePathToUrl())
+                audio.setThumb_image(i.path?.filePathToUrl("thumb_file"))
 
                 var TrackName: String =
                     i.name?.replace(".mp3", "") ?: ""

@@ -4,7 +4,6 @@ import android.provider.BaseColumns
 
 object MessagesColumns : BaseColumns {
     const val TABLENAME = "messages"
-    const val _ID = "_id"
     const val PEER_ID = "peer_id"
     const val FROM_ID = "from_id"
     const val DATE = "date"
@@ -37,7 +36,7 @@ object MessagesColumns : BaseColumns {
     const val RANDOM_ID = "random_id"
     const val EXTRAS = "extras"
     const val DONT_ATTACH = 0
-    const val FULL_ID = "$TABLENAME.$_ID"
+    const val FULL_ID = TABLENAME + "." + BaseColumns._ID
     const val FULL_PEER_ID = "$TABLENAME.$PEER_ID"
     const val FULL_FROM_ID = "$TABLENAME.$FROM_ID"
     const val FULL_DATE = "$TABLENAME.$DATE"

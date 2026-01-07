@@ -58,7 +58,8 @@ class StickersInteractor(private val networker: INetworker, private val storage:
     private suspend fun storeStickerKeyword(
         accountId: Long,
         dbo: Dictionary<VKApiStickersKeywords>,
-        listKeys: MutableSet<Int>
+        listKeys: MutableSet<Int>,
+        clear: Boolean
     ): Boolean {
         val list: MutableList<VKApiStickersKeywords> =
             listEmptyIfNullMutable(dbo.dictionary)
@@ -82,7 +83,7 @@ class StickersInteractor(private val networker: INetworker, private val storage:
                 temp.add(StickersKeywordsEntity(keywords, stickers))
             }
         }
-        return storage.storeKeyWords(accountId, temp).single()
+        return storage.storeKeyWords(accountId, temp, clear).single()
     }
 
     override fun receiveAndStoreStickerSets(accountId: Long): Flow<Boolean> {
@@ -106,12 +107,12 @@ class StickersInteractor(private val networker: INetworker, private val storage:
                     if (Settings.get().main().isHint_stickers) {
                         val first = networker.vkDefault(accountId)
                             .store().getStickerKeywords(0, null).single()
-                        storeStickerKeyword(accountId, first, listKeys)
+                        storeStickerKeyword(accountId, first, listKeys, true)
                         for (i in 1 until first.chunksCount) {
                             val s = networker.vkDefault(accountId)
                                 .store().getStickerKeywords(i, first.chunksHash).delayedFlow(500)
                                 .single()
-                            storeStickerKeyword(accountId, s, listKeys)
+                            storeStickerKeyword(accountId, s, listKeys, false)
                         }
                     }
                     toFlow(true)

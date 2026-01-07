@@ -9,17 +9,18 @@ class CompositeJob {
     private var isCanceled: Boolean = false
 
     fun add(job: Job): Boolean {
+        var ret = false
         if (!isCanceled) {
             synchronized(this) {
                 if (!isCanceled) {
                     jobList.removeIf {
                         it.isCancelled || it.isCompleted
                     }
-                    return jobList.add(job)
+                    ret = jobList.add(job)
                 }
             }
         }
-        return false
+        return ret
     }
 
     operator fun plusAssign(job: Job) {
@@ -27,13 +28,14 @@ class CompositeJob {
     }
 
     fun remove(job: Job, cancel: Boolean = true): Boolean {
+        var ret = false
         synchronized(this) {
-            val ret = jobList.remove(job)
+            ret = jobList.remove(job)
             if (cancel && !isCanceled) {
                 job.cancel()
             }
-            return ret
         }
+        return ret
     }
 
     fun clear() {

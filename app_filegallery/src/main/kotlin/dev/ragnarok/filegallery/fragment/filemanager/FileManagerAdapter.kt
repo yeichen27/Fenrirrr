@@ -22,6 +22,7 @@ import com.squareup.picasso3.Picasso
 import dev.ragnarok.fenrir.module.FenrirNative
 import dev.ragnarok.filegallery.Constants
 import dev.ragnarok.filegallery.R
+import dev.ragnarok.filegallery.filePathToUrl
 import dev.ragnarok.filegallery.media.music.MusicPlaybackController
 import dev.ragnarok.filegallery.media.music.PlayerStatus
 import dev.ragnarok.filegallery.modalbottomsheetdialogfragment.ModalBottomSheetDialogFragment
@@ -216,8 +217,8 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
         val t = Audio()
         t.setId(audio.fileNameHash)
         t.setOwnerId(audio.filePathHash)
-        t.setUrl("file://" + audio.file_path)
-        t.setThumb_image("thumb_file://" + audio.file_path)
+        t.setUrl(audio.file_path?.filePathToUrl())
+        t.setThumb_image(audio.file_path?.filePathToUrl("thumb_file"))
         t.setDuration(audio.size.toInt())
 
         var TrackName: String = audio.file_name?.replace(".mp3", "") ?: ""
@@ -407,7 +408,7 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
         holder.fileInfo.setBackgroundColor(messageBubbleColor)
 
         PicassoInstance.with()
-            .load("thumb_file://${item.file_path}").tag(Constants.PICASSO_TAG)
+            .load(item.file_path?.filePathToUrl("thumb_file")).tag(Constants.PICASSO_TAG)
             .priority(Picasso.Priority.LOW)
             .into(holder.icon, object : Callback {
                 override fun onSuccess() {
@@ -625,7 +626,7 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
         holder.fileInfo.setBackgroundColor(messageBubbleColor)
 
         PicassoInstance.with()
-            .load("thumb_file://${item.file_path}").tag(Constants.PICASSO_TAG)
+            .load(item.file_path?.filePathToUrl("thumb_file")).tag(Constants.PICASSO_TAG)
             .priority(Picasso.Priority.LOW)
             .into(holder.icon)
         holder.fileName.text = item.file_name

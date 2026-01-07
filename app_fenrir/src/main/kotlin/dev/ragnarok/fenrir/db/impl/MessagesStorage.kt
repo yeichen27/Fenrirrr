@@ -3,6 +3,7 @@ package dev.ragnarok.fenrir.db.impl
 import android.content.ContentProviderOperation
 import android.content.ContentValues
 import android.database.Cursor
+import android.provider.BaseColumns
 import dev.ragnarok.fenrir.db.AttachToType
 import dev.ragnarok.fenrir.db.FenrirContentProvider
 import dev.ragnarok.fenrir.db.FenrirContentProvider.Companion.getMessageContentUriFor
@@ -106,7 +107,7 @@ internal class MessagesStorage(base: AppStorages) : AbsStorage(base), IMessagesS
     ): Flow<Optional<Int>> {
         return flow {
             val uri = getMessageContentUriFor(accountId)
-            val projection = arrayOf(MessagesColumns._ID)
+            val projection = arrayOf(BaseColumns._ID)
             val where = MessagesColumns.PEER_ID + " = ?" +
                     " AND " + MessagesColumns.STATUS + " = ?" +
                     " AND " + MessagesColumns.ATTACH_TO + " = ?" +
@@ -126,7 +127,7 @@ internal class MessagesStorage(base: AppStorages) : AbsStorage(base), IMessagesS
             var id: Int? = null
             if (cursor != null) {
                 if (cursor.moveToNext()) {
-                    id = cursor.getInt(MessagesColumns._ID)
+                    id = cursor.getInt(BaseColumns._ID)
                 }
                 cursor.close()
             }
@@ -298,7 +299,7 @@ internal class MessagesStorage(base: AppStorages) : AbsStorage(base), IMessagesS
                 })
 
                 cv.put(MessagesColumns.PAYLOAD, patch.payload)
-                val where = MessagesColumns._ID + " = ?"
+                val where = BaseColumns._ID + " = ?"
                 val args = arrayOf(messageId.toString())
                 operations.add(
                     ContentProviderOperation.newUpdate(uri).withValues(cv)
@@ -352,7 +353,7 @@ internal class MessagesStorage(base: AppStorages) : AbsStorage(base), IMessagesS
 
     override fun findDraftMessage(accountId: Long, peerId: Long): Flow<DraftMessage?> {
         return flow {
-            val columns = arrayOf(MessagesColumns._ID, MessagesColumns.TEXT)
+            val columns = arrayOf(BaseColumns._ID, MessagesColumns.TEXT)
             val uri = getMessageContentUriFor(accountId)
             val cursor = context.contentResolver.query(
                 uri,
@@ -365,7 +366,7 @@ internal class MessagesStorage(base: AppStorages) : AbsStorage(base), IMessagesS
                 var message: DraftMessage? = null
                 if (cursor != null) {
                     if (cursor.moveToNext()) {
-                        val id = cursor.getInt(MessagesColumns._ID)
+                        val id = cursor.getInt(BaseColumns._ID)
                         val body = cursor.getString(MessagesColumns.TEXT)
                         message = DraftMessage(id, body)
                     }
@@ -396,7 +397,7 @@ internal class MessagesStorage(base: AppStorages) : AbsStorage(base), IMessagesS
                 cr.update(
                     uri,
                     cv,
-                    MessagesColumns._ID + " = ?",
+                    BaseColumns._ID + " = ?",
                     arrayOf(existDraftMessageId.toString())
                 )
             } else {
@@ -459,7 +460,7 @@ internal class MessagesStorage(base: AppStorages) : AbsStorage(base), IMessagesS
                     ContentProviderOperation.newUpdate(uri)
                         .withValues(cv)
                         .withSelection(
-                            MessagesColumns._ID + " = ?",
+                            BaseColumns._ID + " = ?",
                             arrayOf(patch.messageId.toString())
                         )
                         .build()
@@ -494,7 +495,7 @@ internal class MessagesStorage(base: AppStorages) : AbsStorage(base), IMessagesS
     }
 
     private fun findDraftMessageId(accountId: Long, peerId: Long): Int? {
-        val columns = arrayOf(MessagesColumns._ID)
+        val columns = arrayOf(BaseColumns._ID)
         val uri = getMessageContentUriFor(accountId)
         val cursor = context.contentResolver.query(
             uri,
@@ -506,7 +507,7 @@ internal class MessagesStorage(base: AppStorages) : AbsStorage(base), IMessagesS
         var id: Int? = null
         if (cursor != null) {
             if (cursor.moveToNext()) {
-                id = cursor.getInt(MessagesColumns._ID)
+                id = cursor.getInt(BaseColumns._ID)
             }
             cursor.close()
         }
@@ -524,7 +525,7 @@ internal class MessagesStorage(base: AppStorages) : AbsStorage(base), IMessagesS
             val contentValues = ContentValues()
             contentValues.put(MessagesColumns.STATUS, status)
             if (vkid != null) {
-                contentValues.put(MessagesColumns._ID, vkid)
+                contentValues.put(BaseColumns._ID, vkid)
             }
             if (cmid != null) {
                 contentValues.put(MessagesColumns.CONVERSATION_MESSAGE_ID, cmid)
@@ -532,7 +533,7 @@ internal class MessagesStorage(base: AppStorages) : AbsStorage(base), IMessagesS
             val uri = getMessageContentUriFor(accountId)
             val count = context.contentResolver.update(
                 uri, contentValues,
-                MessagesColumns._ID + " = ?", arrayOf(messageId.toString())
+                BaseColumns._ID + " = ?", arrayOf(messageId.toString())
             )
             if (count > 0) {
                 emit(true)
@@ -548,7 +549,7 @@ internal class MessagesStorage(base: AppStorages) : AbsStorage(base), IMessagesS
             val uri = getMessageContentUriFor(accountId)
             val count = context.contentResolver.delete(
                 uri,
-                MessagesColumns._ID + " = ?",
+                BaseColumns._ID + " = ?",
                 arrayOf(messageId.toString())
             )
             emit(count > 0)
@@ -592,12 +593,12 @@ internal class MessagesStorage(base: AppStorages) : AbsStorage(base), IMessagesS
         return flow {
             val copy: MutableSet<Int> = HashSet(ids)
             val uri = getMessageContentUriFor(accountId)
-            val projection = arrayOf(MessagesColumns._ID)
+            val projection = arrayOf(BaseColumns._ID)
             val where = MessagesColumns.FULL_ID + " IN(" + join(",", copy) + ")"
             val cursor = contentResolver.query(uri, projection, where, null, null)
             if (cursor != null) {
                 while (cursor.moveToNext()) {
-                    val id = cursor.getInt(MessagesColumns._ID)
+                    val id = cursor.getInt(BaseColumns._ID)
                     copy.remove(id)
                 }
                 cursor.close()
@@ -646,7 +647,7 @@ internal class MessagesStorage(base: AppStorages) : AbsStorage(base), IMessagesS
             val where: String
             val args: Array<String>?
             if (ids.size == 1) {
-                where = MessagesColumns._ID + " = ?"
+                where = BaseColumns._ID + " = ?"
                 args = arrayOf(ids[0].toString())
             } else {
                 where = MessagesColumns.FULL_ID + " IN (" + join(",", ids) + ")"
@@ -686,7 +687,7 @@ internal class MessagesStorage(base: AppStorages) : AbsStorage(base), IMessagesS
         return flow {
             val where = MessagesColumns.STATUS + " = ?"
             val args = arrayOf(MessageStatus.QUEUE.toString())
-            val orderBy = MessagesColumns._ID + " ASC LIMIT 1"
+            val orderBy = BaseColumns._ID + " ASC LIMIT 1"
             for (accountId in accountIds) {
                 if (!isActive()) {
                     break
@@ -721,7 +722,7 @@ internal class MessagesStorage(base: AppStorages) : AbsStorage(base), IMessagesS
             val cv = ContentValues()
             cv.put(MessagesColumns.HAS_ATTACHMENTS, true)
             val uri = getMessageContentUriFor(accountId)
-            val where = MessagesColumns._ID + " = ?"
+            val where = BaseColumns._ID + " = ?"
             val args = arrayOf(messageId.toString())
             contentResolver.update(uri, cv, where, args)
             emit(true)
@@ -778,7 +779,7 @@ internal class MessagesStorage(base: AppStorages) : AbsStorage(base), IMessagesS
                 cv.put(MessagesColumns.ATTACH_TO, attachToId)
             } else if (attachToIndex == null) {
                 // если сообщение не прикреплено к другому
-                cv.put(MessagesColumns._ID, dbo.id)
+                cv.put(BaseColumns._ID, dbo.id)
                 cv.put(MessagesColumns.ATTACH_TO, MessagesColumns.DONT_ATTACH)
             }
             cv.put(MessagesColumns.PEER_ID, dbo.peerId)
@@ -878,7 +879,7 @@ internal class MessagesStorage(base: AppStorages) : AbsStorage(base), IMessagesS
                 cursor.getInt(MessagesColumns.STATUS)
             @ChatAction val action =
                 cursor.getInt(MessagesColumns.ACTION)
-            val id = cursor.getInt(MessagesColumns._ID)
+            val id = cursor.getInt(BaseColumns._ID)
             val peerId = cursor.getLong(MessagesColumns.PEER_ID)
             val fromId = cursor.getLong(MessagesColumns.FROM_ID)
             var extras: Map<Int, String>? = null

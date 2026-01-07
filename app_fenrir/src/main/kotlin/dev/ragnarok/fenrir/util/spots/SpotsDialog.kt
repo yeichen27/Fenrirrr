@@ -71,7 +71,7 @@ class SpotsDialog internal constructor(
         spots = ArrayList(size)
         val sizeP = context.resources.getDimensionPixelSize(R.dimen.spot_size)
         val progressWidth = context.resources.getDimensionPixelSize(R.dimen.progress_width)
-        for (i in 0..size) {
+        (0..size).forEach { _ ->
             val v = AnimatedView(context)
             v.setBackgroundResource(R.drawable.dmax_spots_spot)
             v.target = progressWidth

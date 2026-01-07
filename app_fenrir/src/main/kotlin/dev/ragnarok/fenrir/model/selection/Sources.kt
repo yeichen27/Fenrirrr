@@ -15,36 +15,36 @@ class Sources : Parcelable {
     internal constructor(parcel: Parcel) {
         val size = parcel.readInt()
         sources = ArrayList(size)
-        for (i in 0 until size) {
+        (0 until size).forEach { _ ->
             when (@Types val type = parcel.readInt()) {
                 Types.FILES -> sources.add(
                     parcel.readTypedObjectCompat(
                         FileManagerSelectableSource.CREATOR
-                    )!!
+                    ) ?: return@forEach
                 )
 
                 Types.LOCAL_PHOTOS -> sources.add(
                     parcel.readTypedObjectCompat(
                         LocalPhotosSelectableSource.CREATOR
-                    )!!
+                    ) ?: return@forEach
                 )
 
                 Types.LOCAL_GALLERY -> sources.add(
                     parcel.readTypedObjectCompat(
                         LocalGallerySelectableSource.CREATOR
-                    )!!
+                    ) ?: return@forEach
                 )
 
                 Types.VIDEOS -> sources.add(
                     parcel.readTypedObjectCompat(
                         LocalVideosSelectableSource.CREATOR
-                    )!!
+                    ) ?: return@forEach
                 )
 
                 Types.VK_PHOTOS -> sources.add(
                     parcel.readTypedObjectCompat(
                         VKPhotosSelectableSource.CREATOR
-                    )!!
+                    ) ?: return@forEach
                 )
 
                 else -> throw UnsupportedOperationException("Invalid type $type")

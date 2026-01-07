@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso3.Picasso
 import dev.ragnarok.filegallery.Constants
 import dev.ragnarok.filegallery.R
+import dev.ragnarok.filegallery.filePathToUrl
 import dev.ragnarok.filegallery.model.FileItemSelect
 import dev.ragnarok.filegallery.picasso.PicassoInstance
 import dev.ragnarok.filegallery.util.AppTextUtils.pluralNumerical
@@ -61,7 +62,7 @@ class FileManagerSelectAdapter(private var data: List<FileItemSelect>) :
                 R.string.files_count_c
             )
         PicassoInstance.with()
-            .load("thumb_file://${item.file_path}").tag(Constants.PICASSO_TAG)
+            .load(item.file_path?.filePathToUrl("thumb_file")).tag(Constants.PICASSO_TAG)
             .priority(Picasso.Priority.LOW)
             .into(holder.icon)
         holder.itemView.setOnClickListener {

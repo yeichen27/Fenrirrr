@@ -67,7 +67,7 @@ class LongpollUpdateDtoAdapter : AbsDtoAdapter<AbsLongpollEvent?>("AbsLongpollEv
                 val reactionCount = optInt(array, reactionCountIndex)
                 var offset = reactionCountIndex + 1
                 val arrayReactionList = ArrayList<VKApiReaction>()
-                for (s in 0..<reactionCount) {
+                (0..<reactionCount).forEach { _ ->
                     val reaction = VKApiReaction()
                     reaction.reaction_id = optInt(array, offset + 1)
                     reaction.count = optInt(array, offset + 2)

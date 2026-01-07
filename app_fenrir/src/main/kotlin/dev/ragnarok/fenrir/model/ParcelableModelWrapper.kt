@@ -69,7 +69,7 @@ class ParcelableModelWrapper : Parcelable {
             }
             val sz = parcel.readInt()
             val ret: ArrayList<AbsModel> = ArrayList(sz)
-            for (i in 0 until sz) {
+            (0 until sz).forEach { _ ->
                 ret.add((parcel.readTypedObjectCompat(CREATOR) ?: return null).get())
             }
             return ret

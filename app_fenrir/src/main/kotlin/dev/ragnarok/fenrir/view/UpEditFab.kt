@@ -82,12 +82,12 @@ open class UpEditFab : FloatingActionButton {
                     isAtLastElementOfStaggedGridLayoutManager(manager)
                 }
 
-                is LinearLayoutManager -> {
-                    isAtLastElementOfLinearLayoutManager(manager)
-                }
-
                 is GridLayoutManager -> {
                     isAtLastElementOfGridLayoutManager(manager)
+                }
+
+                is LinearLayoutManager -> {
+                    isAtLastElementOfLinearLayoutManager(manager)
                 }
 
                 else -> false

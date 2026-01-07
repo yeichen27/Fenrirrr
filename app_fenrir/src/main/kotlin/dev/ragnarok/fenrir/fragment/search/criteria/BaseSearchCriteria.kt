@@ -29,7 +29,7 @@ open class BaseSearchCriteria : Parcelable, Cloneable {
         query = parcel.readString()
         val optionsSize = parcel.readInt()
         options = ArrayList(optionsSize)
-        for (i in 0 until optionsSize) {
+        (0 until optionsSize).forEach { _ ->
             when (parcel.readInt()) {
                 BaseOption.DATABASE -> parcel.readTypedObjectCompat(DatabaseOption.CREATOR)
                 BaseOption.SIMPLE_BOOLEAN -> parcel.readTypedObjectCompat(SimpleBooleanOption.CREATOR)

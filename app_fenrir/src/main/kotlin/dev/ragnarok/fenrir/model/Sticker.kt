@@ -3,6 +3,7 @@ package dev.ragnarok.fenrir.model
 import android.content.Context
 import android.os.Parcel
 import android.os.Parcelable
+import dev.ragnarok.fenrir.filePathToUrl
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.settings.Settings.get
 import java.io.File
@@ -205,8 +206,8 @@ class Sticker : AbsModel {
     }
 
     class LocalSticker(val path: String, val isAnimated: Boolean) {
-        val previewPath: String
-            get() = "file://$path"
+        val previewPath: String?
+            get() = path.filePathToUrl()
         val animationName: String
             get() = File(path).name.replace(".json", ".lottie")
     }

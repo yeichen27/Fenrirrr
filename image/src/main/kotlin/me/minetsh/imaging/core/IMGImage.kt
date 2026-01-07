@@ -256,7 +256,7 @@ class IMGImage {
             if (mMosaicPaint == null) {
                 mMosaicPaint = Paint(Paint.ANTI_ALIAS_FLAG)
                 mMosaicPaint?.isFilterBitmap = false
-                mMosaicPaint?.setXfermode(PorterDuffXfermode(PorterDuff.Mode.SRC_IN))
+                mMosaicPaint?.xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC_IN)
             }
             mImage?.let {
                 mMosaicImage = it.scale(w, h, false)

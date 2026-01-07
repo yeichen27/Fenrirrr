@@ -68,7 +68,7 @@ class ReactionContainer : RowLayout {
         }
         visibility = VISIBLE
         val i = reactionsData.size - childCount
-        (0 until i).forEach { j ->
+        (0 until i).forEach { _ ->
             val itemView =
                 LayoutInflater.from(context).inflate(R.layout.item_reaction, this, false)
             val holder = ReactionHolder(itemView)

@@ -185,12 +185,12 @@ class DBHelper private constructor(context: Context, aid: Long) :
     private fun createZeroMessageProtectionTriggers(db: SQLiteDatabase) {
         val sqlUpdate =
             "CREATE TRIGGER zero_msg_upd BEFORE UPDATE ON " + MessagesColumns.TABLENAME + " FOR EACH ROW " +
-                    "WHEN OLD." + MessagesColumns._ID + " = 0 BEGIN " +
+                    "WHEN OLD." + BaseColumns._ID + " = 0 BEGIN " +
                     "   SELECT RAISE(ABORT, 'Cannot update record with _id=0');" +
                     "END;"
         val sqlDelete =
             "CREATE TRIGGER zero_msg_del BEFORE DELETE ON " + MessagesColumns.TABLENAME + " FOR EACH ROW " +
-                    "WHEN OLD." + MessagesColumns._ID + " = 0 BEGIN " +
+                    "WHEN OLD." + BaseColumns._ID + " = 0 BEGIN " +
                     "   SELECT RAISE(ABORT, 'Cannot delete record with _id=0');" +
                     "END;"
         db.execSQL(sqlUpdate)
@@ -262,7 +262,7 @@ class DBHelper private constructor(context: Context, aid: Long) :
                 //" [" + MessagesAttachmentsColumns.ATTACHMENT_OWNER_ID + "] INTEGER, " +
                 //" CONSTRAINT [] UNIQUE ([" + MessagesAttachmentsColumns.M_ID + "], [" + MessagesAttachmentsColumns.ATTACHMENT_ID + "], [" + MessagesAttachmentsColumns.ATTACHMENT_OWNER_ID + "], [" + MessagesAttachmentsColumns.TYPE + "]) ON CONFLICT REPLACE," +
                 " FOREIGN KEY([" + MessagesAttachmentsColumns.M_ID + "]) " +
-                " REFERENCES " + MessagesColumns.TABLENAME + "([" + MessagesColumns._ID + "]) ON DELETE CASCADE ON UPDATE CASCADE);"
+                " REFERENCES " + MessagesColumns.TABLENAME + "([" + BaseColumns._ID + "]) ON DELETE CASCADE ON UPDATE CASCADE);"
         db.execSQL(sql)
     }
 
@@ -451,8 +451,8 @@ class DBHelper private constructor(context: Context, aid: Long) :
 
     private fun createMessagesTable(db: SQLiteDatabase) {
         val create = "CREATE TABLE [" + MessagesColumns.TABLENAME + "] (\n" +
-                " [" + MessagesColumns._ID + "] INTEGER PRIMARY KEY ON CONFLICT REPLACE AUTOINCREMENT NOT NULL UNIQUE, " +
-                " [" + MessagesColumns.ATTACH_TO + "] INTEGER REFERENCES " + MessagesColumns.TABLENAME + "([" + MessagesColumns._ID + "]) ON DELETE CASCADE ON UPDATE CASCADE, " +
+                " [" + BaseColumns._ID + "] INTEGER PRIMARY KEY ON CONFLICT REPLACE AUTOINCREMENT NOT NULL UNIQUE, " +
+                " [" + MessagesColumns.ATTACH_TO + "] INTEGER REFERENCES " + MessagesColumns.TABLENAME + "([" + BaseColumns._ID + "]) ON DELETE CASCADE ON UPDATE CASCADE, " +
                 " [" + MessagesColumns.ORIGINAL_ID + "] INTEGER, " +
                 " [" + MessagesColumns.CONVERSATION_MESSAGE_ID + "] INTEGER, " +
                 " [" + MessagesColumns.PEER_ID + "] INTEGER, " +
@@ -482,11 +482,11 @@ class DBHelper private constructor(context: Context, aid: Long) :
                 " [" + MessagesColumns.REACTIONS + "] BLOB, " +
                 " [" + MessagesColumns.PAYLOAD + "] TEXT);"
         val insertZeroRow =
-            "INSERT INTO " + MessagesColumns.TABLENAME + " (" + MessagesColumns._ID + ") VALUES (0)"
+            "INSERT INTO " + MessagesColumns.TABLENAME + " (" + BaseColumns._ID + ") VALUES (0)"
         val insert =
-            "INSERT INTO " + MessagesColumns.TABLENAME + " (" + MessagesColumns._ID + ") VALUES (1000000000)"
+            "INSERT INTO " + MessagesColumns.TABLENAME + " (" + BaseColumns._ID + ") VALUES (1000000000)"
         val delete =
-            "DELETE FROM " + MessagesColumns.TABLENAME + " WHERE " + MessagesColumns._ID + " = 1000000000"
+            "DELETE FROM " + MessagesColumns.TABLENAME + " WHERE " + BaseColumns._ID + " = 1000000000"
         db.execSQL(create)
         db.execSQL(insertZeroRow)
         db.execSQL(insert)

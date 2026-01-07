@@ -9,13 +9,14 @@ import com.squareup.picasso3.BitmapUtils.decodeStream
 import com.squareup.picasso3.Picasso
 import com.squareup.picasso3.Request
 import com.squareup.picasso3.RequestHandler
+import dev.ragnarok.fenrir.nonNullNoEmpty
 import okio.source
 import java.io.FileNotFoundException
 import java.io.IOException
 
 class PicassoFullLocalRequestHandler(val context: Context) : RequestHandler() {
     override fun canHandleRequest(data: Request): Boolean {
-        return data.uri != null && data.uri!!.path != null && data.uri!!.lastPathSegment != null && data.uri!!.scheme != null && data.uri!!.scheme?.contains(
+        return data.uri?.path.nonNullNoEmpty() && data.uri?.lastPathSegment.nonNullNoEmpty() && data.uri?.scheme?.contains(
             "full_"
         ) == true
     }

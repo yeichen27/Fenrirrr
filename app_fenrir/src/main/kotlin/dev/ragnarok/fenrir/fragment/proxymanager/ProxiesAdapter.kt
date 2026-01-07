@@ -21,7 +21,7 @@ class ProxiesAdapter(data: MutableList<ProxyConfig>, private val actionListener:
         viewHolder.username.text = config.getUser()
         val pass = StringBuilder()
         if (config.getPass().nonNullNoEmpty()) {
-            for (i in 0 until config.getPass()?.length.orZero()) {
+            (0 until config.getPass()?.length.orZero()).forEach { _ ->
                 pass.append("*")
             }
         }

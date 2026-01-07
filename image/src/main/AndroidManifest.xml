@@ -4,6 +4,7 @@
     <application android:supportsRtl="false">
         <activity
             android:name="me.minetsh.imaging.IMGEditActivity"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|keyboard|keyboardHidden"
             android:theme="@style/ImageEditTheme"
             android:windowSoftInputMode="stateAlwaysHidden" />
     </application>

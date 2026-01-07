@@ -64,7 +64,7 @@ class MyStickersAdapter(private val context: Context) :
                 val normalHolder = holder as StickerHolder
                 normalHolder.image.visibility = View.VISIBLE
                 val url = item.previewPath
-                if (url.isEmpty()) {
+                if (url.isNullOrEmpty()) {
                     with().cancelRequest(normalHolder.image)
                     normalHolder.image.setImageResource(R.drawable.ic_avatar_unknown)
                 } else {

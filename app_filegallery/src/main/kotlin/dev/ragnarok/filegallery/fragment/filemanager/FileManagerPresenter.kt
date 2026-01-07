@@ -9,6 +9,7 @@ import dev.ragnarok.fenrir.module.parcel.ParcelFlags
 import dev.ragnarok.fenrir.module.parcel.ParcelNative
 import dev.ragnarok.filegallery.Includes
 import dev.ragnarok.filegallery.R
+import dev.ragnarok.filegallery.filePathToUrl
 import dev.ragnarok.filegallery.fragment.base.RxSupportPresenter
 import dev.ragnarok.filegallery.model.Audio
 import dev.ragnarok.filegallery.model.FileItem
@@ -643,8 +644,8 @@ class FileManagerPresenter(
                 photo.setId(i.fileNameHash)
                 photo.setOwnerId(i.filePathHash)
                 photo.setDate(i.modification)
-                photo.setPhoto_url("file://" + i.file_path)
-                photo.setPreview_url("thumb_file://" + i.file_path)
+                photo.setPhoto_url(i.file_path?.filePathToUrl())
+                photo.setPreview_url(i.file_path?.filePathToUrl("thumb_file"))
                 photo.setLocal(true)
                 photo.setIsAnimation(
                     i.type == FileType.video
@@ -661,7 +662,7 @@ class FileManagerPresenter(
             v.setOwnerId(item.filePathHash)
             v.setDate(item.modification)
             v.setTitle(item.file_name)
-            v.setLink("file://" + item.file_path)
+            v.setLink(item.file_path?.filePathToUrl())
             v.setDuration(item.size)
             v.setDescription(item.parent_path)
             view?.displayVideo(v)
@@ -680,8 +681,8 @@ class FileManagerPresenter(
                 val audio = Audio()
                 audio.setId(i.fileNameHash)
                 audio.setOwnerId(i.filePathHash)
-                audio.setUrl("file://" + i.file_path)
-                audio.setThumb_image("thumb_file://" + i.file_path)
+                audio.setUrl(i.file_path?.filePathToUrl())
+                audio.setThumb_image(i.file_path?.filePathToUrl("thumb_file"))
                 audio.setDuration(i.size.toInt())
 
                 var TrackName: String =

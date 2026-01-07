@@ -183,7 +183,7 @@ class ParcelNative {
             }
         }
         val ret: MutableList<String> = ArrayList(size)
-        for (i in 0 until size) {
+        (0 until size).forEach { _ ->
             ret.add(readString(nativePointer, updateListener).orEmpty())
         }
         return ret
@@ -200,7 +200,7 @@ class ParcelNative {
             }
         }
         val ret: MutableList<Int> = ArrayList(size)
-        for (i in 0 until size) {
+        (0 until size).forEach { _ ->
             ret.add(readInt(nativePointer, updateListener))
         }
         return ret
@@ -217,7 +217,7 @@ class ParcelNative {
             }
         }
         val ret: MutableList<Long> = ArrayList(size)
-        for (i in 0 until size) {
+        (0 until size).forEach { _ ->
             ret.add(readLong(nativePointer, updateListener))
         }
         return ret
@@ -234,7 +234,7 @@ class ParcelNative {
             }
         }
         val ret: MutableList<Float> = ArrayList(size)
-        for (i in 0 until size) {
+        (0 until size).forEach { _ ->
             ret.add(readFloat(nativePointer, updateListener))
         }
         return ret
@@ -251,7 +251,7 @@ class ParcelNative {
             }
         }
         val ret: MutableList<Double> = ArrayList(size)
-        for (i in 0 until size) {
+        (0 until size).forEach { _ ->
             ret.add(readDouble(nativePointer, updateListener))
         }
         return ret
@@ -318,7 +318,7 @@ class ParcelNative {
             }
         }
         val ret: MutableList<T> = ArrayList(size)
-        for (i in 0 until size) {
+        (0 until size).forEach { _ ->
             readParcelable(loader)?.let { ret.add(it) }
         }
         return ret
@@ -332,7 +332,7 @@ class ParcelNative {
             } else ArrayList()
         }
         val ret = ArrayList<T>(size)
-        for (i in 0 until size) {
+        (0 until size).forEach { _ ->
             readParcelable(loader)?.let { ret.add(it) }
         }
         return ret

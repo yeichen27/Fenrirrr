@@ -8,7 +8,12 @@ import kotlinx.coroutines.flow.Flow
 interface IStickersStorage : IStorage {
     fun storeStickerSets(accountId: Long, sets: List<StickerSetEntity>): Flow<Boolean>
     fun storeStickerSetsCustom(accountId: Long, sets: List<StickerSetEntity>): Flow<Boolean>
-    fun storeKeyWords(accountId: Long, sets: List<StickersKeywordsEntity>): Flow<Boolean>
+    fun storeKeyWords(
+        accountId: Long,
+        sets: List<StickersKeywordsEntity>,
+        clear: Boolean
+    ): Flow<Boolean>
+
     fun getStickerSets(accountId: Long): Flow<List<StickerSetEntity>>
     fun getKeywordsStickers(accountId: Long, s: String): Flow<List<VKApiStickerNotFull>>
     fun clearAccount(accountId: Long): Flow<Boolean>

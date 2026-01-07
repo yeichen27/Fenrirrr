@@ -23,12 +23,14 @@ import dev.ragnarok.fenrir.module.animation.AnimatedFileFrame
 import dev.ragnarok.filegallery.Constants
 import dev.ragnarok.filegallery.Includes
 import dev.ragnarok.filegallery.fragment.filemanager.FileManagerFragment.Companion.isExtension
+import dev.ragnarok.filegallery.nonNullNoEmpty
 import dev.ragnarok.filegallery.settings.Settings
 import dev.ragnarok.filegallery.util.CoverSafeResize
 import okio.buffer
 import okio.source
 import java.io.ByteArrayInputStream
 import java.io.File
+import java.io.FileInputStream
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import java.io.FilenameFilter
@@ -43,7 +45,7 @@ class PicassoFileManagerHandler(val context: Context) : RequestHandler() {
     }
 
     override fun canHandleRequest(data: Request): Boolean {
-        return data.uri != null && data.uri!!.path != null && data.uri!!.lastPathSegment != null && "thumb_file" == data.uri?.scheme
+        return data.uri?.path.nonNullNoEmpty() && data.uri?.lastPathSegment.nonNullNoEmpty() && "thumb_file" == data.uri?.scheme
     }
 
     private fun getMetadataAudioThumbnail(uri: Uri): Bitmap? {
@@ -59,10 +61,8 @@ class PicassoFileManagerHandler(val context: Context) : RequestHandler() {
     }
 
     @Throws(FileNotFoundException::class)
-    fun getSource(uri: Uri): InputStream {
-        val contentResolver = context.contentResolver
-        return contentResolver.openInputStream(uri)
-            ?: throw FileNotFoundException("can't open input stream, uri: $uri")
+    private fun getSource(file: File): InputStream {
+        return FileInputStream(file)
     }
 
     private val filter: FilenameFilter = FilenameFilter { dir, filename ->
@@ -148,14 +148,14 @@ class PicassoFileManagerHandler(val context: Context) : RequestHandler() {
         }
     }
 
-    private fun work(requestUri: Uri, dir: File, request: Request, callback: Callback) {
+    private fun work(requestFile: File, dir: File, request: Request, callback: Callback) {
         if (dir.exists()) {
             if (dir.length() <= 0) {
                 callback.onError(Throwable("Cache file empty"))
                 return
             }
             try {
-                val s = getSource(Uri.fromFile(dir))
+                val s = getSource(dir)
                 val bs = BitmapUtils.decodeStream(
                     s.source(),
                     request
@@ -172,8 +172,8 @@ class PicassoFileManagerHandler(val context: Context) : RequestHandler() {
             return
         }
         when {
-            isExtension(requestUri.toString(), Settings.get().main().audioExt) -> {
-                var target = getMetadataAudioThumbnail(requestUri)
+            isExtension(requestFile.absolutePath, Settings.get().main().audioExt) -> {
+                var target = getMetadataAudioThumbnail(requestFile.toUri())
                 if (target == null) {
                     dir.createNewFile()
                     callback.onError(Throwable("Thumb work error"))
@@ -195,11 +195,11 @@ class PicassoFileManagerHandler(val context: Context) : RequestHandler() {
             }
 
             isExtension(
-                requestUri.toString(),
+                requestFile.absolutePath,
                 Settings.get().main().videoExt
             ) -> {
                 var target =
-                    if (FenrirNative.isNativeLoaded) AnimatedFileFrame.getThumbnail(requestUri.toFile().absoluteFile) else null
+                    if (FenrirNative.isNativeLoaded) AnimatedFileFrame.getThumbnail(requestFile) else null
                 if (target == null) {
                     dir.createNewFile()
                     callback.onError(Throwable("Thumb work error"))
@@ -220,8 +220,8 @@ class PicassoFileManagerHandler(val context: Context) : RequestHandler() {
                 return
             }
 
-            isExtension(requestUri.toString(), Settings.get().main().photoExt) -> {
-                val s = getSource(requestUri)
+            isExtension(requestFile.absolutePath, Settings.get().main().photoExt) -> {
+                val s = getSource(requestFile)
                 var target: Bitmap
                 try {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
@@ -248,7 +248,7 @@ class PicassoFileManagerHandler(val context: Context) : RequestHandler() {
                 }
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
                     try {
-                        val exifOrientation = getExifOrientation(requestUri)
+                        val exifOrientation = getExifOrientation(requestFile)
                         val exifRotation = getExifRotation(exifOrientation)
                         val exifTranslation = getExifTranslation(exifOrientation)
                         if (exifRotation != 0 || exifTranslation != 1) {
@@ -294,20 +294,14 @@ class PicassoFileManagerHandler(val context: Context) : RequestHandler() {
         }
     }
 
-    private fun prepareDirectory(requestUri: Uri, request: Request, callback: Callback): Boolean {
-        val direct: File
-        try {
-            direct = requestUri.toFile()
-            if (!direct.isDirectory) {
-                return false
-            }
-        } catch (_: Exception) {
+    private fun prepareDirectory(requestFile: File, request: Request, callback: Callback): Boolean {
+        if (!requestFile.isDirectory) {
             return false
         }
 
         val dir = File(
             PicassoInstance.getCoversPath(context),
-            "thumb_" + toSha1(direct.absolutePath + direct.lastModified()) + ".jpg"
+            "thumb_" + toSha1(requestFile.absolutePath + requestFile.lastModified()) + ".jpg"
         )
         if (dir.exists()) {
             if (dir.length() <= 0) {
@@ -315,7 +309,7 @@ class PicassoFileManagerHandler(val context: Context) : RequestHandler() {
                 return true
             }
             try {
-                val s = getSource(Uri.fromFile(dir))
+                val s = getSource(dir)
                 callback.onSuccess(
                     Result.Bitmap(
                         BitmapUtils.decodeStream(
@@ -331,7 +325,7 @@ class PicassoFileManagerHandler(val context: Context) : RequestHandler() {
             return true
         }
 
-        val fList = direct.listFiles(filter)
+        val fList = requestFile.listFiles(filter)
         val dst = if (fList != null && fList.isNotEmpty()) {
             fList.sortedWith(ItemModificationComparator())[0]
         } else {
@@ -340,32 +334,29 @@ class PicassoFileManagerHandler(val context: Context) : RequestHandler() {
         if (dst == null) {
             callback.onError(Throwable("Thumb not handle"))
         } else {
-            work(("file://" + dst.absolutePath).toUri(), dir, request, callback)
+            work(dst, dir, request, callback)
         }
         return true
 
     }
 
-    private fun getExifOrientation(uri: Uri): Int {
-        val path = uri.path ?: throw FileNotFoundException("path == null, uri: $uri")
-        return ExifInterface(path).getAttributeInt(
+    private fun getExifOrientation(requestFile: File): Int {
+        return ExifInterface(requestFile.absolutePath).getAttributeInt(
             ExifInterface.TAG_ORIENTATION,
             ExifInterface.ORIENTATION_NORMAL
         )
     }
 
     override fun load(picasso: Picasso, request: Request, callback: Callback) {
-        val requestUri = checkNotNull(request.uri) { "request.uri == null" }.toString()
-            .replace("thumb_", "").toUri()
-        if (prepareDirectory(requestUri, request, callback)) {
+        val requestFile = checkNotNull(request.uri) { "request.uri == null" }.toString()
+            .replace("thumb_", "").toUri().toFile()
+        if (prepareDirectory(requestFile, request, callback)) {
             return
         }
-        val pt = requestUri.toFile()
-
         val dir = File(
             PicassoInstance.getCoversPath(context),
-            "thumb_" + toSha1(pt.absolutePath + pt.lastModified()) + ".jpg"
+            "thumb_" + toSha1(requestFile.absolutePath + requestFile.lastModified()) + ".jpg"
         )
-        work(requestUri, dir, request, callback)
+        work(requestFile, dir, request, callback)
     }
 }

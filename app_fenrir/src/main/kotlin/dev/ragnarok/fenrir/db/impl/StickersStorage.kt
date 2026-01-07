@@ -99,17 +99,23 @@ internal class StickersStorage(base: AppStorages) : AbsStorage(base), IStickersS
         }
     }
 
-    override fun storeKeyWords(accountId: Long, sets: List<StickersKeywordsEntity>): Flow<Boolean> {
+    override fun storeKeyWords(
+        accountId: Long,
+        sets: List<StickersKeywordsEntity>,
+        clear: Boolean
+    ): Flow<Boolean> {
         return flow {
             val start = System.currentTimeMillis()
             val db = TempDataHelper.helper.writableDatabase
             db.transaction {
-                val whereDel = StickersKeywordsColumns.ACCOUNT_ID + " = ?"
-                db.delete(
-                    StickersKeywordsColumns.TABLENAME,
-                    whereDel,
-                    arrayOf(accountId.toString())
-                )
+                if (clear) {
+                    val whereDel = StickersKeywordsColumns.ACCOUNT_ID + " = ?"
+                    db.delete(
+                        StickersKeywordsColumns.TABLENAME,
+                        whereDel,
+                        arrayOf(accountId.toString())
+                    )
+                }
                 for ((id, entity) in sets.withIndex()) {
                     db.insert(
                         StickersKeywordsColumns.TABLENAME,
@@ -187,16 +193,14 @@ internal class StickersStorage(base: AppStorages) : AbsStorage(base), IStickersS
             )
             val stickers: MutableList<VKApiStickerNotFull> = ArrayList(safeCountOf(cursor))
             while (cursor.moveToNext()) {
-                if (!isActive() || stickers.size > 10) {
+                if (!isActive() || stickers.size > 40) {
                     break
                 }
                 val entity = mapStickersKeywords(cursor)
                 for (v in entity.keywords) {
                     if (v.contains(s, ignoreCase = true)) {
                         entity.stickers.let { stickers.addAll(it) }
-                        cursor.close()
-                        emit(stickers)
-                        return@flow
+                        break
                     }
                 }
             }
