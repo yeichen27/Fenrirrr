@@ -35,7 +35,6 @@ import dev.ragnarok.fenrir.module.FenrirNative
 import dev.ragnarok.filegallery.Extra
 import dev.ragnarok.filegallery.R
 import dev.ragnarok.filegallery.activity.photopager.PhotoPagerActivity
-import dev.ragnarok.filegallery.activity.qr.CameraScanActivity
 import dev.ragnarok.filegallery.fragment.AudioPlayerFragment
 import dev.ragnarok.filegallery.fragment.PreferencesFragment
 import dev.ragnarok.filegallery.fragment.SecurityPreferencesFragment

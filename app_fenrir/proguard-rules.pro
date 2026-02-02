@@ -14,8 +14,6 @@
 
 
 #Native Library
--keep class com.google.zxing.** { *; }
--keep class com.github.luben.zstd.** { *; }
 -keep class androidx.media3.decoder.ffmpeg.** { *; }
 -keep class androidx.media3.decoder.opus.** { *; }
 

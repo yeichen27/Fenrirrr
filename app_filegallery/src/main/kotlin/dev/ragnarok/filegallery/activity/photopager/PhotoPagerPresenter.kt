@@ -19,7 +19,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.squareup.picasso3.BitmapTarget
 import com.squareup.picasso3.Picasso
 import dev.ragnarok.filegallery.R
-import dev.ragnarok.filegallery.activity.qr.CameraScanActivity
+import dev.ragnarok.filegallery.activity.CameraScanActivity
 import dev.ragnarok.filegallery.fragment.base.RxSupportPresenter
 import dev.ragnarok.filegallery.model.Photo
 import dev.ragnarok.filegallery.model.Video

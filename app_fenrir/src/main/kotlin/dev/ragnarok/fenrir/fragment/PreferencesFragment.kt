@@ -138,7 +138,7 @@ import dev.ragnarok.fenrir.util.coroutines.CancelableJob
 import dev.ragnarok.fenrir.util.coroutines.CompositeJob
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.delayTaskFlow
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
-import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.hiddenIO
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.syncSingleSafe
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.toMain
 import dev.ragnarok.fenrir.util.refresh.RefreshToken
 import dev.ragnarok.fenrir.util.toast.CustomSnackbars
@@ -1056,11 +1056,27 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 defaultValue = true
                 summaryRes = R.string.stickers_by_theme_summary
                 titleRes = R.string.stickers_by_theme
+                onCheckedChange {
+                    for (i in Settings.get().accounts().registered) {
+                        if (!Utils.isHiddenAccount(i)) {
+                            Includes.stores.stickers().clearAccount(accountId).syncSingleSafe()
+                        }
+                    }
+                    requireActivity().recreate()
+                }
             }
 
             switch("stickers_by_new") {
                 defaultValue = false
                 titleRes = R.string.stickers_by_new
+                onCheckedChange {
+                    for (i in Settings.get().accounts().registered) {
+                        if (!Utils.isHiddenAccount(i)) {
+                            Includes.stores.stickers().clearAccount(accountId).syncSingleSafe()
+                        }
+                    }
+                    requireActivity().recreate()
+                }
             }
 
             switch("emojis_full_screen") {
@@ -2911,9 +2927,9 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
             }
             TempDataHelper.helper.clear()
             cleanTmpFileCache(activity, true)
-            Includes.stores.stickers().clearAccount(accountId).hiddenIO()
+            Includes.stores.stickers().clearAccount(accountId).syncSingleSafe()
             Includes.stores.tempStore().clearReactionAssets(accountId)
-                .hiddenIO()
+                .syncSingleSafe()
             activity.recreate()
         }
 

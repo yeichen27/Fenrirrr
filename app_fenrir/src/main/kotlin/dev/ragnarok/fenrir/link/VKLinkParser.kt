@@ -605,7 +605,7 @@ object VKLinkParser {
 
     private fun parseCatalogV2(string: String): AbsLink? {
         return if (patterns.PATTERN_CATALOG_V2_SECTION.containsMatchIn(string)) {
-            return CatalogV2SectionLink(string)
+            CatalogV2SectionLink(string)
         } else null
     }
 

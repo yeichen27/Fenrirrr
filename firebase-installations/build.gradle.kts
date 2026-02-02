@@ -4,8 +4,8 @@ plugins {
     alias(libs.plugins.android.library)
 }
 
-fun isDevelopBuild() = libs.versions.developerBuild.get().toBoolean()
-fun isDevelopBuildString() = libs.versions.developerBuild.get()
+fun isDevelopBuild(): Boolean = libs.versions.developerBuild.get().toBoolean()
+fun isDevelopBuildString(): String = libs.versions.developerBuild.get()
 fun String.commaString() = "\"${this}\""
 fun Provider<String>.commaString() = "\"${this.get()}\""
 fun Provider<String>.asInt() = get().toInt()

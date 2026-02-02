@@ -139,7 +139,7 @@ Java_dev_ragnarok_fenrir_module_animation_thorvg_ThorVGSVGRender_createBitmapNat
             return;
         }
 
-        if (canvas->push(picture) != tvg::Result::Success) {
+        if (canvas->add(picture) != tvg::Result::Success) {
             AndroidBitmap_unlockPixels(env, bitmap);
             delete canvas;
             tvg::Paint::rel(picture);
@@ -412,7 +412,7 @@ Java_dev_ragnarok_fenrir_module_animation_thorvg_ThorVGLottieDrawable_nGetFrame(
         info->animation->frame((float) frame);
         if (!info->isCanvasPushed) {
             info->isCanvasPushed = true;
-            info->canvas->push(info->animation->picture());
+            info->canvas->add(info->animation->picture());
         } else {
             info->canvas->update();
         }
@@ -487,13 +487,13 @@ Java_dev_ragnarok_fenrir_module_animation_thorvg_ThorVGLottie2Gif_lottie2gif(JNI
         bgBackgroundShape->appendRect(0, 0, (float) w, (float) h);
         bgBackgroundShape->fill(((bgColor >> 16) & 0xff), ((bgColor >> 8) & 0xff),
                                 (bgColor & 0xff));
-        if (info.canvas->push(bgBackgroundShape) != tvg::Result::Success) {
+        if (info.canvas->add(bgBackgroundShape) != tvg::Result::Success) {
             tvg::Paint::rel(bgBackgroundShape);
             return false;
         }
     }
 
-    info.canvas->push(info.animation->picture());
+    info.canvas->add(info.animation->picture());
 
     char const *gifNameString = SafeGetStringUTFChars(env, gifName, nullptr);
     std::string gifNameStr = gifNameString;

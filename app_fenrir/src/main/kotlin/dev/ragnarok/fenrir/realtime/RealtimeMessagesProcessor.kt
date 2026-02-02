@@ -113,8 +113,8 @@ internal class RealtimeMessagesProcessor : IRealtimeMessagesProcessor {
     }
 
     override fun isNotificationIntercepted(accountId: Long, peerId: Long): Boolean {
-        for (i in notificationsInterceptors) {
-            if (i.value.first == accountId && i.value.second == peerId) {
+        for ((_, value) in notificationsInterceptors) {
+            if (value.first == accountId && value.second == peerId) {
                 return false
             }
         }

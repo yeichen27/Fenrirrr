@@ -2,7 +2,7 @@
 # APP
 developerBuild = "true"
 
-agpVersion = "9.0.0-rc02"
+agpVersion = "9.0.0"
 appCompileSDK = "36.1"
 appBuildTools = "36.1.0"
 appNdk = "29.0.14206865"
@@ -10,23 +10,22 @@ appCMake = "4.1.2"
 appMinSDKDevelop = "29"
 appMinSDKNotDevelop = "26"
 appTargetSDK = "36"
-appFenrirVersionCode = "999"
-appFenrirVersionName = "2.999"
-appFileGalleryVersionCode = "999"
-appFileGalleryVersionName = "1.999"
+appVersionCode = "1000"
+appVersionName = "107"
 
 # Androidx Libraries
-activityVersion = "1.12.2"
+activityVersion = "1.12.3"
 annotationVersion = "1.9.1"
 appcompatVersion = "1.7.1"
 biometricVersion = "1.4.0-alpha05"
 browserVersion = "1.9.0"
 cardviewVersion = "1.0.0"
-collectionVersion = "1.6.0-alpha01"
+collectionVersion = "1.6.0-beta01"
 concurentVersion = "1.3.0"
 constraintlayoutVersion = "2.2.1"
 coordinatorlayoutVersion = "1.3.0"
 coreVersion = "1.17.0"
+coreBackportedFixesVersion = "1.0.0"
 customviewVersion = "1.2.0"
 customviewPoolingcontainerVersion = "1.1.0"
 documentfileVersion = "1.1.0"
@@ -37,15 +36,15 @@ fragmentVersion = "1.8.9"
 graphicsShapesAndroidVersion = "1.1.0"
 lifecycleVersion = "2.10.0"
 mediaVersion = "1.7.1"
-media3Version = "1.9.0"
+media3Version = "1.9.1"
 resourceInspectionAnnotationVersion = "1.0.1"
 savedStateVersion = "1.4.0"
 swiperefreshlayoutVersion = "1.2.0"
 tracingVersion = "1.3.0"
-transitionVersion = "1.7.0-rc01"
+transitionVersion = "1.7.0"
 vectordrawableVersion = "1.2.0"
 webkitVersion = "1.15.0"
-workVersion = "2.11.0"
+workVersion = "2.11.1"
 
 #Firebase Libraries
 firebaseDatatransportVersion = "20.0.1"
@@ -56,20 +55,24 @@ firebaseCommonVersion = "22.0.1"
 firebaseInstallationsInteropVersion = "17.2.0"
 firebaseComponentsVersion = "19.0.0"
 firebaseAnnotationsVersion = "17.0.0"
-playServicesTasksVersion = "18.4.0"
-playServicesBase = "18.9.0"
+playServicesTasksVersion = "18.4.1"
+playServicesBase = "18.10.0"
 autoValueVersion = "1.11.1"
 
 # Common Libraries
 gmsServicesVersion = "4.4.4"
 kotlinVersion = "2.3.0"
-kotlinCoroutines = "1.10.2"
-kotlinSerializer = "1.10.0-RC"
+kotlinCoroutinesVersion = "1.10.2"
+kotlinSerializerVersion = "1.10.0"
+kotlinAtomicfuVersion = "0.31.0"
+daggerVersion = "2.59"
+kspVersion = "2.3.5"
+javaxInjectVersion = "1"
 okhttpLibraryVersion = "5.3.2"
 okioVersion = "3.16.4"
 guavaVersion = "33.5.0-android"
-errorProneVersion = "2.45.0"
-checkerQualAndroidVersion = "3.52.1"
+errorProneVersion = "2.46.0"
+checkerQualAndroidVersion = "3.53.0"
 jspecifyAnnotationVersion = "1.0.0"
 desugarLibraryVersion = "2.1.5"
 
@@ -103,6 +106,7 @@ androidx-concurrent-futures = { group = "androidx.concurrent", name = "concurren
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayoutVersion" }
 androidx-coordinatorlayout = { group = "androidx.coordinatorlayout", name = "coordinatorlayout", version.ref = "coordinatorlayoutVersion" }
 androidx-core = { group = "androidx.core", name = "core-ktx", version.ref = "coreVersion" }
+androidx-core-backported-fixes = { module = "androidx.core:core-backported-fixes", version.ref = "coreBackportedFixesVersion" }
 androidx-customview = { group = "androidx.customview", name = "customview", version.ref = "customviewVersion" }
 androidx-customview-poolingcontainer = { group = "androidx.customview", name = "customview-poolingcontainer", version.ref = "customviewPoolingcontainerVersion" }
 androidx-documentfile = { group = "androidx.documentfile", name = "documentfile", version.ref = "documentfileVersion" }
@@ -144,9 +148,13 @@ auto-value-annotations = { group = "com.google.auto.value", name = "auto-value-a
 kotlin-annotations = { group = "org.jetbrains.kotlin", name = "kotlin-annotations-jvm", version.ref = "kotlinVersion" }
 kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib-jdk8", version.ref = "kotlinVersion" }
 kotlin-parcelize-runtime = { group = "org.jetbrains.kotlin", name = "kotlin-parcelize-runtime", version.ref = "kotlinVersion" }
-kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinCoroutines" }
-kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlinCoroutines" }
-kotlinx-serialization-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-core", version.ref = "kotlinSerializer" }
+kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinCoroutinesVersion" }
+kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlinCoroutinesVersion" }
+kotlinx-serialization-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-core", version.ref = "kotlinSerializerVersion" }
+kotlinx-atomicfu = { group = "org.jetbrains.kotlinx", name = "atomicfu", version.ref = "kotlinAtomicfuVersion" }
+javax-inject = { module = "javax.inject:javax.inject", version.ref = "javaxInjectVersion" }
+dagger = { module = "com.google.dagger:dagger", version.ref = "daggerVersion" }
+daggerCompiler = { module = "com.google.dagger:dagger-compiler", version.ref = "daggerVersion" }
 okhttp = { group = "com.squareup.okhttp3", name = "okhttp-android", version.ref = "okhttpLibraryVersion" }
 # okhttp-logginginterceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttpLibraryVersion" }
 okio = { group = "com.squareup.okio", name = "okio", version.ref = "okioVersion" }
@@ -161,4 +169,5 @@ desugarjdklibs = { group = "com.android.tools", name = "desugar_jdk_libs", versi
 android-application = { id = "com.android.application", version.ref = "agpVersion" }
 android-library = { id = "com.android.library", version.ref = "agpVersion" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinVersion" }
+devtools-ksp = { id = "com.google.devtools.ksp", version.ref = "kspVersion" }
 gms-services = { id = "com.google.gms.google-services", version.ref = "gmsServicesVersion" }

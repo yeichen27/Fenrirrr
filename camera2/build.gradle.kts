@@ -2,9 +2,10 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.android.library)
+    alias(libs.plugins.devtools.ksp)
 }
 
-//1.5.2
+//1.6.0-beta01
 
 fun isDevelopBuild() = libs.versions.developerBuild.get().toBoolean()
 fun Provider<String>.asInt() = get().toInt()
@@ -31,8 +32,18 @@ android {
 kotlin {
     compilerOptions {
         jvmTarget.set(JvmTarget.JVM_21)
-        freeCompilerArgs.add("-XXLanguage:+PropertyParamAnnotationDefaultTargetMode")
+        freeCompilerArgs.addAll(
+            setOf(
+                "-XXLanguage:+PropertyParamAnnotationDefaultTargetMode",
+                "-jvm-default=no-compatibility"
+            )
+        )
     }
+}
+
+ksp {
+    arg("dagger.fastInit", "enabled")
+    arg("dagger.fullBindingGraphValidation", "ERROR")
 }
 
 dependencies {
@@ -46,6 +57,7 @@ dependencies {
     implementation(libs.androidx.annotation)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.core)
+    implementation(libs.androidx.core.backported.fixes)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.fragment)
     implementation(libs.androidx.collection)
@@ -53,7 +65,12 @@ dependencies {
     implementation(libs.errorprone.annotations)
     implementation(libs.androidx.exifinterface)
     implementation(libs.androidx.concurrent.futures)
+    implementation(libs.kotlinx.atomicfu)
+    implementation(libs.javax.inject)
+    implementation(libs.dagger)
     annotationProcessor(libs.auto.value)
+
+    ksp(libs.daggerCompiler)
 
     modules {
         module("com.google.guava:listenablefuture") {

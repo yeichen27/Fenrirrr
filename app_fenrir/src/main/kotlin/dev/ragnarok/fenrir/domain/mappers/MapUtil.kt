@@ -53,13 +53,14 @@ object MapUtil {
     ): MutableList<R> {
         return if (orig.nonNullNoEmpty()) {
             if (orig.size == 1) {
-                return mutableListOf(function.invoke(orig.iterator().next()))
+                mutableListOf(function.invoke(orig.iterator().next()))
+            } else {
+                val list: MutableList<R> = ArrayList(orig.size)
+                for (o in orig) {
+                    list.add(function.invoke(o))
+                }
+                list
             }
-            val list: MutableList<R> = ArrayList(orig.size)
-            for (o in orig) {
-                list.add(function.invoke(o))
-            }
-            return list
         } else {
             ArrayList(0)
         }
@@ -76,7 +77,7 @@ object MapUtil {
                 for (o in orig) {
                     function.invoke(o)?.let { list.add(it) }
                 }
-                return list
+                list
             }
         } else {
             emptyList()

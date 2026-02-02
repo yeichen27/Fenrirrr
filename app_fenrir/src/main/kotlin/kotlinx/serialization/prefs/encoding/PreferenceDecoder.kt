@@ -52,7 +52,7 @@ internal class PreferenceDecoder(
             val childDescriptor = descriptor.getElementDescriptor(currentIndex++)
             if (
                 name in sharedPreferences || // found key
-                sharedPreferences.all.any { it.key.startsWith("$name.") } || // found key of child
+                sharedPreferences.all.any { (key) -> key.startsWith("$name.") } || // found key of child
                 childDescriptor.isNullable // doesn't encode null, so could be null
             ) {
                 return currentIndex - 1
@@ -71,7 +71,7 @@ internal class PreferenceDecoder(
     }
 
     override fun decodeTaggedNotNullMark(tag: String): Boolean =
-        tag in sharedPreferences || sharedPreferences.all.any { it.key.startsWith("$tag.") }
+        tag in sharedPreferences || sharedPreferences.all.any { (key) -> key.startsWith("$tag.") }
 
     override fun decodeTaggedBoolean(tag: String): Boolean {
         checkTagIsStored(tag)

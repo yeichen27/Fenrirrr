@@ -39,11 +39,11 @@ import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.Includes
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.ActivityUtils.supportToolbarFor
+import dev.ragnarok.fenrir.activity.CameraScanActivity
 import dev.ragnarok.fenrir.activity.EnterPinActivity
 import dev.ragnarok.fenrir.activity.FileManagerSelectActivity
 import dev.ragnarok.fenrir.activity.LoginActivity.Companion.createIntent
 import dev.ragnarok.fenrir.activity.ProxyManagerActivity
-import dev.ragnarok.fenrir.activity.qr.CameraScanActivity
 import dev.ragnarok.fenrir.api.Auth.scope
 import dev.ragnarok.fenrir.dialog.directauth.DirectAuthDialog
 import dev.ragnarok.fenrir.dialog.directauth.DirectAuthDialog.Companion.newInstance
@@ -53,6 +53,7 @@ import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.ModalBottomSheetDialog
 import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.OptionRequest
 import dev.ragnarok.fenrir.model.Account
 import dev.ragnarok.fenrir.model.SaveAccount
+import dev.ragnarok.fenrir.module.FenrirNative
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.place.PlaceFactory.getPreferencesPlace
@@ -729,7 +730,7 @@ class AccountsFragment : BaseMvpFragment<AccountsPresenter, IAccountsView>(), IA
             }
 
             R.id.auth_by_qr -> {
-                if (Utils.isOfficialVKCurrent && Settings.get()
+                if (FenrirNative.isNativeLoaded && Utils.isOfficialVKCurrent && Settings.get()
                         .accounts().anonymToken.expired_at <= System.currentTimeMillis() / 1000
                 ) {
                     showError(R.string.auth_by_qr_error)
@@ -762,6 +763,7 @@ class AccountsFragment : BaseMvpFragment<AccountsPresenter, IAccountsView>(), IA
     override fun onPrepareMenu(menu: Menu) {
         menu.findItem(R.id.export_accounts).isVisible = presenter?.isNotEmptyAccounts() == true
         menu.findItem(R.id.import_by_exchange_token).isVisible = Utils.isOfficialDefault
+        menu.findItem(R.id.auth_by_qr).isVisible = FenrirNative.isNativeLoaded
     }
 
     override fun displayData(accounts: List<Account>) {

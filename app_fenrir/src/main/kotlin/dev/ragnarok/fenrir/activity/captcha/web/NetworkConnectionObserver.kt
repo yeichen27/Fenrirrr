@@ -12,7 +12,7 @@ internal class NetworkConnectionObserver(
     fun isInternetAvailable(): Boolean {
         val connectivityManager = context.getSystemService(
             Context.CONNECTIVITY_SERVICE
-        ) as ConnectivityManager?
+        ) as? ConnectivityManager?
             ?: return false
 
         @Suppress("deprecation")

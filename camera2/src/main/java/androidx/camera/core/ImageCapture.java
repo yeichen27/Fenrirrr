@@ -541,7 +541,6 @@ public final class ImageCapture extends UseCase {
      *
      * @see #setFeatureGroup
      */
-    @OptIn(markerClass = ExperimentalSessionConfig.class)
     private void applyFeatureGroupToConfig(UseCaseConfig.@NonNull Builder<?, ?, ?> builder) {
         Set<@NonNull GroupableFeature> featureGroup = getFeatureGroup();
 
@@ -827,6 +826,12 @@ public final class ImageCapture extends UseCase {
 
             // TODO(b/122846516): Update session configuration and possibly reconfigure session.
         }
+    }
+
+    @RestrictTo(Scope.LIBRARY_GROUP)
+    @Override
+    protected void onProviderRotationChanged(int rotation) {
+        setTargetRotation(rotation);
     }
 
     /**
@@ -1774,6 +1779,17 @@ public final class ImageCapture extends UseCase {
     public @Nullable ResolutionSelector getPostviewResolutionSelector() {
         return getCurrentConfig().retrieveOption(OPTION_POSTVIEW_RESOLUTION_SELECTOR,
                 null);
+    }
+
+    /**
+     * Returns whether the use case supports auto-rotation.
+     *
+     * @return true if the use case supports auto-rotation, false otherwise.
+     */
+    @RestrictTo(Scope.LIBRARY_GROUP)
+    @Override
+    public boolean isAutoRotationSupported() {
+        return true;
     }
 
     /**

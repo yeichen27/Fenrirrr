@@ -7,8 +7,8 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
 }
 
-fun isDevelopBuild() = libs.versions.developerBuild.get().toBoolean()
-fun isDevelopBuildString() = libs.versions.developerBuild.get()
+fun isDevelopBuild(): Boolean = libs.versions.developerBuild.get().toBoolean()
+fun isDevelopBuildString(): String = libs.versions.developerBuild.get()
 fun Provider<String>.asInt() = get().toInt()
 
 android {
@@ -44,8 +44,8 @@ android {
         minSdk =
             if (isDevelopBuild()) libs.versions.appMinSDKDevelop.asInt() else libs.versions.appMinSDKNotDevelop.asInt()
         targetSdk = libs.versions.appTargetSDK.asInt()
-        versionCode = libs.versions.appFileGalleryVersionCode.asInt()
-        versionName = libs.versions.appFileGalleryVersionName.get()
+        versionCode = libs.versions.appVersionCode.asInt()
+        versionName = libs.versions.appVersionName.get()
         buildConfigField("Integer", "TARGET_SDK", libs.versions.appTargetSDK.get())
         buildConfigField("boolean", "FORCE_DEVELOPER_MODE", isDevelopBuildString())
 

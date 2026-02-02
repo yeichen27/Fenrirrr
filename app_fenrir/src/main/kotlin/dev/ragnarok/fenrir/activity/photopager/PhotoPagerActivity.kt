@@ -398,7 +398,11 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
             R.id.save_yourself -> presenter?.fireSaveYourselfClick()
             R.id.action_delete -> presenter?.fireDeleteClick()
             R.id.info -> presenter?.fireInfoButtonClick(this)
-            R.id.detect_qr -> presenter?.fireDetectQRClick(this)
+            R.id.detect_qr -> {
+                if (FenrirNative.isNativeLoaded) {
+                    presenter?.fireDetectQRClick(this)
+                }
+            }
         }
         return false
     }
@@ -414,6 +418,7 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
     }
 
     override fun onPrepareMenu(menu: Menu) {
+        menu.findItem(R.id.detect_qr).isVisible = FenrirNative.isNativeLoaded
         if (!Utils.isHiddenCurrent) {
             menu.findItem(R.id.save_yourself).isVisible = mCanSaveYourself
             menu.findItem(R.id.action_delete).isVisible = mCanDelete

@@ -163,4 +163,22 @@ public interface VideoOutput {
             int sessionType) {
         return VideoCapabilities.EMPTY;
     }
+
+    /**
+     * Returns the {@link EncoderProfilesResolver} of the {@link VideoOutput}.
+     */
+    @RestrictTo(Scope.LIBRARY)
+    default @NonNull EncoderProfilesResolver getEncoderProfilesResolver(
+            @NonNull CameraInfo cameraInfo, int sessionType) {
+        return EncoderProfilesResolver.EMPTY;
+    }
+
+    /**
+     * Returns whether the (or any) {@link QualitySelector} set to the {@link VideoOutput} is the
+     * default one.
+     */
+    @RestrictTo(Scope.LIBRARY)
+    default boolean isQualitySelectorDefault() {
+        return true;
+    }
 }

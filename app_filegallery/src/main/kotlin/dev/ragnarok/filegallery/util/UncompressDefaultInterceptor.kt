@@ -1,14 +1,13 @@
 package dev.ragnarok.filegallery.util
 
-import com.github.luben.zstd.ZstdInputStream
 import dev.ragnarok.fenrir.module.FenrirNative
+import dev.ragnarok.fenrir.module.zstd.ZstdJni.zstdDecompress
 import okhttp3.Interceptor
 import okhttp3.Response
 import okhttp3.ResponseBody.Companion.asResponseBody
 import okhttp3.internal.http.promisesBody
 import okio.GzipSource
 import okio.buffer
-import okio.source
 
 object UncompressDefaultInterceptor : Interceptor {
     private fun uncompress(response: Response): Response {
@@ -20,7 +19,7 @@ object UncompressDefaultInterceptor : Interceptor {
 
         val decompressedSource = when {
             encoding.equals("zstd", ignoreCase = true) ->
-                ZstdInputStream(body.source().inputStream()).source().buffer()
+                body.source().zstdDecompress().buffer()
 
             encoding.equals("gzip", ignoreCase = true) ->
                 GzipSource(body.source()).buffer()

@@ -54,6 +54,7 @@ class PhotosViewHelper internal constructor(
         if (container.childCount > videos.size) {
             container.removeViews(videos.size, container.childCount - videos.size)
         }
+        var countOfAutoPlayVideos = 0
         for (g in videos.indices) {
             val tmpV = container.getChildAt(g)
             var holder: VideoHolder? =
@@ -95,7 +96,8 @@ class PhotosViewHelper internal constructor(
                 holder.tvDelay.text = AppTextUtils.getDurationString(video.duration)
                 holder.tvTitle.text = Utils.firstNonEmptyString(video.title, " ")
 
-                if (isAutoPlayVideo == 1 && trailerUrl.nonNullNoEmpty() || isAutoPlayVideo == 2) {
+                if (isAutoPlayVideo == 1 && trailerUrl.nonNullNoEmpty() || isAutoPlayVideo == 2 && countOfAutoPlayVideos < Constants.MAX_AUTOPLAY_VIDEO_IN_POST) {
+                    countOfAutoPlayVideos++
                     PicassoInstance.with().cancelRequest(holder.vgVideo)
                     holder.vgVideo.setDecoderCallback(object :
                         AnimatedShapeableImageView.OnDecoderInit {
@@ -222,6 +224,7 @@ class PhotosViewHelper internal constructor(
         if (container.childCount > images.size) {
             container.removeViews(images.size, container.childCount - images.size)
         }
+        var countOfAutoPlayVideos = 0
         for (g in images.indices) {
             val tmpV = container.getChildAt(g)
             var holder: Holder? = if (tmpV.tag is Holder) tmpV.tag as Holder else null
@@ -286,7 +289,7 @@ class PhotosViewHelper internal constructor(
             } else {
                 null
             }
-            if ((isAutoPlayVideo == 1 || isAutoPlayVideo == 2) && isGifSrc.nonNullNoEmpty()) {
+            if ((isAutoPlayVideo == 1 || isAutoPlayVideo == 2 && countOfAutoPlayVideos < Constants.MAX_AUTOPLAY_VIDEO_IN_POST) && isGifSrc.nonNullNoEmpty()) {
                 PicassoInstance.with().cancelRequest(holder.vgPhoto)
                 holder.vgPhoto.setDecoderCallback(object :
                     AnimatedShapeableImageView.OnDecoderInit {
@@ -310,6 +313,7 @@ class PhotosViewHelper internal constructor(
                     }
                 })
                 if (isAutoPlayVideo == 2) {
+                    countOfAutoPlayVideos++
                     holder.vgPhoto.fromFile(
                         isGifSrc,
                         true

@@ -141,7 +141,7 @@ class UploadManagerImpl(
     private fun updateNotification(updates: IProgressUpdate?) {
         updates?.let {
             val notificationManager =
-                context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager?
+                context.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager?
                     ?: return
             if (needCreateChannel) {
                 val channel = NotificationChannel(

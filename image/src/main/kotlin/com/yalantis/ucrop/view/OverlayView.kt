@@ -400,7 +400,7 @@ class OverlayView @JvmOverloads constructor(
                 mGridPoints = FloatArray(mCropGridRowCount * 4 + mCropGridColumnCount * 4)
                 var index = 0
                 mGridPoints?.let {
-                    for (i in 0 until mCropGridRowCount) {
+                    for (i in 0..mCropGridRowCount) {
                         it[index++] = cropViewRect.left
                         it[index++] =
                             cropViewRect.height() * ((i.toFloat() + 1.0f) / (mCropGridRowCount + 1).toFloat()) + cropViewRect.top
@@ -408,7 +408,7 @@ class OverlayView @JvmOverloads constructor(
                         it[index++] =
                             cropViewRect.height() * ((i.toFloat() + 1.0f) / (mCropGridRowCount + 1).toFloat()) + cropViewRect.top
                     }
-                    for (i in 0 until mCropGridColumnCount) {
+                    for (i in 0..mCropGridColumnCount) {
                         it[index++] =
                             cropViewRect.width() * ((i.toFloat() + 1.0f) / (mCropGridColumnCount + 1).toFloat()) + cropViewRect.left
                         it[index++] = cropViewRect.top

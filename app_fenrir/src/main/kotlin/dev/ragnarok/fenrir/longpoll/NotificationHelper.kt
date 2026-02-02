@@ -327,7 +327,7 @@ object NotificationHelper {
             .needHideMessagesBodyForNotif
         val text = getMessageContent(hideBody, message, context)
         val nManager =
-            context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager?
+            context.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager?
                 ?: return
         nManager.createNotificationChannel(getChatMessageChannel(context))
         nManager.createNotificationChannel(getGroupChatMessageChannel(context))

@@ -8,8 +8,8 @@ plugins {
     alias(libs.plugins.gms.services)
 }
 
-fun isDevelopBuild() = libs.versions.developerBuild.get().toBoolean()
-fun isDevelopBuildString() = libs.versions.developerBuild.get()
+fun isDevelopBuild(): Boolean = libs.versions.developerBuild.get().toBoolean()
+fun isDevelopBuildString(): String = libs.versions.developerBuild.get()
 fun Provider<String>.commaString() = "\"${this.get()}\""
 fun Provider<String>.asInt() = get().toInt()
 
@@ -46,8 +46,8 @@ android {
         minSdk =
             if (isDevelopBuild()) libs.versions.appMinSDKDevelop.asInt() else libs.versions.appMinSDKNotDevelop.asInt()
         targetSdk = libs.versions.appTargetSDK.asInt()
-        versionCode = libs.versions.appFenrirVersionCode.asInt()
-        versionName = libs.versions.appFenrirVersionName.get()
+        versionCode = libs.versions.appVersionCode.asInt()
+        versionName = libs.versions.appVersionName.get()
 
         buildConfigField("String", "SERVICE_TOKEN", libs.versions.vkServiceToken.commaString())
         buildConfigField("String", "FAKE_ABI", libs.versions.fakeAbi.commaString())

@@ -338,13 +338,11 @@ class UserWallPresenter(
         val currentAvatarOwner_id = details.photoId?.ownerId
         var sel = 0
         if (currentAvatarPhotoId != null && currentAvatarOwner_id != null) {
-            var ut = 0
-            for (i in photos) {
+            for ((ut, i) in photos.withIndex()) {
                 if (i.ownerId == currentAvatarOwner_id && i.getObjectId() == currentAvatarPhotoId) {
                     sel = ut
                     break
                 }
-                ut++
             }
         }
         val curr = sel

@@ -1,6 +1,8 @@
-curl --location https://maven.google.com/androidx/camera/camera-camera2/1.5.2/camera-camera2-1.5.2-sources.jar --output camera-camera2-1.5.2-sources.jar
-curl --location https://maven.google.com/androidx/camera/camera-core/1.5.2/camera-core-1.5.2-sources.jar --output camera-core-1.5.2-sources.jar
-curl --location https://maven.google.com/androidx/camera/camera-lifecycle/1.5.2/camera-lifecycle-1.5.2-sources.jar --output camera-lifecycle-1.5.2-sources.jar
-curl --location https://maven.google.com/androidx/camera/camera-video/1.5.2/camera-video-1.5.2-sources.jar --output camera-video-1.5.2-sources.jar
-curl --location https://maven.google.com/androidx/camera/camera-view/1.5.2/camera-view-1.5.2-sources.jar --output camera-view-1.5.2-sources.jar
-curl --location https://maven.google.com/androidx/camera/featurecombinationquery/featurecombinationquery/1.5.2/featurecombinationquery-1.5.2-sources.jar --output featurecombinationquery-1.5.2-sources.jar
+curl --location https://maven.google.com/androidx/camera/camera-camera2/1.6.0-beta01/camera-camera2-1.6.0-beta01-sources.jar --output camera-camera2-1.6.0-beta01-sources.jar
+curl --location https://maven.google.com/androidx/camera/camera-camera2-pipe/1.6.0-beta01/camera-camera2-pipe-1.6.0-beta01-sources.jar --output camera-camera2-pipe-1.6.0-beta01-sources.jar
+curl --location https://maven.google.com/androidx/camera/camera-core/1.6.0-beta01/camera-core-1.6.0-beta01-sources.jar --output camera-core-1.6.0-beta01-sources.jar
+curl --location https://maven.google.com/androidx/camera/camera-lifecycle/1.6.0-beta01/camera-lifecycle-1.6.0-beta01-sources.jar --output camera-lifecycle-1.6.0-beta01-sources.jar
+curl --location https://maven.google.com/androidx/camera/camera-video/1.6.0-beta01/camera-video-1.6.0-beta01-sources.jar --output camera-video-1.6.0-beta01-sources.jar
+curl --location https://maven.google.com/androidx/camera/camera-view/1.6.0-beta01/camera-view-1.6.0-beta01-sources.jar --output camera-view-1.6.0-beta01-sources.jar
+curl --location https://maven.google.com/androidx/camera/camera-viewfinder-core/1.4.0-alpha07/camera-viewfinder-core-1.4.0-alpha07-sources.jar --output camera-viewfinder-core-1.4.0-alpha07-sources.jar
+curl --location https://maven.google.com/androidx/camera/featurecombinationquery/featurecombinationquery/1.6.0-beta01/featurecombinationquery-1.6.0-beta01-sources.jar --output featurecombinationquery-1.6.0-beta01-sources.jar

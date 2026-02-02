@@ -1,6 +1,6 @@
 package dev.ragnarok.filegallery.util
 
-import com.github.luben.zstd.ZstdInputStream
+import dev.ragnarok.fenrir.module.zstd.ZstdJni.zstdDecompress
 import dev.ragnarok.filegallery.kJson
 import dev.ragnarok.filegallery.kJsonNotPretty
 import kotlinx.serialization.msgpack.MsgPack
@@ -11,7 +11,6 @@ import okhttp3.internal.http.promisesBody
 import okhttp3.internal.platform.Platform
 import okio.Buffer
 import okio.GzipSource
-import okio.source
 import java.io.IOException
 import java.util.TreeSet
 import java.util.concurrent.TimeUnit
@@ -187,9 +186,9 @@ class OkHttp3LoggingInterceptor @JvmOverloads constructor(
                     }
                 } else if ("zstd".equals(headers["Content-Encoding"], ignoreCase = true)) {
                     gzippedLength = buffer.size
-                    ZstdInputStream(buffer.inputStream()).use { gzippedResponseBody ->
+                    buffer.zstdDecompress().use { gzippedResponseBody ->
                         buffer = Buffer()
-                        buffer.writeAll(gzippedResponseBody.source())
+                        buffer.writeAll(gzippedResponseBody)
                     }
                 }
 
@@ -253,9 +252,9 @@ class OkHttp3LoggingInterceptor @JvmOverloads constructor(
                     }
                 } else if ("zstd".equals(headers["Content-Encoding"], ignoreCase = true)) {
                     gzippedLength = buffer.size
-                    ZstdInputStream(buffer.clone().inputStream()).use { gzippedResponseBody ->
+                    buffer.clone().zstdDecompress().use { gzippedResponseBody ->
                         buffer = Buffer()
-                        buffer.writeAll(gzippedResponseBody.source())
+                        buffer.writeAll(gzippedResponseBody)
                     }
                 }
 

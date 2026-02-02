@@ -296,14 +296,12 @@ class VKPhotosPresenter(
             )
         }
         if (loadedIdPhoto > 0) {
-            var opt = 0
-            for (i in photos) {
+            for ((opt, i) in photos.withIndex()) {
                 if (i.photo.getObjectId() == loadedIdPhoto) {
                     i.current = true
                     view?.notifyPhotosChanged(opt, 1)
                     break
                 }
-                opt++
             }
         }
         resolveToolbarView()

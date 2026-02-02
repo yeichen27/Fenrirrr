@@ -114,7 +114,7 @@
         </activity>
 
         <activity
-            android:name="dev.ragnarok.filegallery.activity.qr.CameraScanActivity"
+            android:name="dev.ragnarok.filegallery.activity.CameraScanActivity"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|keyboard|keyboardHidden"
             android:label="@string/scan_qr"
             android:theme="@style/App.DayNight.Swipes"

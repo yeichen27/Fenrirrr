@@ -9,8 +9,6 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerializationStrategy
 import kotlinx.serialization.StringFormat
-import kotlinx.serialization.json.DecodeSequenceMode.ARRAY_WRAPPED
-import kotlinx.serialization.json.DecodeSequenceMode.WHITESPACE_SEPARATED
 import kotlinx.serialization.json.internal.DescriptorSchemaCache
 import kotlinx.serialization.json.internal.FormatLanguage
 import kotlinx.serialization.json.internal.JsonSerializersModuleValidator
@@ -308,7 +306,7 @@ enum class DecodeSequenceMode {
      * Each individual object in the array is parsed lazily when it is requested from the resulting sequence.
      *
      * The stream is read as multiple JSON objects wrapped into a JSON array.
-     * The stream must start with an array start character `[` and end with an array end character `]`,
+     * The stream must start with an array start character  and end with an array end character,
      * otherwise, [JsonDecodingException] is thrown.
      *
      * Example of `ARRAY_WRAPPED` stream content:

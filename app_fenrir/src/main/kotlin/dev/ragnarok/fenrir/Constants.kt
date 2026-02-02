@@ -51,6 +51,7 @@ object Constants {
     const val LONGPOLL_TIMEOUT = 45L
     const val LONGPOLL_WAIT = 25L
     const val PICASSO_TIMEOUT = 15L
+    const val MAX_AUTOPLAY_VIDEO_IN_POST = 2
 
     val CATALOG_V2_IGNORE_SECTIONS = arrayOf("podcasts", "radiostations")
 }

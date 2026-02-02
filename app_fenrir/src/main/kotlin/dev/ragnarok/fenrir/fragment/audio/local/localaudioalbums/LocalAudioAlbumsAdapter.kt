@@ -31,13 +31,11 @@ class LocalAudioAlbumsAdapter(
 
     fun getFirstWithCurrentId(): Int {
         var ret = 0
-        var iter = 0
-        for (i in data) {
+        for ((iter, i) in data.withIndex()) {
             if (i.id == currentId) {
                 ret = iter
                 break
             }
-            iter++
         }
         return ret
     }

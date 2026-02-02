@@ -91,6 +91,13 @@ target_include_directories(thorvg PRIVATE
         animation/thorvg/src/loaders/svg
         animation/thorvg/src/common)
 
+if (${ANDROID_ABI} STREQUAL "arm64-v8a" OR ${ANDROID_ABI} STREQUAL "armeabi-v7a")
+    target_compile_definitions(thorvg PRIVATE RAPIDJSON_NEON)
+else ()
+    target_compile_definitions(thorvg PRIVATE RAPIDJSON_SSE2)
+endif ()
+
+#####################################################################
 add_library(libyuv STATIC
         animation/libyuv/source/compare.cc
         animation/libyuv/source/compare_common.cc
@@ -146,6 +153,7 @@ if (${ANDROID_ABI} STREQUAL "arm64-v8a")
     target_compile_options(libyuv PRIVATE -march=armv8-a+dotprod+i8mm -DLIBYUV_DISABLE_SVE -DLIBYUV_DISABLE_SME)
 endif ()
 
+#####################################################################
 add_library(opus STATIC
         audio/opus/libopus/src/opus.c
         audio/opus/libopus/src/opus_decoder.c
@@ -312,6 +320,7 @@ set_target_properties(opus PROPERTIES
 target_compile_definitions(opus PRIVATE
         OPUS_BUILD FIXED_POINT USE_ALLOCA restrict= __EMX__ HAVE_LRINT HAVE_LRINTF)
 
+#####################################################################
 add_library(common STATIC
         audio/ts/MpegTsBitStream.cpp
         audio/ts/MpegTsDemux.cpp
@@ -431,7 +440,6 @@ add_library(common STATIC
 
 target_include_directories(common
         PRIVATE
-        ./
         audio/taglib
         audio/taglib/mpeg
         audio/taglib/mpeg/id3v1
@@ -462,6 +470,7 @@ if (${ANDROID_ABI} STREQUAL "arm64-v8a")
             compress/zlib/arch/arm/compare256_neon.c
             compress/zlib/arch/arm/crc32_armv8.c
             compress/zlib/arch/arm/slide_hash_neon.c)
+    target_compile_options(common PRIVATE -march=armv8-a+crc)
 elseif (${ANDROID_ABI} STREQUAL "armeabi-v7a")
     target_compile_definitions(common PRIVATE ARM_FEATURES ARM_NEON ARM_NEON_HASLD4)
     target_sources(common PRIVATE
@@ -471,7 +480,7 @@ elseif (${ANDROID_ABI} STREQUAL "armeabi-v7a")
             compress/zlib/arch/arm/compare256_neon.c
             compress/zlib/arch/arm/crc32_armv8.c
             compress/zlib/arch/arm/slide_hash_neon.c)
-else()
+else ()
     target_compile_definitions(common PRIVATE X86_FEATURES X86_SSE2 WITHOUT_CHORBA_SSE)
     target_sources(common PRIVATE
             compress/zlib/arch/x86/chorba_sse2.c
@@ -481,6 +490,134 @@ else()
             compress/zlib/arch/x86/x86_features.c)
 endif ()
 
+#####################################################################
+add_library(zxing STATIC
+        zxing/aztec/AZDecoder.cpp
+        zxing/aztec/AZDetector.cpp
+        zxing/aztec/AZEncoder.cpp
+        zxing/aztec/AZHighLevelEncoder.cpp
+        zxing/aztec/AZReader.cpp
+        zxing/aztec/AZToken.cpp
+        zxing/aztec/AZWriter.cpp
+        zxing/datamatrix/DMBitLayout.cpp
+        zxing/datamatrix/DMDecoder.cpp
+        zxing/datamatrix/DMECEncoder.cpp
+        zxing/datamatrix/DMReader.cpp
+        zxing/datamatrix/DMVersion.cpp
+        zxing/datamatrix/DMDataBlock.cpp
+        zxing/datamatrix/DMDetector.cpp
+        zxing/datamatrix/DMHighLevelEncoder.cpp
+        zxing/datamatrix/DMSymbolInfo.cpp
+        zxing/datamatrix/DMWriter.cpp
+        zxing/libzueci/zueci.c
+        zxing/maxicode/MCBitMatrixParser.cpp
+        zxing/maxicode/MCDecoder.cpp
+        zxing/maxicode/MCReader.cpp
+        zxing/oned/ODCodabarReader.cpp
+        zxing/oned/ODCode128Writer.cpp
+        zxing/oned/ODCode93Writer.cpp
+        zxing/oned/ODDataBarExpandedReader.cpp
+        zxing/oned/ODEAN8Writer.cpp
+        zxing/oned/ODReader.cpp
+        zxing/oned/ODWriterHelper.cpp
+        zxing/oned/ODCodabarWriter.cpp
+        zxing/oned/ODCode39Reader.cpp
+        zxing/oned/ODDXFilmEdgeReader.cpp
+        zxing/oned/ODDataBarLimitedReader.cpp
+        zxing/oned/ODITFReader.cpp
+        zxing/oned/ODUPCAWriter.cpp
+        zxing/oned/ODCode128Patterns.cpp
+        zxing/oned/ODCode39Writer.cpp
+        zxing/oned/ODDataBarCommon.cpp
+        zxing/oned/ODDataBarReader.cpp
+        zxing/oned/ODITFWriter.cpp
+        zxing/oned/ODUPCEANCommon.cpp
+        zxing/oned/ODCode128Reader.cpp
+        zxing/oned/ODCode93Reader.cpp
+        zxing/oned/ODDataBarExpandedBitDecoder.cpp
+        zxing/oned/ODEAN13Writer.cpp
+        zxing/oned/ODMultiUPCEANReader.cpp
+        zxing/oned/ODUPCEWriter.cpp
+        zxing/pdf417/PDFBarcodeValue.cpp
+        zxing/pdf417/PDFCodewordDecoder.cpp
+        zxing/pdf417/PDFDetectionResult.cpp
+        zxing/pdf417/PDFDetector.cpp
+        zxing/pdf417/PDFHighLevelEncoder.cpp
+        zxing/pdf417/PDFModulusPoly.cpp
+        zxing/pdf417/PDFScanningDecoder.cpp
+        zxing/pdf417/ZXBigInteger.cpp
+        zxing/pdf417/PDFBoundingBox.cpp
+        zxing/pdf417/PDFDecoder.cpp
+        zxing/pdf417/PDFDetectionResultColumn.cpp
+        zxing/pdf417/PDFEncoder.cpp
+        zxing/pdf417/PDFModulusGF.cpp
+        zxing/pdf417/PDFReader.cpp
+        zxing/pdf417/PDFWriter.cpp
+        zxing/qrcode/QRBitMatrixParser.cpp
+        zxing/qrcode/QRDataBlock.cpp
+        zxing/qrcode/QRDetector.cpp
+        zxing/qrcode/QRErrorCorrectionLevel.cpp
+        zxing/qrcode/QRMaskUtil.cpp
+        zxing/qrcode/QRReader.cpp
+        zxing/qrcode/QRWriter.cpp
+        zxing/qrcode/QRCodecMode.cpp
+        zxing/qrcode/QRDecoder.cpp
+        zxing/qrcode/QREncoder.cpp
+        zxing/qrcode/QRFormatInformation.cpp
+        zxing/qrcode/QRMatrixUtil.cpp
+        zxing/qrcode/QRVersion.cpp
+        zxing/Barcode.cpp
+        zxing/BitMatrixIO.cpp
+        zxing/GenericGFPoly.cpp
+        zxing/MultiFormatReader.cpp
+        zxing/ReedSolomonEncoder.cpp
+        zxing/Utf.cpp
+        zxing/BarcodeFormat.cpp
+        zxing/BitSource.cpp
+        zxing/ECI.cpp
+        zxing/GlobalHistogramBinarizer.cpp
+        zxing/MultiFormatWriter.cpp
+        zxing/ResultPoint.cpp
+        zxing/WhiteRectDetector.cpp
+        zxing/BinaryBitmap.cpp
+        zxing/CharacterSet.cpp
+        zxing/Error.cpp
+        zxing/GridSampler.cpp
+        zxing/PerspectiveTransform.cpp
+        zxing/TextDecoder.cpp
+        zxing/WriteBarcode.cpp
+        zxing/BitArray.cpp
+        zxing/ConcentricFinder.cpp
+        zxing/GTIN.cpp
+        zxing/HRI.cpp
+        zxing/ReadBarcode.cpp
+        zxing/TextEncoder.cpp
+        zxing/ZXingC.cpp
+        zxing/BitMatrix.cpp
+        zxing/Content.cpp
+        zxing/GenericGF.cpp
+        zxing/HybridBinarizer.cpp
+        zxing/JSON.cpp
+        zxing/ReedSolomonDecoder.cpp
+        zxing/ZXingCpp.cpp
+)
+
+target_include_directories(zxing
+        PRIVATE
+        zxing
+        zxing/aztec
+        zxing/datamatrix
+        zxing/libzueci
+        zxing/maxicode
+        zxing/oned
+        zxing/pdf417
+        zxing/qrcode
+)
+
+target_compile_options(zxing PRIVATE
+        ${OPTIMIZE_FAST} -DZXING_INTERNAL -funroll-loops -fno-strict-aliasing -fno-math-errno -Wno-unused-parameter -Wno-unused-variable ${SYM_VISIBILITY})
+
+#####################################################################
 add_library(fenrir_jni
         SHARED
         jni_call.cpp
@@ -492,19 +629,13 @@ add_library(fenrir_jni
         audio/taglib/taglib_jni.cpp
         audio/opus/opus_jni.cc
         camerax/image_processing_util_jni.cpp
-        camerax/image_tools_jni.cpp
         camerax/surface_util_jni.cpp
-        compress/zstd/jni_bufferdecompress_zstd.c
-        compress/zstd/jni_directbuffercompress_zstd.c
-        compress/zstd/jni_directbufferdecompress_zstd.c
-        compress/zstd/jni_fast_zstd.c
-        compress/zstd/jni_inputstream_zstd.c
-        compress/zstd/jni_outputstream_zstd.c
-        compress/zstd/jni_zdict.c
-        compress/zstd/jni_zstd.c
         parcel_jni.cpp
         string_exist_jni.cpp
-        file_utils_jni.cpp)
+        file_utils_jni.cpp
+        zstd_kmp_jni.cpp
+        zxing_jni.cpp
+)
 
 target_include_directories(fenrir_jni
         PRIVATE
@@ -518,6 +649,8 @@ target_include_directories(fenrir_jni
         compress/zstd/decompress
         compress/zstd/dictBuilder
         compress/zlib
+        zxing
+        zxing/qrcode
         audio/opus/libopus/include
         audio/taglib
         audio/taglib/mpeg
@@ -542,6 +675,9 @@ target_link_libraries(fenrir_jni
         PRIVATE common
         PRIVATE thorvg
         PRIVATE libyuv
-        PRIVATE opus)
+        PRIVATE opus
+        PRIVATE zxing)
 
-target_link_options(fenrir_jni PRIVATE "-Wl,-z,max-page-size=16384,--build-id=none")
+if (NOT ${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+    target_link_options(fenrir_jni PRIVATE "-Wl,-z,max-page-size=16384,--build-id=none")
+endif ()

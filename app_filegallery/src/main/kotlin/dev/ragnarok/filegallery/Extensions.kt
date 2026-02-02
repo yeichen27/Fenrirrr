@@ -113,7 +113,7 @@ inline fun <reified K, reified V> Map<out K, V>?.nonNullNoEmpty(): Boolean {
     contract {
         returns(true) implies (this@nonNullNoEmpty != null)
     }
-    return this != null && this.isNotEmpty()
+    return !this.isNullOrEmpty()
 }
 
 fun IntArray?.nonNullNoEmpty(): Boolean {

@@ -17,7 +17,7 @@ import com.squareup.picasso3.BitmapTarget
 import com.squareup.picasso3.Picasso.LoadedFrom
 import dev.ragnarok.fenrir.App.Companion.instance
 import dev.ragnarok.fenrir.R
-import dev.ragnarok.fenrir.activity.qr.CameraScanActivity
+import dev.ragnarok.fenrir.activity.CameraScanActivity
 import dev.ragnarok.fenrir.domain.IOwnersRepository
 import dev.ragnarok.fenrir.domain.IPhotosInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory

@@ -588,7 +588,7 @@
             tools:ignore="DiscouragedApi,LockedOrientationActivity" />
 
         <activity
-            android:name="dev.ragnarok.fenrir.activity.qr.CameraScanActivity"
+            android:name="dev.ragnarok.fenrir.activity.CameraScanActivity"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|keyboard|keyboardHidden"
             android:label="@string/scan_qr"
             android:theme="@style/App.DayNight.Swipes"

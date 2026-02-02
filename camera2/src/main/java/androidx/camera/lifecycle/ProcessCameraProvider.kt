@@ -16,14 +16,12 @@
 
 package androidx.camera.lifecycle
 
-import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
 import android.content.pm.PackageManager
 import androidx.annotation.MainThread
 import androidx.annotation.OptIn
 import androidx.annotation.RestrictTo
-import androidx.annotation.RestrictTo.Scope
 import androidx.annotation.VisibleForTesting
 import androidx.camera.core.Camera
 import androidx.camera.core.CameraInfo
@@ -34,7 +32,6 @@ import androidx.camera.core.CameraSelector
 import androidx.camera.core.CameraXConfig
 import androidx.camera.core.ConcurrentCamera
 import androidx.camera.core.ConcurrentCamera.SingleCameraConfig
-import androidx.camera.core.ExperimentalSessionConfig
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.InitializationException
@@ -71,14 +68,13 @@ import kotlin.time.Duration.Companion.seconds
  * This is the standard provider for applications to use.
  */
 @OptIn(ExperimentalCameraProviderConfiguration::class)
-@SuppressLint("NullAnnotationGroup")
 public class ProcessCameraProvider
 private constructor(private val lifecycleCameraProvider: LifecycleCameraProviderImpl) :
     CameraProvider {
 
     /**
      * Returns `true` if this [UseCase] is bound to a lifecycle or included in a bound
-     * [SessionConfig]. Otherwise returns `false`.
+     * [SessionConfig], `false` otherwise.
      *
      * After binding a use case, use cases remain bound until the lifecycle reaches a
      * [Lifecycle.State.DESTROYED] state or if is unbound by calls to [unbind] or [unbindAll].
@@ -88,13 +84,13 @@ private constructor(private val lifecycleCameraProvider: LifecycleCameraProvider
     }
 
     /**
-     * Returns `true` if the [SessionConfig] is bound to a lifecycle. Otherwise returns `false`.
+     * Returns `true` if the exact same instance of [SessionConfig] is bound to a lifecycle, `false`
+     * otherwise.
      *
      * After binding a [SessionConfig], this [SessionConfig] remains bound until the lifecycle
      * reaches a [Lifecycle.State.DESTROYED] state or if is unbound by calls to [unbind] or
      * [unbindAll].
      */
-    @ExperimentalSessionConfig
     public fun isBound(sessionConfig: SessionConfig): Boolean {
         return lifecycleCameraProvider.isBound(sessionConfig)
     }
@@ -120,7 +116,10 @@ private constructor(private val lifecycleCameraProvider: LifecycleCameraProvider
     }
 
     /**
-     * Unbinds the [SessionConfig] from the lifecycle provider.
+     * Unbinds the specified [SessionConfig] instance from the lifecycle provider.
+     *
+     * This method will only unbind the session if the provided `sessionConfig` is the exact same
+     * instance that was previously used for binding.
      *
      * This [SessionConfig] contains the [UseCase]s to be detached from the camera. This will
      * initiate a close of every open camera which has zero [UseCase] associated with it at the end
@@ -133,7 +132,6 @@ private constructor(private val lifecycleCameraProvider: LifecycleCameraProvider
      * @throws IllegalStateException If not called on main thread.
      * @throws UnsupportedOperationException If called in concurrent mode.
      */
-    @ExperimentalSessionConfig
     public fun unbind(sessionConfig: SessionConfig) {
         return lifecycleCameraProvider.unbind(sessionConfig)
     }
@@ -287,7 +285,6 @@ private constructor(private val lifecycleCameraProvider: LifecycleCameraProvider
      * - A [UseCase] contained within the [SessionConfig] is already bound to a different
      *   [LifecycleOwner].
      */
-    @ExperimentalSessionConfig
     public fun bindToLifecycle(
         lifecycleOwner: LifecycleOwner,
         cameraSelector: CameraSelector,
@@ -383,9 +380,6 @@ private constructor(private val lifecycleCameraProvider: LifecycleCameraProvider
     override val isConcurrentCameraModeOn: Boolean
         @MainThread get() = lifecycleCameraProvider.isConcurrentCameraModeOn
 
-    override val configImplType: Int
-        @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) get() = lifecycleCameraProvider.configImplType
-
     @Throws(CameraInfoUnavailableException::class)
     override fun hasCamera(cameraSelector: CameraSelector): Boolean {
         return lifecycleCameraProvider.hasCamera(cameraSelector)
@@ -395,12 +389,17 @@ private constructor(private val lifecycleCameraProvider: LifecycleCameraProvider
         return lifecycleCameraProvider.getCameraInfo(cameraSelector)
     }
 
-    @RestrictTo(Scope.LIBRARY_GROUP)
+    override fun getCameraInfo(
+        cameraSelector: CameraSelector,
+        sessionConfig: SessionConfig,
+    ): CameraInfo {
+        return lifecycleCameraProvider.getCameraInfo(cameraSelector, sessionConfig)
+    }
+
     override fun addCameraPresenceListener(executor: Executor, listener: CameraPresenceListener) {
         lifecycleCameraProvider.addCameraPresenceListener(executor, listener)
     }
 
-    @RestrictTo(Scope.LIBRARY_GROUP)
     override fun removeCameraPresenceListener(listener: CameraPresenceListener) {
         lifecycleCameraProvider.removeCameraPresenceListener(listener)
     }

@@ -15,6 +15,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Process
 import android.util.Rational
+import android.view.MotionEvent
 import android.view.ScaleGestureDetector
 import android.view.View
 import android.view.ViewGroup
@@ -294,9 +295,15 @@ class VideoPlayerActivity : AppCompatActivity(),
                     return true
                 }
             })
+        var isScaleMode = false
         @SuppressLint("ClickableViewAccessibility")
         surfaceContainer.setOnTouchListener { _, event ->
-            if (event.pointerCount >= 2) {
+            if (event.pointerCount >= 2 || isScaleMode) {
+                if (event.action == MotionEvent.ACTION_DOWN || event.action == MotionEvent.ACTION_MOVE) {
+                    isScaleMode = true
+                } else if (event.action == MotionEvent.ACTION_UP || event.action == MotionEvent.ACTION_CANCEL) {
+                    isScaleMode = false
+                }
                 scaleGestureDetector.onTouchEvent(event)
             } else {
                 false

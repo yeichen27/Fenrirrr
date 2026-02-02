@@ -126,13 +126,11 @@ class PlaylistFragment : BottomSheetDialogFragment(), AudioRecyclerAdapter.Click
         val my = MusicPlaybackController.currentAudio
         if (my != null) {
             var index = 0
-            var o = 0
-            for (i in mData) {
+            for ((o, i) in mData.withIndex()) {
                 if (i === my) {
                     index = o
                     break
                 }
-                o++
             }
             mRecyclerView?.scrollToPosition(index)
         }

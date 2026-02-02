@@ -379,7 +379,7 @@ class FaveSyncWorker(context: Context, workerParams: WorkerParameters) :
     @SuppressLint("MissingPermission")
     private fun createGroupNotification() {
         val notificationManager =
-            applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager?
+            applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager?
                 ?: return
         val barNotifications = notificationManager.activeNotifications
         for (notification in barNotifications) {

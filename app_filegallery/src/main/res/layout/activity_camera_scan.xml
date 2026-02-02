@@ -14,7 +14,7 @@
 
     <view
         android:id="@+id/view_finder"
-        class="dev.ragnarok.filegallery.activity.qr.CameraScanActivity$FinderView"
+        class="dev.ragnarok.filegallery.activity.CameraScanActivity$FinderView"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

@@ -49,9 +49,7 @@ class GroupInviteFCMMessage {
                 second
             )
         }
-            .fromScopeToMain(INSTANCE) {
-                val userInfo = it.second
-                val groupInfo = it.first
+            .fromScopeToMain(INSTANCE) { (groupInfo, userInfo) ->
                 notifyImpl(app, userInfo.user, groupInfo.avatar, groupInfo.community)
             }
     }

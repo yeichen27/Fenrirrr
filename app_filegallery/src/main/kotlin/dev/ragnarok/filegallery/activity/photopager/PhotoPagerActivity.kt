@@ -32,6 +32,7 @@ import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.squareup.picasso3.Callback
 import com.squareup.picasso3.Rotatable
+import dev.ragnarok.fenrir.module.FenrirNative
 import dev.ragnarok.filegallery.Constants
 import dev.ragnarok.filegallery.Extra
 import dev.ragnarok.filegallery.R
@@ -210,6 +211,7 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
     }
 
     override fun onPrepareMenu(menu: Menu) {
+        menu.findItem(R.id.detect_qr).isVisible = FenrirNative.isNativeLoaded
         menu.findItem(R.id.save_on_drive).isVisible = !isLocalPhoto
         if (!isLocalPhoto) {
             menu.findItem(R.id.start_select_mode).isVisible = false
@@ -235,7 +237,9 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
             }
 
             R.id.detect_qr -> {
-                presenter?.fireDetectQRClick(this)
+                if (FenrirNative.isNativeLoaded) {
+                    presenter?.fireDetectQRClick(this)
+                }
                 return true
             }
 

@@ -47,7 +47,6 @@ import dev.ragnarok.fenrir.activity.ActivityUtils.checkInputExist
 import dev.ragnarok.fenrir.activity.ActivityUtils.isMimeAudio
 import dev.ragnarok.fenrir.activity.gifpager.GifPagerActivity
 import dev.ragnarok.fenrir.activity.photopager.PhotoPagerActivity.Companion.newInstance
-import dev.ragnarok.fenrir.activity.qr.CameraScanActivity
 import dev.ragnarok.fenrir.activity.shortvideopager.ShortVideoPagerActivity
 import dev.ragnarok.fenrir.activity.storypager.StoryPagerActivity
 import dev.ragnarok.fenrir.db.Stores
@@ -177,6 +176,7 @@ import dev.ragnarok.fenrir.model.UserDetails
 import dev.ragnarok.fenrir.model.drawer.AbsMenuItem
 import dev.ragnarok.fenrir.model.drawer.RecentChat
 import dev.ragnarok.fenrir.model.drawer.SectionMenuItem
+import dev.ragnarok.fenrir.module.FenrirNative
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.place.Place
@@ -736,7 +736,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                                     .tryOpenWith(this@MainActivity)
                             }
 
-                            4 -> {
+                            4 if FenrirNative.isNativeLoaded -> {
                                 val intent =
                                     Intent(
                                         this@MainActivity,

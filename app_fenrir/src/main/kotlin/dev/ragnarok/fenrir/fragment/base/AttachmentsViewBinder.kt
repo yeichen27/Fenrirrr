@@ -355,7 +355,7 @@ class AttachmentsViewBinder(
             val localView = ThorVGLottieView(mContext)
             stickersContainer.addView(localView)
         }
-        val imageView = stickersContainer.getChildAt(0) as ThorVGLottieView? ?: return
+        val imageView = stickersContainer.getChildAt(0) as? ThorVGLottieView? ?: return
         val sticker = stickers[0]
         val prefferedStickerSize = Utils.dpToPx(PREFFERED_STICKER_SIZE.toFloat(), mContext)
             .toInt()

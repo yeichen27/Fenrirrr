@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     id("org.jetbrains.kotlin.jvm") version "2.3.0"
-    id("org.jetbrains.intellij.platform") version "2.10.5"
+    id("org.jetbrains.intellij.platform") version "2.11.0"
 }
 
 group = "dev.ragnarok"
@@ -18,7 +18,10 @@ repositories {
 
 dependencies {
     intellijPlatform {
-        intellijIdeaCommunity("2025.2.3")
+        intellijIdea("2025.3.1") {
+            useInstaller = false
+            useCache = false
+        }
         pluginVerifier()
         zipSigner()
     }

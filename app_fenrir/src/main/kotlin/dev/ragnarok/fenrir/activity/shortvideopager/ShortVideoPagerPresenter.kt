@@ -57,7 +57,7 @@ class ShortVideoPagerPresenter(
         view?.displayListLoading(loadingNow)
         appendJob(
             shortVideosInteractor.getShortVideos(accountId, ownerId, nextFrom, 25).fromIOToMain(
-                { onActualShortVideosReceived(nextFrom, it.first, it.second) },
+                { (first, second) -> onActualShortVideosReceived(nextFrom, first, second) },
                 {
                     loadingNow = false
                     view?.displayListLoading(loadingNow)

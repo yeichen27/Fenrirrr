@@ -1,0 +1,7 @@
+<Solution>
+  <Configurations>
+    <BuildType Name="Release" />
+    <Platform Name="x64" />
+  </Configurations>
+  <Project Path="compress_lz4.vcxproj" Id="92e88e66-dbf5-4936-9afd-5e8947c9a5cb" />
+</Solution>

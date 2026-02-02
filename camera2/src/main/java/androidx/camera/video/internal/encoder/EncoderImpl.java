@@ -33,11 +33,11 @@ import static androidx.core.util.Preconditions.checkState;
 
 import static java.util.Objects.requireNonNull;
 
-import android.annotation.SuppressLint;
 import android.media.MediaCodec;
 import android.media.MediaCodec.BufferInfo;
 import android.media.MediaCodecInfo;
 import android.media.MediaFormat;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.Range;
@@ -45,7 +45,6 @@ import android.util.Rational;
 import android.view.Surface;
 
 import androidx.annotation.GuardedBy;
-import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 import androidx.arch.core.util.Function;
 import androidx.camera.core.Logger;
@@ -59,7 +58,7 @@ import androidx.camera.video.internal.compat.quirk.AudioEncoderIgnoresInputTimes
 import androidx.camera.video.internal.compat.quirk.CameraUseInconsistentTimebaseQuirk;
 import androidx.camera.video.internal.compat.quirk.CodecStuckOnFlushQuirk;
 import androidx.camera.video.internal.compat.quirk.DeviceQuirks;
-import androidx.camera.video.internal.compat.quirk.EncoderNotUsePersistentInputSurfaceQuirk;
+import androidx.camera.video.internal.compat.quirk.GLProcessingStuckOnCodecFlushQuirk;
 import androidx.camera.video.internal.compat.quirk.PrematureEndOfStreamVideoQuirk;
 import androidx.camera.video.internal.compat.quirk.PreviewFreezeAfterHighSpeedRecordingQuirk;
 import androidx.camera.video.internal.compat.quirk.SignalEosOutputBufferNotComeQuirk;
@@ -159,8 +158,6 @@ public class EncoderImpl implements Encoder {
     private static final Range<Long> NO_RANGE = Range.create(NO_LIMIT_LONG, NO_LIMIT_LONG);
     private static final long STOP_TIMEOUT_MS = 1000L;
     private static final long SIGNAL_EOS_TIMEOUT_MS = 1000L;
-    static final String PARAMETER_KEY_TIMELAPSE_ENABLED = "time-lapse-enable";
-    static final String PARAMETER_KEY_TIMELAPSE_FPS = "time-lapse-fps";
 
     @SuppressWarnings("WeakerAccess") // synthetic accessor
     final String mTag;
@@ -168,7 +165,6 @@ public class EncoderImpl implements Encoder {
     final Object mLock = new Object();
     @SuppressWarnings("WeakerAccess") // synthetic accessor
     final boolean mIsVideoEncoder;
-    private final EncoderConfig mEncoderConfig;
     @VisibleForTesting
     final MediaFormat mMediaFormat;
     @SuppressWarnings("WeakerAccess") // synthetic accessor
@@ -244,7 +240,6 @@ public class EncoderImpl implements Encoder {
             int sessionType)
             throws InvalidConfigException {
         Preconditions.checkNotNull(executor);
-        mEncoderConfig = Preconditions.checkNotNull(encoderConfig);
 
         mMediaCodec = createCodec(encoderConfig);
         MediaCodecInfo mediaCodecInfo = mMediaCodec.getCodecInfo();
@@ -294,9 +289,7 @@ public class EncoderImpl implements Encoder {
                 }));
         mReleasedCompleter = Preconditions.checkNotNull(releaseFutureRef.get());
 
-        mCodecStopAsFlushWorkaroundEnabled = mIsVideoEncoder
-                && sessionType == SESSION_TYPE_HIGH_SPEED
-                && DeviceQuirks.get(PreviewFreezeAfterHighSpeedRecordingQuirk.class) != null;
+        mCodecStopAsFlushWorkaroundEnabled = shouldEnableCodecStopAsFlushWorkaround(sessionType);
 
         setState(CONFIGURED);
     }
@@ -1114,6 +1107,13 @@ public class EncoderImpl implements Encoder {
         return DeviceQuirks.get(StopCodecAfterSurfaceRemovalCrashMediaServerQuirk.class) != null;
     }
 
+    private boolean shouldEnableCodecStopAsFlushWorkaround(int sessionType) {
+        return mIsVideoEncoder
+                && ((sessionType == SESSION_TYPE_HIGH_SPEED
+                && DeviceQuirks.get(PreviewFreezeAfterHighSpeedRecordingQuirk.class) != null)
+                || DeviceQuirks.get(GLProcessingStuckOnCodecFlushQuirk.class) != null);
+    }
+
     private long toPresentationTimeUsByCaptureEncodeRatio(long systemTimeUs) {
         // Multiplying systemTimeUs by the capture-to-encode frame rate ratio is safe from overflow.
         // Even with extreme slowdowns (e.g., 1920fps to 30fps, a 64x ratio), the resulting
@@ -1237,7 +1237,13 @@ public class EncoderImpl implements Encoder {
                             executor = mEncoderCallbackExecutor;
                         }
 
-                        if (mIsVideoEncoder && isSlowMotion()) {
+                        if (Build.VERSION.SDK_INT < 30 && mIsVideoEncoder && isSlowMotion()) {
+                            // Timestamps for slow-motion recording are automatically adjusted by
+                            // the GraphicBufferSource from API 30 onward (specifically when
+                            // configuring codec with different KEY_CAPTURE_RATE and
+                            // KEY_FRAME_RATE). For devices on earlier API levels, we manually
+                            // adjust the timestamp.
+                            // See ACodec.cpp/CCodec.cpp/GraphicBufferSource.cpp for details.
                             bufferInfo.presentationTimeUs =
                                     toPresentationTimeUsByCaptureEncodeRatio(
                                             bufferInfo.presentationTimeUs);
@@ -1597,13 +1603,6 @@ public class EncoderImpl implements Encoder {
                     case PENDING_START:
                     case PENDING_START_PAUSED:
                     case PENDING_RELEASE:
-                        if (mIsVideoEncoder && isSlowMotion()) {
-                            // MediaMuxer will write these values to the video metadata so Photos
-                            // can recognize that this is a slow-motion video.
-                            mediaFormat.setInteger(PARAMETER_KEY_TIMELAPSE_ENABLED, 1);
-                            mediaFormat.setInteger(PARAMETER_KEY_TIMELAPSE_FPS,
-                                    ((VideoEncoderConfig) mEncoderConfig).getCaptureFrameRate());
-                        }
                         EncoderCallback encoderCallback;
                         Executor executor;
                         synchronized (mLock) {
@@ -1643,89 +1642,28 @@ public class EncoderImpl implements Encoder {
         @GuardedBy("mLock")
         private Surface mSurface;
 
-        @GuardedBy("mLock")
-        private final Set<Surface> mObsoleteSurfaces = new HashSet<>();
-
-        @GuardedBy("mLock")
-        private OnSurfaceUpdateListener mSurfaceUpdateListener;
-
-        @GuardedBy("mLock")
-        private Executor mSurfaceUpdateExecutor;
-
-        /**
-         * Sets the surface update listener.
-         *
-         * @param executor the executor to invoke the listener
-         * @param listener the surface update listener
-         */
-        @Override
-        public void setOnSurfaceUpdateListener(@NonNull Executor executor,
-                @NonNull OnSurfaceUpdateListener listener) {
-            Surface surface;
-            synchronized (mLock) {
-                mSurfaceUpdateListener = Preconditions.checkNotNull(listener);
-                mSurfaceUpdateExecutor = Preconditions.checkNotNull(executor);
-                surface = mSurface;
-            }
-            if (surface != null) {
-                notifySurfaceUpdate(executor, listener, surface);
-            }
-        }
-
-        @SuppressLint("NewApi")
         void resetSurface() {
-            Surface surface;
-            Executor executor;
-            OnSurfaceUpdateListener listener;
-            EncoderNotUsePersistentInputSurfaceQuirk quirk = DeviceQuirks.get(
-                    EncoderNotUsePersistentInputSurfaceQuirk.class);
-            synchronized (mLock) {
-                if (quirk == null) {
-                    if (mSurface == null) {
-                        mSurface = Api23Impl.createPersistentInputSurface();
-                        surface = mSurface;
-                    } else {
-                        surface = null;
-                    }
-                    Api23Impl.setInputSurface(mMediaCodec, mSurface);
-                } else {
-                    if (mSurface != null) {
-                        mObsoleteSurfaces.add(mSurface);
-                    }
-                    mSurface = mMediaCodec.createInputSurface();
-                    surface = mSurface;
-                }
-                listener = mSurfaceUpdateListener;
-                executor = mSurfaceUpdateExecutor;
-            }
-            if (surface != null && listener != null && executor != null) {
-                notifySurfaceUpdate(executor, listener, surface);
-            }
+            mMediaCodec.setInputSurface(getSurface());
         }
 
         void releaseSurface() {
             Surface surface;
-            Set<Surface> obsoleteSurfaces;
             synchronized (mLock) {
                 surface = mSurface;
                 mSurface = null;
-                obsoleteSurfaces = new HashSet<>(mObsoleteSurfaces);
-                mObsoleteSurfaces.clear();
             }
             if (surface != null) {
                 surface.release();
             }
-            for (Surface obsoleteSurface : obsoleteSurfaces) {
-                obsoleteSurface.release();
-            }
         }
 
-        private void notifySurfaceUpdate(@NonNull Executor executor,
-                @NonNull OnSurfaceUpdateListener listener, @NonNull Surface surface) {
-            try {
-                executor.execute(() -> listener.onSurfaceUpdate(surface));
-            } catch (RejectedExecutionException e) {
-                Logger.e(mTag, "Unable to post to the supplied executor.", e);
+        @Override
+        public @NonNull Surface getSurface() {
+            synchronized (mLock) {
+                if (mSurface == null) {
+                    mSurface = MediaCodec.createPersistentInputSurface();
+                }
+                return mSurface;
             }
         }
     }
@@ -1832,24 +1770,6 @@ public class EncoderImpl implements Encoder {
                     Logger.e(mTag, "Unable to post to the supplied executor.", e);
                 }
             }
-        }
-    }
-
-    /**
-     * Nested class to avoid verification errors for methods introduced in Android 6.0 (API 23).
-     */
-    @RequiresApi(23)
-    private static class Api23Impl {
-
-        private Api23Impl() {
-        }
-
-        static @NonNull Surface createPersistentInputSurface() {
-            return MediaCodec.createPersistentInputSurface();
-        }
-
-        static void setInputSurface(@NonNull MediaCodec mediaCodec, @NonNull Surface surface) {
-            mediaCodec.setInputSurface(surface);
         }
     }
 }

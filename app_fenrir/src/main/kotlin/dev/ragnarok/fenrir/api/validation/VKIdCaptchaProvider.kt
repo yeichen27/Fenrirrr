@@ -7,7 +7,7 @@ import dev.ragnarok.fenrir.api.OutOfDateException
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import java.util.Collections
 
-class VKIdCaptchaProvider() :
+class VKIdCaptchaProvider :
     IVKIdCaptchaProvider {
     private val entryMap: MutableMap<String, Entry> = Collections.synchronizedMap(HashMap())
     override fun requestCaptcha(redirectUri: String, domain: String) {

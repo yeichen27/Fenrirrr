@@ -58,7 +58,6 @@ import dev.ragnarok.fenrir.UserAgentTool
 import dev.ragnarok.fenrir.activity.MainActivity
 import dev.ragnarok.fenrir.activity.SwipebleActivity
 import dev.ragnarok.fenrir.activity.SwipebleActivity.Companion.start
-import dev.ragnarok.fenrir.activity.qr.CustomQRCodeWriter
 import dev.ragnarok.fenrir.api.HttpLoggerAndParser.toRequestBuilder
 import dev.ragnarok.fenrir.api.HttpLoggerAndParser.vkHeader
 import dev.ragnarok.fenrir.api.ProxyUtil.applyProxyConfig

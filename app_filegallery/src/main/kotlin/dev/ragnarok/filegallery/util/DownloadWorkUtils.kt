@@ -314,7 +314,7 @@ object DownloadWorkUtils {
         @SuppressLint("MissingPermission")
         private fun createGroupNotification() {
             val notificationManager =
-                context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager?
+                context.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager?
                     ?: return
             val barNotifications = notificationManager.activeNotifications
             for (notification in barNotifications) {

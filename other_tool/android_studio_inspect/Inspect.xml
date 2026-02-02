@@ -19,6 +19,7 @@
   <inspection_tool class="AndroidLintNotifyDataSetChanged" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintPermissionImpliesUnsupportedChromeOsHardware" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="AndroidLintPictureInPictureIssue" enabled="false" level="WARNING" enabled_by_default="false" />
+  <inspection_tool class="AndroidLintPluralsCandidate" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintRestrictedApi" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="AndroidLintSyntheticAccessor" enabled="true" level="WARNING" enabled_by_default="true" />
   <inspection_tool class="AndroidLintUnusedIds" enabled="true" level="WARNING" enabled_by_default="true" />
@@ -31,6 +32,7 @@
   <inspection_tool class="ApiParameter" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="ApplicationServiceAsStaticFinalFieldOrProperty" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AssertBetweenInconvertibleTypes" enabled="false" level="WARNING" enabled_by_default="false" />
+  <inspection_tool class="BlockingMethodInNonBlockingContext" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="BooleanExpressionMayBeConditional" enabled="true" level="WARNING" enabled_by_default="true" />
   <inspection_tool class="BooleanMethodIsAlwaysInverted" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="CastDueToProgressionResolutionChangeMigration" enabled="true" level="WARNING" enabled_by_default="true" />
@@ -54,7 +56,7 @@
   <inspection_tool class="CrossfadeLabel" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="DanglingJavadoc" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="DeclaringClassMigration" enabled="true" level="WARNING" enabled_by_default="true" />
-  <inspection_tool class="Destructure" enabled="true" level="INFO" enabled_by_default="true" />
+  <inspection_tool class="Destructure" enabled="false" level="INFO" enabled_by_default="false" />
   <inspection_tool class="DevKitPropertiesMessageValidation" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="DevKitPropertiesQuotesValidation" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="DirectUseOfResultType" enabled="true" level="WEAK WARNING" enabled_by_default="true" />
@@ -73,6 +75,8 @@
   <inspection_tool class="GlancePreviewNeedsComposableAnnotation" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="GlancePreviewNotSupportedInUnitTestFiles" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="GradleKotlinxCoroutinesDeprecation" enabled="true" level="ERROR" enabled_by_default="true" />
+  <inspection_tool class="GrazieInspection" enabled="false" level="GRAMMAR_ERROR" enabled_by_default="false" />
+  <inspection_tool class="GrazieStyle" enabled="false" level="STYLE_SUGGESTION" enabled_by_default="false" />
   <inspection_tool class="HtmlDeprecatedAttribute" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="HtmlDeprecatedTag" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="HtmlExtraClosingTag" enabled="false" level="WARNING" enabled_by_default="false" />
@@ -109,7 +113,7 @@
   <inspection_tool class="HtmlUnknownTarget" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="HtmlWrongAttributeValue" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="IgnoreFileDuplicateEntry" enabled="false" level="WARNING" enabled_by_default="false" />
-  <inspection_tool class="IncompleteDestructuring" enabled="true" level="WARNING" enabled_by_default="true" />
+  <inspection_tool class="IncompleteDestructuring" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="IncorrectParentDisposable" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="IncorrectServiceRetrieving" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="InfinitePropertiesLabel" enabled="false" level="WARNING" enabled_by_default="false" />
@@ -147,6 +151,7 @@
   <inspection_tool class="KotlinObjectExtensionRegistration" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="KotlinObjectRegisteredAsExtension" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="KotlinUnreachableCode" enabled="false" level="WARNING" enabled_by_default="false" />
+  <inspection_tool class="LanguageDetectionInspection" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
   <inspection_tool class="LeakableMapKey" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="LightServiceMigrationCode" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="LightServiceMigrationXML" enabled="false" level="WARNING" enabled_by_default="false" />
