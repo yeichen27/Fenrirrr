@@ -51,7 +51,6 @@
 #include "functable.h"
 #include "deflate.h"
 #include "deflate_p.h"
-#include "insert_string_p.h"
 
 /* Avoid conflicts with zlib.h macros */
 #ifdef ZLIB_COMPAT
@@ -302,7 +301,9 @@ int32_t ZNG_CONDEXPORT PREFIX(deflateInit2)(PREFIX3(stream) *strm, int32_t level
 
     s->wrap = wrap;
     s->gzhead = NULL;
-    s->w_size = 1 << windowBits;
+    s->w_bits = (unsigned int)windowBits;
+    s->w_size = 1 << s->w_bits;
+    s->w_mask = s->w_size - 1;
 
     s->high_water = 0;      /* nothing written to s->window yet */
 
@@ -348,13 +349,6 @@ int32_t ZNG_CONDEXPORT PREFIX(deflateInit2)(PREFIX3(stream) *strm, int32_t level
      */
 
     s->pending_buf_size = s->lit_bufsize * 4;
-
-    if (s->window == NULL || s->prev == NULL || s->head == NULL || s->pending_buf == NULL) {
-        s->status = FINISH_STATE;
-        strm->msg = ERR_MSG(Z_MEM_ERROR);
-        PREFIX(deflateEnd)(strm);
-        return Z_MEM_ERROR;
-    }
 
 #ifdef LIT_MEM
     s->d_buf = (uint16_t *)(s->pending_buf + (s->lit_bufsize << 1));
@@ -414,7 +408,6 @@ static int deflateStateCheck(PREFIX3(stream) *strm) {
 /* ========================================================================= */
 int32_t Z_EXPORT PREFIX(deflateSetDictionary)(PREFIX3(stream) *strm, const uint8_t *dictionary, uint32_t dictLength) {
     deflate_state *s;
-    insert_string_cb insert_string_func;
     unsigned int str, n;
     int wrap;
     uint32_t avail;
@@ -426,11 +419,6 @@ int32_t Z_EXPORT PREFIX(deflateSetDictionary)(PREFIX3(stream) *strm, const uint8
     wrap = s->wrap;
     if (wrap == 2 || (wrap == 1 && s->status != INIT_STATE) || s->lookahead)
         return Z_STREAM_ERROR;
-
-    if (s->level >= 9)
-        insert_string_func = insert_string_roll;
-    else
-        insert_string_func = insert_string;
 
     /* when using zlib wrappers, compute Adler-32 for provided dictionary */
     if (wrap == 1)
@@ -459,7 +447,7 @@ int32_t Z_EXPORT PREFIX(deflateSetDictionary)(PREFIX3(stream) *strm, const uint8
     while (s->lookahead >= STD_MIN_MATCH) {
         str = s->strstart;
         n = s->lookahead - (STD_MIN_MATCH - 1);
-        insert_string_func(s, str, n);
+        s->insert_string(s, str, n);
         s->strstart = str + n;
         s->lookahead = STD_MIN_MATCH - 1;
         PREFIX(fill_window)(s);
@@ -521,7 +509,7 @@ int32_t Z_EXPORT PREFIX(deflateResetKeep)(PREFIX3(stream) *strm) {
 
 #ifdef GZIP
     if (s->wrap == 2) {
-        strm->adler = CRC32_INITIAL_VALUE;
+        strm->adler = FUNCTABLE_CALL(crc32_fold_reset)(&s->crc_fold);
     } else
 #endif
         strm->adler = ADLER32_INITIAL_VALUE;
@@ -723,7 +711,7 @@ unsigned long Z_EXPORT PREFIX(deflateBound)(PREFIX3(stream) *strm, unsigned long
 
     /* if not default parameters, return conservative bound */
     if (DEFLATE_NEED_CONSERVATIVE_BOUND(strm) ||  /* hook for IBM Z DFLTCC */
-            W_BITS(s) != MAX_WBITS || HASH_BITS < 15) {
+            s->w_bits != MAX_WBITS || HASH_BITS < 15) {
         if (s->level == 0) {
             /* upper bound for stored blocks with length 127 (memLevel == 1) --
                ~4% overhead plus a small constant */
@@ -813,7 +801,7 @@ int32_t Z_EXPORT PREFIX(deflate)(PREFIX3(stream) *strm, int32_t flush) {
         s->status = BUSY_STATE;
     if (s->status == INIT_STATE) {
         /* zlib header */
-        unsigned int header = (Z_DEFLATED + ((W_BITS(s)-8)<<4)) << 8;
+        unsigned int header = (Z_DEFLATED + ((s->w_bits-8)<<4)) << 8;
         unsigned int level_flags;
 
         if (s->strategy >= Z_HUFFMAN_ONLY || s->level < 2)
@@ -847,7 +835,7 @@ int32_t Z_EXPORT PREFIX(deflate)(PREFIX3(stream) *strm, int32_t flush) {
 #ifdef GZIP
     if (s->status == GZIP_STATE) {
         /* gzip header */
-        strm->adler = CRC32_INITIAL_VALUE;
+        FUNCTABLE_CALL(crc32_fold_reset)(&s->crc_fold);
         put_byte(s, 31);
         put_byte(s, 139);
         put_byte(s, 8);
@@ -964,7 +952,7 @@ int32_t Z_EXPORT PREFIX(deflate)(PREFIX3(stream) *strm, int32_t flush) {
                 }
             }
             put_short(s, (uint16_t)strm->adler);
-            strm->adler = CRC32_INITIAL_VALUE;
+            FUNCTABLE_CALL(crc32_fold_reset)(&s->crc_fold);
         }
         s->status = BUSY_STATE;
 
@@ -1035,6 +1023,8 @@ int32_t Z_EXPORT PREFIX(deflate)(PREFIX3(stream) *strm, int32_t flush) {
     /* Write the trailer */
 #ifdef GZIP
     if (s->wrap == 2) {
+        strm->adler = FUNCTABLE_CALL(crc32_fold_final)(&s->crc_fold);
+
         put_uint32(s, strm->adler);
         put_uint32(s, (uint32_t)strm->total_in);
     } else
@@ -1083,7 +1073,7 @@ int32_t Z_EXPORT PREFIX(deflateCopy)(PREFIX3(stream) *dest, PREFIX3(stream) *sou
 
     memcpy((void *)dest, (void *)source, sizeof(PREFIX3(stream)));
 
-    deflate_allocs *alloc_bufs = alloc_deflate(dest, W_BITS(ss), ss->lit_bufsize);
+    deflate_allocs *alloc_bufs = alloc_deflate(dest, ss->w_bits, ss->lit_bufsize);
     if (alloc_bufs == NULL)
         return Z_MEM_ERROR;
 
@@ -1132,6 +1122,20 @@ static void lm_set_level(deflate_state *s, int level) {
     s->good_match       = configuration_table[level].good_length;
     s->nice_match       = configuration_table[level].nice_length;
     s->max_chain_length = configuration_table[level].max_chain;
+
+    /* Use rolling hash for deflate_slow algorithm with level 9. It allows us to
+     * properly lookup different hash chains to speed up longest_match search. Since hashing
+     * method changes depending on the level we cannot put this into functable. */
+    if (s->max_chain_length > 1024) {
+        s->update_hash = &update_hash_roll;
+        s->insert_string = &insert_string_roll;
+        s->quick_insert_string = &quick_insert_string_roll;
+    } else {
+        s->update_hash = update_hash;
+        s->insert_string = insert_string;
+        s->quick_insert_string = quick_insert_string;
+    }
+
     s->level = level;
 }
 
@@ -1169,20 +1173,11 @@ static void lm_init(deflate_state *s) {
  */
 
 void Z_INTERNAL PREFIX(fill_window)(deflate_state *s) {
-    PREFIX3(stream) *strm = s->strm;
-    insert_string_cb insert_string_func;
-    unsigned char *window = s->window;
     unsigned n;
     unsigned int more;    /* Amount of free space at the end of the window. */
     unsigned int wsize = s->w_size;
-    int level = s->level;
 
     Assert(s->lookahead < MIN_LOOKAHEAD, "already enough lookahead");
-
-    if (level >= 9)
-        insert_string_func = insert_string_roll;
-    else
-        insert_string_func = insert_string;
 
     do {
         more = s->window_size - s->lookahead - s->strstart;
@@ -1191,7 +1186,7 @@ void Z_INTERNAL PREFIX(fill_window)(deflate_state *s) {
          * move the upper half to the lower one to make room in the upper half.
          */
         if (s->strstart >= wsize+MAX_DIST(s)) {
-            memcpy(window, window + wsize, (unsigned)wsize);
+            memcpy(s->window, s->window+wsize, (unsigned)wsize);
             if (s->match_start >= wsize) {
                 s->match_start -= wsize;
             } else {
@@ -1205,7 +1200,7 @@ void Z_INTERNAL PREFIX(fill_window)(deflate_state *s) {
             FUNCTABLE_CALL(slide_hash)(s);
             more += wsize;
         }
-        if (strm->avail_in == 0)
+        if (s->strm->avail_in == 0)
             break;
 
         /* If there was no sliding:
@@ -1221,30 +1216,30 @@ void Z_INTERNAL PREFIX(fill_window)(deflate_state *s) {
          */
         Assert(more >= 2, "more < 2");
 
-        n = read_buf(strm, window + s->strstart + s->lookahead, more);
+        n = read_buf(s->strm, s->window + s->strstart + s->lookahead, more);
         s->lookahead += n;
 
         /* Initialize the hash value now that we have some input: */
         if (s->lookahead + s->insert >= STD_MIN_MATCH) {
             unsigned int str = s->strstart - s->insert;
-            if (UNLIKELY(level >= 9)) {
-                s->ins_h = update_hash_roll(window[str], window[str+1]);
+            if (UNLIKELY(s->max_chain_length > 1024)) {
+                s->ins_h = s->update_hash(s->window[str], s->window[str+1]);
             } else if (str >= 1) {
-                quick_insert_string(s, str + 2 - STD_MIN_MATCH);
+                s->quick_insert_string(s, str + 2 - STD_MIN_MATCH);
             }
             unsigned int count = s->insert;
             if (UNLIKELY(s->lookahead == 1)) {
                 count -= 1;
             }
             if (count > 0) {
-                insert_string_func(s, str, count);
+                s->insert_string(s, str, count);
                 s->insert -= count;
             }
         }
         /* If the whole input has less than STD_MIN_MATCH bytes, ins_h is garbage,
          * but this is not important since only literal bytes will be emitted.
          */
-    } while (s->lookahead < MIN_LOOKAHEAD && strm->avail_in != 0);
+    } while (s->lookahead < MIN_LOOKAHEAD && s->strm->avail_in != 0);
 
     /* If the WIN_INIT bytes after the end of the current data have never been
      * written, then zero those bytes in order to avoid memory check reports of
@@ -1264,7 +1259,7 @@ void Z_INTERNAL PREFIX(fill_window)(deflate_state *s) {
             init = s->window_size - curr;
             if (init > WIN_INIT)
                 init = WIN_INIT;
-            memset(window + curr, 0, init);
+            memset(s->window + curr, 0, init);
             s->high_water = curr + init;
         } else if (s->high_water < curr + WIN_INIT) {
             /* High water mark at or above current data, but below current data
@@ -1274,7 +1269,7 @@ void Z_INTERNAL PREFIX(fill_window)(deflate_state *s) {
             init = curr + WIN_INIT - s->high_water;
             if (init > s->window_size - s->high_water)
                 init = s->window_size - s->high_water;
-            memset(window + s->high_water, 0, init);
+            memset(s->window + s->high_water, 0, init);
             s->high_water += init;
         }
     }

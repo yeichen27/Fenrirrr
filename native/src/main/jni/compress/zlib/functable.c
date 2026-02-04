@@ -80,9 +80,12 @@ static int init_functable(void) {
 #  if (defined(__x86_64__) || defined(_M_X64)) && defined(X86_SSE2)
     // x86_64 always has SSE2, so we can use SSE2 functions as fallbacks where available.
     ft.adler32 = &adler32_c;
-    ft.adler32_copy = &adler32_copy_c;
+    ft.adler32_fold_copy = &adler32_fold_copy_c;
     ft.crc32 = &crc32_braid;
-    ft.crc32_copy = &crc32_copy_braid;
+    ft.crc32_fold = &crc32_fold_c;
+    ft.crc32_fold_copy = &crc32_fold_copy_c;
+    ft.crc32_fold_final = &crc32_fold_final_c;
+    ft.crc32_fold_reset = &crc32_fold_reset_c;
 #    ifndef HAVE_BUILTIN_CTZ
     ft.longest_match = &longest_match_c;
     ft.longest_match_slow = &longest_match_slow_c;
@@ -91,10 +94,13 @@ static int init_functable(void) {
 #  endif
 #else // WITH_ALL_FALLBACKS
     ft.adler32 = &adler32_c;
-    ft.adler32_copy = &adler32_copy_c;
+    ft.adler32_fold_copy = &adler32_fold_copy_c;
     ft.chunkmemset_safe = &chunkmemset_safe_c;
     ft.crc32 = &crc32_braid;
-    ft.crc32_copy = &crc32_copy_braid;
+    ft.crc32_fold = &crc32_fold_c;
+    ft.crc32_fold_copy = &crc32_fold_copy_c;
+    ft.crc32_fold_final = &crc32_fold_final_c;
+    ft.crc32_fold_reset = &crc32_fold_reset_c;
     ft.inflate_fast = &inflate_fast_c;
     ft.slide_hash = &slide_hash_c;
     ft.longest_match = &longest_match_c;
@@ -108,7 +114,6 @@ static int init_functable(void) {
     // Chorba generic C fallback
 #ifndef WITHOUT_CHORBA
     ft.crc32 = &crc32_chorba;
-    ft.crc32_copy = &crc32_copy_chorba;
 #endif
 
     // X86 - SSE2
@@ -120,7 +125,6 @@ static int init_functable(void) {
         ft.chunkmemset_safe = &chunkmemset_safe_sse2;
 #  if !defined(WITHOUT_CHORBA_SSE)
         ft.crc32 = &crc32_chorba_sse2;
-        ft.crc32_copy = &crc32_copy_chorba_sse2;
 #  endif
         ft.inflate_fast = &inflate_fast_sse2;
         ft.slide_hash = &slide_hash_sse2;
@@ -135,7 +139,6 @@ static int init_functable(void) {
 #ifdef X86_SSSE3
     if (cf.x86.has_ssse3) {
         ft.adler32 = &adler32_ssse3;
-        ft.adler32_copy = &adler32_copy_ssse3;
         ft.chunkmemset_safe = &chunkmemset_safe_ssse3;
         ft.inflate_fast = &inflate_fast_ssse3;
     }
@@ -145,21 +148,23 @@ static int init_functable(void) {
 #if defined(X86_SSE41) && !defined(WITHOUT_CHORBA_SSE)
     if (cf.x86.has_sse41) {
         ft.crc32 = &crc32_chorba_sse41;
-        ft.crc32_copy = &crc32_copy_chorba_sse41;
     }
 #endif
 
     // X86 - SSE4.2
 #ifdef X86_SSE42
     if (cf.x86.has_sse42) {
-        ft.adler32_copy = &adler32_copy_sse42;
+        ft.adler32_fold_copy = &adler32_fold_copy_sse42;
     }
 #endif
     // X86 - PCLMUL
 #ifdef X86_PCLMULQDQ_CRC
     if (cf.x86.has_pclmulqdq) {
         ft.crc32 = &crc32_pclmulqdq;
-        ft.crc32_copy = &crc32_copy_pclmulqdq;
+        ft.crc32_fold = &crc32_fold_pclmulqdq;
+        ft.crc32_fold_copy = &crc32_fold_pclmulqdq_copy;
+        ft.crc32_fold_final = &crc32_fold_pclmulqdq_final;
+        ft.crc32_fold_reset = &crc32_fold_pclmulqdq_reset;
     }
 #endif
     // X86 - AVX
@@ -170,7 +175,7 @@ static int init_functable(void) {
      * to remain intact. They also allow for a count operand that isn't the CL register, avoiding contention there */
     if (cf.x86.has_avx2 && cf.x86.has_bmi2) {
         ft.adler32 = &adler32_avx2;
-        ft.adler32_copy = &adler32_copy_avx2;
+        ft.adler32_fold_copy = &adler32_fold_copy_avx2;
         ft.chunkmemset_safe = &chunkmemset_safe_avx2;
         ft.inflate_fast = &inflate_fast_avx2;
         ft.slide_hash = &slide_hash_avx2;
@@ -185,7 +190,7 @@ static int init_functable(void) {
 #ifdef X86_AVX512
     if (cf.x86.has_avx512_common) {
         ft.adler32 = &adler32_avx512;
-        ft.adler32_copy = &adler32_copy_avx512;
+        ft.adler32_fold_copy = &adler32_fold_copy_avx512;
         ft.chunkmemset_safe = &chunkmemset_safe_avx512;
         ft.inflate_fast = &inflate_fast_avx512;
 #  ifdef HAVE_BUILTIN_CTZLL
@@ -198,14 +203,17 @@ static int init_functable(void) {
 #ifdef X86_AVX512VNNI
     if (cf.x86.has_avx512vnni) {
         ft.adler32 = &adler32_avx512_vnni;
-        ft.adler32_copy = &adler32_copy_avx512_vnni;
+        ft.adler32_fold_copy = &adler32_fold_copy_avx512_vnni;
     }
 #endif
     // X86 - VPCLMULQDQ
 #ifdef X86_VPCLMULQDQ_CRC
     if (cf.x86.has_pclmulqdq && cf.x86.has_avx512_common && cf.x86.has_vpclmulqdq) {
         ft.crc32 = &crc32_vpclmulqdq;
-        ft.crc32_copy = &crc32_copy_vpclmulqdq;
+        ft.crc32_fold = &crc32_fold_vpclmulqdq;
+        ft.crc32_fold_copy = &crc32_fold_vpclmulqdq_copy;
+        ft.crc32_fold_final = &crc32_fold_vpclmulqdq_final;
+        ft.crc32_fold_reset = &crc32_fold_vpclmulqdq_reset;
     }
 #endif
 
@@ -226,7 +234,7 @@ static int init_functable(void) {
 #  endif
     {
         ft.adler32 = &adler32_neon;
-        ft.adler32_copy = &adler32_copy_neon;
+        ft.adler32_fold_copy = &adler32_fold_copy_neon;
         ft.chunkmemset_safe = &chunkmemset_safe_neon;
         ft.inflate_fast = &inflate_fast_neon;
         ft.slide_hash = &slide_hash_neon;
@@ -241,22 +249,16 @@ static int init_functable(void) {
 #ifdef ARM_CRC32
     if (cf.arm.has_crc32) {
         ft.crc32 = &crc32_armv8;
-        ft.crc32_copy = &crc32_copy_armv8;
+        ft.crc32_fold = &crc32_fold_armv8;
+        ft.crc32_fold_copy = &crc32_fold_copy_armv8;
     }
 #endif
-    // ARM - PMULL EOR3
-#ifdef ARM_PMULL_EOR3
-    if (cf.arm.has_crc32 && cf.arm.has_pmull && cf.arm.has_eor3 && cf.arm.has_fast_pmull) {
-        ft.crc32 = &crc32_armv8_pmull_eor3;
-        ft.crc32_copy = &crc32_copy_armv8_pmull_eor3;
-    }
-#endif
+
 
     // Power - VMX
 #ifdef PPC_VMX
     if (cf.power.has_altivec) {
         ft.adler32 = &adler32_vmx;
-        ft.adler32_copy = &adler32_copy_vmx;
         ft.slide_hash = &slide_hash_vmx;
     }
 #endif
@@ -264,17 +266,14 @@ static int init_functable(void) {
 #ifdef POWER8_VSX
     if (cf.power.has_arch_2_07) {
         ft.adler32 = &adler32_power8;
-        ft.adler32_copy = &adler32_copy_power8;
         ft.chunkmemset_safe = &chunkmemset_safe_power8;
         ft.inflate_fast = &inflate_fast_power8;
         ft.slide_hash = &slide_hash_power8;
     }
 #endif
 #ifdef POWER8_VSX_CRC32
-    if (cf.power.has_arch_2_07) {
+    if (cf.power.has_arch_2_07)
         ft.crc32 = &crc32_power8;
-        ft.crc32_copy = &crc32_copy_power8;
-    }
 #endif
     // Power9
 #ifdef POWER9
@@ -290,7 +289,7 @@ static int init_functable(void) {
 #ifdef RISCV_RVV
     if (cf.riscv.has_rvv) {
         ft.adler32 = &adler32_rvv;
-        ft.adler32_copy = &adler32_copy_rvv;
+        ft.adler32_fold_copy = &adler32_fold_copy_rvv;
         ft.chunkmemset_safe = &chunkmemset_safe_rvv;
         ft.compare256 = &compare256_rvv;
         ft.inflate_fast = &inflate_fast_rvv;
@@ -304,29 +303,27 @@ static int init_functable(void) {
 #ifdef RISCV_CRC32_ZBC
     if (cf.riscv.has_zbc) {
         ft.crc32 = &crc32_riscv64_zbc;
-        ft.crc32_copy = &crc32_copy_riscv64_zbc;
     }
 #endif
 
     // S390
 #ifdef S390_CRC32_VX
-    if (cf.s390.has_vx) {
+    if (cf.s390.has_vx)
         ft.crc32 = crc32_s390_vx;
-        ft.crc32_copy = crc32_copy_s390_vx;
-    }
 #endif
 
     // LOONGARCH
 #ifdef LOONGARCH_CRC
     if (cf.loongarch.has_crc) {
         ft.crc32 = crc32_loongarch64;
-        ft.crc32_copy = crc32_copy_loongarch64;
+        ft.crc32_fold = &crc32_fold_loongarch64;
+        ft.crc32_fold_copy = &crc32_fold_copy_loongarch64;
     }
 #endif
 #ifdef LOONGARCH_LSX
     if (cf.loongarch.has_lsx) {
         ft.adler32 = &adler32_lsx;
-        ft.adler32_copy = &adler32_copy_lsx;
+        ft.adler32_fold_copy = &adler32_fold_copy_lsx;
         ft.slide_hash = slide_hash_lsx;
 #  ifdef HAVE_BUILTIN_CTZ
         ft.compare256 = &compare256_lsx;
@@ -340,7 +337,7 @@ static int init_functable(void) {
 #ifdef LOONGARCH_LASX
     if (cf.loongarch.has_lasx) {
         ft.adler32 = &adler32_lasx;
-        ft.adler32_copy = &adler32_copy_lasx;
+        ft.adler32_fold_copy = &adler32_fold_copy_lasx;
         ft.slide_hash = slide_hash_lasx;
 #  ifdef HAVE_BUILTIN_CTZ
         ft.compare256 = &compare256_lasx;
@@ -357,11 +354,14 @@ static int init_functable(void) {
     // Assign function pointers individually for atomic operation
     FUNCTABLE_ASSIGN(ft, force_init);
     FUNCTABLE_VERIFY_ASSIGN(ft, adler32);
-    FUNCTABLE_VERIFY_ASSIGN(ft, adler32_copy);
+    FUNCTABLE_VERIFY_ASSIGN(ft, adler32_fold_copy);
     FUNCTABLE_VERIFY_ASSIGN(ft, chunkmemset_safe);
     FUNCTABLE_VERIFY_ASSIGN(ft, compare256);
     FUNCTABLE_VERIFY_ASSIGN(ft, crc32);
-    FUNCTABLE_VERIFY_ASSIGN(ft, crc32_copy);
+    FUNCTABLE_VERIFY_ASSIGN(ft, crc32_fold);
+    FUNCTABLE_VERIFY_ASSIGN(ft, crc32_fold_copy);
+    FUNCTABLE_VERIFY_ASSIGN(ft, crc32_fold_final);
+    FUNCTABLE_VERIFY_ASSIGN(ft, crc32_fold_reset);
     FUNCTABLE_VERIFY_ASSIGN(ft, inflate_fast);
     FUNCTABLE_VERIFY_ASSIGN(ft, longest_match);
     FUNCTABLE_VERIFY_ASSIGN(ft, longest_match_slow);
@@ -383,9 +383,9 @@ static uint32_t adler32_stub(uint32_t adler, const uint8_t* buf, size_t len) {
     return functable.adler32(adler, buf, len);
 }
 
-static uint32_t adler32_copy_stub(uint32_t adler, uint8_t* dst, const uint8_t* src, size_t len) {
+static uint32_t adler32_fold_copy_stub(uint32_t adler, uint8_t* dst, const uint8_t* src, size_t len) {
     FUNCTABLE_INIT_ABORT;
-    return functable.adler32_copy(adler, dst, src, len);
+    return functable.adler32_fold_copy(adler, dst, src, len);
 }
 
 static uint8_t* chunkmemset_safe_stub(uint8_t* out, uint8_t *from, unsigned len, unsigned left) {
@@ -403,9 +403,24 @@ static uint32_t crc32_stub(uint32_t crc, const uint8_t* buf, size_t len) {
     return functable.crc32(crc, buf, len);
 }
 
-static uint32_t crc32_copy_stub(uint32_t crc, uint8_t *dst, const uint8_t *src, size_t len) {
+static void crc32_fold_stub(crc32_fold* crc, const uint8_t* src, size_t len, uint32_t init_crc) {
     FUNCTABLE_INIT_ABORT;
-    return functable.crc32_copy(crc, dst, src, len);
+    functable.crc32_fold(crc, src, len, init_crc);
+}
+
+static void crc32_fold_copy_stub(crc32_fold* crc, uint8_t* dst, const uint8_t* src, size_t len) {
+    FUNCTABLE_INIT_ABORT;
+    functable.crc32_fold_copy(crc, dst, src, len);
+}
+
+static uint32_t crc32_fold_final_stub(crc32_fold* crc) {
+    FUNCTABLE_INIT_ABORT;
+    return functable.crc32_fold_final(crc);
+}
+
+static uint32_t crc32_fold_reset_stub(crc32_fold* crc) {
+    FUNCTABLE_INIT_ABORT;
+    return functable.crc32_fold_reset(crc);
 }
 
 static void inflate_fast_stub(PREFIX3(stream) *strm, uint32_t start) {
@@ -413,12 +428,12 @@ static void inflate_fast_stub(PREFIX3(stream) *strm, uint32_t start) {
     functable.inflate_fast(strm, start);
 }
 
-static uint32_t longest_match_stub(deflate_state* const s, uint32_t cur_match) {
+static uint32_t longest_match_stub(deflate_state* const s, Pos cur_match) {
     FUNCTABLE_INIT_ABORT;
     return functable.longest_match(s, cur_match);
 }
 
-static uint32_t longest_match_slow_stub(deflate_state* const s, uint32_t cur_match) {
+static uint32_t longest_match_slow_stub(deflate_state* const s, Pos cur_match) {
     FUNCTABLE_INIT_ABORT;
     return functable.longest_match_slow(s, cur_match);
 }
@@ -432,11 +447,14 @@ static void slide_hash_stub(deflate_state* s) {
 Z_INTERNAL struct functable_s functable = {
     force_init_stub,
     adler32_stub,
-    adler32_copy_stub,
+    adler32_fold_copy_stub,
     chunkmemset_safe_stub,
     compare256_stub,
     crc32_stub,
-    crc32_copy_stub,
+    crc32_fold_stub,
+    crc32_fold_copy_stub,
+    crc32_fold_final_stub,
+    crc32_fold_reset_stub,
     inflate_fast_stub,
     longest_match_stub,
     longest_match_slow_stub,

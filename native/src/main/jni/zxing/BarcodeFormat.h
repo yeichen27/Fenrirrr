@@ -27,14 +27,23 @@
 	X(AllGS1,           '*', 'g', "    ",   0, 1,                       "All GS1") \
 	X(Codabar,          'F', ' ', "lrw ",  18, ZXING_ENABLE_1D,         "Codabar") \
 	X(Code39,           'A', ' ', "lrw ",   8, ZXING_ENABLE_1D,         "Code 39") \
-	X(PZN,              'A', 'p', "lr  ",   8, ZXING_ENABLE_1D,         "Pharmazentralnummer") \
+	X(Code32,           'A', '2', "lr  ", 129, ZXING_ENABLE_1D,         "Code 32") \
+	X(LOGMARS,          'A', 'l', "lr  ",  50, ZXING_ENABLE_1D,         "LOGMARS") \
+	X(PZN,              'A', 'p', "lr  ",  52, ZXING_ENABLE_1D,         "Pharmazentralnummer") \
+	X(VIN,              'A', 'v', "lr  ",  73, ZXING_ENABLE_1D,         "VIN") \
 	X(Code93,           'G', ' ', "lrw ",  25, ZXING_ENABLE_1D,         "Code 93") \
 	X(Code128,          'C', ' ', "lrwg",  20, ZXING_ENABLE_1D,         "Code 128") \
 	X(ITF,              'I', ' ', "lrw ",   3, ZXING_ENABLE_1D,         "ITF") \
-	X(DataBar,          'e', ' ', "lr  ",  29, ZXING_ENABLE_1D,         "DataBar") \
-	X(DataBarOmD,       'e', 'o', "lr  ",  29, ZXING_ENABLE_1D,         "DataBar Omnidirectional") \
-	X(DataBarLtd,       'e', 'l', "lr  ",  30, ZXING_ENABLE_1D,         "DataBar Limited") \
+	X(ITF14,            'I', '4', "lr  ",  89, ZXING_ENABLE_1D,         "ITF-14") \
+	X(Leitcode,         'I', 'l', "lr  ",  21, ZXING_ENABLE_1D,         "Leitcode") \
+	X(Identcode,        'I', 'i', "lr  ",  22, ZXING_ENABLE_1D,         "Identcode") \
+	X(DataBar,          'e', ' ', "lr g",  29, ZXING_ENABLE_1D,         "DataBar") \
+	X(DataBarOmni,      'e', 'o', "lr g",  29, ZXING_ENABLE_1D,         "DataBar Omni") \
+	X(DataBarStk,       'e', 's', "lr g",  79, ZXING_ENABLE_1D,         "DataBar Stacked") \
+	X(DataBarStkOmni,   'e', 'O', "lr g",  80, ZXING_ENABLE_1D,         "DataBar Stacked Omni") \
+	X(DataBarLtd,       'e', 'l', "lr g",  30, ZXING_ENABLE_1D,         "DataBar Limited") \
 	X(DataBarExp,       'e', 'e', "lr g",  31, ZXING_ENABLE_1D,         "DataBar Expanded") \
+	X(DataBarExpStk,    'e', 'E', "lr g",  81, ZXING_ENABLE_1D,         "DataBar Expanded Stacked") \
 	X(EANUPC,           'E', ' ', "lr  ",  15, ZXING_ENABLE_1D,         "EAN/UPC") \
 	X(EAN13,            'E', '1', "lrw ",  15, ZXING_ENABLE_1D,         "EAN-13") \
 	X(EAN8,             'E', '8', "lrw ",  10, ZXING_ENABLE_1D,         "EAN-8") \
@@ -52,6 +61,7 @@
 	X(AztecRune,        'z', 'r', "mr  ", 128, ZXING_ENABLE_AZTEC,      "Aztec Rune") \
 	X(QRCode,           'Q', ' ', "mrwg",  58, ZXING_ENABLE_QRCODE,     "QR Code") \
 	X(QRCodeModel1,     'Q', '1', "mr  ",   0, ZXING_ENABLE_QRCODE,     "QR Code Model 1") \
+	X(QRCodeModel2,     'Q', '2', "mr  ",  58, ZXING_ENABLE_QRCODE,     "QR Code Model 2") \
 	X(MicroQRCode,      'Q', 'm', "mr  ",  97, ZXING_ENABLE_QRCODE,     "Micro QR Code") \
 	X(RMQRCode,         'Q', 'r', "mr g", 145, ZXING_ENABLE_QRCODE,     "rMQR Code") \
 	X(DataMatrix,       'd', ' ', "mrwg",  71, ZXING_ENABLE_DATAMATRIX, "Data Matrix") \
@@ -107,6 +117,9 @@ BarcodeFormat Symbology(BarcodeFormat format);
 
 /// @brief Returns the human-readable name of the given barcode format.
 std::string_view Name(BarcodeFormat format);
+
+/// Test if left hand side (e == element) is 'inside' right hand side (s == set) (e.g. MicroQRCode <= QRCode)
+bool operator<=(BarcodeFormat e, BarcodeFormat s);
 
 /// Test if the two BarcodeFormats have a non-empty intersection (e.g. AllMatrix & QRCode)
 bool operator&(BarcodeFormat a, BarcodeFormat b);
@@ -176,7 +189,7 @@ public:
 	BarcodeFormats(std::vector<BarcodeFormat>&& formats) : formats_(std::move(formats)) { normalize(); }
 
 	/// @brief Constructs a collection from a textual representation (e.g. a comma-separated list of format identifiers).
-	explicit BarcodeFormats(std::string_view ids);
+	explicit BarcodeFormats(std::string_view str);
 
 	BarcodeFormats(const BarcodeFormats&) = default;
 	BarcodeFormats(BarcodeFormats&&) = default;
@@ -194,7 +207,7 @@ public:
 	auto data() const noexcept { return formats_.data(); }
 
 	bool empty() const noexcept { return formats_.empty(); }
-	int size() const noexcept { return formats_.size(); }
+	int size() const noexcept { return static_cast<int>(formats_.size()); }
 
 	// BarcodeFormats&& operator|(BarcodeFormat bt) &&;
 	// BarcodeFormats&& operator|(const BarcodeFormats& other) &&;
@@ -204,20 +217,25 @@ public:
 
 	/// @brief Returns a list of available/supported barcode formats, optionally filtered by the provided formats.
 	/// @example BarcodeFormats::list(BarcodeFormat::AllReadable);
-	static BarcodeFormats list(const BarcodeFormats& filter = BarcodeFormat::All);
+	static BarcodeFormats list(const BarcodeFormats& filter = {});
 
 	[[deprecated]] inline int count() const noexcept { return size(); }
 	[[deprecated]] inline bool testFlag(BarcodeFormat format) const noexcept
 	{
 		return std::any_of(begin(), end(), [format](BarcodeFormat f) { return f & format; });
 	}
-	[[deprecated]] inline bool testFlags(BarcodeFormats formats) const noexcept
+	[[deprecated]] inline bool testFlags(const BarcodeFormats& formats) const noexcept
 	{
 		return std::any_of(begin(), end(), [formats](BarcodeFormat fo) {
 			return std::any_of(formats.begin(), formats.end(), [fo](BarcodeFormat fi) { return fo & fi; });
 		});
 	}
 };
+
+inline bool operator<=(BarcodeFormat lhs, const BarcodeFormats& rhs)
+{
+	return std::any_of(rhs.begin(), rhs.end(), [lhs](BarcodeFormat bf) { return lhs <= bf; });
+}
 
 inline bool operator&(BarcodeFormat lhs, const BarcodeFormats& rhs)
 {

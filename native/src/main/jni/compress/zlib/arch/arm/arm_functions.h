@@ -7,13 +7,13 @@
 
 #ifdef ARM_NEON
 uint32_t adler32_neon(uint32_t adler, const uint8_t *buf, size_t len);
-uint32_t adler32_copy_neon(uint32_t adler, uint8_t *dst, const uint8_t *src, size_t len);
+uint32_t adler32_fold_copy_neon(uint32_t adler, uint8_t *dst, const uint8_t *src, size_t len);
 uint8_t* chunkmemset_safe_neon(uint8_t *out, uint8_t *from, unsigned len, unsigned left);
 
 #  ifdef HAVE_BUILTIN_CTZLL
 uint32_t compare256_neon(const uint8_t *src0, const uint8_t *src1);
-uint32_t longest_match_neon(deflate_state *const s, uint32_t cur_match);
-uint32_t longest_match_slow_neon(deflate_state *const s, uint32_t cur_match);
+uint32_t longest_match_neon(deflate_state *const s, Pos cur_match);
+uint32_t longest_match_slow_neon(deflate_state *const s, Pos cur_match);
 #  endif
 void slide_hash_neon(deflate_state *s);
 void inflate_fast_neon(PREFIX3(stream) *strm, uint32_t start);
@@ -21,11 +21,8 @@ void inflate_fast_neon(PREFIX3(stream) *strm, uint32_t start);
 
 #ifdef ARM_CRC32
 uint32_t crc32_armv8(uint32_t crc, const uint8_t *buf, size_t len);
-uint32_t crc32_copy_armv8(uint32_t crc, uint8_t *dst, const uint8_t *src, size_t len);
-#endif
-#ifdef ARM_PMULL_EOR3
-uint32_t crc32_armv8_pmull_eor3(uint32_t crc, const uint8_t *buf, size_t len);
-uint32_t crc32_copy_armv8_pmull_eor3(uint32_t crc, uint8_t *dst, const uint8_t *src, size_t len);
+void     crc32_fold_copy_armv8(crc32_fold *crc, uint8_t *dst, const uint8_t *src, size_t len);
+void     crc32_fold_armv8(crc32_fold *crc, const uint8_t *src, size_t len, uint32_t init_crc);
 #endif
 
 #ifdef ARM_SIMD
@@ -43,8 +40,8 @@ void slide_hash_armv6(deflate_state *s);
 #  if (defined(ARM_NEON) && (defined(__ARM_NEON__) || defined(__ARM_NEON))) || ARM_NOCHECK_NEON
 #    undef native_adler32
 #    define native_adler32 adler32_neon
-#    undef native_adler32_copy
-#    define native_adler32_copy adler32_copy_neon
+#    undef native_adler32_fold_copy
+#    define native_adler32_fold_copy adler32_fold_copy_neon
 #    undef native_chunkmemset_safe
 #    define native_chunkmemset_safe chunkmemset_safe_neon
 #    undef native_inflate_fast
@@ -64,15 +61,10 @@ void slide_hash_armv6(deflate_state *s);
 #  if (defined(ARM_CRC32) && defined(__ARM_FEATURE_CRC32))
 #    undef native_crc32
 #    define native_crc32 crc32_armv8
-#    undef native_crc32_copy
-#    define native_crc32_copy crc32_copy_armv8
-#  endif
-// ARM - PMULL EOR3
-#  if (defined(ARM_PMULL_EOR3) && defined(__ARM_FEATURE_CRC32) && defined(__ARM_FEATURE_CRYPTO) && defined(__ARM_FEATURE_SHA3))
-#    undef native_crc32
-#    define native_crc32 crc32_armv8_pmull_eor3
-#    undef native_crc32_copy
-#    define native_crc32_copy crc32_copy_armv8_pmull_eor3
+#    undef native_crc32_fold
+#    define native_crc32_fold crc32_fold_armv8
+#    undef native_crc32_fold_copy
+#    define native_crc32_fold_copy crc32_fold_copy_armv8
 #  endif
 #endif
 

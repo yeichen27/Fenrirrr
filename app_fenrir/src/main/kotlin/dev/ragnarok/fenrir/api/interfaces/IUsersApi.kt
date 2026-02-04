@@ -22,6 +22,9 @@ interface IUsersApi {
         count: Int?,
         extended: Int?,
         out: Int?,
+        sort: Int?,
+        needViewed: Int?,
+        suggested: Int?,
         fields: String?
     ): Flow<Items<VKApiUser>>
 

@@ -50,7 +50,7 @@ class IFriendsService : IServiceRest() {
         nameCase: String?
     ): Flow<BaseResponse<Items<VKApiUser>>> {
         return rest.request(
-            "friends.getRecommendations", form(
+            "friends.getSuggestions", form(
                 "count" to count,
                 "fields" to fields,
                 "name_case" to nameCase

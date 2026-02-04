@@ -42,6 +42,7 @@ Z_INTERNAL Z_TARGET_CRC uint32_t crc32_armv8(uint32_t crc, const uint8_t *buf, s
             len -= sizeof(uint32_t);
             buf += sizeof(uint32_t);
         }
+
     }
 
     while (len >= sizeof(uint64_t)) {
@@ -71,9 +72,15 @@ Z_INTERNAL Z_TARGET_CRC uint32_t crc32_armv8(uint32_t crc, const uint8_t *buf, s
     return c;
 }
 
-Z_INTERNAL Z_TARGET_CRC uint32_t crc32_copy_armv8(uint32_t crc, uint8_t *dst, const uint8_t *src, size_t len) {
-    crc = crc32_armv8(crc, src, len);
+/* Note: Based on generic crc32_fold_* implementation with functable call replaced by direct call. */
+Z_INTERNAL Z_TARGET_CRC void crc32_fold_copy_armv8(crc32_fold *crc, uint8_t *dst, const uint8_t *src, size_t len) {
+    crc->value = crc32_armv8(crc->value, src, len);
     memcpy(dst, src, len);
-    return crc;
 }
+
+Z_INTERNAL Z_TARGET_CRC void crc32_fold_armv8(crc32_fold *crc, const uint8_t *src, size_t len, uint32_t init_crc) {
+    Z_UNUSED(init_crc);
+    crc->value = crc32_armv8(crc->value, src, len);
+}
+
 #endif

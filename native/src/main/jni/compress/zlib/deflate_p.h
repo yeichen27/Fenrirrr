@@ -10,7 +10,6 @@
 #define DEFLATE_P_H
 
 #include "functable.h"
-#include "fallback_builtins.h"
 
 /* Forward declare common non-inlined functions declared in deflate.c */
 
@@ -18,7 +17,7 @@
 /* ===========================================================================
  * Check that the match at match_start is indeed a match.
  */
-static inline void check_match(deflate_state *s, uint32_t start, uint32_t match, int length) {
+static inline void check_match(deflate_state *s, Pos start, Pos match, int length) {
     /* check that the match length is valid*/
     if (length < STD_MIN_MATCH || length > STD_MAX_MATCH) {
         fprintf(stderr, " start %u, match %u, length %d\n", start, match, length);
@@ -128,11 +127,13 @@ Z_FORCEINLINE static void flush_pending_inline(PREFIX3(stream) *strm) {
 /* ===========================================================================
  * Reverse the first len bits of a code using bit manipulation
  */
-Z_FORCEINLINE static uint16_t bi_reverse(uint16_t code, int len) {
+static inline uint16_t bi_reverse(unsigned code, int len) {
     /* code: the value to invert */
     /* len: its bit length */
     Assert(len >= 1 && len <= 15, "code length must be 1-15");
-    return __builtin_bitreverse16(code) >> (16 - len);
+#define bitrev8(b) \
+    (uint8_t)((((uint8_t)(b) * 0x80200802ULL) & 0x0884422110ULL) * 0x0101010101ULL >> 32)
+    return (bitrev8(code >> 8) | (uint16_t)bitrev8(code) << 8) >> (16 - len);
 }
 
 /* ===========================================================================
@@ -152,10 +153,10 @@ Z_FORCEINLINE static unsigned read_buf(PREFIX3(stream) *strm, unsigned char *buf
         memcpy(buf, strm->next_in, len);
 #ifdef GZIP
     } else if (s->wrap == 2) {
-        strm->adler = FUNCTABLE_CALL(crc32_copy)(strm->adler, buf, strm->next_in, len);
+        FUNCTABLE_CALL(crc32_fold_copy)(&s->crc_fold, buf, strm->next_in, len);
 #endif
     } else if (s->wrap == 1) {
-        strm->adler = FUNCTABLE_CALL(adler32_copy)(strm->adler, buf, strm->next_in, len);
+        strm->adler = FUNCTABLE_CALL(adler32_fold_copy)(strm->adler, buf, strm->next_in, len);
     } else {
         memcpy(buf, strm->next_in, len);
     }
@@ -192,6 +193,6 @@ Z_FORCEINLINE static unsigned read_buf(PREFIX3(stream) *strm, unsigned char *buf
 /* Compression function. Returns the block state after the call. */
 typedef block_state (*compress_func) (deflate_state *s, int flush);
 /* Match function. Returns the longest match. */
-typedef uint32_t    (*match_func)    (deflate_state *const s, uint32_t cur_match);
+typedef uint32_t    (*match_func)    (deflate_state *const s, Pos cur_match);
 
 #endif

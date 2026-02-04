@@ -9,9 +9,9 @@ import dev.ragnarok.fenrir.fragment.base.core.IToastView
 import dev.ragnarok.fenrir.model.EditingPostType
 import dev.ragnarok.fenrir.model.LoadMoreState
 import dev.ragnarok.fenrir.model.Owner
-import dev.ragnarok.fenrir.model.Photo
 import dev.ragnarok.fenrir.model.Post
 import dev.ragnarok.fenrir.model.Story
+import dev.ragnarok.fenrir.model.TmpSource
 import dev.ragnarok.fenrir.upload.Upload
 
 interface IWallView : IAttachmentsPlacesView, IMvpView, ISnackbarView,
@@ -29,11 +29,19 @@ interface IWallView : IAttachmentsPlacesView, IMvpView, ISnackbarView,
     fun openVideosLibrary(accountId: Long, ownerId: Long, owner: Owner?)
     fun goToPostCreation(accountId: Long, ownerId: Long, @EditingPostType postType: Int)
     fun copyToClipboard(label: String?, body: String?)
-    fun openPhotoAlbum(
+    fun displayGallery(
         accountId: Long,
-        ownerId: Long,
         albumId: Int,
-        photos: ArrayList<Photo>,
+        ownerId: Long,
+        source: TmpSource,
+        position: Int
+    )
+
+    fun displayGalleryUnSafe(
+        accountId: Long,
+        albumId: Int,
+        ownerId: Long,
+        parcelNativePointer: Long,
         position: Int
     )
 

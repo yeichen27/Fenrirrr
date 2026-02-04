@@ -16,6 +16,7 @@ import dev.ragnarok.fenrir.model.FriendsCounters
 import dev.ragnarok.fenrir.model.Owner
 import dev.ragnarok.fenrir.model.User
 import dev.ragnarok.fenrir.orZero
+import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.Pair
 import dev.ragnarok.fenrir.util.Pair.Companion.create
 import dev.ragnarok.fenrir.util.Utils.listEmptyIfNull
@@ -142,9 +143,18 @@ class RelationshipInteractor(
         count: Int,
         offset: Int
     ): Flow<List<User>> {
-        return networker.vkDefault(accountId)
-            .users()
-            .getFollowers(objectId, offset, count, Fields.FIELDS_BASE_USER, null)
+        return (if (accountId == objectId) networker.vkDefault(accountId)
+            .users().getRequests(
+                offset,
+                count,
+                1,
+                0,
+                0,
+                if (Settings.get().main().isOnlyNotViewedFollowers) 0 else 1,
+                0,
+                Fields.FIELDS_BASE_USER
+            ) else networker.vkDefault(accountId)
+            .users().getFollowers(objectId, offset, count, Fields.FIELDS_BASE_USER, null))
             .map { items -> listEmptyIfNull(items.items) }
             .flatMapConcat { dtos ->
                 val dbos = mapUsers(dtos)
@@ -165,7 +175,7 @@ class RelationshipInteractor(
     ): Flow<List<User>> {
         return networker.vkDefault(accountId)
             .users()
-            .getRequests(offset, count, 1, 1, Fields.FIELDS_BASE_USER)
+            .getRequests(offset, count, 1, 1, null, null, 0, Fields.FIELDS_BASE_USER)
             .map { items -> listEmptyIfNull(items.items) }
             .flatMapConcat { dtos ->
                 val dbos = mapUsers(dtos)

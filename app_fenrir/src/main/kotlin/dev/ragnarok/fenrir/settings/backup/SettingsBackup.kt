@@ -58,6 +58,7 @@ class SettingsBackup {
         var snow_mode: Boolean? = null
         var dont_write: Boolean? = null
         var over_ten_attach: Boolean? = null
+        var only_not_viewed_followers: Boolean? = null
 
         //UI
         var avatar_style: Int? = null

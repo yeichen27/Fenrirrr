@@ -251,6 +251,7 @@ interface ISettings {
         fun nextCustomChannelNotif()
         val currentParser: Int
         var catalogV2ListSort: List<Int>
+        val isOnlyNotViewedFollowers: Boolean
     }
 
     interface INotificationSettings {

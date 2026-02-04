@@ -1972,4 +1972,5 @@
     <string name="owner_count_c">%1$d owners</string>
     <string name="long_click_photo">Long press on the photo</string>
     <string name="photo_zoom_enable_list">Scroll through zoomed images</string>
+    <string name="only_not_viewed_followers">Show only unseen followers</string>
 </resources>

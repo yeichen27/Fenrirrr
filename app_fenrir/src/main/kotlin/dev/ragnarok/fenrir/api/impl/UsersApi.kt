@@ -77,11 +77,14 @@ internal class UsersApi(accountId: Long, provider: IServiceProvider) :
         count: Int?,
         extended: Int?,
         out: Int?,
+        sort: Int?,
+        needViewed: Int?,
+        suggested: Int?,
         fields: String?
     ): Flow<Items<VKApiUser>> {
         return provideService(IUsersService(), TokenType.USER)
             .flatMapConcat {
-                it.getRequests(offset, count, extended, out, fields)
+                it.getRequests(offset, count, extended, out, sort, needViewed, suggested, fields)
                     .map(extractResponseWithErrorHandling())
             }
     }

@@ -753,11 +753,22 @@ class ChatPresenter(
             val selectedList = data.filter {
                 it.isSelected
             }
-
             for (selected in selectedList) {
                 for (item in messages) {
                     if (item.getObjectId() == selected.getObjectId()) {
                         item.isSelected = true
+                        break
+                    }
+                }
+            }
+
+            val reactionEditModeList = data.filter {
+                it.reactionEditMode
+            }
+            for (reactionEditMode in reactionEditModeList) {
+                for (item in messages) {
+                    if (item.getObjectId() == reactionEditMode.getObjectId()) {
+                        item.setReactionEditMode(true)
                         break
                     }
                 }

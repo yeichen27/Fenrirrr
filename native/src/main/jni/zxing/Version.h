@@ -17,8 +17,9 @@
 #define ZXING_ENABLE_MAXICODE true
 
 // Version numbering
-#define ZXING_VERSION_MAJOR 2
-#define ZXING_VERSION_MINOR 3
+#define ZXING_VERSION_MAJOR 3
+#define ZXING_VERSION_MINOR 0
 #define ZXING_VERSION_PATCH 0
+#define ZXING_VERSION_SUFFIX "-rc1"
 
-#define ZXING_VERSION_STR "2.3.0"
+#define ZXING_VERSION_STR "3.0.0-rc1"

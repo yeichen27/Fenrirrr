@@ -37,7 +37,7 @@ Reader::Reader(const ReaderOptions& opts) : ZXing::Reader(opts)
 
 	_readers.reserve(8);
 
-	if (opts.hasFormat(EANUPC))
+	if (opts.hasAnyFormat(EANUPC))
 		_readers.emplace_back(new MultiUPCEANReader(opts));
 
 	if (opts.hasFormat(Code39))
@@ -50,11 +50,11 @@ Reader::Reader(const ReaderOptions& opts) : ZXing::Reader(opts)
 		_readers.emplace_back(new ITFReader(opts));
 	if (opts.hasFormat(Codabar))
 		_readers.emplace_back(new CodabarReader(opts));
-	if (opts.hasFormat(DataBarOmD))
+	if (opts.hasFormat(DataBar | DataBarOmni | DataBarStk | DataBarStkOmni))
 		_readers.emplace_back(new DataBarReader(opts));
-	if (opts.hasFormat(DataBarExp))
+	if (opts.hasFormat(DataBar | DataBarExp | DataBarExpStk))
 		_readers.emplace_back(new DataBarExpandedReader(opts));
-	if (opts.hasFormat(DataBarLtd))
+	if (opts.hasFormat(DataBar | DataBarLtd))
 		_readers.emplace_back(new DataBarLimitedReader(opts));
 	if (opts.hasFormat(DXFilmEdge))
 		_readers.emplace_back(new DXFilmEdgeReader(opts));
@@ -133,7 +133,7 @@ BarcodesData DoDecode(const std::vector<std::unique_ptr<RowReader>>& readers, co
 		bool val = false;
 		int x = 0;
 		for (auto b : bars) {
-			for(int j = 0; j < b; ++j)
+			for(unsigned j = 0; j < b; ++j)
 				dbg.set(x++, rowNumber, val);
 			val = !val;
 		}

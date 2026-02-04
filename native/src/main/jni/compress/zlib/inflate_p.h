@@ -72,13 +72,6 @@
     } while (0)
 #endif
 
-/* Compiler optimization for bit accumulator on x86 architectures */
-#if defined(__x86_64__) || defined(__i386__)
-typedef uint8_t bits_t;
-#else
-typedef unsigned bits_t;
-#endif
-
 /* Load registers with state in inflate() for speed */
 #define LOAD() \
     do { \
@@ -87,7 +80,7 @@ typedef unsigned bits_t;
         next = strm->next_in; \
         have = strm->avail_in; \
         hold = state->hold; \
-        bits = (bits_t)state->bits; \
+        bits = state->bits; \
     } while (0)
 
 /* Restore state from registers in inflate() */
@@ -112,7 +105,7 @@ typedef unsigned bits_t;
    not enough available input to do that, then return from inflate()/inflateBack(). */
 #define NEEDBITS(n) \
     do { \
-        while (bits < (bits_t)(n)) \
+        while (bits < (unsigned)(n)) \
             PULLBYTE(); \
     } while (0)
 
@@ -124,7 +117,7 @@ typedef unsigned bits_t;
 #define DROPBITS(n) \
     do { \
         hold >>= (n); \
-        bits -= (bits_t)(n); \
+        bits -= (unsigned)(n); \
     } while (0)
 
 /* Remove zero to seven bits as needed to go to a byte boundary */

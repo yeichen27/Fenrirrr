@@ -127,15 +127,6 @@
 /* Ignore unused variable warning */
 #define Z_UNUSED(var) (void)(var)
 
-/* Force the compiler to treat variable as modified. Empty asm statement with a "+r" constraint prevents
-   the compiler from reordering or eliminating loads into the variable. This can help keep critical latency
-   chains in the hot path from being shortened or optimized away. */
-#if (defined(__GNUC__) || defined(__clang__)) && (defined(__x86_64__) || defined(__i386__) || defined(__aarch64__))
-#  define Z_TOUCH(var) __asm__ ("" : "+r"(var))
-#else
-#  define Z_TOUCH(var) (void)(var)
-#endif
-
 #if defined(HAVE_VISIBILITY_INTERNAL)
 #  define Z_INTERNAL __attribute__((visibility ("internal")))
 #elif defined(HAVE_VISIBILITY_HIDDEN)
@@ -258,7 +249,7 @@
 #ifdef ZLIB_DEBUG
    extern int Z_INTERNAL z_verbose;
    extern void Z_INTERNAL z_error(const char *m);
-#  define Assert(cond, msg) {int _cond = (cond); if (!(_cond)) z_error(msg);}
+#  define Assert(cond, msg) {int _cond = (cond); if (!_cond) z_error(msg);}
 #  define Trace(x) {if (z_verbose >= 0) fprintf x;}
 #  define Tracev(x) {if (z_verbose > 0) fprintf x;}
 #  define Tracevv(x) {if (z_verbose > 1) fprintf x;}

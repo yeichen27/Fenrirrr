@@ -60,9 +60,9 @@ import dev.ragnarok.fenrir.model.LocalPhoto
 import dev.ragnarok.fenrir.model.LocalVideo
 import dev.ragnarok.fenrir.model.Owner
 import dev.ragnarok.fenrir.model.ParcelableOwnerWrapper
-import dev.ragnarok.fenrir.model.Photo
 import dev.ragnarok.fenrir.model.Post
 import dev.ragnarok.fenrir.model.Story
+import dev.ragnarok.fenrir.model.TmpSource
 import dev.ragnarok.fenrir.model.selection.FileManagerSelectableSource
 import dev.ragnarok.fenrir.model.selection.LocalGallerySelectableSource
 import dev.ragnarok.fenrir.model.selection.LocalPhotosSelectableSource
@@ -389,23 +389,40 @@ abstract class AbsWallFragment<V : IWallView, P : AbsWallPresenter<V>> :
             ?.defaultSnack(res, false)?.show()
     }
 
-    override fun openPhotoAlbum(
+    override fun displayGallery(
         accountId: Long,
-        ownerId: Long,
         albumId: Int,
-        photos: ArrayList<Photo>,
+        ownerId: Long,
+        source: TmpSource,
         position: Int
     ) {
         getPhotoAlbumGalleryPlace(
             accountId,
             albumId,
             ownerId,
-            photos,
+            source,
             position,
             false,
             Settings.get().main().isInvertPhotoRev
-        )
-            .tryOpenWith(requireActivity())
+        ).tryOpenWith(requireActivity())
+    }
+
+    override fun displayGalleryUnSafe(
+        accountId: Long,
+        albumId: Int,
+        ownerId: Long,
+        parcelNativePointer: Long,
+        position: Int
+    ) {
+        getPhotoAlbumGalleryPlace(
+            accountId,
+            albumId,
+            ownerId,
+            parcelNativePointer,
+            position,
+            false,
+            Settings.get().main().isInvertPhotoRev
+        ).tryOpenWith(requireActivity())
     }
 
     override fun goToWallSearch(accountId: Long, ownerId: Long) {

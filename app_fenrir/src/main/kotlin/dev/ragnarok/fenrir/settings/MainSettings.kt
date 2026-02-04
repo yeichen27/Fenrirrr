@@ -942,6 +942,12 @@ internal class MainSettings(context: Context) : IMainSettings {
             0
         }
 
+    override val isOnlyNotViewedFollowers: Boolean
+        get() = getPreferences(app).getBoolean(
+            "only_not_viewed_followers",
+            false
+        )
+
     companion object {
         private const val KEY_IMAGE_SIZE = "image_size"
         private const val KEY_JSON_STATE = "json_list_state"

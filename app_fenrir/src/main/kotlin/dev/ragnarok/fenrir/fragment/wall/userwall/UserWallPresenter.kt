@@ -7,6 +7,8 @@ import androidx.annotation.StringRes
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.api.model.VKApiUser
+import dev.ragnarok.fenrir.db.Stores
+import dev.ragnarok.fenrir.db.serialize.Serializers
 import dev.ragnarok.fenrir.domain.IAccountsInteractor
 import dev.ragnarok.fenrir.domain.IFaveInteractor
 import dev.ragnarok.fenrir.domain.IOwnersRepository
@@ -26,9 +28,13 @@ import dev.ragnarok.fenrir.model.Owner
 import dev.ragnarok.fenrir.model.Peer
 import dev.ragnarok.fenrir.model.Photo
 import dev.ragnarok.fenrir.model.PostFilter
+import dev.ragnarok.fenrir.model.TmpSource
 import dev.ragnarok.fenrir.model.User
 import dev.ragnarok.fenrir.model.UserDetails
 import dev.ragnarok.fenrir.model.criteria.WallCriteria
+import dev.ragnarok.fenrir.module.FenrirNative
+import dev.ragnarok.fenrir.module.parcel.ParcelFlags
+import dev.ragnarok.fenrir.module.parcel.ParcelNative
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.requireNonNull
 import dev.ragnarok.fenrir.settings.Settings
@@ -36,6 +42,8 @@ import dev.ragnarok.fenrir.util.ShortcutUtils.createWallShortcutRx
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import dev.ragnarok.fenrir.util.Utils.singletonArrayList
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.isActive
+import kotlinx.coroutines.flow.flow
 
 class UserWallPresenter(
     accountId: Long,
@@ -325,7 +333,7 @@ class UserWallPresenter(
         }
     }
 
-    private fun DisplayUserProfileAlbum(photos: List<Photo>) {
+    private fun displayUserProfileAlbum(photos: List<Photo>) {
         setLoadingAvatarPhotosNow(false)
         if (photos.isEmpty()) {
             view?.showSnackbar(
@@ -345,14 +353,55 @@ class UserWallPresenter(
                 }
             }
         }
-        val curr = sel
-        view?.openPhotoAlbum(
-            accountId,
-            ownerId,
-            -6,
-            ArrayList(photos),
-            curr
-        )
+        val finalIndex = sel
+
+        if (!FenrirNative.isNativeLoaded || !Settings.get().main().isNative_parcel_photo) {
+            val source = TmpSource(fireTempDataUsage(), 0)
+            appendJob(
+                Stores.instance
+                    .tempStore()
+                    .putTemporaryData(
+                        source.ownerId,
+                        source.sourceId,
+                        photos,
+                        Serializers.PHOTOS_SERIALIZER
+                    )
+                    .fromIOToMain({
+                        view?.displayGallery(
+                            accountId,
+                            -6,
+                            ownerId,
+                            source,
+                            finalIndex
+                        )
+                    }) { obj -> obj.printStackTrace() })
+        } else {
+            appendJob(
+                flow {
+                    val mem = ParcelNative.create(ParcelFlags.NULL_LIST)
+                    mem.writeInt(photos.size)
+                    for (i in photos.indices) {
+                        if (!isActive()) {
+                            mem.forceDestroy()
+                            return@flow
+                        }
+                        mem.writeParcelable(photos[i])
+                    }
+                    if (!isActive()) {
+                        mem.forceDestroy()
+                    } else {
+                        emit(mem.nativePointer)
+                    }
+                }.fromIOToMain({
+                    view?.displayGalleryUnSafe(
+                        accountId,
+                        -6,
+                        ownerId,
+                        it,
+                        finalIndex
+                    )
+                }) { obj -> obj.printStackTrace() })
+        }
     }
 
     private fun onAddFriendResult(resultCode: Int) {
@@ -515,7 +564,7 @@ class UserWallPresenter(
         setLoadingAvatarPhotosNow(true)
         appendJob(
             photosInteractor[accountId, ownerId, -6, 100, 0, true]
-                .fromIOToMain({ photos -> DisplayUserProfileAlbum(photos) }) { t ->
+                .fromIOToMain({ photos -> displayUserProfileAlbum(photos) }) { t ->
                     onAvatarAlbumPrepareFailed(
                         t
                     )

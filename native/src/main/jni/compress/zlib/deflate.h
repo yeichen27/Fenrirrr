@@ -119,9 +119,17 @@ typedef uint16_t Pos;
 /* Type definitions for hash callbacks */
 typedef struct internal_state deflate_state;
 
+typedef uint32_t (* update_hash_cb)        (uint32_t h, uint32_t val);
 typedef void     (* insert_string_cb)      (deflate_state *const s, uint32_t str, uint32_t count);
+typedef Pos      (* quick_insert_string_cb)(deflate_state *const s, uint32_t str);
+
+uint32_t update_hash             (uint32_t h, uint32_t val);
 void     insert_string           (deflate_state *const s, uint32_t str, uint32_t count);
+Pos      quick_insert_string     (deflate_state *const s, uint32_t str);
+
+uint32_t update_hash_roll        (uint32_t h, uint32_t val);
 void     insert_string_roll      (deflate_state *const s, uint32_t str, uint32_t count);
+Pos      quick_insert_string_roll(deflate_state *const s, uint32_t str);
 
 /* Struct for memory allocation handling */
 typedef struct deflate_allocs_s {
@@ -135,7 +143,6 @@ typedef struct deflate_allocs_s {
 } deflate_allocs;
 
 struct ALIGNED_(64) internal_state {
-                /* Cacheline 0 */
     PREFIX3(stream)      *strm;            /* pointer back to this zlib stream */
     unsigned char        *pending_buf;     /* output still pending */
     unsigned char        *pending_out;     /* next pending byte to output to the stream */
@@ -148,19 +155,17 @@ struct ALIGNED_(64) internal_state {
     int                  last_flush;       /* value of flush param for previous deflate call */
     int                  reproducible;     /* Whether reproducible compression results are required. */
 
-    unsigned int block_open;
+    int block_open;
     /* Whether or not a block is currently open for the QUICK deflation scheme.
      * This is set to 1 if there is an active block, or 0 if the block was just closed.
      */
 
-                /* Cacheline 1 */
+                /* used by deflate.c: */
 
-    unsigned int  lookahead;    /* number of valid bytes ahead in window */
-    unsigned int strstart;      /* start of string to insert */
-    unsigned int  w_size;       /* LZ77 window size (32K by default) */
-
-    int block_start;            /* Window position at the beginning of the current output block.
-                                 * Gets negative when the window is moved backwards. */
+    unsigned int  w_size;            /* LZ77 window size (32K by default) */
+    unsigned int  w_bits;            /* log2(w_size)  (8..16) */
+    unsigned int  w_mask;            /* w_size - 1 */
+    unsigned int  lookahead;         /* number of valid bytes ahead in window */
 
     unsigned int high_water;
     /* High water mark offset in window for initialized bytes -- bytes above
@@ -194,12 +199,15 @@ struct ALIGNED_(64) internal_state {
 
     uint32_t ins_h; /* hash index of string to be inserted */
 
+    int block_start;
+    /* Window position at the beginning of the current output block. Gets
+     * negative when the window is moved backwards.
+     */
+
     unsigned int match_length;       /* length of best match */
+    Pos          prev_match;         /* previous match */
     int          match_available;    /* set if previous match exists */
-    uint32_t     prev_match;         /* previous match (used by deflate_slow) */
-
-                /* Cacheline 2 */
-
+    unsigned int strstart;           /* start of string to insert */
     unsigned int match_start;        /* start of matching string */
 
     unsigned int prev_length;
@@ -222,25 +230,25 @@ struct ALIGNED_(64) internal_state {
      * max_insert_length is used only for compression levels <= 6.
      */
 
-    int level;                  /* compression level (1..9) */
-    int strategy;               /* favor or force Huffman coding*/
-    unsigned int good_match;    /* Use a faster search when the previous match is longer than this */
-    int nice_match;             /* Stop searching when current match exceeds this */
-    unsigned int matches;       /* number of string matches in current block */
-    unsigned int insert;        /* bytes at end of window left to insert */
+    update_hash_cb          update_hash;
+    insert_string_cb        insert_string;
+    quick_insert_string_cb  quick_insert_string;
+    /* Hash function callbacks that can be configured depending on the deflate
+     * algorithm being used */
 
-    uint64_t bi_buf;            /* Output buffer.
-                                 * Bits are inserted starting at the bottom (least significant bits). */
-    int32_t bi_valid;           /* Number of valid bits in bi_buf.
-                                 * All bits above the last valid bit are always zero. */
+    int level;    /* compression level (1..9) */
+    int strategy; /* favor or force Huffman coding*/
 
-    int heap_len;               /* number of elements in the heap */
-    int heap_max;               /* element of largest frequency */
+    unsigned int good_match;
+    /* Use a faster search when the previous match is longer than this */
 
-    int32_t padding1[1];
+    int nice_match; /* Stop searching when current match exceeds this */
 
-                /* Cacheline 3 */
-    uint8_t ALIGNED_(16) padding4[68];
+#if defined(_M_IX86) || defined(_M_ARM)
+    int padding[2];
+#endif
+
+    struct crc32_fold_s ALIGNED_(16) crc_fold;
 
                 /* used by trees.c: */
     /* Didn't use ct_data typedef below to suppress compiler warning */
@@ -256,6 +264,8 @@ struct ALIGNED_(64) internal_state {
     /* number of codes at each bit length for an optimal tree */
 
     int heap[2*L_CODES+1];      /* heap used to build the Huffman trees */
+    int heap_len;               /* number of elements in the heap */
+    int heap_max;               /* element of largest frequency */
     /* The sons of heap[n] are heap[2*n] and heap[2*n+1]. heap[0] is not used.
      * The same heap array is used to build all trees.
      */
@@ -296,8 +306,14 @@ struct ALIGNED_(64) internal_state {
     unsigned int sym_next;        /* running index in symbol buffer */
     unsigned int sym_end;         /* symbol table full when sym_next reaches this */
 
-    unsigned int opt_len;         /* bit length of current block with optimal trees */
-    unsigned int static_len;      /* bit length of current block with static trees */
+    unsigned long opt_len;        /* bit length of current block with optimal trees */
+    unsigned long static_len;     /* bit length of current block with static trees */
+    unsigned int matches;         /* number of string matches in current block */
+    unsigned int insert;          /* bytes at end of window left to insert */
+
+    /* compressed_len and bits_sent are only used if ZLIB_DEBUG is defined */
+    unsigned long compressed_len; /* total bit length of compressed file mod 2^32 */
+    unsigned long bits_sent;      /* bit length of compressed data sent mod 2^32 */
 
     deflate_allocs *alloc_bufs;
 
@@ -305,14 +321,17 @@ struct ALIGNED_(64) internal_state {
     arch_deflate_state arch;      /* architecture-specific extensions */
 #endif
 
-    /* compressed_len and bits_sent are only used if ZLIB_DEBUG is defined */
-#ifdef ZLIB_DEBUG
-    unsigned long compressed_len; /* total bit length of compressed file mod 2^32 */
-    unsigned long bits_sent;      /* bit length of compressed data sent mod 2^32 */
-#endif
+    uint64_t bi_buf;
+    /* Output buffer. bits are inserted starting at the bottom (least significant bits). */
+
+    int32_t bi_valid;
+    /* Number of valid bits in bi_buf.  All bits above the last valid bit are always zero. */
 
     /* Reserved for future use and alignment purposes */
     int32_t reserved[19];
+#if defined(_M_IX86) || defined(_M_ARM)
+    int32_t padding2[4];
+#endif
 };
 
 typedef enum {
@@ -398,32 +417,6 @@ static inline void put_uint64(deflate_state *s, uint64_t lld) {
 /* In order to simplify the code, particularly on 16 bit machines, match
  * distances are limited to MAX_DIST instead of WSIZE.
  */
-
-#define W_MASK(s)  ((s)->w_size - 1)
-/* Window mask: w_size is always a power of 2, so w_mask = w_size - 1 */
-
-#ifdef HAVE_BUILTIN_CTZ
-#  define W_BITS(s)  ((unsigned int)__builtin_ctz((s)->w_size))
-#else
-/* Fallback for w_size which is always a power of 2 between 256 and 32768 */
-static inline unsigned int compute_w_bits(unsigned int w_size) {
-    /* Switch ordered by likelihood - most common first (MAX_WBITS=15 -> 32768) */
-    switch (w_size) {
-        case 32768: return 15;  /* MAX_WBITS default */
-        case 16384: return 14;
-        case  8192: return 13;
-        case  4096: return 12;
-        case  2048: return 11;
-        case  1024: return 10;
-        case   512: return  9;
-        case   256: return  8;
-    }
-    Assert(w_size >= 256 && w_size <= 32768, "invalid w_size");
-    return 0;
-}
-#  define W_BITS(s)  compute_w_bits((s)->w_size)
-#endif
-/* Window bits: log2(w_size), computed from w_size since w_size is a power of 2 */
 
 #define WIN_INIT STD_MAX_MATCH
 /* Number of bytes after end of data in window to initialize in order to avoid

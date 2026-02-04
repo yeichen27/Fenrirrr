@@ -853,6 +853,11 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 titleRes = R.string.autoplay_video_on_posts
             }
 
+            switch("only_not_viewed_followers") {
+                defaultValue = false
+                titleRes = R.string.only_not_viewed_followers
+            }
+
             singleChoice(
                 "viewpager_page_transform",
                 selItems(

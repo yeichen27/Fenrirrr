@@ -28,11 +28,11 @@ static inline void inf_chksum_cpy(PREFIX3(stream) *strm, uint8_t *dst,
     struct inflate_state *state = (struct inflate_state*)strm->state;
 #ifdef GUNZIP
     if (state->flags) {
-        strm->adler = state->check = FUNCTABLE_CALL(crc32_copy)(state->check, dst, src, copy);
+        FUNCTABLE_CALL(crc32_fold_copy)(&state->crc_fold, dst, src, copy);
     } else
 #endif
     {
-        strm->adler = state->check = FUNCTABLE_CALL(adler32_copy)(state->check, dst, src, copy);
+        strm->adler = state->check = FUNCTABLE_CALL(adler32_fold_copy)(state->check, dst, src, copy);
     }
 }
 
@@ -40,7 +40,7 @@ static inline void inf_chksum(PREFIX3(stream) *strm, const uint8_t *src, uint32_
     struct inflate_state *state = (struct inflate_state*)strm->state;
 #ifdef GUNZIP
     if (state->flags) {
-        strm->adler = state->check = FUNCTABLE_CALL(crc32)(state->check, src, len);
+        FUNCTABLE_CALL(crc32_fold)(&state->crc_fold, src, len, 0);
     } else
 #endif
     {
@@ -479,7 +479,7 @@ int32_t Z_EXPORT PREFIX(inflate)(PREFIX3(stream) *strm, int32_t flush) {
     unsigned char *from;        /* where to copy match bytes from */
     unsigned have, left;        /* available input and output */
     uint64_t hold;              /* bit buffer */
-    bits_t bits;                /* bits in bit buffer */
+    unsigned bits;              /* bits in bit buffer */
     uint32_t in, out;           /* save starting available input and output */
     unsigned copy;              /* number of stored or match bytes to copy */
     code here;                  /* current decoding table entry */
@@ -697,7 +697,7 @@ int32_t Z_EXPORT PREFIX(inflate)(PREFIX3(stream) *strm, int32_t flush) {
             }
             /* compute crc32 checksum if not in raw mode */
             if ((state->wrap & 4) && state->flags)
-                strm->adler = state->check = CRC32_INITIAL_VALUE;
+                strm->adler = state->check = FUNCTABLE_CALL(crc32_fold_reset)(&state->crc_fold);
             state->mode = TYPE;
             break;
 #endif
@@ -1117,6 +1117,10 @@ int32_t Z_EXPORT PREFIX(inflate)(PREFIX3(stream) *strm, int32_t flush) {
                     if (out) {
                         inf_chksum(strm, put - out, out);
                     }
+#ifdef GUNZIP
+                    if (state->flags)
+                        strm->adler = state->check = FUNCTABLE_CALL(crc32_fold_final)(&state->crc_fold);
+#endif
                 }
                 out = left;
                 if ((state->wrap & 4) && (

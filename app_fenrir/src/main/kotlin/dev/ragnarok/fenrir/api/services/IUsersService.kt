@@ -49,6 +49,9 @@ class IUsersService : IServiceRest() {
         count: Int?,
         extended: Int?,
         out: Int?,
+        sort: Int?,
+        needViewed: Int?,
+        suggested: Int?,
         fields: String?
     ): Flow<BaseResponse<Items<VKApiUser>>> {
         return rest.request(
@@ -57,6 +60,9 @@ class IUsersService : IServiceRest() {
                 "count" to count,
                 "extended" to extended,
                 "out" to out,
+                "sort" to sort,
+                "need_viewed" to needViewed,
+                "suggested" to suggested,
                 "fields" to fields
             ), items(VKApiUser.serializer())
         )

@@ -376,10 +376,12 @@ add_library(common STATIC
         audio/taglib/toolkit/tzlib.cpp
         compress/lz4/lz4.c
         compress/zlib/arch/generic/adler32_c.c
+        compress/zlib/arch/generic/adler32_fold_c.c
         compress/zlib/arch/generic/chunkset_c.c
         compress/zlib/arch/generic/compare256_c.c
         compress/zlib/arch/generic/crc32_braid_c.c
         compress/zlib/arch/generic/crc32_chorba_c.c
+        compress/zlib/arch/generic/crc32_fold_c.c
         compress/zlib/arch/generic/slide_hash_c.c
         compress/zlib/adler32.c
         compress/zlib/compress.c
@@ -402,6 +404,7 @@ add_library(common STATIC
         compress/zlib/inflate.c
         compress/zlib/inftrees.c
         compress/zlib/insert_string.c
+        compress/zlib/insert_string_roll.c
         compress/zlib/trees.c
         compress/zlib/uncompr.c
         compress/zlib/zutil.c

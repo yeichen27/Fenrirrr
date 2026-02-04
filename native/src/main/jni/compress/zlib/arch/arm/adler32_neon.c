@@ -265,22 +265,29 @@ static void NEON_handle_tail(uint32_t *pair, const uint8_t *buf, size_t len) {
     }
 }
 
-static Z_FORCEINLINE uint32_t adler32_copy_impl(uint32_t adler, uint8_t *dst, const uint8_t *src, size_t len, const int COPY) {
+static Z_FORCEINLINE uint32_t adler32_fold_copy_impl(uint32_t adler, uint8_t *dst, const uint8_t *src, size_t len, const int COPY) {
     /* split Adler-32 into component sums */
     uint32_t sum2 = (adler >> 16) & 0xffff;
     adler &= 0xffff;
 
     /* in case user likes doing a byte at a time, keep it fast */
-    if (UNLIKELY(len == 1))
-        return adler32_copy_len_1(adler, dst, src, sum2, COPY);
+    if (len == 1) {
+        if (COPY)
+           *dst = *src;
+        return adler32_len_1(adler, src, sum2);
+    }
 
     /* initial Adler-32 value (deferred check for len == 1 speed) */
-    if (UNLIKELY(src == NULL))
+    if (src == NULL)
         return 1L;
 
     /* in case short lengths are provided, keep it somewhat fast */
-    if (UNLIKELY(len < 16))
-        return adler32_copy_len_16(adler, dst, src, len, sum2, COPY);
+    if (len < 16) {
+        if (COPY)
+            return adler32_copy_len_16(adler, src, dst, len, sum2);
+        else
+            return adler32_len_16(adler, src, len, sum2);
+    }
 
     uint32_t pair[2];
     int n = NMAX;
@@ -369,11 +376,11 @@ static Z_FORCEINLINE uint32_t adler32_copy_impl(uint32_t adler, uint8_t *dst, co
 }
 
 Z_INTERNAL uint32_t adler32_neon(uint32_t adler, const uint8_t *src, size_t len) {
-    return adler32_copy_impl(adler, NULL, src, len, 0);
+    return adler32_fold_copy_impl(adler, NULL, src, len, 0);
 }
 
-Z_INTERNAL uint32_t adler32_copy_neon(uint32_t adler, uint8_t *dst, const uint8_t *src, size_t len) {
-    return adler32_copy_impl(adler, dst, src, len, 1);
+Z_INTERNAL uint32_t adler32_fold_copy_neon(uint32_t adler, uint8_t *dst, const uint8_t *src, size_t len) {
+    return adler32_fold_copy_impl(adler, dst, src, len, dst != NULL);
 }
 
 #endif
