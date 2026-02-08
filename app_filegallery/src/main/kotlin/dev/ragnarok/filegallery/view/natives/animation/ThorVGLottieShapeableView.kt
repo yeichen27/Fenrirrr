@@ -21,6 +21,7 @@ import dev.ragnarok.filegallery.R
 import dev.ragnarok.filegallery.util.Utils
 import dev.ragnarok.filegallery.util.coroutines.CancelableJob
 import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.fromIOToMain
+import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.isActive
 import kotlinx.coroutines.flow.flow
 import okhttp3.Call
 import okhttp3.OkHttpClient
@@ -139,17 +140,17 @@ class ThorVGLottieShapeableView @JvmOverloads constructor(
         if (filePathTmp == url && colorReplacementTmp.contentEquals(colorReplacement) && useMoveColorTmp == useMoveColor && loadedFrom == LoadedFrom.NET) {
             return
         }
-        clearAnimationDrawable(callSuper = true, clearState = true, cancelTask = true)
-
-        colorReplacementTmp = colorReplacement
-        useMoveColorTmp = useMoveColor
-        loadedFrom = LoadedFrom.NET
-        filePathTmp = url
-        isPlaying = autoPlay
 
         if (cache.isCachedFile(url)) {
             setAnimationByUrlCache(url, autoPlay, colorReplacement, useMoveColor)
             return
+        } else {
+            clearAnimationDrawable(callSuper = true, clearState = true, cancelTask = true)
+            colorReplacementTmp = colorReplacement
+            useMoveColorTmp = useMoveColor
+            loadedFrom = LoadedFrom.NET
+            filePathTmp = url
+            isPlaying = autoPlay
         }
         mDisposable.set(flow {
             var call: Call? = null
@@ -163,19 +164,27 @@ class ThorVGLottieShapeableView @JvmOverloads constructor(
                     emit(false)
                     return@flow
                 }
-                cache.writeTempCacheFile(url, response.body.source())
-                response.close()
-                cache.renameTempFile(url)
-                emit(true)
+                if (isActive()) {
+                    val rs = cache.writeTempCacheFile(url, response.body.source())
+                    response.close()
+                    emit(rs)
+                } else {
+                    response.close()
+                    emit(false)
+                }
             } catch (e: CancellationException) {
                 call?.cancel()
                 throw e
             }
-        }.fromIOToMain {
+        }.fromIOToMain({
             if (it) {
                 setAnimationByUrlCache(url, autoPlay, colorReplacement, useMoveColor)
             }
-        })
+        }, {
+            if (Constants.IS_DEBUG) {
+                it.printStackTrace()
+            }
+        }))
     }
 
     fun fromRes(
@@ -322,7 +331,9 @@ class ThorVGLottieShapeableView @JvmOverloads constructor(
         super.onAttachedToWindow()
 
         if (loadedFrom == LoadedFrom.NET) {
-            filePathTmp?.let {
+            val tmpFilePathTmp = filePathTmp
+            tmpFilePathTmp?.let {
+                filePathTmp = null
                 fromNet(
                     it,
                     Utils.createOkHttp(Constants.PICASSO_TIMEOUT),

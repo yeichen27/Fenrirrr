@@ -210,7 +210,7 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
                 )
                 for (i in list) {
                     val cv = ContentValues()
-                    cv.put(ReactionsColumns.REACTION_ID, i.reaction_id)
+                    cv.put(BaseColumns._ID, i.reaction_id)
                     cv.put(ReactionsColumns.ACCOUNT_ID, accountId)
                     cv.put(ReactionsColumns.BIG_ANIMATION, i.big_animation)
                     cv.put(ReactionsColumns.SMALL_ANIMATION, i.small_animation)
@@ -234,7 +234,7 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
                 args,
                 null,
                 null,
-                ReactionsColumns.REACTION_ID + " DESC"
+                BaseColumns._ID + " DESC"
             )
             val data: MutableList<ReactionAssetEntity> = ArrayList(cursor.count)
             cursor.use {
@@ -555,7 +555,6 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
 
         private val PROJECTION_REACTION_ASSET = arrayOf(
             BaseColumns._ID,
-            ReactionsColumns.REACTION_ID,
             ReactionsColumns.BIG_ANIMATION,
             ReactionsColumns.SMALL_ANIMATION,
             ReactionsColumns.STATIC
@@ -644,7 +643,7 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
 
         internal fun mapReactionAsset(cursor: Cursor): ReactionAssetEntity {
             return ReactionAssetEntity()
-                .setReactionId(cursor.getInt(ReactionsColumns.REACTION_ID))
+                .setReactionId(cursor.getInt(BaseColumns._ID))
                 .setBigAnimation(cursor.getString(ReactionsColumns.BIG_ANIMATION))
                 .setSmallAnimation(cursor.getString(ReactionsColumns.SMALL_ANIMATION))
                 .setStatic(cursor.getString(ReactionsColumns.STATIC))

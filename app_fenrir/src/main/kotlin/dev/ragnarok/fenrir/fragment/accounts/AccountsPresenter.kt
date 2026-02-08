@@ -206,6 +206,7 @@ class AccountsPresenter(savedInstanceState: Bundle?) :
             Includes.stores.tempStore().clearReactionAssets(account.getOwnerObjectId())
                 .hiddenIO()
         )
+        Utils.clearReactionAssets(account.getOwnerObjectId())
     }
 
     fun processNewAccount(

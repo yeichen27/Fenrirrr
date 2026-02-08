@@ -1064,7 +1064,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 onCheckedChange {
                     for (i in Settings.get().accounts().registered) {
                         if (!Utils.isHiddenAccount(i)) {
-                            Includes.stores.stickers().clearAccount(accountId).syncSingleSafe()
+                            Includes.stores.stickers().clearAccount(i).syncSingleSafe()
                         }
                     }
                     requireActivity().recreate()
@@ -1077,7 +1077,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 onCheckedChange {
                     for (i in Settings.get().accounts().registered) {
                         if (!Utils.isHiddenAccount(i)) {
-                            Includes.stores.stickers().clearAccount(accountId).syncSingleSafe()
+                            Includes.stores.stickers().clearAccount(i).syncSingleSafe()
                         }
                     }
                     requireActivity().recreate()
@@ -2935,6 +2935,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
             Includes.stores.stickers().clearAccount(accountId).syncSingleSafe()
             Includes.stores.tempStore().clearReactionAssets(accountId)
                 .syncSingleSafe()
+            Utils.clearReactionAssets(accountId)
             activity.recreate()
         }
 

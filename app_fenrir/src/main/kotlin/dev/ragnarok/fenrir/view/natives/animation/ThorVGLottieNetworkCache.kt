@@ -3,80 +3,95 @@ package dev.ragnarok.fenrir.view.natives.animation
 import android.content.Context
 import android.util.Log
 import dev.ragnarok.fenrir.Constants
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.isActive
 import okio.BufferedSource
 import okio.buffer
 import okio.sink
 import java.io.File
+import java.util.concurrent.atomic.AtomicInteger
 
 class ThorVGLottieNetworkCache(context: Context) {
     private val appContext = context.applicationContext
 
     fun fetch(url: String): File? {
-        val cachedFile = getCachedFile(url) ?: return null
-        if (Constants.IS_DEBUG) {
-            Log.d("ThorVGLottieNetworkCache", "Cache hit for $url at ${cachedFile.absolutePath}")
-        }
-        return cachedFile
-    }
-
-    fun isCachedFile(url: String): Boolean {
-        return File(parentDir(), filenameForUrl(url, false)).exists()
-    }
-
-    fun writeTempCacheFile(url: String, source: BufferedSource): File {
-        val fileName = filenameForUrl(url, true)
-        val file = File(parentDir(), fileName)
-
-        file.sink().buffer().use { output ->
-            output.writeAll(source)
-        }
-        return file
-    }
-
-    fun renameTempFile(url: String) {
-        val fileName = filenameForUrl(url, true)
-        val file = File(parentDir(), fileName)
-        val newFileName = file.absolutePath.replace(".temp", "")
-        val newFile = File(newFileName)
-        val renamed = file.renameTo(newFile)
-        if (Constants.IS_DEBUG) {
-            Log.d("ThorVGLottieNetworkCache", "Copying temp file to real file ($newFile)")
-        }
-        if (!renamed) {
-            if (Constants.IS_DEBUG) {
-                Log.w(
-                    "ThorVGLottieNetworkCache",
-                    "Unable to rename cache file ${file.absolutePath} to ${newFile.absolutePath}."
-                )
+        return synchronized(sync) {
+            val cachedFile = File(parentDir(appContext), filenameForUrl(url, false))
+            if (!cachedFile.exists()) {
+                null
+            } else {
+                if (Constants.IS_DEBUG) {
+                    Log.d(
+                        "ThorVGLottieNetworkCache",
+                        "Cache hit for $url at ${cachedFile.absolutePath}"
+                    )
+                }
+                cachedFile
             }
         }
     }
 
-    private fun getCachedFile(url: String): File? {
-        val file = File(parentDir(), filenameForUrl(url, false))
-        return if (file.exists()) {
-            file
-        } else null
+    fun isCachedFile(url: String): Boolean {
+        synchronized(sync) {
+            return File(parentDir(appContext), filenameForUrl(url, false)).exists()
+        }
     }
 
-    private fun parentDir(): File {
-        val file = File(appContext.cacheDir, "lottie_cache")
-        if (file.isFile) {
+    suspend fun writeTempCacheFile(url: String, source: BufferedSource): Boolean {
+        val file = File(parentDir(appContext), filenameForUrl(url, true))
+        val newFile: File
+        synchronized(sync) {
+            newFile = File(parentDir(appContext), filenameForUrl(url, false))
+            if (newFile.exists()) {
+                return true
+            }
+        }
+        try {
+            file.sink().buffer().use { output ->
+                output.writeAll(source)
+            }
+        } catch (e: Exception) {
             file.delete()
+            throw e
         }
-        if (!file.exists()) {
-            file.mkdirs()
+
+        if (!isActive()) {
+            file.delete()
+            return false
         }
-        return file
+        synchronized(sync) {
+            return if (newFile.exists()) {
+                file.delete()
+                true
+            } else {
+                val rs = file.renameTo(newFile)
+                if (!rs) {
+                    file.delete()
+                }
+                rs
+            }
+        }
     }
 
     companion object {
-        private const val TEMP_JSON_EXTENSION = ".temp.json"
-        private const val JSON_EXTENSION = ".json"
-        fun filenameForUrl(url: String, isTemp: Boolean) =
+        private val counter = AtomicInteger(0)
+        private val sync = Any()
+        private const val EXTENSION = ".json"
+        internal fun filenameForUrl(url: String, isTemp: Boolean) =
             "lottie_cache_" + url.replace(
                 "\\W+".toRegex(),
                 ""
-            ) + if (isTemp) TEMP_JSON_EXTENSION else JSON_EXTENSION
+            ) + if (isTemp) "$EXTENSION." + counter.addAndGet(1)
+                .toString() + ".temp" else EXTENSION
+
+        internal fun parentDir(context: Context): File {
+            val file = File(context.cacheDir, "lottie_cache")
+            if (file.isFile) {
+                file.delete()
+            }
+            if (!file.exists()) {
+                file.mkdirs()
+            }
+            return file
+        }
     }
 }

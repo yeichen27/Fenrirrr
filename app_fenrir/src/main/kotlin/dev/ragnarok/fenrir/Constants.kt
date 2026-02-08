@@ -8,7 +8,7 @@ object Constants {
     const val OLD_API_FOR_AUDIO_VERSION = "5.90"
 
     const val DATABASE_FENRIR_VERSION = 46
-    const val DATABASE_TEMPORARY_VERSION = 12
+    const val DATABASE_TEMPORARY_VERSION = 14
     const val EXPORT_SETTINGS_FORMAT = 1
     const val forceDeveloperMode: Boolean = BuildConfig.FORCE_DEVELOPER_MODE
 

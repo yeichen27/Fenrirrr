@@ -4,113 +4,155 @@ import android.content.Context
 import android.util.Log
 import androidx.annotation.RawRes
 import dev.ragnarok.filegallery.Constants
+import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.isActive
 import okio.BufferedSource
 import okio.buffer
 import okio.sink
+import okio.source
 import java.io.File
+import java.util.concurrent.atomic.AtomicInteger
 
 class AnimationNetworkCache(context: Context) {
     private val appContext = context.applicationContext
 
     fun fetch(url: String): File? {
-        val cachedFile = getCachedFile(url) ?: return null
-        if (Constants.IS_DEBUG) {
-            Log.d("AnimationNetworkCache", "Cache hit for $url at ${cachedFile.absolutePath}")
+        return synchronized(syncUrl) {
+            val cachedFile = File(parentUrlDir(appContext), filenameForUrl(url, false))
+            if (!cachedFile.exists()) {
+                null
+            } else {
+                if (Constants.IS_DEBUG) {
+                    Log.d(
+                        "AnimationNetworkCache",
+                        "Cache hit for $url at ${cachedFile.absolutePath}"
+                    )
+                }
+                cachedFile
+            }
         }
-        return cachedFile
     }
 
     fun fetch(@RawRes res: Int): File? {
-        val cachedFile = getCachedFile(res) ?: return null
-        if (Constants.IS_DEBUG) {
-            Log.d("AnimationNetworkCache", "Cache hit for $res at ${cachedFile.absolutePath}")
+        return synchronized(syncRes) {
+            val cachedFile = File(parentResDir(appContext), filenameForRes(res, false))
+            if (!cachedFile.exists()) {
+                null
+            } else {
+                if (Constants.IS_DEBUG) {
+                    Log.d(
+                        "AnimationNetworkCache",
+                        "Cache hit for $res at ${cachedFile.absolutePath}"
+                    )
+                }
+                cachedFile
+            }
         }
-        return cachedFile
     }
 
     fun isCachedFile(url: String): Boolean {
-        return File(parentDir(appContext), filenameForUrl(url, false)).exists()
+        synchronized(syncUrl) {
+            return File(parentUrlDir(appContext), filenameForUrl(url, false)).exists()
+        }
     }
 
     fun isCachedRes(@RawRes res: Int): Boolean {
-        return File(parentResDir(appContext), filenameForRes(res, false)).exists()
+        synchronized(syncRes) {
+            return File(parentResDir(appContext), filenameForRes(res, false)).exists()
+        }
     }
 
-    fun writeTempCacheFile(url: String, source: BufferedSource): File {
-        val fileName = filenameForUrl(url, true)
-        val file = File(parentDir(appContext), fileName)
-
-        file.sink().buffer().use { output ->
-            output.writeAll(source)
+    suspend fun writeTempCacheFile(url: String, source: BufferedSource): Boolean {
+        val file = File(parentUrlDir(appContext), filenameForUrl(url, true))
+        val newFile: File
+        synchronized(syncUrl) {
+            newFile = File(parentUrlDir(appContext), filenameForUrl(url, false))
+            if (newFile.exists()) {
+                return true
+            }
         }
-        return file
-    }
-
-    fun renameTempFile(url: String) {
-        val fileName = filenameForUrl(url, true)
-        val file = File(parentDir(appContext), fileName)
-        val newFileName = file.absolutePath.replace(".temp", "")
-        val newFile = File(newFileName)
-        val renamed = file.renameTo(newFile)
-        if (Constants.IS_DEBUG) {
-            Log.d("AnimationNetworkCache", "Copying temp file to real file ($newFile)")
+        try {
+            file.sink().buffer().use { output ->
+                output.writeAll(source)
+            }
+        } catch (e: Exception) {
+            file.delete()
+            throw e
         }
-        if (!renamed) {
-            if (Constants.IS_DEBUG) {
-                Log.w(
-                    "AnimationNetworkCache",
-                    "Unable to rename cache file ${file.absolutePath} to ${newFile.absolutePath}."
-                )
+
+        if (!isActive()) {
+            file.delete()
+            return false
+        }
+        synchronized(syncUrl) {
+            return if (newFile.exists()) {
+                file.delete()
+                true
+            } else {
+                val rs = file.renameTo(newFile)
+                if (!rs) {
+                    file.delete()
+                }
+                rs
             }
         }
     }
 
-    fun renameTempFile(@RawRes res: Int) {
-        val fileName = filenameForRes(res, true)
-        val file = File(parentResDir(appContext), fileName)
-        val newFileName = file.absolutePath.replace(".temp", "")
-        val newFile = File(newFileName)
-        val renamed = file.renameTo(newFile)
-        if (Constants.IS_DEBUG) {
-            Log.d("AnimationNetworkCache", "Copying temp file to real file ($newFile)")
-        }
-        if (!renamed) {
-            if (Constants.IS_DEBUG) {
-                Log.w(
-                    "AnimationNetworkCache",
-                    "Unable to rename cache file ${file.absolutePath} to ${newFile.absolutePath}."
-                )
+    suspend fun writeTempCacheFile(@RawRes rawRes: Int): Boolean {
+        val file = File(parentResDir(appContext), filenameForRes(rawRes, true))
+        val newFile: File
+        synchronized(syncRes) {
+            newFile = File(parentResDir(appContext), filenameForRes(rawRes, false))
+            if (newFile.exists()) {
+                return true
             }
         }
-    }
+        try {
+            appContext.resources.openRawResource(rawRes).use {
+                file.sink().buffer().use { output ->
+                    output.writeAll(it.source())
+                }
+            }
+        } catch (e: Exception) {
+            file.delete()
+            throw e
+        }
 
-    private fun getCachedFile(url: String): File? {
-        val file = File(parentDir(appContext), filenameForUrl(url, false))
-        return if (file.exists()) {
-            file
-        } else null
-    }
-
-    private fun getCachedFile(@RawRes res: Int): File? {
-        val file = File(parentResDir(appContext), filenameForRes(res, false))
-        return if (file.exists()) {
-            file
-        } else null
+        if (!isActive()) {
+            file.delete()
+            return false
+        }
+        synchronized(syncRes) {
+            return if (newFile.exists()) {
+                file.delete()
+                true
+            } else {
+                val rs = file.renameTo(newFile)
+                if (!rs) {
+                    file.delete()
+                }
+                rs
+            }
+        }
     }
 
     companion object {
-        private const val TEMP_EXTENSION = ".temp.video"
+        private val counterUrl = AtomicInteger(0)
+        private val counterRes = AtomicInteger(0)
+        private val syncUrl = Any()
+        private val syncRes = Any()
         private const val EXTENSION = ".video"
-        fun filenameForUrl(url: String, isTemp: Boolean) =
+        internal fun filenameForUrl(url: String, isTemp: Boolean) =
             "video_cache_" + url.replace(
                 "\\W+".toRegex(),
                 ""
-            ) + if (isTemp) TEMP_EXTENSION else EXTENSION
+            ) + if (isTemp) "$EXTENSION." + counterUrl.addAndGet(1)
+                .toString() + ".temp" else EXTENSION
 
-        fun filenameForRes(@RawRes res: Int, isTemp: Boolean) =
-            "video_res_cache_" + res + if (isTemp) TEMP_EXTENSION else EXTENSION
+        internal fun filenameForRes(@RawRes res: Int, isTemp: Boolean) =
+            "video_res_cache_$res" + if (isTemp) "$EXTENSION." + counterRes.addAndGet(1)
+                .toString() + ".temp" else EXTENSION
 
-        fun parentDir(context: Context): File {
+        internal fun parentUrlDir(context: Context): File {
             val file = File(context.cacheDir, "video_network_cache")
             if (file.isFile) {
                 file.delete()
@@ -121,7 +163,7 @@ class AnimationNetworkCache(context: Context) {
             return file
         }
 
-        fun parentResDir(context: Context): File {
+        internal fun parentResDir(context: Context): File {
             val file = File(context.cacheDir, "video_resource_cache")
             if (file.isFile) {
                 file.delete()

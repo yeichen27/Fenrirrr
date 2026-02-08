@@ -21,6 +21,7 @@ import dev.ragnarok.fenrir.module.animation.thorvg.ThorVGLottieDrawable.RepeatMo
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.coroutines.CancelableJob
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.isActive
 import kotlinx.coroutines.flow.flow
 import okhttp3.Call
 import okhttp3.OkHttpClient
@@ -36,7 +37,7 @@ class ThorVGLottieFloatingActionButtonView @JvmOverloads constructor(
 ) :
     FloatingActionButton(context, attrs) {
     private val cache: ThorVGLottieNetworkCache = ThorVGLottieNetworkCache(context)
-    private var mDisposable: CancelableJob? = CancelableJob()
+    private var mDisposable = CancelableJob()
     private var animatedDrawable: ThorVGLottieDrawable? = null
     private var mListener: LottieAnimationListener? = null
 
@@ -142,19 +143,19 @@ class ThorVGLottieFloatingActionButtonView @JvmOverloads constructor(
         if (filePathTmp == url && colorReplacementTmp.contentEquals(colorReplacement) && useMoveColorTmp == useMoveColor && loadedFrom == LoadedFrom.NET) {
             return
         }
-        clearAnimationDrawable(callSuper = true, clearState = true, cancelTask = true)
-
-        colorReplacementTmp = colorReplacement
-        useMoveColorTmp = useMoveColor
-        loadedFrom = LoadedFrom.NET
-        filePathTmp = url
-        isPlaying = autoPlay
 
         if (cache.isCachedFile(url)) {
             setAnimationByUrlCache(url, autoPlay, colorReplacement, useMoveColor)
             return
+        } else {
+            clearAnimationDrawable(callSuper = true, clearState = true, cancelTask = true)
+            colorReplacementTmp = colorReplacement
+            useMoveColorTmp = useMoveColor
+            loadedFrom = LoadedFrom.NET
+            filePathTmp = url
+            isPlaying = autoPlay
         }
-        mDisposable?.set(flow {
+        mDisposable.set(flow {
             var call: Call? = null
             try {
                 val request: Request = Request.Builder()
@@ -166,19 +167,27 @@ class ThorVGLottieFloatingActionButtonView @JvmOverloads constructor(
                     emit(false)
                     return@flow
                 }
-                cache.writeTempCacheFile(url, response.body.source())
-                response.close()
-                cache.renameTempFile(url)
-                emit(true)
+                if (isActive()) {
+                    val rs = cache.writeTempCacheFile(url, response.body.source())
+                    response.close()
+                    emit(rs)
+                } else {
+                    response.close()
+                    emit(false)
+                }
             } catch (e: CancellationException) {
                 call?.cancel()
                 throw e
             }
-        }.fromIOToMain {
+        }.fromIOToMain({
             if (it) {
                 setAnimationByUrlCache(url, autoPlay, colorReplacement, useMoveColor)
             }
-        })
+        }, {
+            if (Constants.IS_DEBUG) {
+                it.printStackTrace()
+            }
+        }))
     }
 
     fun fromRes(
@@ -272,7 +281,7 @@ class ThorVGLottieFloatingActionButtonView @JvmOverloads constructor(
         cancelTask: Boolean
     ) {
         if (cancelTask) {
-            mDisposable?.cancel()
+            mDisposable.cancel()
         }
         if (animatedDrawable != null) {
             animatedDrawable?.callback = null
@@ -317,7 +326,9 @@ class ThorVGLottieFloatingActionButtonView @JvmOverloads constructor(
         super.onAttachedToWindow()
 
         if (loadedFrom == LoadedFrom.NET) {
-            filePathTmp?.let {
+            val tmpFilePathTmp = filePathTmp
+            tmpFilePathTmp?.let {
+                filePathTmp = null
                 fromNet(
                     it,
                     Utils.createOkHttp(Constants.GIF_TIMEOUT, true),

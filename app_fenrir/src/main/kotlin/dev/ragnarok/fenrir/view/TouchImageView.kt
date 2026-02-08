@@ -38,6 +38,7 @@ import dev.ragnarok.fenrir.picasso.PicassoInstance
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.coroutines.CancelableJob
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.isActive
 import dev.ragnarok.fenrir.view.natives.animation.AnimationNetworkCache
 import kotlinx.coroutines.flow.flow
 import okhttp3.Call
@@ -229,17 +230,18 @@ class TouchImageView @JvmOverloads constructor(
         if (filePathTmp == url && keyTmp == key && fallbackTmp == fallback && loadedFrom == LoadedFrom.NET) {
             return
         }
-        clearAnimationDrawable(callSuper = true, clearState = true, cancelTask = true)
-        loadedFrom = LoadedFrom.NET
-        filePathTmp = url
-        keyTmp = key
-        isPlaying = autoPlay
-        tmpFade = true
-        fallbackTmp = fallback
 
         if (cache.isCachedFile(key)) {
             setAnimationByUrlCache(key, fallback, autoPlay, true)
             return
+        } else {
+            clearAnimationDrawable(callSuper = true, clearState = true, cancelTask = true)
+            loadedFrom = LoadedFrom.NET
+            filePathTmp = url
+            keyTmp = key
+            isPlaying = autoPlay
+            tmpFade = true
+            fallbackTmp = fallback
         }
         mDisposable.set(flow {
             var call: Call? = null
@@ -253,19 +255,27 @@ class TouchImageView @JvmOverloads constructor(
                     emit(false)
                     return@flow
                 }
-                cache.writeTempCacheFile(key, response.body.source())
-                response.close()
-                cache.renameTempFile(key)
-                emit(true)
+                if (isActive()) {
+                    val rs = cache.writeTempCacheFile(key, response.body.source())
+                    response.close()
+                    emit(rs)
+                } else {
+                    response.close()
+                    emit(false)
+                }
             } catch (e: CancellationException) {
                 call?.cancel()
                 throw e
             }
-        }.fromIOToMain { u ->
+        }.fromIOToMain({ u ->
             if (u) {
                 setAnimationByUrlCache(key, fallback, autoPlay, true)
             }
-        })
+        }, {
+            if (Constants.IS_DEBUG) {
+                it.printStackTrace()
+            }
+        }))
     }
 
     fun releaseAnimation() {
@@ -388,8 +398,10 @@ class TouchImageView @JvmOverloads constructor(
         super.onAttachedToWindow()
         when {
             loadedFrom == LoadedFrom.NET -> {
-                filePathTmp?.let {
+                val tmpFilePathTmp = filePathTmp
+                tmpFilePathTmp?.let {
                     keyTmp?.let { s ->
+                        filePathTmp = null
                         fromAnimationNet(
                             s,
                             it,

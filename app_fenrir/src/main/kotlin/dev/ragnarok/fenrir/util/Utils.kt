@@ -211,6 +211,11 @@ object Utils {
         return false
     }
 
+    fun clearReactionAssets(account_id: Long) {
+        reload_reactions_assets.remove(account_id)
+        reactionsAssets[account_id]?.clear()
+    }
+
     fun needReloadDialogs(account_id: Long): Boolean {
         if (!reload_dialogs.contains(account_id)) {
             reload_dialogs.add(account_id)

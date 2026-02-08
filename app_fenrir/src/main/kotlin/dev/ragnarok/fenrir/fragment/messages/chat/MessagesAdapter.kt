@@ -316,6 +316,34 @@ class MessagesAdapter(
                 getItemRawPosition(holder.bindingAdapterPosition)
             ) == true
         }
+
+        val reactionMarked: MutableList<ReactionWithAsset> = ArrayList()
+        if (!message.reactionEditMode) {
+            for (i in message.reactions.orEmpty()) {
+                if (reactions.containsKey(i.reaction_id)) {
+                    reactions[i.reaction_id]?.let {
+                        reactionMarked.add(ReactionWithAsset().setReaction(i).setReactionAsset(it))
+                    }
+                } else {
+                    reactionMarked.add(ReactionWithAsset().setReaction(i))
+                }
+            }
+        } else {
+            for ((key, value) in reactions) {
+                reactionMarked.add(
+                    ReactionWithAsset().setReactionAsset(value)
+                        .setCount(message.getReactionCount(key))
+                )
+            }
+        }
+        holder.reactionContainer?.displayReactions(
+            message.reactionEditMode,
+            message.reaction_id,
+            reactionMarked,
+            message.conversation_message_id,
+            message.peerId,
+            onReactionListener
+        )
     }
 
     private fun bindNormalMessage(holder: MessageHolder, message: Message) {
@@ -416,33 +444,6 @@ class MessagesAdapter(
             )
             attachmentsViewBinder.displayForwards(message.fwd, holder.forwardMessagesRoot, true)
         }
-        val reactionMarked: MutableList<ReactionWithAsset> = ArrayList()
-        if (!message.reactionEditMode) {
-            for (i in message.reactions.orEmpty()) {
-                if (reactions.containsKey(i.reaction_id)) {
-                    reactions[i.reaction_id]?.let {
-                        reactionMarked.add(ReactionWithAsset().setReaction(i).setReactionAsset(it))
-                    }
-                } else {
-                    reactionMarked.add(ReactionWithAsset().setReaction(i))
-                }
-            }
-        } else {
-            for ((key, value) in reactions) {
-                reactionMarked.add(
-                    ReactionWithAsset().setReactionAsset(value)
-                        .setCount(message.getReactionCount(key))
-                )
-            }
-        }
-        holder.reactionContainer?.displayReactions(
-            message.reactionEditMode,
-            message.reaction_id,
-            reactionMarked,
-            message.conversation_message_id,
-            message.peerId,
-            onReactionListener
-        )
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -677,6 +678,9 @@ class MessagesAdapter(
         val avatar: ImageView = itemView.findViewById(R.id.item_message_avatar)
         val important: OnlineView = itemView.findViewById(R.id.item_message_important)
         val Restore: Button = itemView.findViewById(R.id.item_message_restore)
+
+        val reactionContainer: ReactionContainer? =
+            itemView.findViewById(R.id.item_message_reaction)
     }
 
     private inner class GiftMessageHolder(itemView: View) :
@@ -701,8 +705,6 @@ class MessagesAdapter(
         val attachmentsHolder: AttachmentsHolder
         val encryptedView: View = itemView.findViewById(R.id.item_message_encrypted)
         val botKeyboardView: BotKeyboardView? = itemView.findViewById(R.id.input_keyboard_container)
-        val reactionContainer: ReactionContainer? =
-            itemView.findViewById(R.id.item_message_reaction)
 
         init {
             body.movementMethod = LinkMovementMethod.getInstance()

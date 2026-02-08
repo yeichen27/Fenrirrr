@@ -17,15 +17,13 @@ import dev.ragnarok.filegallery.R
 import dev.ragnarok.filegallery.util.Utils
 import dev.ragnarok.filegallery.util.coroutines.CancelableJob
 import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.fromIOToMain
-import dev.ragnarok.filegallery.view.natives.animation.AnimationNetworkCache.Companion.filenameForRes
-import dev.ragnarok.filegallery.view.natives.animation.AnimationNetworkCache.Companion.parentResDir
+import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.isActive
 import kotlinx.coroutines.flow.flow
 import okhttp3.Call
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import java.io.File
-import java.io.FileOutputStream
 import kotlin.coroutines.cancellation.CancellationException
 
 open class AnimatedShapeableImageView @JvmOverloads constructor(
@@ -113,16 +111,17 @@ open class AnimatedShapeableImageView @JvmOverloads constructor(
         if (filePathTmp == url && keyTmp == key && loadedFrom == LoadedFrom.NET) {
             return
         }
-        clearAnimationDrawable(callSuper = true, clearState = true, cancelTask = true)
-        loadedFrom = LoadedFrom.NET
-        filePathTmp = url
-        keyTmp = key
-        isPlaying = autoPlay
-        tmpFade = true
 
         if (cache.isCachedFile(key)) {
             setAnimationByUrlCache(key, autoPlay, true)
             return
+        } else {
+            clearAnimationDrawable(callSuper = true, clearState = true, cancelTask = true)
+            loadedFrom = LoadedFrom.NET
+            filePathTmp = url
+            keyTmp = key
+            isPlaying = autoPlay
+            tmpFade = true
         }
         mDisposable.set(flow {
             var call: Call? = null
@@ -136,10 +135,14 @@ open class AnimatedShapeableImageView @JvmOverloads constructor(
                     emit(false)
                     return@flow
                 }
-                cache.writeTempCacheFile(key, response.body.source())
-                response.close()
-                cache.renameTempFile(key)
-                emit(true)
+                if (isActive()) {
+                    val rs = cache.writeTempCacheFile(key, response.body.source())
+                    response.close()
+                    emit(rs)
+                } else {
+                    response.close()
+                    emit(false)
+                }
             } catch (e: CancellationException) {
                 call?.cancel()
                 throw e
@@ -166,28 +169,24 @@ open class AnimatedShapeableImageView @JvmOverloads constructor(
         if (rawResTmp == resId && loadedFrom == LoadedFrom.RES) {
             return
         }
-        clearAnimationDrawable(callSuper = true, clearState = true, cancelTask = true)
-        loadedFrom = LoadedFrom.RES
-        rawResTmp = resId
-        tmpFade = true
-        isPlaying = autoPlay
 
         if (cache.isCachedRes(resId)) {
             setAnimationByResCache(resId, autoPlay, true)
             return
+        } else {
+            clearAnimationDrawable(callSuper = true, clearState = true, cancelTask = true)
+            loadedFrom = LoadedFrom.RES
+            rawResTmp = resId
+            tmpFade = true
+            isPlaying = autoPlay
         }
         mDisposable.set(flow {
-            try {
-                if (!copyRes(resId)) {
-                    emit(false)
-                    return@flow
-                }
-                cache.renameTempFile(resId)
-            } catch (_: Exception) {
+            if (isActive()) {
+                val rs = cache.writeTempCacheFile(resId)
+                emit(rs)
+            } else {
                 emit(false)
-                return@flow
             }
-            emit(true)
         }.fromIOToMain {
             if (it) {
                 setAnimationByResCache(resId, autoPlay, true)
@@ -308,8 +307,10 @@ open class AnimatedShapeableImageView @JvmOverloads constructor(
         super.onAttachedToWindow()
         when {
             loadedFrom == LoadedFrom.NET -> {
-                filePathTmp?.let {
+                val tmpFilePathTmp = filePathTmp
+                tmpFilePathTmp?.let {
                     keyTmp?.let { s ->
+                        filePathTmp = null
                         fromNet(
                             s,
                             it,
@@ -399,41 +400,8 @@ open class AnimatedShapeableImageView @JvmOverloads constructor(
         super.onRestoreInstanceState(state)
     }
 
-    private fun copyRes(@RawRes rawRes: Int): Boolean {
-        try {
-            context.resources.openRawResource(rawRes).use { inputStream ->
-                val out = File(
-                    parentResDir(
-                        context
-                    ), filenameForRes(rawRes, true)
-                )
-                val o = FileOutputStream(out)
-                var buffer = bufferLocal.get()
-                if (buffer == null) {
-                    buffer = ByteArray(4096)
-                    bufferLocal.set(buffer)
-                }
-                while (inputStream.read(buffer, 0, buffer.size) >= 0) {
-                    o.write(buffer)
-                }
-                o.flush()
-                o.close()
-            }
-        } catch (e: Exception) {
-            if (Constants.IS_DEBUG) {
-                e.printStackTrace()
-            }
-            return false
-        }
-        return true
-    }
-
     interface OnDecoderInit {
         fun onLoaded(success: Boolean)
-    }
-
-    companion object {
-        private val bufferLocal = ThreadLocal<ByteArray>()
     }
 
     init {

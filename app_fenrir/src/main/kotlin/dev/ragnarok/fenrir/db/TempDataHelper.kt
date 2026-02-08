@@ -40,19 +40,18 @@ class TempDataHelper(context: Context) :
 
     private fun createReactionAssetsTable(db: SQLiteDatabase) {
         val sql = "CREATE TABLE IF NOT EXISTS [" + ReactionsColumns.TABLENAME + "] (\n" +
-                " [" + BaseColumns._ID + "] INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                " [" + ReactionsColumns.REACTION_ID + "] INTEGER, " +
+                " [" + BaseColumns._ID + "] INTEGER NOT NULL, " +
                 " [" + ReactionsColumns.ACCOUNT_ID + "] INTEGER, " +
                 " [" + ReactionsColumns.STATIC + "] TEXT, " +
                 " [" + ReactionsColumns.SMALL_ANIMATION + "] TEXT, " +
                 " [" + ReactionsColumns.BIG_ANIMATION + "] TEXT, " +
-                " CONSTRAINT [] UNIQUE ([" + BaseColumns._ID + "]) ON CONFLICT REPLACE);"
+                " CONSTRAINT [] UNIQUE ([" + BaseColumns._ID + "], [" + ReactionsColumns.ACCOUNT_ID + "]) ON CONFLICT REPLACE);"
         db.execSQL(sql)
     }
 
     private fun createStickerSetsTable(db: SQLiteDatabase) {
         val sql = "CREATE TABLE IF NOT EXISTS [" + StickerSetsColumns.TABLENAME + "] (\n" +
-                " [" + BaseColumns._ID + "] INTEGER NOT NULL UNIQUE ON CONFLICT REPLACE, " +
+                " [" + BaseColumns._ID + "] INTEGER NOT NULL, " +
                 " [" + StickerSetsColumns.ACCOUNT_ID + "] INTEGER, " +
                 " [" + StickerSetsColumns.POSITION + "] INTEGER, " +
                 " [" + StickerSetsColumns.TITLE + "] TEXT, " +
@@ -61,13 +60,13 @@ class TempDataHelper(context: Context) :
                 " [" + StickerSetsColumns.ACTIVE + "] BOOLEAN, " +
                 " [" + StickerSetsColumns.ICON + "] BLOB, " +
                 " [" + StickerSetsColumns.STICKERS + "] BLOB, " +
-                " CONSTRAINT [] PRIMARY KEY([" + BaseColumns._ID + "]) ON CONFLICT REPLACE);"
+                " CONSTRAINT [] UNIQUE ([" + BaseColumns._ID + "], [" + StickerSetsColumns.ACCOUNT_ID + "]) ON CONFLICT REPLACE);"
         db.execSQL(sql)
     }
 
     private fun createStickerSetsCustomTable(db: SQLiteDatabase) {
         val sql = "CREATE TABLE IF NOT EXISTS [" + StickerSetsCustomColumns.TABLENAME + "] (\n" +
-                " [" + BaseColumns._ID + "] INTEGER NOT NULL UNIQUE ON CONFLICT REPLACE, " +
+                " [" + BaseColumns._ID + "] INTEGER NOT NULL, " +
                 " [" + StickerSetsCustomColumns.ACCOUNT_ID + "] INTEGER, " +
                 " [" + StickerSetsCustomColumns.POSITION + "] INTEGER, " +
                 " [" + StickerSetsCustomColumns.TITLE + "] TEXT, " +
@@ -76,17 +75,17 @@ class TempDataHelper(context: Context) :
                 " [" + StickerSetsCustomColumns.ACTIVE + "] BOOLEAN, " +
                 " [" + StickerSetsCustomColumns.ICON + "] BLOB, " +
                 " [" + StickerSetsCustomColumns.STICKERS + "] BLOB, " +
-                " CONSTRAINT [] PRIMARY KEY([" + BaseColumns._ID + "]) ON CONFLICT REPLACE);"
+                " CONSTRAINT [] UNIQUE ([" + BaseColumns._ID + "], [" + StickerSetsCustomColumns.ACCOUNT_ID + "]) ON CONFLICT REPLACE);"
         db.execSQL(sql)
     }
 
     private fun createStickersKeywordsTable(db: SQLiteDatabase) {
         val sql = "CREATE TABLE IF NOT EXISTS [" + StickersKeywordsColumns.TABLENAME + "] (\n" +
-                " [" + BaseColumns._ID + "] INTEGER NOT NULL UNIQUE ON CONFLICT REPLACE, " +
+                " [" + BaseColumns._ID + "] INTEGER NOT NULL, " +
                 " [" + StickersKeywordsColumns.ACCOUNT_ID + "] INTEGER, " +
                 " [" + StickersKeywordsColumns.KEYWORDS + "] BLOB, " +
                 " [" + StickersKeywordsColumns.STICKERS + "] BLOB, " +
-                " CONSTRAINT [] PRIMARY KEY([" + BaseColumns._ID + "]) ON CONFLICT REPLACE);"
+                " CONSTRAINT [] UNIQUE ([" + BaseColumns._ID + "], [" + StickersKeywordsColumns.ACCOUNT_ID + "]) ON CONFLICT REPLACE);"
         db.execSQL(sql)
     }
 
