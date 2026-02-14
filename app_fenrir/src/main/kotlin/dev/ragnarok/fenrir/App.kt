@@ -22,6 +22,8 @@ import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.sharedFlowToMain
 import dev.ragnarok.fenrir.util.existfile.FileExistJVM
 import dev.ragnarok.fenrir.util.existfile.FileExistNative
 import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
+import dev.ragnarok.fenrir.view.natives.animation.AnimationNetworkCache
+import dev.ragnarok.fenrir.view.natives.animation.ThorVGLottieNetworkCache
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.flatMapConcat
 
@@ -59,6 +61,12 @@ class App : Application() {
             }
         } else {
             MusicPlaybackController.tracksExist = FileExistJVM()
+        }
+        AnimationNetworkCache.setOnOkhttpCreate {
+            Utils.createOkHttp(Constants.GIF_TIMEOUT, true)
+        }
+        ThorVGLottieNetworkCache.setOnOkhttpCreate {
+            Utils.createOkHttp(Constants.GIF_TIMEOUT, true)
         }
         Utils.isCompressIncomingTraffic = Settings.get().main().isCompress_incoming_traffic
         Utils.isCompressOutgoingTraffic = Settings.get().main().isCompress_outgoing_traffic

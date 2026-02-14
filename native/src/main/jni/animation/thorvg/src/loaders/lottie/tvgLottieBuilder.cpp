@@ -899,6 +899,8 @@ void LottieBuilder::updateSolid(LottieLayer* layer)
 
 void LottieBuilder::updateImage(LottieGroup* layer)
 {
+    if (layer->children.empty()) return;
+
     auto image = static_cast<LottieImage*>(layer->children.first());
     auto picture = image->bitmap.picture;
 
@@ -914,14 +916,25 @@ void LottieBuilder::updateImage(LottieGroup* layer)
 }
 
 
-void LottieBuilder::updateURLFont( LottieLayer* layer, float frameNo, LottieText* text, const TextDocument& doc)
+void LottieBuilder::updateURLFont(LottieLayer* layer, float frameNo, LottieText* text, const TextDocument& doc)
 {
     //text load
+    //TODO: cache the text instance, don't need to reload every frame.
     auto paint = Text::gen();
     if (paint->font(doc.name) != Result::Success) {
-        if (!(text->font && resolver && resolver->func(paint, text->font->path, resolver->data))) {
+        char* src;
+        bool free = false;
+        if (text->font && text->font->path) src = text->font->path;
+        else {
+            auto len = (strlen(doc.name) + 6);
+            src = tvg::malloc<char>(sizeof(char) * len);
+            snprintf(src, len, "name:%s", doc.name);
+            free = true;
+        }
+        if (!resolver || !resolver->func(paint, src, resolver->data)) {
             paint->font(nullptr);  //fallback to any available font
         }
+        if (free) tvg::free(src);
     }
 
     //text build
@@ -947,8 +960,14 @@ void LottieBuilder::updateURLFont( LottieLayer* layer, float frameNo, LottieText
     paint->fill(color.r, color.g, color.b);
     paint->size(doc.size * 75.0f); //1 pt = 1/72; 1 in = 96 px; -> 72/96 = 0.75
     paint->text(buf);
-    paint->align(-doc.justify, 0.0f);
-    paint->translate(0.0f, doc.size * -100.0f);
+    paint->layout(doc.bbox.size.x, doc.bbox.size.y);
+    paint->translate(doc.bbox.pos.x, doc.bbox.pos.y);
+
+    //align the text to the base line
+    TextMetrics metrics;
+    paint->metrics(metrics);
+    paint->align(doc.justify, metrics.ascent / (metrics.ascent - metrics.descent));
+
     layer->scene->add(paint);
 
     //outline
@@ -1125,7 +1144,7 @@ void LottieBuilder::updateLocalFont(LottieLayer* layer, float frameNo, LottieTex
 
             //horizontal alignment
             Point layout = {doc.bbox.pos.x, doc.bbox.pos.y + ascent - doc.shift};
-            layout.x += doc.justify * (-1.0f * doc.bbox.size.x + ctx.cursor.x * ctx.scale);
+            layout.x += doc.justify * (doc.bbox.size.x - ctx.cursor.x * ctx.scale);
 
             //new text group, single scene based on text-grouping
             ctx.textScene->add(ctx.lineScene);
@@ -1204,8 +1223,12 @@ void LottieBuilder::updateLocalFont(LottieLayer* layer, float frameNo, LottieTex
 
 void LottieBuilder::updateText(LottieLayer* layer, float frameNo)
 {
+    if (layer->children.empty()) return;
+
     auto text = static_cast<LottieText*>(layer->children.first());
     auto& doc = text->doc(frameNo, exps);
+    if (!doc.text) return;
+
     if (text->font && text->font->origin == LottieFont::Origin::Local && !text->font->chars.empty()) {
         updateLocalFont(layer, frameNo, text, doc);
     } else {

@@ -87,7 +87,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:stateListAnimator="@animator/clicked"
             app:active="false"
-            app:active_background_color="?attr/icon_color_active"
+            app:active_background_color="?icon_color_active"
             app:always_counter="false"
             app:button_icon="@drawable/heart"
             app:noactive_icon_color="#ffffff" />
@@ -100,7 +100,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:stateListAnimator="@animator/clicked"
             app:active="true"
-            app:active_background_color="?attr/icon_color_active"
+            app:active_background_color="?icon_color_active"
             app:always_counter="false"
             app:button_icon="@drawable/comment"
             app:noactive_icon_color="#ffffff" />
@@ -113,7 +113,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:stateListAnimator="@animator/clicked"
             app:active="true"
-            app:active_background_color="?attr/icon_color_active"
+            app:active_background_color="?icon_color_active"
             app:always_counter="false"
             app:button_icon="@drawable/download"
             app:noactive_icon_color="#ffffff" />
@@ -126,7 +126,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:stateListAnimator="@animator/clicked"
             app:active="true"
-            app:active_background_color="?attr/icon_color_active"
+            app:active_background_color="?icon_color_active"
             app:always_counter="false"
             app:button_icon="@drawable/share"
             app:noactive_icon_color="#ffffff" />

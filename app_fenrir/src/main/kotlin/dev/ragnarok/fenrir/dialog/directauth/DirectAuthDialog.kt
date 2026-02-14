@@ -12,6 +12,7 @@ import androidx.appcompat.app.AlertDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.materialswitch.MaterialSwitch
 import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textview.MaterialTextView
 import dev.ragnarok.fenrir.AccountType
 import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.Extra
@@ -33,6 +34,7 @@ class DirectAuthDialog : BaseMvpDialogFragment<DirectAuthPresenter, IDirectAuthV
     private var mSmsCode: TextInputEditText? = null
     private var mSavePassword: MaterialSwitch? = null
     private var mSmsCodeRoot: View? = null
+    private var mSmsAuthHelp: MaterialTextView? = null
     private var mContentRoot: View? = null
     private var mLoadingRoot: View? = null
     private var mCaptchaLegacyRoot: View? = null
@@ -71,6 +73,7 @@ class DirectAuthDialog : BaseMvpDialogFragment<DirectAuthPresenter, IDirectAuthV
                 presenter?.fireSmsCodeEdit(s)
             }
         })
+        mSmsAuthHelp = view.findViewById(R.id.sms_auth_help)
         mContentRoot = view.findViewById(R.id.content_root)
         mLoadingRoot = view.findViewById(R.id.loading_root)
         mCaptchaLegacyRoot = view.findViewById(R.id.captcha_legacy_root)
@@ -123,12 +126,20 @@ class DirectAuthDialog : BaseMvpDialogFragment<DirectAuthPresenter, IDirectAuthV
         mSmsCodeRoot?.visibility = if (visible) View.VISIBLE else View.GONE
     }
 
+    override fun setSmsHelpVisible(visible: Boolean) {
+        mSmsAuthHelp?.visibility = if (visible) View.VISIBLE else View.GONE
+    }
+
     override fun setAppCodeRootVisible(visible: Boolean) {
         mEnterAppCodeRoot?.visibility = if (visible) View.VISIBLE else View.GONE
     }
 
     override fun moveFocusToSmsCode() {
         mSmsCode?.requestFocus()
+    }
+
+    override fun moveFocusToSmsHelp() {
+        mSmsAuthHelp?.requestFocus()
     }
 
     override fun moveFocusToAppCode() {

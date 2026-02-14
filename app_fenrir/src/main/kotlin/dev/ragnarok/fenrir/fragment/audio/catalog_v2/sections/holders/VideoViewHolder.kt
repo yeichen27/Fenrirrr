@@ -82,7 +82,6 @@ class VideoViewHolder(itemView: View) : IViewHolder(itemView) {
                 image.fromNet(
                     (video.ownerId.toString() + "_" + video.id.toString()),
                     trailerUrl,
-                    Utils.createOkHttp(Constants.GIF_TIMEOUT, true),
                     true
                 )
             }

@@ -219,7 +219,6 @@ class NewsfeedMentionsAdapter(
                 holder.image.fromNet(
                     (video.ownerId.toString() + "_" + video.id.toString()),
                     trailerUrl,
-                    Utils.createOkHttp(Constants.GIF_TIMEOUT, true),
                     true
                 )
             }

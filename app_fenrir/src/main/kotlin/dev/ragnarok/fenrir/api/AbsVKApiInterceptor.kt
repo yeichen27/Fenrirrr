@@ -42,7 +42,7 @@ abstract class AbsVKApiInterceptor(private val version: String) :
 
     @Throws(IOException::class)
     override fun intercept(chain: Interceptor.Chain): Response {
-        val vkAccessToken: String = token.nonNullNoEmpty(
+        var vkAccessToken: String = token.nonNullNoEmpty(
             { it },
             { throw UnauthorizedException("No authorization! Please, login and retry") })
         val original: Request = chain.request()
@@ -51,7 +51,6 @@ abstract class AbsVKApiInterceptor(private val version: String) :
         val body = original.body
         var hasVersion = false
         var hasDeviceId = false
-        var hasAccessToken = false
         if (body is FormBody) {
             for (i in 0 until body.size) {
                 val name = body.name(i)
@@ -61,7 +60,10 @@ abstract class AbsVKApiInterceptor(private val version: String) :
                     }
 
                     "device_id" -> hasDeviceId = true
-                    "access_token" -> hasAccessToken = true
+                    "access_token" -> {
+                        vkAccessToken = body.value(i)
+                        continue
+                    }
                 }
                 val value = body.value(i)
                 formBuilder.add(name, value)
@@ -69,9 +71,6 @@ abstract class AbsVKApiInterceptor(private val version: String) :
         }
         if (!hasVersion) {
             formBuilder.add("v", version)
-        }
-        if (!hasAccessToken) {
-            formBuilder.add("access_token", vkAccessToken)
         }
         formBuilder.add("lang", Constants.DEVICE_COUNTRY_CODE)
             .add("https", "1")
@@ -83,7 +82,8 @@ abstract class AbsVKApiInterceptor(private val version: String) :
         }
         return chain.proceed(
             original.newBuilder().vkHeader(false)
-                .addHeader("User-Agent", getAccountUserAgent(type, customDeviceName))
+                .header("Authorization", "Bearer $vkAccessToken")
+                .header("User-Agent", getAccountUserAgent(type, customDeviceName))
                 .post(formBuilder.build())
                 .makeVK(true)
                 .build()

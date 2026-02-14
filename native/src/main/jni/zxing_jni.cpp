@@ -503,7 +503,6 @@ static ReaderOptions CreateReaderOptions(JNIEnv *env, jobject opts) {
             .downscaleFactor(GetIntField(env, cls, opts, "downscaleFactor"))
             .minLineCount(GetIntField(env, cls, opts, "minLineCount"))
             .maxNumberOfSymbols(GetIntField(env, cls, opts, "maxNumberOfSymbols"))
-            .tryCode39ExtendedMode(GetBooleanField(env, cls, opts, "tryCode39ExtendedMode"))
             .returnErrors(GetBooleanField(env, cls, opts, "returnErrors"))
             .eanAddOnSymbol(EanAddOnSymbolFromString(
                     GetEnumField(env, cls, opts, "eanAddOnSymbol", "EanAddOnSymbol")))

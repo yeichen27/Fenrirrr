@@ -12,7 +12,6 @@ import dev.ragnarok.fenrir.model.StickerSet
 import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.with
 import dev.ragnarok.fenrir.settings.Settings
-import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.view.emoji.EmojiconsPopup.OnStickerClickedListener
 import dev.ragnarok.fenrir.view.natives.animation.ThorVGLottieView
 
@@ -69,7 +68,6 @@ class StickersAdapter(private val context: Context, private val stickers: Sticke
                 val animatedHolder = holder as StickerAnimatedHolder
                 animatedHolder.animation.fromNet(
                     item?.getAnimationByType(if (isNightSticker) "dark" else "light"),
-                    Utils.createOkHttp(Constants.GIF_TIMEOUT, true),
                     false
                 )
                 animatedHolder.root.setOnClickListener {
@@ -109,7 +107,6 @@ class StickersAdapter(private val context: Context, private val stickers: Sticke
                 val animatedHolder = holder as StickerAnimatedHolder
                 animatedHolder.animation.fromNet(
                     item?.getAnimationByType(if (isNightSticker) "dark" else "light"),
-                    Utils.createOkHttp(Constants.GIF_TIMEOUT, true),
                     false
                 )
                 animatedHolder.root.setOnClickListener {

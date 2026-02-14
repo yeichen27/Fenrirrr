@@ -139,6 +139,7 @@ static constexpr struct { BarcodeFormat format; SymbologyIdentifier si; } barcod
 	{BarcodeFormat::Code128, {'C', '0'}}, // '1' GS1, '2' AIM
 	// {BarcodeFormat::Code16K, {'K', '0'}}, // '1' GS1, '2' AIM, '4' D1 PAD
 	// {BarcodeFormat::Code39, {'A', '0'}}, // '3' checksum, '4' extended, '7' checksum,extended
+	{BarcodeFormat::Code39Ext, {'A', '4'}}, // '3' checksum, '4' extended, '7' checksum,extended
 	{BarcodeFormat::DataBar, {'e', '0', 0, AIFlag::GS1}},
 	{BarcodeFormat::DataBarOmni, {'e', '0', 0, AIFlag::GS1}},
 	{BarcodeFormat::DataBarStk, {'e', '0', 0, AIFlag::GS1}},
@@ -172,9 +173,6 @@ static SymbologyIdentifier SymbologyIdentifierZint2ZXing(const CreatorOptions& o
 	if (format & (EAN13 | UPCA | UPCE)) {
 		if (ba.size() > 13)     // Have EAN-2/5 add-on?
 			ret.modifier = '3'; // Combined packet, EAN-13, UPC-A, UPC-E, with add-on
-	} else if (format == Code39) {
-		if (FindIf(ba, iscntrl) != ba.end()) // Extended Code 39?
-			ret.modifier = static_cast<char>(ret.modifier + 4);
 	} else if (opts.gs1() && format & AllGS1) {
 		if (format & (Aztec | Code128))
 			ret.modifier = '1';
@@ -403,12 +401,10 @@ Barcode CreateBarcodeFromText(std::string_view contents, const CreatorOptions& o
 	return CreateBarcode(contents.data(), contents.size(), UNICODE_MODE, options);
 }
 
-#if __cplusplus > 201703L
 Barcode CreateBarcodeFromText(std::u8string_view contents, const CreatorOptions& options)
 {
 	return CreateBarcode(contents.data(), contents.size(), UNICODE_MODE, options);
 }
-#endif
 
 Barcode CreateBarcodeFromBytes(const void* data, int size, const CreatorOptions& options)
 {
@@ -421,20 +417,12 @@ zint_symbol* CreatorOptions::zint() const { return nullptr; }
 
 static Barcode CreateBarcode(BitMatrix&& bits, std::string_view contents, const CreatorOptions& opts)
 {
-	auto img = ToMatrix<uint8_t>(bits);
-
-#ifdef ZXING_READERS
-	(void)contents; // unused
-	return ReadBarcode({img.data(), img.width(), img.height(), ImageFormat::Lum},
-					   ReaderOptions().formats(opts.format()).isPure(true).binarizer(Binarizer::BoolCast));
-#else
 	Content content;
 	content.append(contents);
 
 	DecoderResult decRes(std::move(content));
 	DetectorResult detRes(std::move(bits), Rectangle<PointI>(0, 0, bits.width(), bits.height()));
 	return MatrixBarcode(std::move(decRes), std::move(detRes), opts.format());
-#endif
 }
 
 Barcode CreateBarcodeFromText(std::string_view contents, const CreatorOptions& opts)
@@ -448,12 +436,10 @@ Barcode CreateBarcodeFromText(std::string_view contents, const CreatorOptions& o
 	return CreateBarcode(writer.encode(std::string(contents), 0, opts.format() & BarcodeFormat::AllLinear ? 50 : 0), contents, opts);
 }
 
-#if __cplusplus > 201703L
 Barcode CreateBarcodeFromText(std::u8string_view contents, const CreatorOptions& opts)
 {
 	return CreateBarcodeFromText({reinterpret_cast<const char*>(contents.data()), contents.size()}, opts);
 }
-#endif
 
 Barcode CreateBarcodeFromBytes(const void* data, int size, const CreatorOptions& opts)
 {
@@ -480,12 +466,10 @@ Barcode CreateBarcodeFromText(std::string_view, const CreatorOptions&)
 	throw std::runtime_error("This build of zxing-cpp does not support creating barcodes.");
 }
 
-#if __cplusplus > 201703L
 Barcode CreateBarcodeFromText(std::u8string_view, const CreatorOptions&)
 {
 	throw std::runtime_error("This build of zxing-cpp does not support creating barcodes.");
 }
-#endif
 
 Barcode CreateBarcodeFromBytes(const void*, int, const CreatorOptions&)
 {

@@ -70,7 +70,7 @@
                 app:displayHashTags="true"
                 app:emojiconSize="20sp"
                 app:fixWrapText="true"
-                app:hashTagColor="?attr/colorAccent"
+                app:hashTagColor="?colorPrimaryVariant"
                 tools:text="Message" />
 
             <LinearLayout

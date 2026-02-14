@@ -8,7 +8,7 @@
 
 #define TVG_VERSION_MAJOR 1  // for compile-time checks
 #define TVG_VERSION_MINOR 0  // for compile-time checks
-#define TVG_VERSION_MICRO 0  // for compile-time checks
+#define TVG_VERSION_MICRO 1  // for compile-time checks
 
 #ifdef TVG_API
     #undef TVG_API
@@ -339,6 +339,24 @@ struct Matrix
     float e11, e12, e13;
     float e21, e22, e23;
     float e31, e32, e33;
+};
+
+
+/**
+ * @brief Describes the font metrics of a text object.
+ *
+ * Provides the basic vertical layout metrics used for text rendering,
+ * such as ascent, descent, and line spacing (linegap).
+ *
+ * @see Text::metrics()
+ * @note Experimental API
+ */
+struct TextMetrics
+{
+    float ascent;   ///< Distance from the baseline to the top of the highest glyph (usually positive).
+    float descent;  ///< Distance from the baseline to the bottom of the lowest glyph (usually negative, as in TTF).
+    float linegap;  ///< Additional spacing recommended between lines (leading).
+    float advance;  ///< The total vertical advance between lines of text: ascent - descent + linegap (i.e., ascent + |descent| + linegap when descent is negative).
 };
 
 
@@ -1663,10 +1681,12 @@ struct TVG_API Picture : Paint
      *
      * @retval Result::InsufficientCondition If the picture is already loaded.
      * 
-     * @note This function must be called before @ref Picture::load()
-     *       Setting the resolver after loading will have no effect on asset resolution for that asset.
+     * @warning This function must be called before @ref Picture::load()
+     *          Setting the resolver after loading will have no effect on asset resolution for that asset.
+     * @note @p src will be either a font path or a font name. In the case of a font name, @p src will begin with "name:", e.g., "name:FreeSans-Medium".
      * @note If @c false is returned by @p func, ThorVG will attempt to resolve the resource using its internal resolution mechanism as a fallback.
      * @note To unset the resolver, pass @c nullptr as the @p func parameter.
+     *
      * @note Experimental API
      */
     Result resolver(std::function<bool(Paint* paint, const char* src, void* data)> func, void* data) noexcept;
@@ -2035,6 +2055,24 @@ struct TVG_API Text : Paint
      * @since 1.0
      */
     Result spacing(float letter, float line) noexcept;
+
+    /**
+     * @brief Retrieves the layout metrics of the text object.
+     *
+     * Fills the provided `TextMetrics` structure with the font layout values of this text object,
+     * such as ascent, descent, linegap, and line advance.
+     *
+     * The returned values reflect the font size applied to the text object,
+     * but do not include any transformations (e.g., scale, rotation, or translation).
+     *
+     * @param[out] metrics A reference to a `TextMetrics` structure to be filled with the resulting values.
+     *
+     * @return Result::InsufficientCondition if no font or size has been set yet.
+     *
+     * @see TextMetrics
+     * @note Experimental API
+     */
+    Result metrics(TextMetrics& metrics) const noexcept;
 
     /**
      * @brief Loads a scalable font data (ttf) from a file.

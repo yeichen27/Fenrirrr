@@ -27,7 +27,9 @@ class IAuthService : IServiceRest() {
         forceSms: Int?,
         device_id: String?,
         libverify_support: Int?,
-        lang: String?
+        lang: String?,
+        smsSid: String?,
+        anonymous_token: String?
     ): Flow<LoginResponse> {
         return rest.request(
             "token",
@@ -47,6 +49,8 @@ class IAuthService : IServiceRest() {
                 "success_token" to captchaSuccessToken,
                 "force_sms" to forceSms,
                 "device_id" to device_id,
+                "anonymous_token" to anonymous_token,
+                "sid" to smsSid,
                 "lang" to lang,
                 "https" to 1
             ), LoginResponse.serializer(), false

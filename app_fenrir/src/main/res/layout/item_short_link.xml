@@ -23,7 +23,7 @@
         android:ellipsize="end"
         android:maxLines="1"
         android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
-        android:textColor="?attr/colorSecondary"
+        android:textColor="?colorSecondary"
         android:textSize="15sp"
         tools:text="Short" />
 

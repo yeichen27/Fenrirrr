@@ -84,7 +84,7 @@
             app:displayHashTags="true"
             app:emojiconSize="20sp"
             app:fixWrapText="true"
-            app:hashTagColor="?attr/colorAccent"
+            app:hashTagColor="?colorPrimaryVariant"
             tools:text="Message" />
 
         <com.google.android.material.textview.MaterialTextView
@@ -95,7 +95,7 @@
             android:text="@string/show_more"
             android:textAllCaps="true"
             android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
-            android:textColor="?attr/colorAccent"
+            android:textColor="?colorPrimaryVariant"
             android:visibility="gone" />
 
         <LinearLayout

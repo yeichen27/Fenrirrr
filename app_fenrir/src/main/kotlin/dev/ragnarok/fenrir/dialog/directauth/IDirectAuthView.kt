@@ -6,8 +6,10 @@ import dev.ragnarok.fenrir.fragment.base.core.IMvpView
 interface IDirectAuthView : IMvpView, IErrorView {
     fun setLoginButtonEnabled(enabled: Boolean)
     fun setSmsRootVisible(visible: Boolean)
+    fun setSmsHelpVisible(visible: Boolean)
     fun setAppCodeRootVisible(visible: Boolean)
     fun moveFocusToSmsCode()
+    fun moveFocusToSmsHelp()
     fun moveFocusToAppCode()
     fun displayLoading(loading: Boolean)
     fun setCaptchaLegacyRootVisible(visible: Boolean)

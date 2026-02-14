@@ -39,7 +39,9 @@ class AuthApi(private val service: IDirectLoginServiceProvider) : IAuthApi {
         captchaKey: String?,
         captchaSuccessToken: String?,
         forceSms: Boolean,
-        libverify_support: Boolean
+        libverify_support: Boolean,
+        smsSid: String?,
+        anonymous_token: String?
     ): Flow<LoginResponse> {
         return service.provideAuthService()
             .flatMapConcat {
@@ -62,7 +64,9 @@ class AuthApi(private val service: IDirectLoginServiceProvider) : IAuthApi {
                         provideApplicationContext()
                     ),
                     if (libverify_support) 1 else null,
-                    DEVICE_COUNTRY_CODE
+                    DEVICE_COUNTRY_CODE,
+                    smsSid,
+                    anonymous_token
                 )
                     .map { response ->
                         when {

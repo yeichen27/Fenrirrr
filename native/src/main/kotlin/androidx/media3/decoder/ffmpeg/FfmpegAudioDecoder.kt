@@ -197,6 +197,14 @@ class FfmpegAudioDecoder(
         private const val AUDIO_DECODER_ERROR_INVALID_DATA = -1
         private const val AUDIO_DECODER_ERROR_OTHER = -2
 
+        // FLAC parsing constants
+        private val flacStreamMarker: ByteArray =
+            byteArrayOf('f'.code.toByte(), 'L'.code.toByte(), 'a'.code.toByte(), 'C'.code.toByte())
+        private const val FLAC_METADATA_TYPE_STREAM_INFO: Int = 0
+        private const val FLAC_METADATA_BLOCK_HEADER_SIZE: Int = 4
+        private const val FLAC_STREAM_INFO_DATA_SIZE: Int = 34
+
+
         /**
          * Returns FFmpeg-compatible codec-specific initialization data ("extra data"), or `null` if
          * not required.
@@ -215,10 +223,72 @@ class FfmpegAudioDecoder(
                     initializationData
                 )
 
+                MimeTypes.AUDIO_FLAC -> getFlacExtraData(
+                    initializationData
+                )
+
                 else ->                 // Other codecs do not require extra data.
                     null
             }
         }
+
+        private fun getFlacExtraData(initializationData: List<ByteArray>): ByteArray? {
+            for (i in initializationData.indices) {
+                val out = extractFlacStreamInfo(initializationData[i])
+                if (out != null) {
+                    return out
+                }
+            }
+            return null
+        }
+
+        private fun extractFlacStreamInfo(data: ByteArray): ByteArray? {
+            var offset = 0
+            if (arrayStartsWith(data, flacStreamMarker)) {
+                offset = flacStreamMarker.size
+            }
+
+            if (data.size - offset == FLAC_STREAM_INFO_DATA_SIZE) {
+                val streamInfo = ByteArray(FLAC_STREAM_INFO_DATA_SIZE)
+                System.arraycopy(data, offset, streamInfo, 0, FLAC_STREAM_INFO_DATA_SIZE)
+                return streamInfo
+            }
+
+            if (data.size >= offset + FLAC_METADATA_BLOCK_HEADER_SIZE) {
+                val type = data[offset].toInt() and 0x7F
+                val length =
+                    (((data[offset + 1].toInt() and 0xFF) shl 16)
+                            or ((data[offset + 2].toInt() and 0xFF) shl 8)
+                            or (data[offset + 3].toInt() and 0xFF))
+
+                if (type == FLAC_METADATA_TYPE_STREAM_INFO && length == FLAC_STREAM_INFO_DATA_SIZE && data.size >= offset + FLAC_METADATA_BLOCK_HEADER_SIZE + FLAC_STREAM_INFO_DATA_SIZE) {
+                    val streamInfo = ByteArray(FLAC_STREAM_INFO_DATA_SIZE)
+                    System.arraycopy(
+                        data,
+                        offset + FLAC_METADATA_BLOCK_HEADER_SIZE,
+                        streamInfo,
+                        0,
+                        FLAC_STREAM_INFO_DATA_SIZE
+                    )
+                    return streamInfo
+                }
+            }
+
+            return null
+        }
+
+        private fun arrayStartsWith(data: ByteArray, prefix: ByteArray): Boolean {
+            if (data.size < prefix.size) {
+                return false
+            }
+            for (i in prefix.indices) {
+                if (data[i] != prefix[i]) {
+                    return false
+                }
+            }
+            return true
+        }
+
 
         private fun getAlacExtraData(initializationData: List<ByteArray>): ByteArray {
             // FFmpeg's ALAC decoder expects an ALAC atom, which contains the ALAC "magic cookie", as extra

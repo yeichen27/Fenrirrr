@@ -58,7 +58,6 @@ class ZXingWrapper {
         var downscaleThreshold: Int = 500,
         var minLineCount: Int = 2,
         var maxNumberOfSymbols: Int = 0xff,
-        var tryCode39ExtendedMode: Boolean = true,
         var returnErrors: Boolean = false,
         var eanAddOnSymbol: EanAddOnSymbol = EanAddOnSymbol.IGNORE,
         var textMode: TextMode = TextMode.HRI

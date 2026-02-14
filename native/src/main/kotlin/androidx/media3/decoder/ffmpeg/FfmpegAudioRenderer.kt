@@ -91,7 +91,6 @@ class FfmpegAudioRenderer : DecoderAudioRenderer<FfmpegAudioDecoder> {
         return ADAPTIVE_NOT_SEAMLESS
     }
 
-    /** {@inheritDoc} */
     @Throws(FfmpegDecoderException::class)
     override fun createDecoder(format: Format, cryptoConfig: CryptoConfig?): FfmpegAudioDecoder {
         TraceUtil.beginSection("createFfmpegAudioDecoder")
@@ -104,7 +103,6 @@ class FfmpegAudioRenderer : DecoderAudioRenderer<FfmpegAudioDecoder> {
         return decoder
     }
 
-    /** {@inheritDoc} */
     override fun getOutputFormat(decoder: FfmpegAudioDecoder): Format {
         return Format.Builder()
             .setSampleMimeType(MimeTypes.AUDIO_RAW)

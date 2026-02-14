@@ -44,8 +44,8 @@
             android:gravity="center"
             android:maxWidth="450dp"
             android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
-            android:textColor="?attr/colorPrimary"
-            app:hashTagColor="?attr/colorAccent"
+            android:textColor="?colorPrimary"
+            app:hashTagColor="?colorPrimaryVariant"
             tools:text="Message" />
 
         <LinearLayout

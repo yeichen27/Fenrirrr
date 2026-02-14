@@ -9,7 +9,6 @@ import android.util.AttributeSet
 import androidx.annotation.RawRes
 import androidx.core.content.withStyledAttributes
 import com.google.android.material.imageview.ShapeableImageView
-import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.model.Video
@@ -18,7 +17,6 @@ import dev.ragnarok.fenrir.module.animation.AnimatedFileDrawable
 import dev.ragnarok.fenrir.module.animation.LoadedFrom
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.settings.Settings
-import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.coroutines.CancelableJob
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.isActive
@@ -104,7 +102,7 @@ open class AnimatedShapeableImageView @JvmOverloads constructor(
         }
     }
 
-    fun fromNet(key: String, url: String?, client: OkHttpClient.Builder, autoPlay: Boolean) {
+    fun fromNet(key: String, url: String?, autoPlay: Boolean) {
         if (!FenrirNative.isNativeLoaded || url.isNullOrEmpty()) {
             if (loadedFrom == LoadedFrom.NET) {
                 loadedFrom = LoadedFrom.NO
@@ -116,11 +114,16 @@ open class AnimatedShapeableImageView @JvmOverloads constructor(
             return
         }
 
+        var client: OkHttpClient?
         if (cache.isCachedFile(key)) {
             setAnimationByUrlCache(key, autoPlay, true)
             return
         } else {
             clearAnimationDrawable(callSuper = true, clearState = true, cancelTask = true)
+            client = AnimationNetworkCache.getOkHttpClient()
+            if (client == null) {
+                return
+            }
             loadedFrom = LoadedFrom.NET
             filePathTmp = url
             keyTmp = key
@@ -133,7 +136,7 @@ open class AnimatedShapeableImageView @JvmOverloads constructor(
                 val request: Request = Request.Builder()
                     .url(url)
                     .build()
-                call = client.build().newCall(request)
+                call = client.newCall(request)
                 val response: Response = call.execute()
                 if (!response.isSuccessful) {
                     emit(false)
@@ -354,7 +357,6 @@ open class AnimatedShapeableImageView @JvmOverloads constructor(
                         fromNet(
                             s,
                             it,
-                            Utils.createOkHttp(Constants.GIF_TIMEOUT, true),
                             isPlaying == true,
                         )
                     }
@@ -364,7 +366,9 @@ open class AnimatedShapeableImageView @JvmOverloads constructor(
             }
 
             loadedFrom == LoadedFrom.RES -> {
-                rawResTmp?.let {
+                val tmpRawResTmp = rawResTmp
+                tmpRawResTmp?.let {
+                    rawResTmp = null
                     fromRes(
                         it,
                         isPlaying == true,

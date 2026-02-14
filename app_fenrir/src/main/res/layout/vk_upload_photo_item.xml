@@ -54,7 +54,7 @@
                     android:layout_width="56dp"
                     android:layout_height="56dp"
                     android:layout_gravity="center"
-                    app:arcLoadingColor="?attr/icon_color_active"
+                    app:arcLoadingColor="?icon_color_active"
                     app:arcLoadingStartAngle="270"
                     app:arcLoadingStrokeWidth="4dp"
                     app:roadColor="#ffffff"

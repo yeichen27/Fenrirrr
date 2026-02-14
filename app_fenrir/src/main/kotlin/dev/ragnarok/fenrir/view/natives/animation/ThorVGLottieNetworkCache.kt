@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.isActive
+import okhttp3.OkHttpClient
 import okio.BufferedSource
 import okio.buffer
 import okio.sink
@@ -73,9 +74,33 @@ class ThorVGLottieNetworkCache(context: Context) {
     }
 
     companion object {
+        private var okHttpBuilder: OnOkhttpCreate? = null
+        private var okHttpClient: OkHttpClient? = null
         private val counter = AtomicInteger(0)
         private val sync = Any()
         private const val EXTENSION = ".json"
+
+        fun setOnOkhttpCreate(client: () -> OkHttpClient.Builder) {
+            okHttpBuilder = object : OnOkhttpCreate {
+                override fun createOkHttpClient(): OkHttpClient = client().build()
+            }
+        }
+
+        fun releaseOkHttpClient() {
+            synchronized(this) {
+                okHttpClient = null
+            }
+        }
+
+        fun getOkHttpClient(): OkHttpClient? {
+            synchronized(this) {
+                if (okHttpClient == null && okHttpBuilder != null) {
+                    okHttpClient = okHttpBuilder?.createOkHttpClient()
+                }
+                return okHttpClient
+            }
+        }
+
         internal fun filenameForUrl(url: String, isTemp: Boolean) =
             "lottie_cache_" + url.replace(
                 "\\W+".toRegex(),
@@ -93,5 +118,9 @@ class ThorVGLottieNetworkCache(context: Context) {
             }
             return file
         }
+    }
+
+    interface OnOkhttpCreate {
+        fun createOkHttpClient(): OkHttpClient
     }
 }

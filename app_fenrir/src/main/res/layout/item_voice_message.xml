@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:gravity="end"
         android:textAppearance="@style/TextAppearance.Material3.BodySmall"
-        android:textColor="?attr/icon_color_active"
+        android:textColor="?icon_color_active"
         android:textSize="11sp"
         android:textStyle="bold"
         tools:ignore="SmallSp"
@@ -71,8 +71,8 @@
         android:layout_alignBottom="@id/item_voice_buttons"
         android:layout_marginStart="12dp"
         android:layout_toEndOf="@id/item_voice_buttons"
-        app:waveform_active_color="?attr/colorPrimary"
-        app:waveform_noactive_color="?attr/colorOnSurface" />
+        app:waveform_active_color="?colorPrimary"
+        app:waveform_noactive_color="?colorOnSurface" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/transcription_text"

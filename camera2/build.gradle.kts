@@ -5,7 +5,7 @@ plugins {
     alias(libs.plugins.devtools.ksp)
 }
 
-//1.6.0-beta01
+//1.6.0-beta02
 
 fun isDevelopBuild() = libs.versions.developerBuild.get().toBoolean()
 fun Provider<String>.asInt() = get().toInt()
@@ -62,6 +62,7 @@ dependencies {
     implementation(libs.androidx.fragment)
     implementation(libs.androidx.collection)
     implementation(libs.androidx.tracing)
+    implementation(libs.androidx.media3.muxer)
     implementation(libs.errorprone.annotations)
     implementation(libs.androidx.exifinterface)
     implementation(libs.androidx.concurrent.futures)

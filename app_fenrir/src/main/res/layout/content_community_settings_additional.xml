@@ -33,7 +33,7 @@
             android:layout_marginTop="8dp"
             app:spinner_hint="@string/select_category_hint"
             app:spinner_hint_color="?android:textColorSecondary"
-            app:spinner_icon_color="?attr/colorAccent"
+            app:spinner_icon_color="?colorPrimaryVariant"
             app:spinner_text_color="?android:textColorPrimary" />
 
     </LinearLayout>
@@ -115,7 +115,7 @@
             android:background="?attr/selectableItemBackground"
             android:fontFamily="sans-serif-medium"
             android:padding="8dp"
-            android:textColor="?attr/colorAccent"
+            android:textColor="?colorPrimaryVariant"
             tools:text="Day:" />
 
         <com.google.android.material.textview.MaterialTextView
@@ -125,7 +125,7 @@
             android:background="?attr/selectableItemBackground"
             android:fontFamily="sans-serif-medium"
             android:padding="8dp"
-            android:textColor="?attr/colorAccent"
+            android:textColor="?colorPrimaryVariant"
             tools:text="Month:" />
 
         <com.google.android.material.textview.MaterialTextView
@@ -135,7 +135,7 @@
             android:background="?attr/selectableItemBackground"
             android:fontFamily="sans-serif-medium"
             android:padding="8dp"
-            android:textColor="?attr/colorAccent"
+            android:textColor="?colorPrimaryVariant"
             tools:text="Year:" />
 
     </LinearLayout>

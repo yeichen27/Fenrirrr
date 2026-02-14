@@ -134,7 +134,7 @@
                 android:contentDescription="@string/close"
                 android:padding="6dp"
                 android:src="@drawable/close"
-                app:tint="?attr/colorOnSurface" />
+                app:tint="?colorOnSurface" />
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/pause_voice_message"

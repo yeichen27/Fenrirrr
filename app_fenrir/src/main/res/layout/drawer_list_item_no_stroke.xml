@@ -49,7 +49,7 @@
             android:paddingTop="4dp"
             android:paddingRight="6dp"
             android:paddingBottom="4dp"
-            android:textColor="?attr/icon_color_active"
+            android:textColor="?icon_color_active"
             android:textSize="@dimen/navi_drawer_font_size"
             android:textStyle="bold"
             tools:text="1" />

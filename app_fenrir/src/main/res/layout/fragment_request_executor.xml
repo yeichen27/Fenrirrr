@@ -155,7 +155,7 @@
                                 android:contentDescription="@null"
                                 android:padding="8dp"
                                 android:src="@drawable/content_copy"
-                                app:tint="?attr/colorAccent" />
+                                app:tint="?colorPrimaryVariant" />
 
                             <androidx.appcompat.widget.AppCompatImageView
                                 android:id="@+id/button_save"
@@ -165,7 +165,7 @@
                                 android:contentDescription="@null"
                                 android:padding="8dp"
                                 android:src="@drawable/file"
-                                app:tint="?attr/colorPrimary" />
+                                app:tint="?colorPrimary" />
 
                         </LinearLayout>
 

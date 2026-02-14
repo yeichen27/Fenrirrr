@@ -376,7 +376,6 @@ class AttachmentsViewBinder(
         if (sticker.isAnimated) {
             imageView.fromNet(
                 sticker.getAnimationByType(if (isNightSticker) "dark" else "light"),
-                Utils.createOkHttp(Constants.GIF_TIMEOUT, true),
                 true
             )
             stickersContainer.setOnLongClickListener {

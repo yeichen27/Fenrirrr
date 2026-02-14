@@ -26,7 +26,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/button_1"
-                android:textColor="?attr/icon_color_active"
+                android:textColor="?icon_color_active"
                 android:textSize="30dp" />
 
             <com.google.android.material.textview.MaterialTextView
@@ -51,14 +51,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/button_2"
-                android:textColor="?attr/icon_color_active"
+                android:textColor="?icon_color_active"
                 android:textSize="30dp" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/button_2_desc"
-                android:textColor="?attr/icon_color_active"
+                android:textColor="?icon_color_active"
                 android:textSize="@dimen/pincode_button_subtitle_text_size" />
 
         </LinearLayout>
@@ -76,14 +76,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/button_3"
-                android:textColor="?attr/icon_color_active"
+                android:textColor="?icon_color_active"
                 android:textSize="30dp" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/button_3_desc"
-                android:textColor="?attr/icon_color_active"
+                android:textColor="?icon_color_active"
                 android:textSize="@dimen/pincode_button_subtitle_text_size" />
 
         </LinearLayout>
@@ -106,14 +106,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/button_4"
-                android:textColor="?attr/icon_color_active"
+                android:textColor="?icon_color_active"
                 android:textSize="30dp" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/button_4_desc"
-                android:textColor="?attr/icon_color_active"
+                android:textColor="?icon_color_active"
                 android:textSize="@dimen/pincode_button_subtitle_text_size" />
 
         </LinearLayout>
@@ -131,14 +131,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/button_5"
-                android:textColor="?attr/icon_color_active"
+                android:textColor="?icon_color_active"
                 android:textSize="30dp" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/button_5_desc"
-                android:textColor="?attr/icon_color_active"
+                android:textColor="?icon_color_active"
                 android:textSize="@dimen/pincode_button_subtitle_text_size" />
 
         </LinearLayout>
@@ -156,14 +156,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/button_6"
-                android:textColor="?attr/icon_color_active"
+                android:textColor="?icon_color_active"
                 android:textSize="30dp" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/button_6_desc"
-                android:textColor="?attr/icon_color_active"
+                android:textColor="?icon_color_active"
                 android:textSize="@dimen/pincode_button_subtitle_text_size" />
 
         </LinearLayout>
@@ -186,14 +186,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/button_7"
-                android:textColor="?attr/icon_color_active"
+                android:textColor="?icon_color_active"
                 android:textSize="30dp" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/button_7_desc"
-                android:textColor="?attr/icon_color_active"
+                android:textColor="?icon_color_active"
                 android:textSize="@dimen/pincode_button_subtitle_text_size" />
 
         </LinearLayout>
@@ -211,14 +211,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/button_8"
-                android:textColor="?attr/icon_color_active"
+                android:textColor="?icon_color_active"
                 android:textSize="30dp" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/button_8_desc"
-                android:textColor="?attr/icon_color_active"
+                android:textColor="?icon_color_active"
                 android:textSize="@dimen/pincode_button_subtitle_text_size" />
 
         </LinearLayout>
@@ -236,14 +236,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/button_9"
-                android:textColor="?attr/icon_color_active"
+                android:textColor="?icon_color_active"
                 android:textSize="30dp" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/button_9_desc"
-                android:textColor="?attr/icon_color_active"
+                android:textColor="?icon_color_active"
                 android:textSize="@dimen/pincode_button_subtitle_text_size" />
 
         </LinearLayout>
@@ -267,7 +267,7 @@
                 android:layout_height="wrap_content"
                 android:contentDescription="@null"
                 android:src="@drawable/fingerprint"
-                app:tint="?attr/icon_color_active" />
+                app:tint="?icon_color_active" />
 
         </LinearLayout>
 
@@ -284,7 +284,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/button_0"
-                android:textColor="?attr/icon_color_active"
+                android:textColor="?icon_color_active"
                 android:textSize="30dp" />
 
         </LinearLayout>
@@ -303,7 +303,7 @@
                 android:layout_height="wrap_content"
                 android:contentDescription="@null"
                 android:src="@drawable/backspace"
-                app:tint="?attr/icon_color_active" />
+                app:tint="?icon_color_active" />
 
         </LinearLayout>
     </TableRow>

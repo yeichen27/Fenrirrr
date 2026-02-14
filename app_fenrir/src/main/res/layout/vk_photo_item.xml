@@ -76,7 +76,7 @@
             android:layout_height="20dp"
             android:layout_alignStart="@id/imageView"
             android:layout_alignTop="@id/imageView"
-            android:background="?attr/colorPrimary"
+            android:background="?colorPrimary"
             android:paddingStart="4dp"
             android:paddingEnd="8dp">
 
@@ -97,7 +97,7 @@
             android:layout_height="20dp"
             android:layout_alignEnd="@id/imageView"
             android:layout_alignBottom="@id/imageView"
-            android:background="?attr/colorPrimary"
+            android:background="?colorPrimary"
             android:paddingStart="4dp"
             android:paddingEnd="8dp">
 

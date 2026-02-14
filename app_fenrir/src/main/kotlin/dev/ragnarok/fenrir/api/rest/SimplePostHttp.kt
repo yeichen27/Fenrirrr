@@ -8,6 +8,7 @@ import dev.ragnarok.fenrir.ifNonNull
 import dev.ragnarok.fenrir.isJson
 import dev.ragnarok.fenrir.isMsgPack
 import dev.ragnarok.fenrir.kJson
+import dev.ragnarok.fenrir.nonNullNoEmpty
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.KSerializer
@@ -148,6 +149,15 @@ class SimplePostHttp(
                             tmp.key = "post_url"
                             tmp.value = response.request.url.toString()
                             o.add(tmp)
+                            var authHeader = response.request.header("Authorization")
+                            if (authHeader.nonNullNoEmpty()) {
+                                authHeader = authHeader.removePrefix("Bearer ")
+                                val accessToken = Params()
+                                accessToken.key = "access_token"
+                                accessToken.value = authHeader
+                                o.add(accessToken)
+                            }
+
                             it.requestParams = o
                         }
                     }

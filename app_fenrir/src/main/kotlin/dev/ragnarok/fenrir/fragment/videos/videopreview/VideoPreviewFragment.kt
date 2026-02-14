@@ -302,7 +302,7 @@ class VideoPreviewFragment : BaseMvpFragment<VideoPreviewPresenter, IVideoPrevie
                     pp.fromNet(
                         (video.ownerId.toString() + "_" + video.id.toString()),
                         video.trailer,
-                        Utils.createOkHttp(Constants.GIF_TIMEOUT, true), true
+                        true
                     )
                 }
             } else if (imageUrl.nonNullNoEmpty()) {

@@ -35,7 +35,6 @@ import dev.ragnarok.fenrir.module.animation.LoadedFrom
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.picasso.PicassoInstance
-import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.coroutines.CancelableJob
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.isActive
@@ -218,7 +217,6 @@ class TouchImageView @JvmOverloads constructor(
         key: String,
         url: String?,
         fallback: String?,
-        client: OkHttpClient.Builder,
         autoPlay: Boolean
     ) {
         if (!FenrirNative.isNativeLoaded || url.isNullOrEmpty()) {
@@ -231,11 +229,16 @@ class TouchImageView @JvmOverloads constructor(
             return
         }
 
+        var client: OkHttpClient?
         if (cache.isCachedFile(key)) {
             setAnimationByUrlCache(key, fallback, autoPlay, true)
             return
         } else {
             clearAnimationDrawable(callSuper = true, clearState = true, cancelTask = true)
+            client = AnimationNetworkCache.getOkHttpClient()
+            if (client == null) {
+                return
+            }
             loadedFrom = LoadedFrom.NET
             filePathTmp = url
             keyTmp = key
@@ -249,7 +252,7 @@ class TouchImageView @JvmOverloads constructor(
                 val request: Request = Request.Builder()
                     .url(url)
                     .build()
-                call = client.build().newCall(request)
+                call = client.newCall(request)
                 val response: Response = call.execute()
                 if (!response.isSuccessful) {
                     emit(false)
@@ -406,7 +409,6 @@ class TouchImageView @JvmOverloads constructor(
                             s,
                             it,
                             fallbackTmp,
-                            Utils.createOkHttp(Constants.GIF_TIMEOUT, true),
                             isPlaying == true,
                         )
                     }

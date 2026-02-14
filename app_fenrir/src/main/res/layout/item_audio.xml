@@ -116,7 +116,7 @@
                 android:contentDescription="@null"
                 android:padding="2dp"
                 android:src="@drawable/high_quality"
-                app:tint="?attr/colorPrimary" />
+                app:tint="?colorPrimary" />
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/saved"
@@ -125,7 +125,7 @@
                 android:contentDescription="@null"
                 android:padding="2dp"
                 android:src="@drawable/save"
-                app:tint="?attr/colorPrimary" />
+                app:tint="?colorPrimary" />
 
         </TableRow>
 

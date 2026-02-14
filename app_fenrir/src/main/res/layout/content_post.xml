@@ -26,7 +26,7 @@
             android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
             app:displayHashTags="true"
             app:emojiconSize="20sp"
-            app:hashTagColor="?attr/colorAccent"
+            app:hashTagColor="?colorPrimaryVariant"
             tools:text="Message" />
 
         <com.google.android.material.textview.MaterialTextView
@@ -37,7 +37,7 @@
             android:text="@string/show_more"
             android:textAllCaps="true"
             android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
-            android:textColor="?attr/colorAccent" />
+            android:textColor="?colorPrimaryVariant" />
 
     </LinearLayout>
 
@@ -52,7 +52,7 @@
         android:paddingBottom="8dp"
         android:textAllCaps="true"
         android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
-        android:textColor="?attr/colorAccent" />
+        android:textColor="?colorPrimaryVariant" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/item_need_donate"

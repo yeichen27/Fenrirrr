@@ -56,10 +56,10 @@
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:clickable="true"
                 android:focusable="true"
-                app:active_background_color="?attr/icon_color_active"
+                app:active_background_color="?icon_color_active"
                 app:always_counter="false"
                 app:button_icon="@drawable/heart"
-                app:noactive_icon_color="?attr/colorOnSurface" />
+                app:noactive_icon_color="?colorOnSurface" />
 
             <dev.ragnarok.fenrir.view.CircleCounterButton
                 android:id="@+id/comments_button"
@@ -69,10 +69,10 @@
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:clickable="true"
                 android:focusable="true"
-                app:active_background_color="?attr/icon_color_active"
+                app:active_background_color="?icon_color_active"
                 app:always_counter="false"
                 app:button_icon="@drawable/comment"
-                app:noactive_icon_color="?attr/colorOnSurface" />
+                app:noactive_icon_color="?colorOnSurface" />
 
             <dev.ragnarok.fenrir.view.CircleCounterButton
                 android:id="@+id/share_button"
@@ -82,9 +82,9 @@
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:clickable="true"
                 android:focusable="true"
-                app:active_background_color="?attr/icon_color_active"
+                app:active_background_color="?icon_color_active"
                 app:button_icon="@drawable/ic_outline_share"
-                app:noactive_icon_color="?attr/colorOnSurface" />
+                app:noactive_icon_color="?colorOnSurface" />
 
         </LinearLayout>
     </LinearLayout>

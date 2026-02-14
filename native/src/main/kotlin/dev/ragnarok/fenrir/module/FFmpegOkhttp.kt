@@ -4,143 +4,140 @@ import okhttp3.Headers.Companion.toHeaders
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
-import okhttp3.ResponseBody
-import okio.BufferedSource
 import java.io.IOException
 import kotlin.math.min
 
 class FFmpegOkhttp(val pUrl: String, val pHeaders: String?) {
-    var pResponse: Response? = null
-    var pBody: ResponseBody? = null
-    var dataStream: BufferedSource? = null
-    var mMimeType: String? = null
+    var response: Response? = null
+    var mimeType: String? = null
     var position: Long = 0
-    var pContentSize: Long = Long.MAX_VALUE
-    var mSeekable: Boolean = true
-    val okhttpClient: OkHttpClient? = okHttpBuilder?.createOkHttpClient()?.build()
+    var contentSize: Long = Long.MAX_VALUE
+    var seekable: Boolean = true
 
     @Throws(IOException::class)
     fun okhttpClose() {
         try {
-            pBody?.close()
-            pBody = null
-            pResponse?.close()
-            pResponse = null
-            dataStream?.close()
-            dataStream = null
+            response?.close()
+            response = null
             position = 0L
+            contentSize = Long.MAX_VALUE
         } catch (_: IOException) {
         }
     }
 
     fun okhttpGetMime(): String? {
-        return mMimeType
+        return mimeType
     }
 
     @Throws(IOException::class)
     fun okhttpOpen(avOptions: MutableMap<String, String>?): Int {
-        if (okhttpClient == null || isLockNetwork) {
-            return -5
-        }
-        try {
-            val httpHeaders = splitHttpHeaders(pHeaders)
-            if (mSeekable) {
-                httpHeaders["Range"] = "bytes=$position-"
-            }
-            setOptions(avOptions, httpHeaders)
+        val client = getOkHttpClient()
+        return if (client == null || isLockNetwork) {
+            -5
+        } else {
+            try {
+                val httpHeaders = splitHttpHeaders(pHeaders)
+                if (seekable) {
+                    httpHeaders["Range"] = "bytes=$position-"
+                }
+                setOptions(avOptions, httpHeaders)
 
-            val response: Response = okhttpClient.newCall(
-                Request.Builder().url(pUrl).headers(httpHeaders.toHeaders()).build()
-            ).execute()
-            pResponse = response
-            pBody = response.body
-            if (response.code == 416) {
-                okhttpClose()
-                httpHeaders.remove("Range")
-                mSeekable = false
-                val response2: Response = okhttpClient.newCall(
+                response = client.newCall(
                     Request.Builder().url(pUrl).headers(httpHeaders.toHeaders()).build()
                 ).execute()
-                pResponse = response2
-                pBody = response2.body
-            }
-            if (pResponse?.isSuccessful != true) {
+                if (response?.code == 416) {
+                    okhttpClose()
+                    httpHeaders.remove("Range")
+                    seekable = false
+                    response = client.newCall(
+                        Request.Builder().url(pUrl).headers(httpHeaders.toHeaders()).build()
+                    ).execute()
+                }
+                if (response?.isSuccessful != true) {
+                    okhttpClose()
+                    -5
+                } else {
+                    mimeType = response?.body?.contentType().toString()
+                    contentSize = response?.body?.contentLength() ?: 0
+                    if (contentSize <= 0) {
+                        contentSize = Long.MAX_VALUE
+                    }
+                    0
+                }
+            } catch (_: IOException) {
                 okhttpClose()
-                return -5
+                -5
             }
-            mMimeType = pBody?.contentType().toString()
-            pContentSize = pBody?.contentLength() ?: 0
-            dataStream = pBody?.source()
-            if (pContentSize <= 0) {
-                pContentSize = Long.MAX_VALUE
-            }
-            return 0
-        } catch (_: IOException) {
-            okhttpClose()
-            return -5
         }
     }
 
     @Throws(IOException::class)
     fun okhttpRead(bArr: ByteArray, bufferSize: Int): Int {
-        if (isLockNetwork) {
-            return -1
-        }
-        try {
-            if (dataStream != null && bufferSize >= 0) {
-                val read = dataStream?.read(bArr, 0, min(bufferSize, 8192)) ?: -1
-                if (read > 0) {
-                    position += read.toLong()
-                    return read
+        return if (isLockNetwork) {
+            okhttpClose()
+            -1
+        } else {
+            try {
+                if (response != null && bufferSize >= 0) {
+                    val read = response?.body?.source()?.read(bArr, 0, min(bufferSize, 8192))
+                    if (read == null) {
+                        -1
+                    } else if (read > 0) {
+                        position += read.toLong()
+                        read
+                    } else if (read < 0 && contentSize == Long.MAX_VALUE) {
+                        contentSize = position
+                        -1
+                    } else {
+                        -1
+                    }
+                } else {
+                    -3
                 }
-                if (read < 0 && pContentSize == Long.MAX_VALUE) {
-                    pContentSize = position
-                }
-                return -1
+            } catch (_: IOException) {
+                -1
+            } catch (_: ArrayIndexOutOfBoundsException) {
+                -1
+            } catch (_: IllegalStateException) {
+                -1
             }
-            return -3
-        } catch (_: IOException) {
-            return -1
-        } catch (_: ArrayIndexOutOfBoundsException) {
-            return -1
-        } catch (_: IllegalStateException) {
-            return -1
         }
     }
 
     @Throws(IOException::class)
     private fun okhttpSeek(off: Long): Long {
-        if (okhttpClient == null || isLockNetwork) {
-            return -5
-        }
-        okhttpClose()
-        try {
-            val httpHeaders: HashMap<String, String> = splitHttpHeaders(pHeaders)
-            httpHeaders["Range"] = "bytes=$off-"
-            val response: Response = okhttpClient.newCall(
-                Request.Builder().url(pUrl).headers(httpHeaders.toHeaders()).build()
-            ).execute()
-            pResponse = response
-            pBody = response.body
-            if (response.code == 416) {
-                okhttpClose()
-                httpHeaders.remove("Range")
-                mSeekable = false
-                val response2: Response = okhttpClient.newCall(
+        val client = getOkHttpClient()
+        return if (client == null) {
+            -5
+        } else if (isLockNetwork) {
+            okhttpClose()
+            -5
+        } else {
+            okhttpClose()
+            try {
+                val httpHeaders: HashMap<String, String> = splitHttpHeaders(pHeaders)
+                httpHeaders["Range"] = "bytes=$off-"
+                response = client.newCall(
                     Request.Builder().url(pUrl).headers(httpHeaders.toHeaders()).build()
                 ).execute()
-                pResponse = response2
-                pBody = response2.body
+                if (response?.code == 416) {
+                    okhttpClose()
+                    httpHeaders.remove("Range")
+                    seekable = false
+                    response = client.newCall(
+                        Request.Builder().url(pUrl).headers(httpHeaders.toHeaders()).build()
+                    ).execute()
+                }
+                if (response?.isSuccessful == true) {
+                    off
+                } else {
+                    okhttpClose()
+                    -5L
+                }
+            } catch (_: IOException) {
+                okhttpClose()
+                -5L
             }
-            if (pResponse?.isSuccessful == true) {
-                dataStream = pBody?.source()
-                return off
-            }
-            okhttpClose()
-            return -5L
-        } catch (_: IOException) {
-            okhttpClose()
-            return -5L
         }
     }
 
@@ -150,7 +147,7 @@ class FFmpegOkhttp(val pUrl: String, val pHeaders: String?) {
         }
         if (map.containsKey("seekable")) {
             val str = map["seekable"]
-            mSeekable = str != null && str != "-1"
+            seekable = str != null && str != "-1"
         }
         if (map.containsKey("offset")) {
             var range: String = "bytes=" + map["offset"] + "-"
@@ -163,35 +160,49 @@ class FFmpegOkhttp(val pUrl: String, val pHeaders: String?) {
 
     @Throws(IOException::class)
     fun okhttpSeek(off: Long, whence: Int): Long {
-        if (dataStream == null || isLockNetwork) {
-            return -5L
-        }
-        if (whence == 65536) {
-            return if (pContentSize == Long.MAX_VALUE) position else pContentSize
-        }
-        if (whence == 0) {
+        return if (response == null || isLockNetwork) {
+            -5L
+        } else if (whence == 65536) {
+            if (contentSize == Long.MAX_VALUE) position else contentSize
+        } else if (whence == 0) {
             position = off
-            return okhttpSeek(off)
-        }
-        if (whence == 1) {
+            okhttpSeek(off)
+        } else if (whence == 1) {
             position += off
-            return okhttpSeek(position)
+            okhttpSeek(position)
+        } else if (whence != 2) {
+            -4L
+        } else {
+            position = contentSize
+            okhttpSeek(position)
         }
-        if (whence != 2) {
-            return -4L
-        }
-        position = pContentSize
-        return okhttpSeek(position)
     }
 
     companion object {
         private var okHttpBuilder: OnFFmpegOkhttpCreate? = null
+        private var okHttpClient: OkHttpClient? = null
 
         @Volatile
         private var isLockNetwork = false
+
         fun setOnFFmpegOkhttpCreate(client: () -> OkHttpClient.Builder) {
             okHttpBuilder = object : OnFFmpegOkhttpCreate {
-                override fun createOkHttpClient(): OkHttpClient.Builder = client()
+                override fun createOkHttpClient(): OkHttpClient = client().build()
+            }
+        }
+
+        fun releaseOkHttpClient() {
+            synchronized(this) {
+                okHttpClient = null
+            }
+        }
+
+        internal fun getOkHttpClient(): OkHttpClient? {
+            synchronized(this) {
+                if (okHttpClient == null && okHttpBuilder != null) {
+                    okHttpClient = okHttpBuilder?.createOkHttpClient()
+                }
+                return okHttpClient
             }
         }
 
@@ -199,7 +210,7 @@ class FFmpegOkhttp(val pUrl: String, val pHeaders: String?) {
             this.isLockNetwork = isLockNetwork
         }
 
-        fun splitHttpHeaders(str: String?): HashMap<String, String> {
+        internal fun splitHttpHeaders(str: String?): HashMap<String, String> {
             if (str.isNullOrEmpty()) {
                 return HashMap()
             }
@@ -216,8 +227,8 @@ class FFmpegOkhttp(val pUrl: String, val pHeaders: String?) {
             return map
         }
     }
-}
 
-interface OnFFmpegOkhttpCreate {
-    fun createOkHttpClient(): OkHttpClient.Builder
+    interface OnFFmpegOkhttpCreate {
+        fun createOkHttpClient(): OkHttpClient
+    }
 }

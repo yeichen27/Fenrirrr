@@ -45,7 +45,7 @@
             android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
             app:displayHashTags="true"
             app:emojiconSize="18sp"
-            app:hashTagColor="?attr/colorAccent"
+            app:hashTagColor="?colorPrimaryVariant"
             tools:text="Message" />
 
         <LinearLayout

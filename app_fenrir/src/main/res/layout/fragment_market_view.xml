@@ -140,9 +140,9 @@
             android:layout_height="wrap_content"
             android:layout_weight="25"
             android:background="?attr/selectableItemBackgroundBorderless"
-            app:active_background_color="?attr/icon_color_active"
+            app:active_background_color="?icon_color_active"
             app:button_icon="@drawable/star"
-            app:noactive_icon_color="?attr/colorOnSurface" />
+            app:noactive_icon_color="?colorOnSurface" />
 
         <dev.ragnarok.fenrir.view.CircleCounterButton
             android:id="@+id/share_button"
@@ -150,9 +150,9 @@
             android:layout_height="wrap_content"
             android:layout_weight="25"
             android:background="?attr/selectableItemBackgroundBorderless"
-            app:active_background_color="?attr/icon_color_active"
+            app:active_background_color="?icon_color_active"
             app:button_icon="@drawable/ic_outline_share"
-            app:noactive_icon_color="?attr/colorOnSurface" />
+            app:noactive_icon_color="?colorOnSurface" />
 
     </LinearLayout>
 

@@ -18,7 +18,6 @@ import dev.ragnarok.fenrir.module.animation.thorvg.ThorVGLottieDrawable.LottieAn
 import dev.ragnarok.fenrir.module.animation.thorvg.ThorVGLottieDrawable.RepeatMode
 import dev.ragnarok.filegallery.Constants
 import dev.ragnarok.filegallery.R
-import dev.ragnarok.filegallery.util.Utils
 import dev.ragnarok.filegallery.util.coroutines.CancelableJob
 import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.fromIOToMain
 import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.isActive
@@ -129,7 +128,6 @@ class ThorVGLottieFloatingActionButtonView @JvmOverloads constructor(
 
     fun fromNet(
         url: String?,
-        client: OkHttpClient.Builder,
         autoPlay: Boolean,
         colorReplacement: IntArray? = null,
         useMoveColor: Boolean = false
@@ -144,11 +142,16 @@ class ThorVGLottieFloatingActionButtonView @JvmOverloads constructor(
             return
         }
 
+        var client: OkHttpClient?
         if (cache.isCachedFile(url)) {
             setAnimationByUrlCache(url, autoPlay, colorReplacement, useMoveColor)
             return
         } else {
             clearAnimationDrawable(callSuper = true, clearState = true, cancelTask = true)
+            client = AnimationNetworkCache.getOkHttpClient()
+            if (client == null) {
+                return
+            }
             colorReplacementTmp = colorReplacement
             useMoveColorTmp = useMoveColor
             loadedFrom = LoadedFrom.NET
@@ -161,7 +164,7 @@ class ThorVGLottieFloatingActionButtonView @JvmOverloads constructor(
                 val request: Request = Request.Builder()
                     .url(url)
                     .build()
-                call = client.build().newCall(request)
+                call = client.newCall(request)
                 val response: Response = call.execute()
                 if (!response.isSuccessful) {
                     emit(false)
@@ -331,7 +334,6 @@ class ThorVGLottieFloatingActionButtonView @JvmOverloads constructor(
                 filePathTmp = null
                 fromNet(
                     it,
-                    Utils.createOkHttp(Constants.PICASSO_TIMEOUT),
                     isPlaying == true,
                     colorReplacementTmp,
                     useMoveColorTmp

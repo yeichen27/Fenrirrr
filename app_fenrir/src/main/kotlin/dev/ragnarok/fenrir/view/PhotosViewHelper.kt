@@ -128,7 +128,6 @@ class PhotosViewHelper internal constructor(
                         holder.vgVideo.fromNet(
                             (video.ownerId.toString() + "_" + image.attachment.id.toString()),
                             trailerUrl,
-                            Utils.createOkHttp(Constants.GIF_TIMEOUT, true),
                             true
                         )
                     }
@@ -322,7 +321,6 @@ class PhotosViewHelper internal constructor(
                     holder.vgPhoto.fromNet(
                         ((image.attachment as Document).ownerId.toString() + "_" + image.attachment.id.toString()),
                         isGifSrc,
-                        Utils.createOkHttp(Constants.GIF_TIMEOUT, true),
                         true
                     )
                 }

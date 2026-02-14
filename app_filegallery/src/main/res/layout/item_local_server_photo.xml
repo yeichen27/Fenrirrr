@@ -42,7 +42,7 @@
             android:layout_height="20dp"
             android:layout_alignStart="@id/imageView"
             android:layout_alignTop="@id/imageView"
-            android:background="?attr/colorSecondary"
+            android:background="?colorSecondary"
             android:paddingStart="4dp"
             android:paddingEnd="8dp">
 

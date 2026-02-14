@@ -93,7 +93,6 @@ class LibopusAudioRenderer : DecoderAudioRenderer<OpusDecoder> {
         }
     }
 
-    /** {@inheritDoc} */
     @Throws(OpusDecoderException::class)
     override fun createDecoder(format: Format, cryptoConfig: CryptoConfig?): OpusDecoder {
         TraceUtil.beginSection("createOpusDecoder")
@@ -115,7 +114,6 @@ class LibopusAudioRenderer : DecoderAudioRenderer<OpusDecoder> {
         return decoder
     }
 
-    /** {@inheritDoc} */
     override fun getOutputFormat(decoder: OpusDecoder): Format {
         val pcmEncoding = if (decoder.outputFloat) C.ENCODING_PCM_FLOAT else C.ENCODING_PCM_16BIT
         return Util.getPcmFormat(

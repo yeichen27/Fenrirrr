@@ -14,6 +14,7 @@ import dev.ragnarok.fenrir.api.model.response.LoginResponse
 import dev.ragnarok.fenrir.fragment.base.RxSupportPresenter
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.service.ApiErrorCodes
+import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.trimmedNonNullNoEmpty
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.delayedFlow
@@ -24,6 +25,7 @@ class DirectAuthPresenter(savedInstanceState: Bundle?) :
     private val networker: INetworker = networkInterfaces
     private var requiredCaptchaLegacy: CaptchaLegacy? = null
     private var requiredVKIdCaptcha: VKIdCaptcha? = null
+    private var requireSmsHelp = false
     private var requireSmsCode = false
     private var requireAppCode = false
     private var savePassword = false
@@ -31,6 +33,7 @@ class DirectAuthPresenter(savedInstanceState: Bundle?) :
     private var username: String? = null
     private var pass: String? = null
     private var smsCode: String? = null
+    private var smsSid: String? = null
     private var captcha: String? = null
     private var appCode: String? = null
     private var RedirectUrl: String? = null
@@ -73,17 +76,21 @@ class DirectAuthPresenter(savedInstanceState: Bundle?) :
                     captchaLegacyCode,
                     requiredVKIdCaptcha?.success_token,
                     forceSms,
-                    Constants.DEFAULT_ACCOUNT_TYPE == AccountType.VK_ANDROID
+                    Constants.DEFAULT_ACCOUNT_TYPE == AccountType.VK_ANDROID,
+                    smsSid,
+                    if (Constants.DEFAULT_ACCOUNT_TYPE == AccountType.VK_ANDROID) Settings.get()
+                        .accounts().anonymToken.token else null
                 )
-                .fromIOToMain({ response -> onLoginResponse(response) }) { t ->
-                    onLoginError(
-                        getCauseIfRuntime(t)
-                    )
+                .fromIOToMain({
+                    onLoginResponse(it)
+                }) {
+                    onLoginError(getCauseIfRuntime(it))
                 })
     }
 
     private fun onLoginError(t: Throwable) {
         setLoginNow(false)
+        requireSmsHelp = smsCode.nonNullNoEmpty()
         requiredCaptchaLegacy = null
         requiredVKIdCaptcha = null
         requireAppCode = false
@@ -104,6 +111,7 @@ class DirectAuthPresenter(savedInstanceState: Bundle?) :
                 val type = t.validationType
                 val sid = t.sid
                 val phone = t.phone
+                smsSid = sid
                 when {
                     "2fa_sms".equals(type, ignoreCase = true) || "2fa_libverify".equals(
                         type,
@@ -149,6 +157,7 @@ class DirectAuthPresenter(savedInstanceState: Bundle?) :
         }
         resolveCaptchaViews()
         resolveSmsRootVisibility()
+        resolveSmsHelpVisibility()
         resolveAppCodeRootVisibility()
         resolveButtonLoginState()
 
@@ -168,6 +177,10 @@ class DirectAuthPresenter(savedInstanceState: Bundle?) :
                 view?.moveFocusToSmsCode()
             }
 
+            requireSmsHelp -> {
+                view?.moveFocusToSmsHelp()
+            }
+
             requireAppCode -> {
                 view?.moveFocusToAppCode()
             }
@@ -176,6 +189,10 @@ class DirectAuthPresenter(savedInstanceState: Bundle?) :
 
     private fun resolveSmsRootVisibility() {
         view?.setSmsRootVisible(requireSmsCode)
+    }
+
+    private fun resolveSmsHelpVisibility() {
+        view?.setSmsHelpVisible(requireSmsHelp)
     }
 
     private fun resolveAppCodeRootVisibility() {
@@ -240,6 +257,7 @@ class DirectAuthPresenter(savedInstanceState: Bundle?) :
         super.onGuiCreated(viewHost)
         resolveLoadingViews()
         resolveSmsRootVisibility()
+        resolveSmsHelpVisibility()
         resolveAppCodeRootVisibility()
         resolveCaptchaViews()
     }

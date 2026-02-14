@@ -47,7 +47,7 @@
                     android:contentDescription="@null"
                     android:padding="8dp"
                     android:src="@drawable/close"
-                    app:tint="?attr/icon_color_active" />
+                    app:tint="?icon_color_active" />
 
             </RelativeLayout>
 

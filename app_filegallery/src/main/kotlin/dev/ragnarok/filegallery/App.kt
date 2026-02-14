@@ -15,6 +15,8 @@ import dev.ragnarok.filegallery.util.Camera2SurfaceUtil
 import dev.ragnarok.filegallery.util.Utils
 import dev.ragnarok.filegallery.util.existfile.FileExistJVM
 import dev.ragnarok.filegallery.util.existfile.FileExistNative
+import dev.ragnarok.filegallery.view.natives.animation.AnimationNetworkCache
+import dev.ragnarok.filegallery.view.natives.animation.ThorVGLottieNetworkCache
 
 class App : Application() {
     override fun onCreate() {
@@ -47,6 +49,12 @@ class App : Application() {
             }
         } else {
             MusicPlaybackController.tracksExist = FileExistJVM()
+        }
+        AnimationNetworkCache.setOnOkhttpCreate {
+            Utils.createOkHttp(Constants.PICASSO_TIMEOUT)
+        }
+        ThorVGLottieNetworkCache.setOnOkhttpCreate {
+            Utils.createOkHttp(Constants.PICASSO_TIMEOUT)
         }
         Utils.isCompressIncomingTraffic = Settings.get().main().isCompress_incoming_traffic
         Utils.currentParser = Settings.get().main().currentParser

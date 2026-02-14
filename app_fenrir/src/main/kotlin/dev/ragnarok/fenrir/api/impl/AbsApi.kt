@@ -96,6 +96,14 @@ internal open class AbsApi(val accountId: Long, private val restProvider: IServi
                     tmp.key = "post_url"
                     tmp.value = method
                     o.add(tmp)
+                    var authHeader = response.request.header("Authorization")
+                    if (authHeader.nonNullNoEmpty()) {
+                        authHeader = authHeader.removePrefix("Bearer ")
+                        val accessToken = Params()
+                        accessToken.key = "access_token"
+                        accessToken.value = authHeader
+                        o.add(accessToken)
+                    }
                     it.requestParams = o
                 }
                 k

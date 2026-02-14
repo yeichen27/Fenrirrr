@@ -19,12 +19,15 @@ import dev.ragnarok.fenrir.UserAgentTool
 import dev.ragnarok.fenrir.api.HttpLoggerAndParser.toRequestBuilder
 import dev.ragnarok.fenrir.api.HttpLoggerAndParser.vkHeader
 import dev.ragnarok.fenrir.api.ProxyUtil
+import dev.ragnarok.fenrir.module.FFmpegOkhttp
 import dev.ragnarok.fenrir.settings.IProxySettings
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.CoverSafeResize
 import dev.ragnarok.fenrir.util.Logger
 import dev.ragnarok.fenrir.util.UncompressDefaultInterceptor
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.sharedFlowToMain
+import dev.ragnarok.fenrir.view.natives.animation.AnimationNetworkCache
+import dev.ragnarok.fenrir.view.natives.animation.ThorVGLottieNetworkCache
 import okhttp3.Cache
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -46,6 +49,9 @@ class PicassoInstance @SuppressLint("CheckResult") private constructor(
                 singleton = null
                 cache_data?.flush()
             }
+            FFmpegOkhttp.releaseOkHttpClient()
+            AnimationNetworkCache.releaseOkHttpClient()
+            ThorVGLottieNetworkCache.releaseOkHttpClient()
             Logger.d(TAG, "Picasso singleton shutdown")
         }
     }

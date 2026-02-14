@@ -36,7 +36,7 @@
             android:padding="16dp"
             android:text="@string/message_attachment_empty_text"
             android:textAppearance="@style/TextAppearance.Material3.BodySmall"
-            app:drawableTint="?attr/colorOnSurface"
+            app:drawableTint="?colorOnSurface"
             app:drawableTopCompat="@drawable/ic_sad_vector" />
 
 
@@ -58,7 +58,7 @@
             android:contentDescription="@null"
             android:padding="12dp"
             android:src="@drawable/photo_sizes"
-            app:tint="?attr/colorSecondary" />
+            app:tint="?colorSecondary" />
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/buttonCamera"
@@ -69,7 +69,7 @@
             android:contentDescription="@null"
             android:padding="12dp"
             android:src="@drawable/ic_outline_camera"
-            app:tint="?attr/colorOnSurface" />
+            app:tint="?colorOnSurface" />
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/buttonVideo"
@@ -80,7 +80,7 @@
             android:contentDescription="@null"
             android:padding="12dp"
             android:src="@drawable/ic_outline_video_library"
-            app:tint="?attr/colorOnSurface" />
+            app:tint="?colorOnSurface" />
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/buttonAudio"
@@ -91,7 +91,7 @@
             android:contentDescription="@null"
             android:padding="12dp"
             android:src="@drawable/ic_outline_library_music"
-            app:tint="?attr/colorOnSurface" />
+            app:tint="?colorOnSurface" />
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/buttonDoc"
@@ -102,7 +102,7 @@
             android:contentDescription="@null"
             android:padding="12dp"
             android:src="@drawable/ic_outline_library_books"
-            app:tint="?attr/colorOnSurface" />
+            app:tint="?colorOnSurface" />
 
         <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/buttonHide"

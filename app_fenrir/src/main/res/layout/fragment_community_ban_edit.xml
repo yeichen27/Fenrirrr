@@ -9,7 +9,7 @@
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/colorPrimary">
+        android:background="?colorPrimary">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
@@ -129,7 +129,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 app:spinner_hint_color="?android:textColorSecondary"
-                app:spinner_icon_color="?attr/colorAccent"
+                app:spinner_icon_color="?colorPrimaryVariant"
                 app:spinner_text_color="?android:textColorPrimary" />
 
             <com.google.android.material.textview.MaterialTextView
@@ -145,7 +145,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 app:spinner_hint_color="?android:textColorSecondary"
-                app:spinner_icon_color="?attr/colorAccent"
+                app:spinner_icon_color="?colorPrimaryVariant"
                 app:spinner_text_color="?android:textColorPrimary" />
 
             <com.google.android.material.textview.MaterialTextView

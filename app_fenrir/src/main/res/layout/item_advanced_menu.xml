@@ -57,7 +57,7 @@
             android:layout_height="24dp"
             android:layout_marginEnd="16dp"
             android:src="@drawable/video"
-            app:filter_color="?attr/icon_color_active" />
+            app:filter_color="?icon_color_active" />
 
         <LinearLayout
             android:layout_width="wrap_content"

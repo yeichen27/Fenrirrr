@@ -143,7 +143,7 @@
                 android:contentDescription="@null"
                 android:padding="8dp"
                 android:src="@drawable/close"
-                app:tint="?attr/colorOnSurface" />
+                app:tint="?colorOnSurface" />
 
         </RelativeLayout>
 
@@ -227,7 +227,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:background="?attr/colorSurface"
+        android:background="?colorSurface"
         android:orientation="vertical">
 
         <RelativeLayout
@@ -249,7 +249,7 @@
                 android:contentDescription="@null"
                 android:padding="8dp"
                 android:src="@drawable/pencil"
-                app:tint="?attr/colorOnSurface" />
+                app:tint="?colorOnSurface" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/editMessageTitle"
@@ -284,7 +284,7 @@
                 android:contentDescription="@null"
                 android:padding="8dp"
                 android:src="@drawable/close"
-                app:tint="?attr/colorOnSurface" />
+                app:tint="?colorOnSurface" />
 
         </RelativeLayout>
 

@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.view.isNotEmpty
-import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.model.ReactionWithAsset
 import dev.ragnarok.fenrir.settings.CurrentTheme
@@ -95,7 +94,6 @@ class ReactionContainer : RowLayout {
             } else {
                 reactionHolder.ivReaction.fromNet(
                     reaction.small_animation,
-                    Utils.createOkHttp(Constants.GIF_TIMEOUT, true),
                     !isEdit
                 )
             }

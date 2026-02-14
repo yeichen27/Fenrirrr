@@ -19,7 +19,7 @@
         android:background="?attr/selectableItemBackgroundBorderless"
         android:stateListAnimator="@animator/clicked"
         app:active="true"
-        app:active_background_color="?attr/icon_color_active"
+        app:active_background_color="?icon_color_active"
         app:always_counter="false"
         app:button_icon="@drawable/download"
         app:noactive_icon_color="#ffffff" />
