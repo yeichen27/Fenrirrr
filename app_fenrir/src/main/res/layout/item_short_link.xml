@@ -12,8 +12,8 @@
     app:radius_bottom_right="10dp"
     app:radius_top_left="10dp"
     app:radius_top_right="10dp"
-    app:view_color="?dividerColor"
     app:view_is_stroke="true"
+    app:view_stroke_color="?dividerColor"
     app:view_stroke_width="1dp">
 
     <com.google.android.material.textview.MaterialTextView

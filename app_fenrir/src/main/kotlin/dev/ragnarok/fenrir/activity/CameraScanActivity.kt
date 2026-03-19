@@ -27,7 +27,10 @@ import android.view.Display
 import android.view.MotionEvent
 import android.view.ScaleGestureDetector
 import android.view.View
+import android.view.ViewGroup
 import android.view.WindowManager
+import androidx.activity.SystemBarStyle
+import androidx.activity.enableEdgeToEdge
 import androidx.annotation.LayoutRes
 import androidx.camera.camera2.interop.Camera2CameraControl
 import androidx.camera.camera2.interop.CaptureRequestOptions
@@ -46,13 +49,17 @@ import androidx.camera.core.resolutionselector.ResolutionStrategy
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.core.view.insets.ProtectionLayout
+import androidx.core.view.iterator
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.slidr.Slidr
 import dev.ragnarok.fenrir.activity.slidr.model.SlidrConfig
+import dev.ragnarok.fenrir.applyAlpha
 import dev.ragnarok.fenrir.listener.AppStyleable
 import dev.ragnarok.fenrir.module.ZXingWrapper
 import dev.ragnarok.fenrir.nonNullNoEmpty
@@ -65,7 +72,6 @@ import dev.ragnarok.fenrir.toColor
 import dev.ragnarok.fenrir.util.AppPerms
 import dev.ragnarok.fenrir.util.AppPerms.requestPermissionsResultAbs
 import dev.ragnarok.fenrir.util.Utils
-import dev.ragnarok.fenrir.util.Utils.hasVanillaIceCreamTarget
 import dev.ragnarok.fenrir.util.coroutines.CancelableJob
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.delayTaskFlow
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.toMain
@@ -130,6 +136,27 @@ class CameraScanActivity : NoMainActivity(), AppStyleable {
             this,
             SlidrConfig.Builder().scrimColor(CurrentTheme.getColorBackground(this)).build()
         )
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.item_root)) { v, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            val insets2 =
+                windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+            if (Utils.isLandscape(this)) {
+                v.setPadding(
+                    insets.left, 0,
+                    insets.right,
+                    insets.bottom
+                )
+            } else {
+                v.setPadding(
+                    insets2.left, 0,
+                    insets2.right,
+                    insets2.bottom
+                )
+            }
+            WindowInsetsCompat.CONSUMED
+        }
+
         viewFinder = findViewById(R.id.preview)
         finder = findViewById(R.id.view_finder)
         flashButton = findViewById(R.id.flash_button)
@@ -391,23 +418,27 @@ class CameraScanActivity : NoMainActivity(), AppStyleable {
     override fun openMenu(open: Boolean) {}
 
     override fun setStatusbarColored(colored: Boolean, invertIcons: Boolean) {
-        val w = window
-        @Suppress("deprecation")
-        if (!hasVanillaIceCreamTarget()) {
-            w.statusBarColor =
-                if (colored) getStatusBarColor(this) else getStatusBarNonColored(
-                    this
-                )
-            w.navigationBarColor =
-                if (colored) getNavigationBarColor(this) else Color.BLACK
-        } else {
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
-                w.isNavigationBarContrastEnforced = colored
+        val statusBarColor = if (colored) getStatusBarColor(this) else getStatusBarNonColored(
+            this
+        )
+        val navigationBarColor = if (colored) getNavigationBarColor(this) else Color.BLACK
+
+        val statusBarStyle = if (invertIcons) SystemBarStyle.light(
+            statusBarColor.applyAlpha(180),
+            statusBarColor.applyAlpha(180)
+        ) else SystemBarStyle.dark(statusBarColor.applyAlpha(180))
+        val navigationBarStyle = if (invertIcons) SystemBarStyle.light(
+            navigationBarColor.applyAlpha(180),
+            navigationBarColor.applyAlpha(180)
+        ) else SystemBarStyle.dark(navigationBarColor.applyAlpha(180))
+
+        for (i in (window.decorView as ViewGroup)) {
+            if (i is ProtectionLayout) {
+                (window.decorView as ViewGroup).removeView(i)
             }
         }
-        val ins = WindowInsetsControllerCompat(w, w.decorView)
-        ins.isAppearanceLightStatusBars = invertIcons
-        ins.isAppearanceLightNavigationBars = invertIcons
+
+        enableEdgeToEdge(statusBarStyle, navigationBarStyle)
     }
 
     open class FinderView(context: Context, attrs: AttributeSet?) :

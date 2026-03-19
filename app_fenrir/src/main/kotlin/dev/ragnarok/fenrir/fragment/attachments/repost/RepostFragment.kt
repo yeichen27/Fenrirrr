@@ -1,20 +1,46 @@
 package dev.ragnarok.fenrir.fragment.attachments.repost
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
 import androidx.core.view.MenuProvider
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.ActivityUtils.supportToolbarFor
 import dev.ragnarok.fenrir.fragment.attachments.absattachmentsedit.AbsAttachmentsEditFragment
 import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.model.Post
+import kotlin.math.max
 
 class RepostFragment : AbsAttachmentsEditFragment<RepostPresenter, IRepostView>(), IRepostView,
     MenuProvider {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        val root = super.onCreateView(inflater, container, savedInstanceState)
+        ViewCompat.setOnApplyWindowInsetsListener(root) { _, windowInsets ->
+            val insets =
+                windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+            val imeFixedBottom =
+                if (windowInsets.isVisible(WindowInsetsCompat.Type.ime())) max(
+                    windowInsets.getInsets(
+                        WindowInsetsCompat.Type.ime()
+                    ).bottom, insets.bottom
+                ) else insets.bottom
+            root.findViewById<View>(R.id.actionbar)?.setPadding(0, insets.top, 0, 0)
+            root.setPadding(0, 0, 0, imeFixedBottom)
+            WindowInsetsCompat.CONSUMED
+        }
+        return root
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    id("org.jetbrains.kotlin.jvm") version "2.3.0"
+    id("org.jetbrains.kotlin.jvm") version "2.3.20-RC2"
     id("org.jetbrains.intellij.platform") version "2.11.0"
 }
 
@@ -18,7 +18,7 @@ repositories {
 
 dependencies {
     intellijPlatform {
-        intellijIdea("2025.3.1") {
+        intellijIdea("2025.3.2") {
             useInstaller = false
             useCache = false
         }

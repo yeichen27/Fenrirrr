@@ -10,6 +10,7 @@
         android:layout_above="@id/current_path_root">
 
         <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/actionbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="?android:colorBackground"
@@ -124,11 +125,11 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:orientation="vertical"
+        app:fill_color="?colorPrimary"
         app:radius_bottom_left="2dp"
         app:radius_bottom_right="2dp"
         app:radius_top_left="12dp"
-        app:radius_top_right="12dp"
-        app:view_color="?colorPrimary">
+        app:radius_top_right="12dp">
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/current_path"

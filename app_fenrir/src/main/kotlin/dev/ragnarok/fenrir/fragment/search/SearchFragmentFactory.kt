@@ -1,6 +1,8 @@
 package dev.ragnarok.fenrir.fragment.search
 
+import android.os.Bundle
 import androidx.fragment.app.Fragment
+import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.fragment.search.artistsearch.ArtistSearchFragment.Companion.newInstance
 import dev.ragnarok.fenrir.fragment.search.audioplaylistsearch.AudioPlaylistSearchFragment.Companion.newInstance
 import dev.ragnarok.fenrir.fragment.search.audiossearch.AudiosSearchFragment.Companion.newInstance
@@ -27,78 +29,118 @@ import dev.ragnarok.fenrir.fragment.search.peoplesearch.PeopleSearchFragment.Com
 import dev.ragnarok.fenrir.fragment.search.photosearch.PhotoSearchFragment.Companion.newInstance
 import dev.ragnarok.fenrir.fragment.search.videosearch.VideoSearchFragment
 import dev.ragnarok.fenrir.fragment.search.wallsearch.WallSearchFragment
+import dev.ragnarok.fenrir.getParcelableCompat
 
 object SearchFragmentFactory {
+    fun buildArgs(
+        accountId: Long,
+        @SearchContentType contentType: Int,
+        criteria: BaseSearchCriteria?,
+        hideToolbar: Boolean
+    ): Bundle {
+        val args = Bundle()
+        args.putInt(Extra.TYPE, contentType)
+        args.putLong(Extra.ACCOUNT_ID, accountId)
+        args.putParcelable(Extra.CRITERIA, criteria)
+        args.putBoolean(Extra.IN_TABS_CONTAINER, hideToolbar)
+        return args
+    }
+
+    fun create(args: Bundle?): Fragment {
+        if (args == null) {
+            throw UnsupportedOperationException()
+        }
+        return create(
+            args.getLong(Extra.ACCOUNT_ID),
+            args.getInt(Extra.TYPE),
+            args.getParcelableCompat(Extra.CRITERIA),
+            args.getBoolean(Extra.IN_TABS_CONTAINER)
+        )
+    }
 
     fun create(
-        @SearchContentType type: Int,
         accountId: Long,
-        criteria: BaseSearchCriteria?
+        @SearchContentType type: Int,
+        criteria: BaseSearchCriteria? = null,
+        hideToolbar: Boolean = true
     ): Fragment {
         return when (type) {
             SearchContentType.PEOPLE -> newInstance(
                 accountId,
-                criteria as? PeopleSearchCriteria
+                criteria as? PeopleSearchCriteria,
+                hideToolbar
             )
 
             SearchContentType.COMMUNITIES -> CommunitiesSearchFragment.newInstance(
                 accountId,
-                criteria as? GroupSearchCriteria
+                criteria as? GroupSearchCriteria,
+                hideToolbar
             )
 
             SearchContentType.VIDEOS -> VideoSearchFragment.newInstance(
                 accountId,
-                criteria as? VideoSearchCriteria
+                criteria as? VideoSearchCriteria,
+                hideToolbar
             )
 
             SearchContentType.AUDIOS -> newInstance(
                 accountId,
-                criteria as? AudioSearchCriteria
+                criteria as? AudioSearchCriteria,
+                hideToolbar
             )
 
             SearchContentType.ARTISTS -> newInstance(
                 accountId,
-                criteria as? ArtistSearchCriteria
+                criteria as? ArtistSearchCriteria,
+                hideToolbar
             )
 
             SearchContentType.AUDIOS_SELECT -> newInstanceSelect(
                 accountId,
-                criteria as? AudioSearchCriteria
+                criteria as? AudioSearchCriteria,
+                hideToolbar
             )
 
             SearchContentType.AUDIO_PLAYLISTS -> newInstance(
                 accountId,
-                criteria as? AudioPlaylistSearchCriteria
+                criteria as? AudioPlaylistSearchCriteria,
+                hideToolbar
             )
 
             SearchContentType.DOCUMENTS -> newInstance(
                 accountId,
-                criteria as? DocumentSearchCriteria
+                criteria as? DocumentSearchCriteria,
+                hideToolbar
             )
 
             SearchContentType.NEWS -> newInstance(
                 accountId,
-                criteria as? NewsFeedCriteria
+                criteria as? NewsFeedCriteria,
+                hideToolbar
             )
 
             SearchContentType.MESSAGES -> newInstance(
                 accountId,
-                criteria as? MessageSearchCriteria
+                criteria as? MessageSearchCriteria,
+                hideToolbar
             )
 
             SearchContentType.WALL -> WallSearchFragment.newInstance(
                 accountId,
-                criteria as? WallSearchCriteria
+                criteria as? WallSearchCriteria,
+                hideToolbar
             )
 
             SearchContentType.DIALOGS -> newInstance(
                 accountId,
-                criteria as? DialogsSearchCriteria
+                criteria as? DialogsSearchCriteria,
+                hideToolbar
             )
 
             SearchContentType.PHOTOS -> newInstance(
                 accountId,
-                criteria as? PhotoSearchCriteria
+                criteria as? PhotoSearchCriteria,
+                hideToolbar
             )
 
             else -> throw UnsupportedOperationException()

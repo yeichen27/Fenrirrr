@@ -189,6 +189,16 @@ void LottieBuilder::updateTransform(LottieGroup* parent, LottieObject** child, f
         auto denominator = sqrtf(m.e11 * m.e11 + m.e12 * m.e12);
         if (denominator > 1.0f) ctx->propagator->strokeWidth(ctx->propagator->strokeWidth() / denominator);
     }
+
+    //FIXME: compensate gradient fills when the propagator enters a group scope.
+    if (ctx->fragment) {
+        Matrix im;
+        if (inverse(&m, &im)) {
+            auto& rs = to<ShapeImpl>(ctx->propagator)->rs;
+            if (rs.fill) rs.fill->transform(rs.fill->transform() * im);
+            if (rs.stroke && rs.stroke->fill) rs.stroke->fill->transform(rs.stroke->fill->transform() * im);
+        }
+    }
 }
 
 
@@ -725,10 +735,12 @@ void LottieBuilder::updateRoundedCorner(TVG_UNUSED LottieGroup* parent, LottieOb
     auto r = roundedCorner->radius(frameNo, tween, exps);
     if (r < LottieRoundnessModifier::ROUNDNESS_EPSILON) return;
 
-    if (!ctx->roundness) ctx->roundness = new LottieRoundnessModifier(&buffer, r);
-    else if (ctx->roundness->r < r) ctx->roundness->r = r;
-
-    ctx->update(ctx->roundness);
+    if (ctx->roundness) {
+        if (ctx->roundness->r < r) ctx->roundness->r = r;
+    } else {
+        ctx->roundness = new LottieRoundnessModifier(&buffer, r);
+        ctx->update(ctx->roundness);
+    }
 }
 
 
@@ -903,6 +915,7 @@ void LottieBuilder::updateImage(LottieGroup* layer)
 
     auto image = static_cast<LottieImage*>(layer->children.first());
     auto picture = image->bitmap.picture;
+    if (!picture) return;
 
     //resolve an image asset if need
     if (resolver && !image->resolved) {
@@ -959,6 +972,7 @@ void LottieBuilder::updateURLFont(LottieLayer* layer, float frameNo, LottieText*
     auto color = doc.color;
     paint->fill(color.r, color.g, color.b);
     paint->size(doc.size * 75.0f); //1 pt = 1/72; 1 in = 96 px; -> 72/96 = 0.75
+    if (text->font && text->font->style && strstr(text->font->style, "Italic")) paint->italic();
     paint->text(buf);
     paint->layout(doc.bbox.size.x, doc.bbox.size.y);
     paint->translate(doc.bbox.pos.x, doc.bbox.pos.y);

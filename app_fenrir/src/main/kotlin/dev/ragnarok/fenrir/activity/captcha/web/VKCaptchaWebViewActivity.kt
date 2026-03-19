@@ -7,9 +7,16 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.view.View
+import android.view.ViewGroup
 import android.webkit.WebView
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.SystemBarStyle
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.insets.ProtectionLayout
+import androidx.core.view.iterator
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.captcha.VK_CAPTCHA_CHALLENGE_DOMAIN_URL_KEY
 import dev.ragnarok.fenrir.activity.captcha.VK_CAPTCHA_URL_KEY
@@ -17,12 +24,14 @@ import dev.ragnarok.fenrir.activity.captcha.di.DI.Companion.di
 import dev.ragnarok.fenrir.activity.captcha.sensors.HandlerThreadProvider
 import dev.ragnarok.fenrir.activity.captcha.sensors.model.SensorsData
 import dev.ragnarok.fenrir.activity.captcha.sensors.model.toJson
+import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.coroutines.CancelableJob
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.delayTaskFlow
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.toMain
 import dev.ragnarok.fenrir.view.natives.animation.ThorVGLottieView
 import org.json.JSONObject
+import kotlin.math.max
 
 internal val webViewProvider by lazy {
     HandlerThreadProvider("vk-webview-thread")
@@ -65,6 +74,44 @@ internal class VKCaptchaWebViewActivity : AppCompatActivity() {
         mLoadingProgressBar = findViewById(R.id.loading_progress_bar)
         val url = intent.getStringExtra(VK_CAPTCHA_URL_KEY) ?: return
         setupWebView(url)
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.item_root)) { v, windowInsets ->
+            val insets =
+                windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+            val imeFixedBottom =
+                if (windowInsets.isVisible(WindowInsetsCompat.Type.ime())) max(
+                    windowInsets.getInsets(
+                        WindowInsetsCompat.Type.ime()
+                    ).bottom, insets.bottom
+                ) else insets.bottom
+            v.setPadding(
+                insets.left, insets.top,
+                insets.right,
+                imeFixedBottom
+            )
+            WindowInsetsCompat.CONSUMED
+        }
+
+        val statusBarColor = Color.TRANSPARENT
+        val navigationBarColor = Color.TRANSPARENT
+        val invertIcons = !Settings.get().ui().isDarkModeEnabled(
+            this
+        )
+        val statusBarStyle = if (invertIcons) SystemBarStyle.light(
+            statusBarColor,
+            statusBarColor
+        ) else SystemBarStyle.dark(statusBarColor)
+        val navigationBarStyle = if (invertIcons) SystemBarStyle.light(
+            navigationBarColor,
+            navigationBarColor
+        ) else SystemBarStyle.dark(navigationBarColor)
+        for (i in (window.decorView as ViewGroup)) {
+            if (i is ProtectionLayout) {
+                (window.decorView as ViewGroup).removeView(i)
+            }
+        }
+
+        enableEdgeToEdge(statusBarStyle, navigationBarStyle)
     }
 
     fun displayLoading(loading: Boolean) {

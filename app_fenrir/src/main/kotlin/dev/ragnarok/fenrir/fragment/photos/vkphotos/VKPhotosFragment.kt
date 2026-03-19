@@ -14,7 +14,10 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.MenuProvider
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -22,6 +25,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.ActivityFeatures
+import dev.ragnarok.fenrir.activity.MainActivity
 import dev.ragnarok.fenrir.activity.PhotosActivity
 import dev.ragnarok.fenrir.dialog.ImageSizeAlertDialog
 import dev.ragnarok.fenrir.dialog.ImageSizeAlertDialog.Companion.showUploadPhotoSizeIfNeed
@@ -48,6 +52,7 @@ import dev.ragnarok.fenrir.util.AppPerms.requestPermissionsAbs
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.ViewUtils.setupSwipeRefreshLayoutWithCurrentTheme
 import dev.ragnarok.fenrir.view.navigation.AbsNavigationView
+import kotlin.math.max
 
 class VKPhotosFragment : BaseMvpFragment<VKPhotosPresenter, IVKPhotosView>(),
     BigVKPhotosAdapter.PhotosActionListener, UploadActionListener, IVKPhotosView, MenuProvider {
@@ -110,18 +115,48 @@ class VKPhotosFragment : BaseMvpFragment<VKPhotosPresenter, IVKPhotosView>(),
     ): View? {
         val root = inflater.inflate(R.layout.fragment_photo_gallery, container, false)
         (requireActivity() as AppCompatActivity).setSupportActionBar(root.findViewById(R.id.toolbar))
+        mFab = root.findViewById(R.id.fr_photo_gallery_attach)
+        mFab?.setOnClickListener { onFabClicked() }
+        mRecyclerView = root.findViewById(R.id.list)
         val columnCount = resources.getInteger(R.integer.local_gallery_column_count)
         val manager =
             if (Settings.get().main().single_line_photos) Utils.getSingleElementsLayoutManager(
                 requireActivity()
             ) else GridLayoutManager(requireActivity(), columnCount)
+        mRecyclerView?.layoutManager = manager
+        if (requireActivity() is MainActivity) {
+            ViewCompat.setOnApplyWindowInsetsListener(root) { _, windowInsets ->
+                val insets =
+                    windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+                root.findViewById<View>(R.id.actionbar)?.setPadding(0, insets.top, 0, 0)
+                WindowInsetsCompat.CONSUMED
+            }
+        } else {
+            ViewCompat.setOnApplyWindowInsetsListener(root) { _, windowInsets ->
+                val insets =
+                    windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+                val imeFixedBottom =
+                    if (windowInsets.isVisible(WindowInsetsCompat.Type.ime())) max(
+                        windowInsets.getInsets(
+                            WindowInsetsCompat.Type.ime()
+                        ).bottom, insets.bottom
+                    ) else insets.bottom
+                root.findViewById<View>(R.id.actionbar)
+                    ?.setPadding(insets.left, insets.top, insets.right, 0)
+                mRecyclerView?.setPadding(insets.left, 0, insets.right, imeFixedBottom)
+                (mFab?.layoutParams as? CoordinatorLayout.LayoutParams)?.bottomMargin =
+                    imeFixedBottom + Utils.dp(16f)
+                (mFab?.layoutParams as? CoordinatorLayout.LayoutParams)?.rightMargin =
+                    insets.right + Utils.dp(16f)
+                WindowInsetsCompat.CONSUMED
+            }
+        }
+
         mSwipeRefreshLayout = root.findViewById(R.id.refresh)
         mSwipeRefreshLayout?.setOnRefreshListener {
             presenter?.fireRefresh()
         }
         setupSwipeRefreshLayoutWithCurrentTheme(requireActivity(), mSwipeRefreshLayout)
-        mRecyclerView = root.findViewById(R.id.list)
-        mRecyclerView?.layoutManager = manager
         PicassoPauseOnScrollListener.addListener(mRecyclerView, TAG)
         mRecyclerView?.addOnScrollListener(object : EndlessRecyclerOnScrollListener() {
             override fun onScrollToLastElement() {
@@ -129,8 +164,6 @@ class VKPhotosFragment : BaseMvpFragment<VKPhotosPresenter, IVKPhotosView>(),
             }
         })
         mEmptyText = root.findViewById(R.id.empty)
-        mFab = root.findViewById(R.id.fr_photo_gallery_attach)
-        mFab?.setOnClickListener { onFabClicked() }
         mAdapter = BigVKPhotosAdapter(requireActivity(), emptyList(), emptyList(), TAG)
         mAdapter?.setPhotosActionListener(this)
         mAdapter?.setUploadActionListener(this)

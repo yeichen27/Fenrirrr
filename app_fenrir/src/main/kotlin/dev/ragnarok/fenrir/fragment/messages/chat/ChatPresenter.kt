@@ -434,13 +434,15 @@ class ChatPresenter(
         view?.notifyDataChanged()
     }
 
-    override fun fireReactionModeClick(position: Int) {
+    override fun fireReactionModeClick() {
         if (isHiddenAccount(messagesOwnerId) || isHiddenAccount(accountId)) {
             return
         }
-        if (position >= 0 && data.size > position) {
-            data[position].setReactionEditMode(!data[position].reactionEditMode)
-            safeNotifyItemChanged(position)
+        for (i in data.indices) {
+            if (data[i].isSelected) {
+                data[i].setReactionEditMode(!data[i].reactionEditMode)
+                safeNotifyItemChanged(i)
+            }
         }
     }
 
@@ -2767,7 +2769,7 @@ class ChatPresenter(
 
             val intents = UploadIntent(accountId, destination).apply {
                 pAutoCommit = false
-                pFileUri = video.data.toString().toUri()
+                pFileUri = video.data
             }
 
             uploadManager.enqueue(listOf(intents))

@@ -8,6 +8,8 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -53,6 +55,14 @@ class ImportantMessagesFragment :
     ): View? {
         val root = inflater.inflate(R.layout.fragment_important_msgs, container, false)
         (requireActivity() as AppCompatActivity).setSupportActionBar(root.findViewById(R.id.toolbar))
+
+        ViewCompat.setOnApplyWindowInsetsListener(root) { _, windowInsets ->
+            val insets =
+                windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+            root.findViewById<View>(R.id.toolbar_root)?.setPadding(0, insets.top, 0, 0)
+            WindowInsetsCompat.CONSUMED
+        }
+
         mSwipeRefreshLayout = root.findViewById(R.id.refresh)
         mSwipeRefreshLayout?.setOnRefreshListener {
             presenter?.fireRefresh()
@@ -333,6 +343,7 @@ class ImportantMessagesFragment :
         val buttonPin: View = rootView.findViewById(R.id.buttonPin)
         val buttonSpam: View = rootView.findViewById(R.id.buttonSpam)
         val buttonStar: ImageView = rootView.findViewById(R.id.buttonStar)
+        val buttonReaction: ImageView = rootView.findViewById(R.id.buttonReaction)
         val titleView: TextView = rootView.findViewById(R.id.actionModeTitle)
         val reference: WeakReference<ImportantMessagesFragment> = WeakReference(fragment)
         fun show() {
@@ -371,6 +382,11 @@ class ImportantMessagesFragment :
                     hide()
                 }
 
+                R.id.buttonReaction -> {
+                    reference.get()?.presenter?.fireReactionModeClick()
+                    hide()
+                }
+
                 R.id.buttonSpam -> {
                     MaterialAlertDialogBuilder(requireActivity())
                         .setIcon(R.drawable.report_red)
@@ -398,6 +414,7 @@ class ImportantMessagesFragment :
             buttonDelete.setOnClickListener(this)
             buttonPin.setOnClickListener(this)
             buttonStar.setOnClickListener(this)
+            buttonReaction.setOnClickListener(this)
             buttonSpam.setOnClickListener(this)
         }
     }

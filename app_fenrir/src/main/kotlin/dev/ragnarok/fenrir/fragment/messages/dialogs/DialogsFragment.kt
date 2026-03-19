@@ -17,6 +17,8 @@ import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuProvider
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -168,6 +170,14 @@ class DialogsFragment : BaseMvpFragment<DialogsPresenter, IDialogsView>(), IDial
     ): View? {
         val root = inflater.inflate(R.layout.fragment_dialogs, container, false)
         (requireActivity() as AppCompatActivity).setSupportActionBar(root.findViewById(R.id.toolbar))
+
+        ViewCompat.setOnApplyWindowInsetsListener(root) { _, windowInsets ->
+            val insets =
+                windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+            root.findViewById<View>(R.id.actionbar)?.setPadding(0, insets.top, 0, 0)
+            WindowInsetsCompat.CONSUMED
+        }
+
         mFab = root.findViewById(R.id.fab)
         mFab?.setOnClickListener {
             if (Settings.get().security().showHiddenDialogs) {

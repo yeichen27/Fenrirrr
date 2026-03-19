@@ -20,11 +20,16 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.activity.SystemBarStyle
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.core.view.insets.ProtectionLayout
+import androidx.core.view.iterator
 import androidx.customview.widget.ViewDragHelper
 import dev.ragnarok.fenrir.module.FFmpegOkhttp
 import dev.ragnarok.filegallery.R
@@ -32,6 +37,7 @@ import dev.ragnarok.filegallery.activity.slidr.Slidr
 import dev.ragnarok.filegallery.activity.slidr.model.SlidrConfig
 import dev.ragnarok.filegallery.activity.slidr.model.SlidrListener
 import dev.ragnarok.filegallery.activity.slidr.model.SlidrPosition
+import dev.ragnarok.filegallery.applyAlpha
 import dev.ragnarok.filegallery.getParcelableCompat
 import dev.ragnarok.filegallery.getParcelableExtraCompat
 import dev.ragnarok.filegallery.listener.AppStyleable
@@ -49,7 +55,6 @@ import dev.ragnarok.filegallery.settings.theme.ThemesController.currentStyle
 import dev.ragnarok.filegallery.toColor
 import dev.ragnarok.filegallery.util.Logger
 import dev.ragnarok.filegallery.util.Utils
-import dev.ragnarok.filegallery.util.Utils.hasVanillaIceCreamTarget
 import dev.ragnarok.filegallery.util.toast.CustomToast
 import dev.ragnarok.filegallery.view.ExpandableSurfaceView
 import dev.ragnarok.filegallery.view.VideoControllerView
@@ -114,6 +119,34 @@ class VideoPlayerActivity : AppCompatActivity(),
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         mDecorView = window.decorView
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.videoSurfaceContainer)) { v, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            val insets2 =
+                windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+            if (Utils.isLandscape(this)) {
+                toolbar.setPadding(insets.left, insets.top, insets.right, 0)
+                v.setPadding(
+                    insets.left, 0,
+                    insets.right,
+                    insets.bottom
+                )
+            } else {
+                toolbar.setPadding(
+                    insets2.left,
+                    insets2.top,
+                    insets2.right,
+                    0
+                )
+                v.setPadding(
+                    insets2.left, 0,
+                    insets2.right,
+                    insets2.bottom
+                )
+            }
+            WindowInsetsCompat.CONSUMED
+        }
+
         setSupportActionBar(toolbar)
         if (toolbar != null) {
             toolbar.setNavigationIcon(R.drawable.arrow_left)
@@ -379,10 +412,7 @@ class VideoPlayerActivity : AppCompatActivity(),
         mPlayer?.play()
     }
 
-    override val isFullScreen: Boolean
-        get() = false
-
-    override fun toggleFullScreen() {
+    override fun doRotateDisplay() {
         try {
             requestedOrientation =
                 if (isLandscape) ActivityInfo.SCREEN_ORIENTATION_PORTRAIT else ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
@@ -444,23 +474,27 @@ class VideoPlayerActivity : AppCompatActivity(),
     }
 
     override fun setStatusbarColored(colored: Boolean, invertIcons: Boolean) {
-        val w = window
-        @Suppress("deprecation")
-        if (!hasVanillaIceCreamTarget()) {
-            w.statusBarColor =
-                if (colored) getStatusBarColor(this) else getStatusBarNonColored(
-                    this
-                )
-            w.navigationBarColor =
-                if (colored) getNavigationBarColor(this) else Color.BLACK
-        } else {
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
-                w.isNavigationBarContrastEnforced = colored
+        val statusBarColor = if (colored) getStatusBarColor(this) else getStatusBarNonColored(
+            this
+        )
+        val navigationBarColor = if (colored) getNavigationBarColor(this) else Color.BLACK
+
+        val statusBarStyle = if (invertIcons) SystemBarStyle.light(
+            statusBarColor.applyAlpha(180),
+            statusBarColor.applyAlpha(180)
+        ) else SystemBarStyle.dark(statusBarColor.applyAlpha(180))
+        val navigationBarStyle = if (invertIcons) SystemBarStyle.light(
+            navigationBarColor.applyAlpha(180),
+            navigationBarColor.applyAlpha(180)
+        ) else SystemBarStyle.dark(navigationBarColor.applyAlpha(180))
+
+        for (i in (window.decorView as ViewGroup)) {
+            if (i is ProtectionLayout) {
+                (window.decorView as ViewGroup).removeView(i)
             }
         }
-        val ins = WindowInsetsControllerCompat(w, w.decorView)
-        ins.isAppearanceLightStatusBars = invertIcons
-        ins.isAppearanceLightNavigationBars = invertIcons
+
+        enableEdgeToEdge(statusBarStyle, navigationBarStyle)
     }
 
     companion object {

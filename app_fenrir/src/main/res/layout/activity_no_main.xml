@@ -3,12 +3,10 @@
     android:id="@+id/no_main_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?android:colorBackground"
-    android:fitsSystemWindows="true">
+    android:background="?android:colorBackground">
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:clipToPadding="false" />
+        android:layout_height="match_parent" />
 </RelativeLayout>

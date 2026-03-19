@@ -5,6 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
@@ -31,6 +33,14 @@ class AudioSearchTabsFragment : Fragment() {
         val root = inflater.inflate(R.layout.fragment_search_tabs, container, false)
         val mViewPager: ViewPager2 = root.findViewById(R.id.viewpager)
         (requireActivity() as AppCompatActivity).setSupportActionBar(root.findViewById(R.id.toolbar))
+
+        ViewCompat.setOnApplyWindowInsetsListener(root) { _, windowInsets ->
+            val insets =
+                windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+            root.findViewById<View>(R.id.actionbar)?.setPadding(0, insets.top, 0, 0)
+            WindowInsetsCompat.CONSUMED
+        }
+
         val mAdapter = Adapter(this)
         mViewPager.adapter = mAdapter
         mViewPager.setPageTransformer(
@@ -72,18 +82,18 @@ class AudioSearchTabsFragment : Fragment() {
         override fun createFragment(position: Int): Fragment {
             val accountId = fromArgs(arguments)
             val fragment: Fragment = when (position) {
-                TAB_MUSIC -> SingleTabSearchFragment.newInstance(
+                TAB_MUSIC -> SearchFragmentFactory.create(
                     accountId,
                     SearchContentType.AUDIOS,
                     AudioSearchCriteria("", by_artist = false, in_main_page = true)
                 )
 
-                TAB_AUDIO_PLAYLISTS -> SingleTabSearchFragment.newInstance(
+                TAB_AUDIO_PLAYLISTS -> SearchFragmentFactory.create(
                     accountId,
                     SearchContentType.AUDIO_PLAYLISTS
                 )
 
-                TAB_ARTISTS -> SingleTabSearchFragment.newInstance(
+                TAB_ARTISTS -> SearchFragmentFactory.create(
                     accountId,
                     SearchContentType.ARTISTS
                 )

@@ -45,7 +45,7 @@
             android:id="@+id/item_button_copy"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
+            android:layout_margin="16dp"
             android:maxLines="2"
             android:text="@string/button_copy"
             android:textSize="18sp"

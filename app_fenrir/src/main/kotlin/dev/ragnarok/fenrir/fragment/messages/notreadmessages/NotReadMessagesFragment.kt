@@ -9,6 +9,8 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -68,6 +70,13 @@ class NotReadMessagesFragment :
         savedInstanceState: Bundle?
     ): View? {
         val root = inflater.inflate(R.layout.fragment_not_read_messages, container, false)
+        ViewCompat.setOnApplyWindowInsetsListener(root) { _, windowInsets ->
+            val insets =
+                windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+            root.findViewById<View>(R.id.toolbar_root)?.setPadding(0, insets.top, 0, 0)
+            WindowInsetsCompat.CONSUMED
+        }
+
         root.background = CurrentTheme.getChatBackground(requireActivity())
         val layoutManager: RecyclerView.LayoutManager =
             LinearLayoutManager(requireActivity(), RecyclerView.VERTICAL, true)
@@ -485,6 +494,7 @@ class NotReadMessagesFragment :
         val buttonPin: View = rootView.findViewById(R.id.buttonPin)
         val buttonSpam: View = rootView.findViewById(R.id.buttonSpam)
         val buttonStar: ImageView = rootView.findViewById(R.id.buttonStar)
+        val buttonReaction: ImageView = rootView.findViewById(R.id.buttonReaction)
         val titleView: TextView = rootView.findViewById(R.id.actionModeTitle)
         val reference: WeakReference<NotReadMessagesFragment> = WeakReference(fragment)
         fun show() {
@@ -523,6 +533,11 @@ class NotReadMessagesFragment :
                     hide()
                 }
 
+                R.id.buttonReaction -> {
+                    reference.get()?.presenter?.fireReactionModeClick()
+                    hide()
+                }
+
                 R.id.buttonSpam -> {
                     MaterialAlertDialogBuilder(requireActivity())
                         .setIcon(R.drawable.report_red)
@@ -550,6 +565,7 @@ class NotReadMessagesFragment :
             buttonDelete.setOnClickListener(this)
             buttonPin.setOnClickListener(this)
             buttonStar.setOnClickListener(this)
+            buttonReaction.setOnClickListener(this)
             buttonSpam.setOnClickListener(this)
         }
     }

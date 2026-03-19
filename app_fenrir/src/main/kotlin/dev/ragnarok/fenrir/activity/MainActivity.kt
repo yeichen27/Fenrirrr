@@ -19,13 +19,18 @@ import android.view.ViewGroup
 import android.view.animation.LinearInterpolator
 import android.view.inputmethod.InputMethodManager
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.SystemBarStyle
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.core.view.WindowInsetsControllerCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.get
+import androidx.core.view.insets.ProtectionLayout
+import androidx.core.view.iterator
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
@@ -49,6 +54,7 @@ import dev.ragnarok.fenrir.activity.gifpager.GifPagerActivity
 import dev.ragnarok.fenrir.activity.photopager.PhotoPagerActivity.Companion.newInstance
 import dev.ragnarok.fenrir.activity.shortvideopager.ShortVideoPagerActivity
 import dev.ragnarok.fenrir.activity.storypager.StoryPagerActivity
+import dev.ragnarok.fenrir.applyAlpha
 import dev.ragnarok.fenrir.db.Stores
 import dev.ragnarok.fenrir.dialog.ResolveDomainDialog
 import dev.ragnarok.fenrir.domain.InteractorFactory
@@ -127,8 +133,8 @@ import dev.ragnarok.fenrir.fragment.products.marketview.MarketViewFragment
 import dev.ragnarok.fenrir.fragment.products.productalbums.ProductAlbumsFragment
 import dev.ragnarok.fenrir.fragment.requestexecute.RequestExecuteFragment
 import dev.ragnarok.fenrir.fragment.search.AudioSearchTabsFragment
+import dev.ragnarok.fenrir.fragment.search.SearchFragmentFactory
 import dev.ragnarok.fenrir.fragment.search.SearchTabsFragment
-import dev.ragnarok.fenrir.fragment.search.SingleTabSearchFragment
 import dev.ragnarok.fenrir.fragment.shortcutsview.ShortcutsViewFragment
 import dev.ragnarok.fenrir.fragment.shortedlinks.ShortedLinksFragment
 import dev.ragnarok.fenrir.fragment.theme.ThemeFragment
@@ -211,6 +217,7 @@ import dev.ragnarok.fenrir.view.navigation.AbsNavigationView
 import dev.ragnarok.fenrir.view.navigation.AbsNavigationView.NavigationDrawerCallbacks
 import dev.ragnarok.fenrir.view.zoomhelper.ZoomHelper.Companion.getInstance
 import kotlinx.coroutines.flow.filter
+import kotlin.math.max
 
 open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSectionResumeCallback,
     AppStyleable, PlaceProvider, ServiceConnection, UpdatableNavigation,
@@ -389,6 +396,59 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
         } else getInstance()?.dispatchTouchEvent(ev, this) == true || super.dispatchTouchEvent(ev)
     }
 
+    open fun createInsetListener() {
+        if (!Settings.get().main().is_side_navigation) {
+            mBottomNavigationContainer?.let {
+                ViewCompat.setOnApplyWindowInsetsListener(it) { v, windowInsets ->
+                    val insets =
+                        windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+                    val imeFixedBottom =
+                        if (windowInsets.isVisible(WindowInsetsCompat.Type.ime())) max(
+                            windowInsets.getInsets(
+                                WindowInsetsCompat.Type.ime()
+                            ).bottom, insets.bottom
+                        ) else insets.bottom
+                    v.setPadding(
+                        insets.left, 0,
+                        insets.right,
+                        imeFixedBottom
+                    )
+                    mViewFragment?.setPadding(
+                        insets.left,
+                        0,
+                        insets.right,
+                        0
+                    )
+                    WindowInsetsCompat.CONSUMED
+                }
+            }
+        } else {
+            navigationView?.let {
+                ViewCompat.setOnApplyWindowInsetsListener(it) { v, windowInsets ->
+                    val insets =
+                        windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+                    val imeFixedBottom =
+                        if (windowInsets.isVisible(WindowInsetsCompat.Type.ime())) max(
+                            windowInsets.getInsets(
+                                WindowInsetsCompat.Type.ime()
+                            ).bottom, insets.bottom
+                        ) else insets.bottom
+                    findViewById<ViewGroup>(R.id.main_root)?.setPadding(
+                        insets.left, 0,
+                        insets.right,
+                        imeFixedBottom
+                    )
+                    v.setPadding(
+                        insets.left, insets.top,
+                        insets.right,
+                        imeFixedBottom
+                    )
+                    WindowInsetsCompat.CONSUMED
+                }
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         delegate.applyDayNight()
         if (savedInstanceState == null && mainActivityTransform == MainActivityTransforms.MAIN) {
@@ -463,6 +523,9 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
         mBottomNavigation = findViewById(R.id.bottom_navigation_menu)
         mBottomNavigation?.setOnItemSelectedListener(this)
         mBottomNavigationContainer = findViewById(R.id.bottom_navigation_menu_container)
+
+        createInsetListener()
+
         supportFragmentManager.addOnBackStackChangedListener(mOnBackStackChangedListener)
         resolveToolbarNavigationIcon()
         updateMessagesBagde(
@@ -1303,19 +1366,27 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
     }
 
     override fun setStatusbarColored(colored: Boolean, invertIcons: Boolean) {
-        val w = window
-        @Suppress("deprecation")
-        if (!Utils.hasVanillaIceCreamTarget()) {
-            w.statusBarColor =
-                if (colored) getStatusBarColor(this) else getStatusBarNonColored(
-                    this
-                )
-            w.navigationBarColor =
-                if (colored) getNavigationBarColor(this) else Color.BLACK
+        val statusBarColor = if (colored) getStatusBarColor(this) else getStatusBarNonColored(
+            this
+        )
+        val navigationBarColor = if (colored) getNavigationBarColor(this) else Color.BLACK
+
+        val statusBarStyle = if (invertIcons) SystemBarStyle.light(
+            statusBarColor.applyAlpha(180),
+            statusBarColor.applyAlpha(180)
+        ) else SystemBarStyle.dark(statusBarColor.applyAlpha(180))
+        val navigationBarStyle = if (invertIcons) SystemBarStyle.light(
+            navigationBarColor.applyAlpha(180),
+            navigationBarColor.applyAlpha(180)
+        ) else SystemBarStyle.dark(navigationBarColor.applyAlpha(180))
+
+        for (i in (window.decorView as ViewGroup)) {
+            if (i is ProtectionLayout) {
+                (window.decorView as ViewGroup).removeView(i)
+            }
         }
-        val ins = WindowInsetsControllerCompat(w, w.decorView)
-        ins.isAppearanceLightStatusBars = invertIcons
-        ins.isAppearanceLightNavigationBars = invertIcons
+
+        enableEdgeToEdge(statusBarStyle, navigationBarStyle)
     }
 
     override fun hideMenu(hide: Boolean) {
@@ -1581,7 +1652,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
             Place.COMMENT_CREATE -> openCommentCreatePlace(place)
             Place.LOGS -> attachToFront(LogsFragment.newInstance())
             Place.SINGLE_SEARCH -> {
-                val singleTabSearchFragment = SingleTabSearchFragment.newInstance(args)
+                val singleTabSearchFragment = SearchFragmentFactory.create(args)
                 attachToFront(singleTabSearchFragment)
             }
 

@@ -34,7 +34,6 @@ import dev.ragnarok.fenrir.model.Audio
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.picasso.Content_Local
 import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.buildUriForPicasso
-import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.buildUriForPicassoNew
 import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.with
 import dev.ragnarok.fenrir.picasso.transforms.PolyTransformation
 import dev.ragnarok.fenrir.picasso.transforms.RoundTransformation
@@ -231,7 +230,7 @@ class AudioDuplicateDialog :
             )
             if (cursor != null && cursor.moveToFirst()) {
                 val id = cursor.getLong(BaseColumns._ID)
-                val data = buildUriForPicassoNew(Content_Local.AUDIO, id).toString()
+                val data = buildUriForPicasso(Content_Local.AUDIO, id).toString()
                 if (cursor.getString(MediaStore.MediaColumns.DISPLAY_NAME)
                         .isNullOrEmpty()
                 ) {

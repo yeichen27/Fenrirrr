@@ -9,6 +9,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuProvider
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
@@ -17,6 +19,7 @@ import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.ActivityUtils.supportToolbarFor
+import dev.ragnarok.fenrir.activity.MainActivity
 import dev.ragnarok.fenrir.fragment.audio.audioplaylists.AudioPlaylistsFragment
 import dev.ragnarok.fenrir.fragment.audio.audios.AudiosFragment
 import dev.ragnarok.fenrir.fragment.base.BaseFragment
@@ -28,6 +31,7 @@ import dev.ragnarok.fenrir.place.PlaceFactory.getSingleTabSearchPlace
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.Utils.createPageTransform
 import dev.ragnarok.fenrir.view.navigation.AbsNavigationView
+import kotlin.math.max
 
 class AudioSelectTabsFragment : BaseFragment(), MenuProvider {
     var accountId = 0L
@@ -45,6 +49,30 @@ class AudioSelectTabsFragment : BaseFragment(), MenuProvider {
     ): View {
         val root = inflater.inflate(R.layout.fragment_audios_tabs, container, false) as ViewGroup
         (requireActivity() as AppCompatActivity).setSupportActionBar(root.findViewById(R.id.toolbar))
+
+        if (requireActivity() is MainActivity) {
+            ViewCompat.setOnApplyWindowInsetsListener(root) { _, windowInsets ->
+                val insets =
+                    windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+                root.findViewById<View>(R.id.actionbar)?.setPadding(0, insets.top, 0, 0)
+                WindowInsetsCompat.CONSUMED
+            }
+        } else {
+            ViewCompat.setOnApplyWindowInsetsListener(root) { _, windowInsets ->
+                val insets =
+                    windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+                val imeFixedBottom =
+                    if (windowInsets.isVisible(WindowInsetsCompat.Type.ime())) max(
+                        windowInsets.getInsets(
+                            WindowInsetsCompat.Type.ime()
+                        ).bottom, insets.bottom
+                    ) else insets.bottom
+                root.findViewById<View>(R.id.actionbar)
+                    ?.setPadding(insets.left, insets.top, insets.right, 0)
+                root.setPadding(insets.left, 0, insets.right, imeFixedBottom)
+                WindowInsetsCompat.CONSUMED
+            }
+        }
         return root
     }
 
@@ -74,11 +102,11 @@ class AudioSelectTabsFragment : BaseFragment(), MenuProvider {
             val fragment = AudioPlaylistsFragment.newInstanceSelect(
                 accountId
             )
-            fragment.requireArguments().putBoolean(AudiosFragment.EXTRA_IN_TABS_CONTAINER, true)
+            fragment.requireArguments().putBoolean(Extra.IN_TABS_CONTAINER, true)
             fragment
         } else {
             val args = AudiosFragment.buildArgs(accountId, accountId, null, null)
-            args.putBoolean(AudiosFragment.EXTRA_IN_TABS_CONTAINER, true)
+            args.putBoolean(Extra.IN_TABS_CONTAINER, true)
             AudiosFragment.newInstance(args, true)
         }
     }

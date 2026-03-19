@@ -10,6 +10,9 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatActivity
+import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -38,6 +41,7 @@ import dev.ragnarok.fenrir.util.coroutines.CancelableJob
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.delayTaskFlow
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.toMain
 import dev.ragnarok.fenrir.view.natives.animation.ThorVGLottieView
+import kotlin.math.max
 
 class LocalJsonToChatFragment :
     PlaceSupportMvpFragment<LocalJsonToChatPresenter, ILocalJsonToChatView>(), ILocalJsonToChatView,
@@ -62,7 +66,10 @@ class LocalJsonToChatFragment :
         val root = inflater.inflate(R.layout.fragment_json_chat, container, false)
         root.background = CurrentTheme.getChatBackground(requireActivity())
         (requireActivity() as AppCompatActivity).setSupportActionBar(root.findViewById(R.id.toolbar))
-        mEmpty = root.findViewById(R.id.empty)
+
+        recyclerView = root.findViewById(R.id.content_list)
+        recyclerView?.layoutManager =
+            LinearLayoutManager(requireActivity(), RecyclerView.VERTICAL, true)
         val mAttachment: FloatingActionButton = root.findViewById(R.id.goto_button)
         mAttachment.setOnClickListener { presenter?.toggleAttachment() }
         mAttachment.setOnLongClickListener {
@@ -70,15 +77,32 @@ class LocalJsonToChatFragment :
             mAttachment.setImageResource(if (my) R.drawable.account_circle else R.drawable.attachment)
             true
         }
+        ViewCompat.setOnApplyWindowInsetsListener(root) { _, windowInsets ->
+            val insets =
+                windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+            val imeFixedBottom =
+                if (windowInsets.isVisible(WindowInsetsCompat.Type.ime())) max(
+                    windowInsets.getInsets(
+                        WindowInsetsCompat.Type.ime()
+                    ).bottom, insets.bottom
+                ) else insets.bottom
+            root.findViewById<View>(R.id.actionbar)
+                ?.setPadding(insets.left, insets.top, insets.right, 0)
+            recyclerView?.setPadding(insets.left, 0, insets.right, imeFixedBottom)
+            (mAttachment.layoutParams as? CoordinatorLayout.LayoutParams)?.bottomMargin =
+                imeFixedBottom + Utils.dp(16f)
+            (mAttachment.layoutParams as? CoordinatorLayout.LayoutParams)?.rightMargin =
+                insets.right + Utils.dp(16f)
+            WindowInsetsCompat.CONSUMED
+        }
+
+        mEmpty = root.findViewById(R.id.empty)
 
         Title = root.findViewById(R.id.dialog_title)
         SubTitle = root.findViewById(R.id.dialog_subtitle)
         Avatar = root.findViewById(R.id.toolbar_avatar)
         EmptyAvatar = root.findViewById(R.id.empty_avatar_text)
 
-        recyclerView = root.findViewById(R.id.content_list)
-        recyclerView?.layoutManager =
-            LinearLayoutManager(requireActivity(), RecyclerView.VERTICAL, true)
         PicassoPauseOnScrollListener.addListener(recyclerView)
         mLoadingProgressBar = root.findViewById(R.id.loading_progress_bar)
         mAdapter = MessagesAdapter(

@@ -6,6 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dev.ragnarok.fenrir.Constants
@@ -42,6 +44,14 @@ class PollFragment : BaseMvpFragment<PollPresenter, IPollView>(), IPollView,
     ): View? {
         val root = inflater.inflate(R.layout.fragment_poll, container, false)
         (requireActivity() as AppCompatActivity).setSupportActionBar(root.findViewById(R.id.toolbar))
+
+        ViewCompat.setOnApplyWindowInsetsListener(root) { _, windowInsets ->
+            val insets =
+                windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+            root.findViewById<View>(R.id.actionbar)?.setPadding(0, insets.top, 0, 0)
+            WindowInsetsCompat.CONSUMED
+        }
+
         recyclerView = root.findViewById(R.id.recycler_view)
         recyclerView?.layoutManager = LinearLayoutManager(requireActivity())
         mAnswersAdapter = PollAnswersAdapter(requireActivity(), mutableListOf())

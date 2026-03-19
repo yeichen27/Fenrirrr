@@ -16,8 +16,11 @@ import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.RelativeLayout
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.SystemBarStyle
+import androidx.activity.enableEdgeToEdge
 import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
 import androidx.appcompat.widget.Toolbar
@@ -25,7 +28,12 @@ import androidx.core.content.FileProvider
 import androidx.core.net.toFile
 import androidx.core.net.toUri
 import androidx.core.view.MenuProvider
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.core.view.insets.ProtectionLayout
+import androidx.core.view.iterator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
@@ -44,6 +52,7 @@ import dev.ragnarok.filegallery.activity.slidr.Slidr
 import dev.ragnarok.filegallery.activity.slidr.model.SlidrConfig
 import dev.ragnarok.filegallery.activity.slidr.model.SlidrListener
 import dev.ragnarok.filegallery.activity.slidr.model.SlidrPosition
+import dev.ragnarok.filegallery.applyAlpha
 import dev.ragnarok.filegallery.fragment.AudioPlayerFragment
 import dev.ragnarok.filegallery.fragment.base.horizontal.ImageListAdapter
 import dev.ragnarok.filegallery.listener.AppStyleable
@@ -60,7 +69,6 @@ import dev.ragnarok.filegallery.settings.CurrentTheme.getStatusBarNonColored
 import dev.ragnarok.filegallery.settings.Settings
 import dev.ragnarok.filegallery.util.DownloadWorkUtils
 import dev.ragnarok.filegallery.util.Utils
-import dev.ragnarok.filegallery.util.Utils.hasVanillaIceCreamTarget
 import dev.ragnarok.filegallery.util.coroutines.CancelableJob
 import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.delayTaskFlow
 import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.toMain
@@ -109,6 +117,7 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
         }
     }
 
+    private var mDecorView: View? = null
     private var mViewPager: ViewPager2? = null
     private var mContentRoot: RelativeLayout? = null
     private var mLoadingProgressBar: ThorVGLottieView? = null
@@ -158,12 +167,53 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
 
                 }).build()
         )
+        mDecorView = window.decorView
         mContentRoot = findViewById(R.id.photo_pager_root)
-        mLoadingProgressBar = findViewById(R.id.loading_progress_bar)
-        mPreviewsRecycler = findViewById(R.id.previews_photos)
+
         mToolbar = findViewById(R.id.toolbar)
-        setSupportActionBar(mToolbar)
         mViewPager = findViewById(R.id.view_pager)
+        setSupportActionBar(mToolbar)
+        mPreviewsRecycler = findViewById(R.id.previews_photos)
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.photo_pager_root)) { _, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            val insets2 =
+                windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+            if (Utils.isLandscape(this)) {
+                mToolbar?.setPadding(insets.left, insets.top, insets.right, 0)
+                mViewPager?.setPadding(
+                    insets.left, 0,
+                    insets.right,
+                    insets.bottom
+                )
+                mPreviewsRecycler?.setPadding(
+                    insets.left,
+                    0,
+                    insets.right,
+                    insets.bottom
+                )
+            } else {
+                mToolbar?.setPadding(
+                    insets2.left,
+                    insets2.top,
+                    insets2.right,
+                    0
+                )
+                mViewPager?.setPadding(
+                    insets2.left, 0,
+                    insets2.right,
+                    insets2.bottom
+                )
+                mPreviewsRecycler?.setPadding(
+                    insets2.left,
+                    0,
+                    insets2.right,
+                    insets2.bottom
+                )
+            }
+            WindowInsetsCompat.CONSUMED
+        }
+
+        mLoadingProgressBar = findViewById(R.id.loading_progress_bar)
         mViewPager?.setPageTransformer(
             Utils.createPageTransform(
                 Settings.get().main().viewpager_page_transform
@@ -381,6 +431,36 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
         mPreviewsRecycler?.visibility = if (visible && bShowPhotosLine) View.VISIBLE else View.GONE
     }
 
+    override fun setIsFullScreen(fullScreen: Boolean) {
+        if (fullScreen) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                mDecorView?.layoutParams =
+                    WindowManager.LayoutParams(WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES)
+            }
+
+            WindowCompat.setDecorFitsSystemWindows(window, false)
+            mDecorView?.let {
+                WindowInsetsControllerCompat(window, it).let { controller ->
+                    controller.hide(WindowInsetsCompat.Type.systemBars())
+                    controller.systemBarsBehavior =
+                        WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+                }
+            }
+        } else {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                mDecorView?.layoutParams =
+                    WindowManager.LayoutParams(WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT)
+            }
+            WindowCompat.setDecorFitsSystemWindows(window, true)
+            mDecorView?.let {
+                WindowInsetsControllerCompat(
+                    window,
+                    it
+                ).show(WindowInsetsCompat.Type.systemBars())
+            }
+        }
+    }
+
     override fun setToolbarVisible(visible: Boolean) {
         mToolbar?.visibility = if (visible) View.VISIBLE else View.GONE
     }
@@ -427,23 +507,27 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
     }
 
     override fun setStatusbarColored(colored: Boolean, invertIcons: Boolean) {
-        val w = window
-        @Suppress("deprecation")
-        if (!hasVanillaIceCreamTarget()) {
-            w.statusBarColor =
-                if (colored) getStatusBarColor(this) else getStatusBarNonColored(
-                    this
-                )
-            w.navigationBarColor =
-                if (colored) getNavigationBarColor(this) else Color.BLACK
-        } else {
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
-                w.isNavigationBarContrastEnforced = colored
+        val statusBarColor = if (colored) getStatusBarColor(this) else getStatusBarNonColored(
+            this
+        )
+        val navigationBarColor = if (colored) getNavigationBarColor(this) else Color.BLACK
+
+        val statusBarStyle = if (invertIcons) SystemBarStyle.light(
+            statusBarColor.applyAlpha(180),
+            statusBarColor.applyAlpha(180)
+        ) else SystemBarStyle.dark(statusBarColor.applyAlpha(180))
+        val navigationBarStyle = if (invertIcons) SystemBarStyle.light(
+            navigationBarColor.applyAlpha(180),
+            navigationBarColor.applyAlpha(180)
+        ) else SystemBarStyle.dark(navigationBarColor.applyAlpha(180))
+
+        for (i in (window.decorView as ViewGroup)) {
+            if (i is ProtectionLayout) {
+                (window.decorView as ViewGroup).removeView(i)
             }
         }
-        val ins = WindowInsetsControllerCompat(w, w.decorView)
-        ins.isAppearanceLightStatusBars = invertIcons
-        ins.isAppearanceLightNavigationBars = invertIcons
+
+        enableEdgeToEdge(statusBarStyle, navigationBarStyle)
     }
 
     override fun onResume() {

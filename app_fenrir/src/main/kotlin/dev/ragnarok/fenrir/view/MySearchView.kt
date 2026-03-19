@@ -120,10 +120,10 @@ class MySearchView : FrameLayout {
         mInput?.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus) {
                 mSearchRoot?.setStrokeWidth(Utils.dpf2(2f))
-                mSearchRoot?.setViewColor(CurrentTheme.getColorPrimary(context))
+                mSearchRoot?.setStrokeColor(CurrentTheme.getColorPrimary(context))
             } else {
                 mSearchRoot?.setStrokeWidth(Utils.dpf2(1f))
-                mSearchRoot?.setViewColor(CurrentTheme.getDividerColorColor(context))
+                mSearchRoot?.setStrokeColor(CurrentTheme.getDividerColorColor(context))
             }
         }
         mButtonBack = findViewById(R.id.button_back)

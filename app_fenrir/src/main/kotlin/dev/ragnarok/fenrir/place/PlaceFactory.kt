@@ -48,8 +48,8 @@ import dev.ragnarok.fenrir.fragment.poll.voters.VotersFragment
 import dev.ragnarok.fenrir.fragment.products.marketview.MarketViewFragment
 import dev.ragnarok.fenrir.fragment.search.AudioSearchTabsFragment
 import dev.ragnarok.fenrir.fragment.search.SearchContentType
+import dev.ragnarok.fenrir.fragment.search.SearchFragmentFactory
 import dev.ragnarok.fenrir.fragment.search.SearchTabsFragment
-import dev.ragnarok.fenrir.fragment.search.SingleTabSearchFragment
 import dev.ragnarok.fenrir.fragment.search.criteria.BaseSearchCriteria
 import dev.ragnarok.fenrir.fragment.topics.TopicsFragment
 import dev.ragnarok.fenrir.fragment.videos.VideosFragment
@@ -198,7 +198,7 @@ object PlaceFactory {
         criteria: BaseSearchCriteria?
     ): Place {
         return Place(Place.SINGLE_SEARCH)
-            .setArguments(SingleTabSearchFragment.buildArgs(accountId, type, criteria))
+            .setArguments(SearchFragmentFactory.buildArgs(accountId, type, criteria, false))
     }
 
     val logsPlace: Place

@@ -42,6 +42,7 @@ object ShortcutUtils {
             val size = getLauncherIconSize(context)
             avatar = with()
                 .load(url)
+                .config(Bitmap.Config.ARGB_8888)
                 .transform(RoundTransformation())
                 .resize(size, size)
                 .get()
@@ -81,6 +82,7 @@ object ShortcutUtils {
             val size = getLauncherIconSize(context)
             avatar = with()
                 .load(url)
+                .config(Bitmap.Config.ARGB_8888)
                 .transform(RoundTransformation())
                 .resize(size, size)
                 .get()
@@ -199,6 +201,7 @@ object ShortcutUtils {
             emit(
                 with()
                     .load(url)
+                    .config(Bitmap.Config.ARGB_8888)
                     .transform(RoundTransformation())
                     .get() ?: throw UnsupportedOperationException()
             )
@@ -249,12 +252,14 @@ object ShortcutUtils {
         bm = if (url.isEmpty()) {
             with()
                 .load(R.drawable.ic_avatar_unknown)
+                .config(Bitmap.Config.ARGB_8888)
                 .transform(transformation)
                 .resize(appIconSize, appIconSize)
                 .get()
         } else {
             with()
                 .load(url)
+                .config(Bitmap.Config.ARGB_8888)
                 .transform(transformation)
                 .resize(appIconSize, appIconSize)
                 .get()

@@ -48,8 +48,9 @@ public interface FrameBuffer : AutoCloseable {
      *
      * If set a new capacity and the new capacity is less than the current number of buffered
      * frames, the oldest [FrameReference]s will be evicted until the buffer size matches new
-     * capacity. Any [Frame] instances associated with the evicted [FrameReference]s will be closed.
-     * Increasing the capacity does not cause any frames to be evicted.
+     * capacity. Any [Frame] instances associated with the evicted [FrameReference]s will be closed
+     * if the [FrameReference] is not hold by another [FrameBuffer]. Increasing the capacity does
+     * not cause any frames to be evicted.
      */
     public var capacity: Int
 
@@ -79,6 +80,41 @@ public interface FrameBuffer : AutoCloseable {
      * The frame references are removed from the buffer.
      */
     public fun removeAllReferences(): List<FrameReference>
+
+    /**
+     * Removes the first entry in [FrameBuffer] that matches the [FrameReference] filter. If a match
+     * is found, the entry is removed from the buffer. The frame will be returned if the entry has a
+     * valid [Frame]. Otherwise, null is returned.
+     *
+     * @param predicate The filter function to apply.
+     * @return The [Frame] of the first buffer entry that matches the filter, or null if a match is
+     *   not found or the matching entry does not have a frame.
+     */
+    public fun removeFirstFrameReferenceAndAcquire(predicate: (FrameReference) -> Boolean): Frame?
+
+    /**
+     * Removes the last entry in [FrameBuffer] that matches the [FrameReference] filter. If a match
+     * is found, the entry is removed from the buffer. The frame will be returned if the entry has a
+     * valid [Frame]. Otherwise, null is returned.
+     *
+     * @param predicate The filter function to apply.
+     * @return The [Frame] of the last buffer entry that matches the filter, or null if a match is
+     *   not found or the matching entry does not have a frame.
+     */
+    public fun removeLastFrameReferenceAndAcquire(predicate: (FrameReference) -> Boolean): Frame?
+
+    /**
+     * Removes the last entry in [FrameBuffer] that matches the [FrameReference] filter. If a match
+     * is found, the entry is removed from the buffer. The frame will be returned if the entry has a
+     * valid [Frame]. Otherwise, null is returned.
+     *
+     * @param predicate The filter function to apply.
+     * @return The [Frame] of the last buffer entry that matches the filter, or null if a match is
+     *   not found or the matching entry does not have a frame.
+     */
+    public fun removeAllFrameReferencesAndAcquire(
+        predicate: (FrameReference) -> Boolean
+    ): List<Frame>
 
     /**
      * The first FrameReference in the buffer, or null if the buffer is empty. No frames or

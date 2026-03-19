@@ -85,11 +85,13 @@ class PhotoSearchFragment :
 
         fun newInstance(
             accountId: Long,
-            initialCriteria: PhotoSearchCriteria?
+            initialCriteria: PhotoSearchCriteria?,
+            hideToolbar: Boolean
         ): PhotoSearchFragment {
             val args = Bundle()
             args.putParcelable(Extra.CRITERIA, initialCriteria)
             args.putLong(Extra.ACCOUNT_ID, accountId)
+            args.putBoolean(Extra.IN_TABS_CONTAINER, hideToolbar)
             val fragment = PhotoSearchFragment()
             fragment.arguments = args
             return fragment

@@ -15,6 +15,9 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
@@ -25,6 +28,7 @@ import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.DualTabPhotoActivity.Companion.createIntent
+import dev.ragnarok.fenrir.activity.MainActivity
 import dev.ragnarok.fenrir.activity.SendAttachmentsActivity.Companion.startForSendAttachments
 import dev.ragnarok.fenrir.dialog.PostShareDialog.Methods
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
@@ -57,6 +61,7 @@ import dev.ragnarok.fenrir.util.Utils.shareLink
 import dev.ragnarok.fenrir.util.Utils.singletonArrayList
 import dev.ragnarok.fenrir.util.ViewUtils.setupSwipeRefreshLayoutWithCurrentTheme
 import dev.ragnarok.fenrir.view.MySearchView
+import kotlin.math.max
 
 class VideosFragment : BaseMvpFragment<VideosListPresenter, IVideosListView>(), IVideosListView,
     DocsUploadAdapter.ActionListener, VideosAdapter.VideoOnClickListener {
@@ -110,7 +115,7 @@ class VideosFragment : BaseMvpFragment<VideosListPresenter, IVideosListView>(), 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        inTabsContainer = requireArguments().getBoolean(EXTRA_IN_TABS_CONTAINER)
+        inTabsContainer = requireArguments().getBoolean(Extra.IN_TABS_CONTAINER)
     }
 
     override fun setToolbarTitle(title: String?) {
@@ -189,9 +194,40 @@ class VideosFragment : BaseMvpFragment<VideosListPresenter, IVideosListView>(), 
         val root = inflater.inflate(R.layout.fragment_videos, container, false)
         val recyclerView: RecyclerView = root.findViewById(R.id.recycler_view)
         val toolbar: Toolbar = root.findViewById(R.id.toolbar)
+        mUploadRoot = root.findViewById(R.id.uploads_root)
+        val mAdd: FloatingActionButton = root.findViewById(R.id.add_button)
         if (!inTabsContainer) {
             toolbar.visibility = View.VISIBLE
             (requireActivity() as AppCompatActivity).setSupportActionBar(toolbar)
+
+            if (requireActivity() is MainActivity) {
+                ViewCompat.setOnApplyWindowInsetsListener(root) { _, windowInsets ->
+                    val insets =
+                        windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+                    root.findViewById<View>(R.id.actionbar)?.setPadding(0, insets.top, 0, 0)
+                    WindowInsetsCompat.CONSUMED
+                }
+            } else {
+                ViewCompat.setOnApplyWindowInsetsListener(root) { _, windowInsets ->
+                    val insets =
+                        windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+                    val imeFixedBottom =
+                        if (windowInsets.isVisible(WindowInsetsCompat.Type.ime())) max(
+                            windowInsets.getInsets(
+                                WindowInsetsCompat.Type.ime()
+                            ).bottom, insets.bottom
+                        ) else insets.bottom
+                    root.findViewById<View>(R.id.actionbar)
+                        ?.setPadding(insets.left, insets.top, insets.right, 0)
+                    recyclerView.setPadding(insets.left, 0, insets.right, imeFixedBottom)
+                    mUploadRoot?.setPadding(insets.left, 0, insets.right, imeFixedBottom)
+                    (mAdd.layoutParams as? CoordinatorLayout.LayoutParams)?.bottomMargin =
+                        imeFixedBottom + Utils.dp(16f)
+                    (mAdd.layoutParams as? CoordinatorLayout.LayoutParams)?.rightMargin =
+                        insets.right + Utils.dp(16f)
+                    WindowInsetsCompat.CONSUMED
+                }
+            }
         } else {
             toolbar.visibility = View.GONE
         }
@@ -213,14 +249,13 @@ class VideosFragment : BaseMvpFragment<VideosListPresenter, IVideosListView>(), 
                 return false
             }
         })
-        val Add: FloatingActionButton = root.findViewById(R.id.add_button)
         var isNotMy = true
         presenter?.let {
             isNotMy = it.accountId != it.ownerId
         }
-        if (isNotMy) Add.visibility = View.GONE else {
-            Add.visibility = View.VISIBLE
-            Add.setOnClickListener {
+        if (isNotMy) mAdd.visibility = View.GONE else {
+            mAdd.visibility = View.VISIBLE
+            mAdd.setOnClickListener {
                 presenter?.doUpload()
             }
         }
@@ -249,7 +284,6 @@ class VideosFragment : BaseMvpFragment<VideosListPresenter, IVideosListView>(), 
         mAdapter?.setVideoOnClickListener(this)
         mUploadAdapter = DocsUploadAdapter(emptyList(), this)
         uploadRecyclerView.adapter = mUploadAdapter
-        mUploadRoot = root.findViewById(R.id.uploads_root)
         recyclerView.adapter = mAdapter
         resolveEmptyTextVisibility()
         return root
@@ -542,7 +576,6 @@ class VideosFragment : BaseMvpFragment<VideosListPresenter, IVideosListView>(), 
     }
 
     companion object {
-        const val EXTRA_IN_TABS_CONTAINER = "in_tabs_container"
         const val EXTRA_ALBUM_TITLE = "album_title"
         fun buildArgs(
             accountId: Long,

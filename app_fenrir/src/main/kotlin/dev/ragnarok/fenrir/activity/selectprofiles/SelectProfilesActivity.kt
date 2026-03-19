@@ -3,7 +3,10 @@ package dev.ragnarok.fenrir.activity.selectprofiles
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import androidx.annotation.LayoutRes
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dev.ragnarok.fenrir.Extra
@@ -22,6 +25,7 @@ import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.Logger
 import dev.ragnarok.fenrir.util.MainActivityTransforms
 import dev.ragnarok.fenrir.util.Utils
+import kotlin.math.max
 
 class SelectProfilesActivity : MainActivity(), SelectedProfilesAdapter.ActionListener,
     ProfileSelectable {
@@ -41,6 +45,50 @@ class SelectProfilesActivity : MainActivity(), SelectedProfilesAdapter.ActionLis
         } else {
             R.layout.activity_main_with_profiles_selection
         }
+
+    override fun createInsetListener() {
+        val rootView = findViewById<View>(R.id.main_root)
+        if (!Settings.get().main().is_side_navigation) {
+            ViewCompat.setOnApplyWindowInsetsListener(rootView) { v, windowInsets ->
+                val insets =
+                    windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+                val imeFixedBottom =
+                    if (windowInsets.isVisible(WindowInsetsCompat.Type.ime())) max(
+                        windowInsets.getInsets(
+                            WindowInsetsCompat.Type.ime()
+                        ).bottom, insets.bottom
+                    ) else insets.bottom
+                v.setPadding(
+                    insets.left, insets.top,
+                    insets.right,
+                    imeFixedBottom
+                )
+                WindowInsetsCompat.CONSUMED
+            }
+        } else {
+            ViewCompat.setOnApplyWindowInsetsListener(rootView) { v, windowInsets ->
+                val insets =
+                    windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+                val imeFixedBottom =
+                    if (windowInsets.isVisible(WindowInsetsCompat.Type.ime())) max(
+                        windowInsets.getInsets(
+                            WindowInsetsCompat.Type.ime()
+                        ).bottom, insets.bottom
+                    ) else insets.bottom
+                v.setPadding(
+                    insets.left, insets.top,
+                    insets.right,
+                    imeFixedBottom
+                )
+                navigationView?.setPadding(
+                    insets.left, insets.top,
+                    insets.right,
+                    imeFixedBottom
+                )
+                WindowInsetsCompat.CONSUMED
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

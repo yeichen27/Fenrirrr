@@ -512,6 +512,7 @@ class MusicPlaybackService : Service() {
         }
         PicassoInstance.with()
             .load(albumCover)
+            .config(Bitmap.Config.ARGB_8888)
             .into(object : BitmapTarget {
                 override fun onBitmapLoaded(bitmap: Bitmap, from: LoadedFrom) {
                     coverBitmap = bitmap

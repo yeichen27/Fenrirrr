@@ -2,15 +2,13 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?android:colorBackground"
-    android:fitsSystemWindows="true">
+    android:background="?android:colorBackground">
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@id/bottom_navigation_menu_container"
-        android:clipToPadding="false" />
+        android:layout_above="@id/bottom_navigation_menu_container" />
 
     <include
         android:id="@+id/bottom_navigation_menu_container"

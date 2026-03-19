@@ -98,11 +98,13 @@ class NewsFeedSearchFragment :
 
         fun newInstance(
             accountId: Long,
-            initialCriteria: NewsFeedCriteria?
+            initialCriteria: NewsFeedCriteria?,
+            hideToolbar: Boolean
         ): NewsFeedSearchFragment {
             val args = Bundle()
             args.putParcelable(Extra.CRITERIA, initialCriteria)
             args.putLong(Extra.ACCOUNT_ID, accountId)
+            args.putBoolean(Extra.IN_TABS_CONTAINER, hideToolbar)
             val fragment = NewsFeedSearchFragment()
             fragment.arguments = args
             return fragment

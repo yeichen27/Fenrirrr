@@ -11,15 +11,23 @@ import android.util.SparseArray
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.TextView
+import androidx.activity.SystemBarStyle
+import androidx.activity.enableEdgeToEdge
 import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.util.size
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.core.view.insets.ProtectionLayout
+import androidx.core.view.iterator
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.snackbar.Snackbar
@@ -34,6 +42,7 @@ import dev.ragnarok.fenrir.activity.slidr.Slidr
 import dev.ragnarok.fenrir.activity.slidr.model.SlidrConfig
 import dev.ragnarok.fenrir.activity.slidr.model.SlidrListener
 import dev.ragnarok.fenrir.activity.slidr.model.SlidrPosition
+import dev.ragnarok.fenrir.applyAlpha
 import dev.ragnarok.fenrir.domain.ILikesInteractor
 import dev.ragnarok.fenrir.fragment.audio.AudioPlayerFragment
 import dev.ragnarok.fenrir.listener.AppStyleable
@@ -55,7 +64,6 @@ import dev.ragnarok.fenrir.util.AppTextUtils
 import dev.ragnarok.fenrir.util.DownloadWorkUtils
 import dev.ragnarok.fenrir.util.HelperSimple
 import dev.ragnarok.fenrir.util.Utils
-import dev.ragnarok.fenrir.util.Utils.hasVanillaIceCreamTarget
 import dev.ragnarok.fenrir.util.ViewUtils
 import dev.ragnarok.fenrir.util.coroutines.CancelableJob
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.delayTaskFlow
@@ -87,6 +95,7 @@ class ShortVideoPagerActivity : BaseMvpActivity<ShortVideoPagerPresenter, IShort
     private var mLoadingProgressBar: ThorVGLottieView? = null
     private var shortVideoDuration: TextView? = null
     private var playDispose = CancelableJob()
+    private var mDecorView: View? = null
 
     @get:LayoutRes
     override val noMainContentView: Int
@@ -95,6 +104,7 @@ class ShortVideoPagerActivity : BaseMvpActivity<ShortVideoPagerPresenter, IShort
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mFullscreen = savedInstanceState?.getBoolean("mFullscreen") == true
+        mDecorView = window.decorView
         transformation = CurrentTheme.createTransformationForAvatar()
         mContentRoot = findViewById<RelativeLayout>(R.id.shortvideo_pager_root)
         mToolbar = findViewById(R.id.toolbar)
@@ -181,6 +191,45 @@ class ShortVideoPagerActivity : BaseMvpActivity<ShortVideoPagerPresenter, IShort
 
                 }).build()
         )
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.shortvideo_pager_root)) { _, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            val insets2 =
+                windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+            if (Utils.isLandscape(this)) {
+                mToolbar?.setPadding(insets.left, insets.top, insets.right, 0)
+                mViewPager?.setPadding(
+                    insets.left, 0,
+                    insets.right,
+                    insets.bottom
+                )
+                mButtonsRoot.setPadding(
+                    insets.left,
+                    0,
+                    insets.right,
+                    insets.bottom
+                )
+            } else {
+                mToolbar?.setPadding(
+                    insets2.left,
+                    insets2.top,
+                    insets2.right,
+                    0
+                )
+                mViewPager?.setPadding(
+                    insets2.left, 0,
+                    insets2.right,
+                    insets2.bottom
+                )
+                mButtonsRoot.setPadding(
+                    insets2.left,
+                    0,
+                    insets2.right,
+                    insets2.bottom
+                )
+            }
+            WindowInsetsCompat.CONSUMED
+        }
     }
 
     override fun displayLikes(count: Int, userLikes: Boolean) {
@@ -287,23 +336,27 @@ class ShortVideoPagerActivity : BaseMvpActivity<ShortVideoPagerPresenter, IShort
     override fun openMenu(open: Boolean) {}
 
     override fun setStatusbarColored(colored: Boolean, invertIcons: Boolean) {
-        val w = window
-        @Suppress("deprecation")
-        if (!hasVanillaIceCreamTarget()) {
-            w.statusBarColor =
-                if (colored) getStatusBarColor(this) else getStatusBarNonColored(
-                    this
-                )
-            w.navigationBarColor =
-                if (colored) getNavigationBarColor(this) else Color.BLACK
-        } else {
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
-                w.isNavigationBarContrastEnforced = colored
+        val statusBarColor = if (colored) getStatusBarColor(this) else getStatusBarNonColored(
+            this
+        )
+        val navigationBarColor = if (colored) getNavigationBarColor(this) else Color.BLACK
+
+        val statusBarStyle = if (invertIcons) SystemBarStyle.light(
+            statusBarColor.applyAlpha(180),
+            statusBarColor.applyAlpha(180)
+        ) else SystemBarStyle.dark(statusBarColor.applyAlpha(180))
+        val navigationBarStyle = if (invertIcons) SystemBarStyle.light(
+            navigationBarColor.applyAlpha(180),
+            navigationBarColor.applyAlpha(180)
+        ) else SystemBarStyle.dark(navigationBarColor.applyAlpha(180))
+
+        for (i in (window.decorView as ViewGroup)) {
+            if (i is ProtectionLayout) {
+                (window.decorView as ViewGroup).removeView(i)
             }
         }
-        val ins = WindowInsetsControllerCompat(w, w.decorView)
-        ins.isAppearanceLightStatusBars = invertIcons
-        ins.isAppearanceLightNavigationBars = invertIcons
+
+        enableEdgeToEdge(statusBarStyle, navigationBarStyle)
     }
 
     private val requestWritePermission = requestPermissionsAbs(
@@ -345,6 +398,34 @@ class ShortVideoPagerActivity : BaseMvpActivity<ShortVideoPagerPresenter, IShort
         mShare?.visibility = if (mFullscreen) View.GONE else View.VISIBLE
         likeButton?.visibility = if (mFullscreen) View.GONE else View.VISIBLE
         commentsButton?.visibility = if (mFullscreen) View.GONE else View.VISIBLE
+
+        if (mFullscreen) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                mDecorView?.layoutParams =
+                    WindowManager.LayoutParams(WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES)
+            }
+
+            WindowCompat.setDecorFitsSystemWindows(window, false)
+            mDecorView?.let {
+                WindowInsetsControllerCompat(window, it).let { controller ->
+                    controller.hide(WindowInsetsCompat.Type.systemBars())
+                    controller.systemBarsBehavior =
+                        WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+                }
+            }
+        } else {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                mDecorView?.layoutParams =
+                    WindowManager.LayoutParams(WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT)
+            }
+            WindowCompat.setDecorFitsSystemWindows(window, true)
+            mDecorView?.let {
+                WindowInsetsControllerCompat(
+                    window,
+                    it
+                ).show(WindowInsetsCompat.Type.systemBars())
+            }
+        }
     }
 
     override fun getPresenterFactory(saveInstanceState: Bundle?): ShortVideoPagerPresenter {

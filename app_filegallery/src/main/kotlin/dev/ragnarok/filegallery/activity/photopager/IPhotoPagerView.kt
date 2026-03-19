@@ -12,6 +12,7 @@ interface IPhotoPagerView : IMvpView, IErrorView, IToastView {
     fun setToolbarSubtitle(subtitle: String?)
     fun displayPhotoListLoading(loading: Boolean)
     fun setButtonsBarVisible(visible: Boolean)
+    fun setIsFullScreen(fullScreen: Boolean)
     fun setToolbarVisible(visible: Boolean)
     fun closeOnly()
     fun returnInfo(position: Int, parcelNativePtr: Long)

@@ -18,6 +18,8 @@ import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuProvider
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -63,6 +65,7 @@ import dev.ragnarok.fenrir.view.LoadMoreFooterHelperComment.Companion.createFrom
 import dev.ragnarok.fenrir.view.emoji.EmojiconTextView
 import dev.ragnarok.fenrir.view.emoji.EmojiconsPopup.OnStickerClickedListener
 import dev.ragnarok.fenrir.view.emoji.StickersKeyWordsAdapter
+import kotlin.math.max
 
 class CommentsFragment : PlaceSupportMvpFragment<CommentsPresenter, ICommentsView>(),
     ICommentsView, OnStickerClickedListener, CommentsInputViewController.OnInputActionCallback,
@@ -125,6 +128,21 @@ class CommentsFragment : PlaceSupportMvpFragment<CommentsPresenter, ICommentsVie
     ): View? {
         val root = inflater.inflate(R.layout.fragment_comments, container, false)
         (requireActivity() as AppCompatActivity).setSupportActionBar(root.findViewById(R.id.toolbar))
+
+        ViewCompat.setOnApplyWindowInsetsListener(root) { _, windowInsets ->
+            val insets =
+                windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+            val imeFixedBottom =
+                if (windowInsets.isVisible(WindowInsetsCompat.Type.ime())) max(
+                    windowInsets.getInsets(
+                        WindowInsetsCompat.Type.ime()
+                    ).bottom, insets.bottom
+                ) else insets.bottom
+            root.findViewById<View>(R.id.actionbar)?.setPadding(0, insets.top, 0, 0)
+            root.setPadding(0, 0, 0, imeFixedBottom)
+            WindowInsetsCompat.CONSUMED
+        }
+
         stickersKeywordsView = root.findViewById(R.id.stickers)
         stickersAdapter = StickersKeyWordsAdapter(requireActivity(), emptyList())
         stickersAdapter?.setStickerClickedListener(object : OnStickerClickedListener {

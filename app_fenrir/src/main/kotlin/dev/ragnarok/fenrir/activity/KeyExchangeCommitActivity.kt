@@ -2,13 +2,21 @@ package dev.ragnarok.fenrir.activity
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.activity.SystemBarStyle
+import androidx.activity.enableEdgeToEdge
 import androidx.annotation.StyleRes
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.insets.ProtectionLayout
+import androidx.core.view.iterator
 import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.crypt.ExchangeMessage
@@ -20,6 +28,7 @@ import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.settings.theme.ThemeOverlay
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.ViewUtils
+import kotlin.math.max
 
 class KeyExchangeCommitActivity : AppCompatActivity() {
     override fun attachBaseContext(newBase: Context) {
@@ -42,6 +51,43 @@ class KeyExchangeCommitActivity : AppCompatActivity() {
         window.setBackgroundDrawableResource(R.color.transparent)
 
         setContentView(R.layout.activity_key_exchange_commit)
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.item_root)) { v, windowInsets ->
+            val insets =
+                windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+            val imeFixedBottom =
+                if (windowInsets.isVisible(WindowInsetsCompat.Type.ime())) max(
+                    windowInsets.getInsets(
+                        WindowInsetsCompat.Type.ime()
+                    ).bottom, insets.bottom
+                ) else insets.bottom
+            v.setPadding(
+                insets.left, insets.top,
+                insets.right,
+                imeFixedBottom
+            )
+            WindowInsetsCompat.CONSUMED
+        }
+        val statusBarColor = Color.TRANSPARENT
+        val navigationBarColor = Color.TRANSPARENT
+        val invertIcons = !Settings.get().ui().isDarkModeEnabled(
+            this
+        )
+        val statusBarStyle = if (invertIcons) SystemBarStyle.light(
+            statusBarColor,
+            statusBarColor
+        ) else SystemBarStyle.dark(statusBarColor)
+        val navigationBarStyle = if (invertIcons) SystemBarStyle.light(
+            navigationBarColor,
+            navigationBarColor
+        ) else SystemBarStyle.dark(navigationBarColor)
+        for (i in (window.decorView as ViewGroup)) {
+            if (i is ProtectionLayout) {
+                (window.decorView as ViewGroup).removeView(i)
+            }
+        }
+        enableEdgeToEdge(statusBarStyle, navigationBarStyle)
+
         val accountId = (intent.extras ?: return).getLong(Extra.ACCOUNT_ID)
         val peerId = (intent.extras ?: return).getLong(Extra.PEER_ID)
         val user: User = intent.getParcelableExtraCompat(Extra.OWNER) ?: return

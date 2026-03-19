@@ -23,6 +23,7 @@ interface IPhotoPagerView : IMvpView, IErrorView, IToastView {
     fun goToComments(accountId: Long, commented: Commented)
     fun displayPhotoListLoading(loading: Boolean)
     fun setButtonsBarVisible(visible: Boolean)
+    fun setIsFullScreen(fullScreen: Boolean)
     fun setToolbarVisible(visible: Boolean)
     fun rebindPhotoAt(position: Int)
     fun rebindPhotoAtPartial(position: Int)

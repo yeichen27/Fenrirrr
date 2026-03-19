@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.content.res.Configuration
+import android.content.res.Configuration.ORIENTATION_LANDSCAPE
 import android.graphics.*
 import android.os.Build
 import android.view.Display
@@ -75,6 +76,10 @@ object Utils {
             }
         }
         return target
+    }
+
+    fun isLandscape(context: Context): Boolean {
+        return context.resources.configuration.orientation == ORIENTATION_LANDSCAPE
     }
 
     fun is600dp(context: Context): Boolean {

@@ -12,6 +12,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuProvider
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.checkbox.MaterialCheckBox
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
@@ -39,6 +41,7 @@ import dev.ragnarok.fenrir.util.ViewUtils.displayAvatar
 import dev.ragnarok.fenrir.util.ViewUtils.getOnlineIcon
 import dev.ragnarok.fenrir.view.MySpinnerView
 import dev.ragnarok.fenrir.view.OnlineView
+import kotlin.math.max
 
 class CommunityBanEditFragment :
     BaseMvpFragment<CommunityBanEditPresenter, ICommunityBanEditView>(), ICommunityBanEditView,
@@ -65,6 +68,21 @@ class CommunityBanEditFragment :
     ): View? {
         val root = inflater.inflate(R.layout.fragment_community_ban_edit, container, false)
         (requireActivity() as AppCompatActivity).setSupportActionBar(root.findViewById(R.id.toolbar))
+
+        ViewCompat.setOnApplyWindowInsetsListener(root) { _, windowInsets ->
+            val insets =
+                windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+            val imeFixedBottom =
+                if (windowInsets.isVisible(WindowInsetsCompat.Type.ime())) max(
+                    windowInsets.getInsets(
+                        WindowInsetsCompat.Type.ime()
+                    ).bottom, insets.bottom
+                ) else insets.bottom
+            root.findViewById<View>(R.id.actionbar)?.setPadding(0, insets.top, 0, 0)
+            root.setPadding(0, 0, 0, imeFixedBottom)
+            WindowInsetsCompat.CONSUMED
+        }
+
         mAvatar = root.findViewById(R.id.avatar)
         mAvatar?.setBackgroundResource(
             if (Settings.get()

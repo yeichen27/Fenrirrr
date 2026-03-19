@@ -47,8 +47,8 @@ class VideoControllerView : FrameLayout, CustomSeekBar.CustomSeekBarListener {
         doPauseResume()
         show()
     }
-    private val mFullscreenListener = OnClickListener {
-        doToggleFullscreen()
+    private val mRotationDisplayListener = OnClickListener {
+        doRotateDisplay()
         show()
     }
 
@@ -140,10 +140,10 @@ class VideoControllerView : FrameLayout, CustomSeekBar.CustomSeekBarListener {
         mPauseButton = v.findViewById(R.id.pause)
         mPauseButton?.requestFocus()
         mPauseButton?.setOnClickListener(mPauseListener)
-        val mFullscreenButton = v.findViewById<TextView>(R.id.fullscreen)
-        if (mFullscreenButton != null) {
-            mFullscreenButton.requestFocus()
-            mFullscreenButton.setOnClickListener(mFullscreenListener)
+        val mRotationDisplayButton = v.findViewById<TextView>(R.id.rotate)
+        if (mRotationDisplayButton != null) {
+            mRotationDisplayButton.requestFocus()
+            mRotationDisplayButton.setOnClickListener(mRotationDisplayListener)
         }
         mFfwdButton = v.findViewById(R.id.ffwd)
         if (mFfwdButton != null) {
@@ -414,8 +414,8 @@ class VideoControllerView : FrameLayout, CustomSeekBar.CustomSeekBarListener {
         updatePausePlay()
     }
 
-    private fun doToggleFullscreen() {
-        mPlayer?.toggleFullScreen()
+    private fun doRotateDisplay() {
+        mPlayer?.doRotateDisplay()
     }
 
     override fun setEnabled(enabled: Boolean) {
@@ -475,9 +475,8 @@ class VideoControllerView : FrameLayout, CustomSeekBar.CustomSeekBarListener {
         fun canPause(): Boolean
         fun canSeekBackward(): Boolean
         fun canSeekForward(): Boolean
-        val isFullScreen: Boolean
         fun commentClick()
-        fun toggleFullScreen()
+        fun doRotateDisplay()
         fun toPIPScreen()
         fun hideActionBar()
         fun onScrolling(position: Long)

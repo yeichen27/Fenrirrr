@@ -11,9 +11,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.activity.SystemBarStyle
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.core.view.WindowInsetsControllerCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.insets.ProtectionLayout
+import androidx.core.view.iterator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
@@ -25,6 +30,7 @@ import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.slidr.Slidr.attach
 import dev.ragnarok.fenrir.activity.slidr.model.SlidrConfig
 import dev.ragnarok.fenrir.activity.slidr.model.SlidrPosition
+import dev.ragnarok.fenrir.applyAlpha
 import dev.ragnarok.fenrir.fragment.absownerslist.OwnersAdapter
 import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.kJson
@@ -60,6 +66,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.text.DateFormat
 import java.text.SimpleDateFormat
+import kotlin.math.max
 
 class DeltaOwnerActivity : AppCompatActivity(), PlaceProvider, AppStyleable {
     private var mToolbar: Toolbar? = null
@@ -80,6 +87,24 @@ class DeltaOwnerActivity : AppCompatActivity(), PlaceProvider, AppStyleable {
         )
         setContentView(R.layout.activity_delta_owner)
         setSupportActionBar(findViewById(R.id.toolbar))
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.item_root)) { v, windowInsets ->
+            val insets =
+                windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+            val imeFixedBottom =
+                if (windowInsets.isVisible(WindowInsetsCompat.Type.ime())) max(
+                    windowInsets.getInsets(
+                        WindowInsetsCompat.Type.ime()
+                    ).bottom, insets.bottom
+                ) else insets.bottom
+            v.setPadding(
+                insets.left, insets.top,
+                insets.right,
+                imeFixedBottom
+            )
+            WindowInsetsCompat.CONSUMED
+        }
+
         supportActionBar?.title = null
         supportActionBar?.subtitle = null
 
@@ -285,19 +310,27 @@ class DeltaOwnerActivity : AppCompatActivity(), PlaceProvider, AppStyleable {
     }
 
     override fun setStatusbarColored(colored: Boolean, invertIcons: Boolean) {
-        val w = window
-        @Suppress("deprecation")
-        if (!hasVanillaIceCreamTarget()) {
-            w.statusBarColor =
-                if (colored) getStatusBarColor(this) else getStatusBarNonColored(
-                    this
-                )
-            w.navigationBarColor =
-                if (colored) getNavigationBarColor(this) else Color.BLACK
+        val statusBarColor = if (colored) getStatusBarColor(this) else getStatusBarNonColored(
+            this
+        )
+        val navigationBarColor = if (colored) getNavigationBarColor(this) else Color.BLACK
+
+        val statusBarStyle = if (invertIcons) SystemBarStyle.light(
+            statusBarColor.applyAlpha(180),
+            statusBarColor.applyAlpha(180)
+        ) else SystemBarStyle.dark(statusBarColor.applyAlpha(180))
+        val navigationBarStyle = if (invertIcons) SystemBarStyle.light(
+            navigationBarColor.applyAlpha(180),
+            navigationBarColor.applyAlpha(180)
+        ) else SystemBarStyle.dark(navigationBarColor.applyAlpha(180))
+
+        for (i in (window.decorView as ViewGroup)) {
+            if (i is ProtectionLayout) {
+                (window.decorView as ViewGroup).removeView(i)
+            }
         }
-        val ins = WindowInsetsControllerCompat(w, w.decorView)
-        ins.isAppearanceLightStatusBars = invertIcons
-        ins.isAppearanceLightNavigationBars = invertIcons
+
+        enableEdgeToEdge(statusBarStyle, navigationBarStyle)
     }
 
     companion object {

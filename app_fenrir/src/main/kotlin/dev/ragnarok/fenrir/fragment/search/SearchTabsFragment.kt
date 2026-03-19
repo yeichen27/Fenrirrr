@@ -5,6 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
@@ -38,6 +40,14 @@ class SearchTabsFragment : Fragment() {
         val root = inflater.inflate(R.layout.fragment_search_tabs, container, false)
         val mViewPager: ViewPager2 = root.findViewById(R.id.viewpager)
         (requireActivity() as AppCompatActivity).setSupportActionBar(root.findViewById(R.id.toolbar))
+
+        ViewCompat.setOnApplyWindowInsetsListener(root) { _, windowInsets ->
+            val insets =
+                windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+            root.findViewById<View>(R.id.actionbar)?.setPadding(0, insets.top, 0, 0)
+            WindowInsetsCompat.CONSUMED
+        }
+
         val mAdapter = Adapter(this)
         mViewPager.adapter = mAdapter
         mViewPager.setPageTransformer(
@@ -95,52 +105,52 @@ class SearchTabsFragment : Fragment() {
         override fun createFragment(position: Int): Fragment {
             val accountId = fromArgs(arguments)
             val fragment: Fragment = when (position) {
-                TAB_PEOPLE -> SingleTabSearchFragment.newInstance(
+                TAB_PEOPLE -> SearchFragmentFactory.create(
                     accountId,
                     SearchContentType.PEOPLE
                 )
 
-                TAB_COMMUNITIES -> SingleTabSearchFragment.newInstance(
+                TAB_COMMUNITIES -> SearchFragmentFactory.create(
                     accountId,
                     SearchContentType.COMMUNITIES
                 )
 
-                TAB_MUSIC -> SingleTabSearchFragment.newInstance(
+                TAB_MUSIC -> SearchFragmentFactory.create(
                     accountId,
                     SearchContentType.AUDIOS
                 )
 
-                TAB_AUDIO_PLAYLISTS -> SingleTabSearchFragment.newInstance(
+                TAB_AUDIO_PLAYLISTS -> SearchFragmentFactory.create(
                     accountId,
                     SearchContentType.AUDIO_PLAYLISTS
                 )
 
-                TAB_VIDEOS -> SingleTabSearchFragment.newInstance(
+                TAB_VIDEOS -> SearchFragmentFactory.create(
                     accountId,
                     SearchContentType.VIDEOS
                 )
 
-                TAB_DOCUMENTS -> SingleTabSearchFragment.newInstance(
+                TAB_DOCUMENTS -> SearchFragmentFactory.create(
                     accountId,
                     SearchContentType.DOCUMENTS
                 )
 
-                TAB_PHOTOS -> SingleTabSearchFragment.newInstance(
+                TAB_PHOTOS -> SearchFragmentFactory.create(
                     accountId,
                     SearchContentType.PHOTOS
                 )
 
-                TAB_NEWS -> SingleTabSearchFragment.newInstance(
+                TAB_NEWS -> SearchFragmentFactory.create(
                     accountId,
                     SearchContentType.NEWS
                 )
 
-                TAB_MESSAGES -> SingleTabSearchFragment.newInstance(
+                TAB_MESSAGES -> SearchFragmentFactory.create(
                     accountId,
                     SearchContentType.MESSAGES
                 )
 
-                TAB_ARTISTS -> SingleTabSearchFragment.newInstance(
+                TAB_ARTISTS -> SearchFragmentFactory.create(
                     accountId,
                     SearchContentType.ARTISTS
                 )

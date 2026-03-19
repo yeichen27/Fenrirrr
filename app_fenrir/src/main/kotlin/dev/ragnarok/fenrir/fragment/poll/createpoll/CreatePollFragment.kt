@@ -11,6 +11,8 @@ import android.view.ViewGroup
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuProvider
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isGone
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -24,6 +26,7 @@ import dev.ragnarok.fenrir.activity.ActivityUtils.supportToolbarFor
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
 import dev.ragnarok.fenrir.listener.TextWatcherAdapter
 import dev.ragnarok.fenrir.model.Poll
+import kotlin.math.max
 
 class CreatePollFragment : BaseMvpFragment<CreatePollPresenter, ICreatePollView>(),
     ICreatePollView, MenuProvider {
@@ -42,6 +45,20 @@ class CreatePollFragment : BaseMvpFragment<CreatePollPresenter, ICreatePollView>
     ): View? {
         val root = inflater.inflate(R.layout.fragment_create_poll, container, false)
         (requireActivity() as AppCompatActivity).setSupportActionBar(root.findViewById(R.id.toolbar))
+
+        ViewCompat.setOnApplyWindowInsetsListener(root) { _, windowInsets ->
+            val insets =
+                windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+            val imeFixedBottom =
+                if (windowInsets.isVisible(WindowInsetsCompat.Type.ime())) max(
+                    windowInsets.getInsets(
+                        WindowInsetsCompat.Type.ime()
+                    ).bottom, insets.bottom
+                ) else insets.bottom
+            root.findViewById<View>(R.id.actionbar)?.setPadding(0, insets.top, 0, 0)
+            root.setPadding(0, 0, 0, imeFixedBottom)
+            WindowInsetsCompat.CONSUMED
+        }
 
         mPollBackground = root.findViewById(R.id.poll_background_option)
         mPollBackground?.layoutManager =

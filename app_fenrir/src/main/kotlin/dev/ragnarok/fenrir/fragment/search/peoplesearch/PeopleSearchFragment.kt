@@ -50,11 +50,13 @@ class PeopleSearchFragment :
 
         fun newInstance(
             accountId: Long,
-            initialCriteria: PeopleSearchCriteria?
+            initialCriteria: PeopleSearchCriteria?,
+            hideToolbar: Boolean
         ): PeopleSearchFragment {
             val args = Bundle()
             args.putLong(Extra.ACCOUNT_ID, accountId)
             args.putParcelable(Extra.CRITERIA, initialCriteria)
+            args.putBoolean(Extra.IN_TABS_CONTAINER, hideToolbar)
             val fragment = PeopleSearchFragment()
             fragment.arguments = args
             return fragment

@@ -4,8 +4,7 @@
     android:id="@+id/main_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?android:colorBackground"
-    android:fitsSystemWindows="true">
+    android:background="?android:colorBackground">
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/recycleViewFrame"
@@ -28,8 +27,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/bottom_navigation_menu_container"
-        android:layout_below="@id/recycleViewFrame"
-        android:clipToPadding="false" />
+        android:layout_below="@id/recycleViewFrame" />
 
     <dev.ragnarok.fenrir.view.navigation.AdditionalNavigationView
         android:id="@+id/additional_navigation_menu"

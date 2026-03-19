@@ -19,6 +19,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.net.toUri
 import androidx.core.view.MenuProvider
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.squareup.picasso3.Transformation
 import dev.ragnarok.fenrir.Constants
@@ -157,6 +159,16 @@ class VideoPreviewFragment : BaseMvpFragment<VideoPreviewPresenter, IVideoPrevie
     ): View? {
         mRootView = inflater.inflate(R.layout.fragment_video, container, false)
         (requireActivity() as AppCompatActivity).setSupportActionBar(mRootView?.findViewById(R.id.toolbar))
+
+        mRootView?.let {
+            ViewCompat.setOnApplyWindowInsetsListener(it) { v, windowInsets ->
+                val insets =
+                    windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+                v.findViewById<View>(R.id.actionbar)?.setPadding(0, insets.top, 0, 0)
+                WindowInsetsCompat.CONSUMED
+            }
+        }
+
         mPreviewImage = mRootView?.findViewById(R.id.fragment_video_preview_image)
         likeButton = mRootView?.findViewById(R.id.like_button)
         val shareButton: CircleCounterButton? = mRootView?.findViewById(R.id.share_button)

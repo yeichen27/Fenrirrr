@@ -130,11 +130,7 @@ class PicassoInstance @SuppressLint("CheckResult") private constructor(
         @SuppressLint("StaticFieldLeak")
         private var instance: PicassoInstance? = null
 
-
-        fun buildUriForPicasso(@Content_Local type: Int, id: Long): Uri {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                return buildUriForPicassoNew(type, id)
-            }
+        private fun buildUriForPicassoOld(@Content_Local type: Int, id: Long): Uri {
             when (type) {
                 Content_Local.PHOTO -> return ContentUris.withAppendedId(
                     "content://media/external/images/media/".toUri(),
@@ -157,7 +153,10 @@ class PicassoInstance @SuppressLint("CheckResult") private constructor(
             )
         }
 
-        fun buildUriForPicassoNew(@Content_Local type: Int, id: Long): Uri {
+        fun buildUriForPicasso(@Content_Local type: Int, id: Long): Uri {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+                return buildUriForPicassoOld(type, id)
+            }
             when (type) {
                 Content_Local.PHOTO -> return ContentUris.withAppendedId(
                     MediaStore.Images.Media.EXTERNAL_CONTENT_URI,

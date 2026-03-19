@@ -19,6 +19,8 @@ import android.webkit.WebView.HitTestResult
 import android.webkit.WebViewClient
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuProvider
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.webkit.WebSettingsCompat
 import androidx.webkit.WebViewFeature
 import dev.ragnarok.fenrir.Extra
@@ -89,6 +91,14 @@ class BrowserFragment : BaseFragment(), MenuProvider, BackPressCallback,
     ): View? {
         val root = inflater.inflate(R.layout.fragment_browser, container, false)
         (requireActivity() as AppCompatActivity).setSupportActionBar(root.findViewById(R.id.toolbar))
+
+        ViewCompat.setOnApplyWindowInsetsListener(root) { _, windowInsets ->
+            val insets =
+                windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+            root.findViewById<View>(R.id.actionbar)?.setPadding(0, insets.top, 0, 0)
+            WindowInsetsCompat.CONSUMED
+        }
+
         mWebView = root.findViewById(R.id.webview)
         mWebView?.settings?.builtInZoomControls = true
         mWebView?.settings?.displayZoomControls = false

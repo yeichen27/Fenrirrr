@@ -288,6 +288,15 @@ public class FirebaseInstallations implements FirebaseInstallationsApi {
   }
 
   /**
+   * Clears all data associated with the Firebase Installation ID (FID) of the current Firebase App.
+   * @hide
+   */
+  @Override
+  public void clearFidCache() {
+    persistedInstallation.clearDataFile();
+  }
+
+  /**
    * Register a callback {@link FidListener} to receive fid changes.
    *
    * @hide
@@ -422,7 +431,7 @@ public class FirebaseInstallations implements FirebaseInstallationsApi {
 
     // Let the caller know about the result.
     if (prefs.isErrored()) {
-      triggerOnException(new FirebaseInstallationsException("doNetworkCallIfNecessary", Status.BAD_CONFIG));
+      triggerOnException(new FirebaseInstallationsException(Status.BAD_CONFIG));
     } else if (prefs.isNotGenerated()) {
       // If there is no fid it means the call failed with an auth error. Simulate an
       // IOException so that the caller knows to try again.

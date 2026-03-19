@@ -13,8 +13,11 @@ import android.os.Bundle
 import android.os.Environment
 import android.os.IBinder
 import android.view.MenuItem
+import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.SystemBarStyle
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
@@ -22,7 +25,9 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
-import androidx.core.view.WindowInsetsControllerCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.insets.ProtectionLayout
 import androidx.core.view.iterator
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
@@ -35,6 +40,7 @@ import dev.ragnarok.fenrir.module.FenrirNative
 import dev.ragnarok.filegallery.Extra
 import dev.ragnarok.filegallery.R
 import dev.ragnarok.filegallery.activity.photopager.PhotoPagerActivity
+import dev.ragnarok.filegallery.applyAlpha
 import dev.ragnarok.filegallery.fragment.AudioPlayerFragment
 import dev.ragnarok.filegallery.fragment.PreferencesFragment
 import dev.ragnarok.filegallery.fragment.SecurityPreferencesFragment
@@ -75,7 +81,6 @@ import dev.ragnarok.filegallery.util.HelperSimple.NOTIFICATION_PERMISSION
 import dev.ragnarok.filegallery.util.HelperSimple.needHelp
 import dev.ragnarok.filegallery.util.Logger
 import dev.ragnarok.filegallery.util.Utils
-import dev.ragnarok.filegallery.util.Utils.hasVanillaIceCreamTarget
 import dev.ragnarok.filegallery.util.ViewUtils.keyboardHide
 import dev.ragnarok.filegallery.util.coroutines.CompositeJob
 import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils
@@ -83,10 +88,12 @@ import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.fromIOToMain
 import dev.ragnarok.filegallery.util.toast.CustomSnackbars
 import dev.ragnarok.filegallery.util.toast.CustomToast.Companion.createCustomToast
 import java.io.File
+import kotlin.math.max
 
 class MainActivity : AppCompatActivity(), OnSectionResumeCallback, AppStyleable, PlaceProvider,
     NavigationBarView.OnItemSelectedListener, UpdatableNavigation, ServiceConnection {
     private var mBottomNavigation: BottomNavigationView? = null
+    private var mBottomNavigationContainer: ViewGroup? = null
     private var isSelected = false
 
     @SectionItem
@@ -167,7 +174,33 @@ class MainActivity : AppCompatActivity(), OnSectionResumeCallback, AppStyleable,
         setContentView(mainContentView)
         mBottomNavigation = findViewById(R.id.bottom_navigation_menu)
         mBottomNavigation?.setOnItemSelectedListener(this)
+        mBottomNavigationContainer = findViewById(R.id.bottom_navigation_menu_container)
         mViewFragment = findViewById(mainContainerViewId)
+
+        mBottomNavigationContainer?.let {
+            ViewCompat.setOnApplyWindowInsetsListener(it) { v, windowInsets ->
+                val insets =
+                    windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+                val imeFixedBottom =
+                    if (windowInsets.isVisible(WindowInsetsCompat.Type.ime())) max(
+                        windowInsets.getInsets(
+                            WindowInsetsCompat.Type.ime()
+                        ).bottom, insets.bottom
+                    ) else insets.bottom
+                v.setPadding(
+                    insets.left, 0,
+                    insets.right,
+                    imeFixedBottom
+                )
+                mViewFragment?.setPadding(
+                    insets.left,
+                    0,
+                    insets.right,
+                    0
+                )
+                WindowInsetsCompat.CONSUMED
+            }
+        }
 
         supportFragmentManager.addOnBackStackChangedListener(mOnBackStackChangedListener)
         resolveToolbarNavigationIcon()
@@ -365,19 +398,27 @@ class MainActivity : AppCompatActivity(), OnSectionResumeCallback, AppStyleable,
     }
 
     override fun setStatusbarColored(colored: Boolean, invertIcons: Boolean) {
-        val w = window
-        @Suppress("deprecation")
-        if (!hasVanillaIceCreamTarget()) {
-            w.statusBarColor =
-                if (colored) getStatusBarColor(this) else getStatusBarNonColored(
-                    this
-                )
-            w.navigationBarColor =
-                if (colored) getNavigationBarColor(this) else Color.BLACK
+        val statusBarColor = if (colored) getStatusBarColor(this) else getStatusBarNonColored(
+            this
+        )
+        val navigationBarColor = if (colored) getNavigationBarColor(this) else Color.BLACK
+
+        val statusBarStyle = if (invertIcons) SystemBarStyle.light(
+            statusBarColor.applyAlpha(180),
+            statusBarColor.applyAlpha(180)
+        ) else SystemBarStyle.dark(statusBarColor.applyAlpha(180))
+        val navigationBarStyle = if (invertIcons) SystemBarStyle.light(
+            navigationBarColor.applyAlpha(180),
+            navigationBarColor.applyAlpha(180)
+        ) else SystemBarStyle.dark(navigationBarColor.applyAlpha(180))
+
+        for (i in (window.decorView as ViewGroup)) {
+            if (i is ProtectionLayout) {
+                (window.decorView as ViewGroup).removeView(i)
+            }
         }
-        val ins = WindowInsetsControllerCompat(w, w.decorView)
-        ins.isAppearanceLightStatusBars = invertIcons
-        ins.isAppearanceLightNavigationBars = invertIcons
+
+        enableEdgeToEdge(statusBarStyle, navigationBarStyle)
     }
 
     private fun handleIntent(action: String?, main: Boolean) {

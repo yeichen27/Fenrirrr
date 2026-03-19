@@ -72,11 +72,13 @@ class VideoSearchFragment :
     companion object {
         fun newInstance(
             accountId: Long,
-            initialCriteria: VideoSearchCriteria?
+            initialCriteria: VideoSearchCriteria?,
+            hideToolbar: Boolean
         ): VideoSearchFragment {
             val args = Bundle()
             args.putLong(Extra.ACCOUNT_ID, accountId)
             args.putParcelable(Extra.CRITERIA, initialCriteria)
+            args.putBoolean(Extra.IN_TABS_CONTAINER, hideToolbar)
             val fragment = VideoSearchFragment()
             fragment.arguments = args
             return fragment

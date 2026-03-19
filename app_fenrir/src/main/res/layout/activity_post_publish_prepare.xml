@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <dev.ragnarok.fenrir.view.RoundCornerLinearView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/item_root"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center_vertical"
-    android:fitsSystemWindows="true"
     android:orientation="vertical"
     android:padding="16dp"
+    app:fill_color="?message_bubble_color"
     app:radius_bottom_left="12dp"
     app:radius_bottom_right="12dp"
     app:radius_top_left="12dp"
-    app:radius_top_right="12dp"
-    app:view_color="?message_bubble_color">
+    app:radius_top_right="12dp">
 
     <com.google.android.material.textview.MaterialTextView
         android:layout_width="match_parent"

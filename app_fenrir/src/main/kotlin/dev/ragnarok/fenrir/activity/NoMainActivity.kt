@@ -11,11 +11,9 @@ import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.FragmentManager
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.listener.BackPressCallback
-import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.settings.theme.ThemesController.currentStyle
 import dev.ragnarok.fenrir.util.Utils
-import dev.ragnarok.fenrir.util.Utils.hasVanillaIceCreamTarget
 import dev.ragnarok.fenrir.view.zoomhelper.ZoomHelper.Companion.getInstance
 
 abstract class NoMainActivity : AppCompatActivity() {
@@ -44,12 +42,6 @@ abstract class NoMainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         isZoomPhoto = Settings.get().main().isDo_zoom_photo
         setContentView(noMainContentView)
-        @Suppress("deprecation")
-        if (!hasVanillaIceCreamTarget()) {
-            val w = window
-            w.statusBarColor = CurrentTheme.getStatusBarColor(this)
-            w.navigationBarColor = CurrentTheme.getNavigationBarColor(this)
-        }
         supportFragmentManager.addOnBackStackChangedListener(mBackStackListener)
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {

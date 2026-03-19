@@ -60,7 +60,7 @@ class TouchImageView @JvmOverloads constructor(
 ) :
     AppCompatImageView(context, attrs, defStyle) {
     //%%~Animation
-    private var mDisposable = CancelableJob()
+    private var mDisposable: CancelableJob? = CancelableJob()
     private val cache: AnimationNetworkCache = AnimationNetworkCache(context)
     private var animatedDrawable: AnimatedFileDrawable? = null
     private var attachedToWindow = false
@@ -246,7 +246,7 @@ class TouchImageView @JvmOverloads constructor(
             tmpFade = true
             fallbackTmp = fallback
         }
-        mDisposable.set(flow {
+        mDisposable?.set(flow {
             var call: Call? = null
             try {
                 val request: Request = Request.Builder()
@@ -291,7 +291,7 @@ class TouchImageView @JvmOverloads constructor(
         cancelTask: Boolean
     ) {
         if (cancelTask) {
-            mDisposable.cancel()
+            mDisposable?.cancel()
         }
         if (animatedDrawable != null) {
             animatedDrawable?.callback = null

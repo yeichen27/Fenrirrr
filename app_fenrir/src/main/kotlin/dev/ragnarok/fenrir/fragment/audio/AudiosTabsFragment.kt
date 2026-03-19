@@ -9,6 +9,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuProvider
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
@@ -49,6 +51,13 @@ class AudiosTabsFragment : BaseFragment(), MenuProvider {
     ): View {
         val root = inflater.inflate(R.layout.fragment_audios_tabs, container, false) as ViewGroup
         (requireActivity() as AppCompatActivity).setSupportActionBar(root.findViewById(R.id.toolbar))
+
+        ViewCompat.setOnApplyWindowInsetsListener(root) { _, windowInsets ->
+            val insets =
+                windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+            root.findViewById<View>(R.id.actionbar)?.setPadding(0, insets.top, 0, 0)
+            WindowInsetsCompat.CONSUMED
+        }
         return root
     }
 
@@ -93,13 +102,13 @@ class AudiosTabsFragment : BaseFragment(), MenuProvider {
         return when (option_menu) {
             PLAYLISTS -> {
                 val fragment = AudioPlaylistsFragment.newInstance(accountId, ownerId)
-                fragment.requireArguments().putBoolean(AudiosFragment.EXTRA_IN_TABS_CONTAINER, true)
+                fragment.requireArguments().putBoolean(Extra.IN_TABS_CONTAINER, true)
                 fragment
             }
 
             LOCAL -> {
                 val fragment = AudiosLocalFragment.newInstance(accountId)
-                fragment.requireArguments().putBoolean(AudiosFragment.EXTRA_IN_TABS_CONTAINER, true)
+                fragment.requireArguments().putBoolean(Extra.IN_TABS_CONTAINER, true)
                 fragment
             }
 
@@ -109,7 +118,7 @@ class AudiosTabsFragment : BaseFragment(), MenuProvider {
 
             MY_AUDIO -> {
                 val args = AudiosFragment.buildArgs(accountId, ownerId, null, null)
-                args.putBoolean(AudiosFragment.EXTRA_IN_TABS_CONTAINER, true)
+                args.putBoolean(Extra.IN_TABS_CONTAINER, true)
                 AudiosFragment.newInstance(args)
             }
 
@@ -117,7 +126,7 @@ class AudiosTabsFragment : BaseFragment(), MenuProvider {
                 val fragment = AudiosRecommendationFragment.newInstance(
                     accountId, ownerId, false, 0
                 )
-                fragment.requireArguments().putBoolean(AudiosFragment.EXTRA_IN_TABS_CONTAINER, true)
+                fragment.requireArguments().putBoolean(Extra.IN_TABS_CONTAINER, true)
                 fragment
             }
 
@@ -125,7 +134,7 @@ class AudiosTabsFragment : BaseFragment(), MenuProvider {
                 val fragment = AudiosRecommendationFragment.newInstance(
                     accountId, ownerId, true, option_menu
                 )
-                fragment.requireArguments().putBoolean(AudiosFragment.EXTRA_IN_TABS_CONTAINER, true)
+                fragment.requireArguments().putBoolean(Extra.IN_TABS_CONTAINER, true)
                 fragment
             }
         }

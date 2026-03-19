@@ -4,15 +4,13 @@
     android:id="@+id/main_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?android:colorBackground"
-    android:fitsSystemWindows="true">
+    android:background="?android:colorBackground">
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@id/bottom_navigation_menu_container"
-        android:clipToPadding="false" />
+        android:layout_above="@id/bottom_navigation_menu_container" />
 
     <dev.ragnarok.fenrir.view.navigation.AdditionalNavigationView
         android:id="@+id/additional_navigation_menu"

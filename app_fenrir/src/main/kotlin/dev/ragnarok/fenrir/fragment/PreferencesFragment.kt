@@ -31,6 +31,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.edit
 import androidx.core.graphics.scale
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -85,6 +87,7 @@ import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.ActivityUtils
 import dev.ragnarok.fenrir.activity.EnterPinActivity
 import dev.ragnarok.fenrir.activity.FileManagerSelectActivity
+import dev.ragnarok.fenrir.activity.MainActivity
 import dev.ragnarok.fenrir.activity.PhotosActivity
 import dev.ragnarok.fenrir.activity.ProxyManagerActivity
 import dev.ragnarok.fenrir.activity.alias.BlackFenrirAlias
@@ -150,6 +153,7 @@ import kotlinx.serialization.prefs.Preferences
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import kotlin.math.max
 
 class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScreenChangeListener,
     BackPressCallback, CanBackPressedCallback {
@@ -207,6 +211,32 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
         savedInstanceState: Bundle?
     ): View {
         val root = inflater.inflate(R.layout.preference_fenrir_list_fragment, container, false)
+        (requireActivity() as AppCompatActivity).setSupportActionBar(root.findViewById(R.id.toolbar))
+
+        if (requireActivity() is MainActivity) {
+            ViewCompat.setOnApplyWindowInsetsListener(root) { _, windowInsets ->
+                val insets =
+                    windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+                root.findViewById<View>(R.id.actionbar)?.setPadding(0, insets.top, 0, 0)
+                WindowInsetsCompat.CONSUMED
+            }
+        } else {
+            ViewCompat.setOnApplyWindowInsetsListener(root) { _, windowInsets ->
+                val insets =
+                    windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+                val imeFixedBottom =
+                    if (windowInsets.isVisible(WindowInsetsCompat.Type.ime())) max(
+                        windowInsets.getInsets(
+                            WindowInsetsCompat.Type.ime()
+                        ).bottom, insets.bottom
+                    ) else insets.bottom
+                root.findViewById<View>(R.id.actionbar)
+                    ?.setPadding(insets.left, insets.top, insets.right, 0)
+                preferencesView?.setPadding(insets.left, 0, insets.right, imeFixedBottom)
+                WindowInsetsCompat.CONSUMED
+            }
+        }
+
         searchView = root.findViewById(R.id.searchview)
         searchView?.setRightButtonVisibility(false)
         searchView?.setLeftIcon(R.drawable.magnify)

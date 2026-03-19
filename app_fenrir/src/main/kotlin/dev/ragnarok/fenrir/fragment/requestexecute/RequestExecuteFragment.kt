@@ -6,6 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.textfield.TextInputEditText
 import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
@@ -37,6 +39,14 @@ class RequestExecuteFragment : BaseMvpFragment<RequestExecutePresenter, IRequest
     ): View? {
         val root = inflater.inflate(R.layout.fragment_request_executor, container, false)
         (requireActivity() as AppCompatActivity).setSupportActionBar(root.findViewById(R.id.toolbar))
+
+        ViewCompat.setOnApplyWindowInsetsListener(root) { _, windowInsets ->
+            val insets =
+                windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+            root.findViewById<View>(R.id.actionbar)?.setPadding(0, insets.top, 0, 0)
+            WindowInsetsCompat.CONSUMED
+        }
+
         mResposeBody = root.findViewById(R.id.response_body)
         val methodEditText: TextInputEditText = root.findViewById(R.id.method)
         methodEditText.addTextChangedListener(object : TextWatcherAdapter() {

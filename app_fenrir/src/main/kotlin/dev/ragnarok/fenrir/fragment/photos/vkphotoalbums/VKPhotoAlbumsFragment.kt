@@ -12,7 +12,10 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.MenuProvider
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -22,6 +25,7 @@ import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.ActivityUtils.supportToolbarFor
+import dev.ragnarok.fenrir.activity.MainActivity
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
 import dev.ragnarok.fenrir.fragment.photos.vkphotoalbums.PhotoAlbumsPresenter.AdditionalParams
 import dev.ragnarok.fenrir.getParcelableCompat
@@ -39,8 +43,10 @@ import dev.ragnarok.fenrir.place.PlaceFactory.getLocalServerPhotosPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getPhotoAllCommentsPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getVKPhotosAlbumPlace
 import dev.ragnarok.fenrir.settings.Settings
+import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.ViewUtils.setupSwipeRefreshLayoutWithCurrentTheme
 import dev.ragnarok.fenrir.view.navigation.AbsNavigationView
+import kotlin.math.max
 
 class VKPhotoAlbumsFragment : BaseMvpFragment<PhotoAlbumsPresenter, IPhotoAlbumsView>(),
     IPhotoAlbumsView, VKPhotoAlbumsAdapter.ClickListener, SwipeRefreshLayout.OnRefreshListener,
@@ -60,18 +66,46 @@ class VKPhotoAlbumsFragment : BaseMvpFragment<PhotoAlbumsPresenter, IPhotoAlbums
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_albums_gallery, container, false)
-        val toolbar: Toolbar = view.findViewById(R.id.toolbar)
+        val root = inflater.inflate(R.layout.fragment_albums_gallery, container, false)
+        val toolbar: Toolbar = root.findViewById(R.id.toolbar)
+        val recyclerView: RecyclerView = root.findViewById(R.id.list)
         if (!hasHideToolbarExtra()) {
             (requireActivity() as AppCompatActivity).setSupportActionBar(toolbar)
+
+            if (requireActivity() is MainActivity) {
+                ViewCompat.setOnApplyWindowInsetsListener(root) { _, windowInsets ->
+                    val insets =
+                        windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+                    root.findViewById<View>(R.id.actionbar)?.setPadding(0, insets.top, 0, 0)
+                    WindowInsetsCompat.CONSUMED
+                }
+            } else {
+                ViewCompat.setOnApplyWindowInsetsListener(root) { _, windowInsets ->
+                    val insets =
+                        windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+                    val imeFixedBottom =
+                        if (windowInsets.isVisible(WindowInsetsCompat.Type.ime())) max(
+                            windowInsets.getInsets(
+                                WindowInsetsCompat.Type.ime()
+                            ).bottom, insets.bottom
+                        ) else insets.bottom
+                    root.findViewById<View>(R.id.actionbar)
+                        ?.setPadding(insets.left, insets.top, insets.right, 0)
+                    recyclerView.setPadding(insets.left, 0, insets.right, imeFixedBottom)
+                    (mFab?.layoutParams as? CoordinatorLayout.LayoutParams)?.bottomMargin =
+                        imeFixedBottom + Utils.dp(16f)
+                    (mFab?.layoutParams as? CoordinatorLayout.LayoutParams)?.rightMargin =
+                        insets.right + Utils.dp(16f)
+                    WindowInsetsCompat.CONSUMED
+                }
+            }
         } else {
             toolbar.visibility = View.GONE
         }
-        mSwipeRefreshLayout = view.findViewById(R.id.refresh)
+        mSwipeRefreshLayout = root.findViewById(R.id.refresh)
         mSwipeRefreshLayout?.setOnRefreshListener(this)
         setupSwipeRefreshLayoutWithCurrentTheme(requireActivity(), mSwipeRefreshLayout)
-        val recyclerView: RecyclerView = view.findViewById(R.id.list)
-        mEmptyText = view.findViewById(R.id.empty)
+        mEmptyText = root.findViewById(R.id.empty)
         val columnCount = resources.getInteger(R.integer.photos_albums_column_count)
         recyclerView.layoutManager = GridLayoutManager(requireActivity(), columnCount)
         PicassoPauseOnScrollListener.addListener(recyclerView)
@@ -83,11 +117,11 @@ class VKPhotoAlbumsFragment : BaseMvpFragment<PhotoAlbumsPresenter, IPhotoAlbums
         mAdapter = VKPhotoAlbumsAdapter(requireActivity(), emptyList())
         mAdapter?.setClickListener(this)
         recyclerView.adapter = mAdapter
-        mFab = view.findViewById(R.id.fab)
+        mFab = root.findViewById(R.id.fab)
         mFab?.setOnClickListener {
             presenter?.fireCreateAlbumClick()
         }
-        return view
+        return root
     }
 
     override fun onResume() {

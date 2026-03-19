@@ -110,6 +110,7 @@ open class PhotoPagerPresenter internal constructor(
         resolveRestoreButtonVisibility()
         resolveToolbarVisibility()
         resolveButtonsBarVisible()
+        resolveFullScreen()
         resolveLoadingView()
     }
 
@@ -685,12 +686,17 @@ open class PhotoPagerPresenter internal constructor(
         mFullScreen = !mFullScreen
         resolveToolbarVisibility()
         resolveButtonsBarVisible()
+        resolveFullScreen()
     }
 
     fun resolveButtonsBarVisible() {
         view?.setButtonsBarVisible(
             hasPhotos() && !mFullScreen
         )
+    }
+
+    fun resolveFullScreen() {
+        view?.setIsFullScreen(mFullScreen)
     }
 
     fun resolveToolbarVisibility() {

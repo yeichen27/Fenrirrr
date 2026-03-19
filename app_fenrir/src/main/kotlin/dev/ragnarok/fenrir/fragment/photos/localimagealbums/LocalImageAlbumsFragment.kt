@@ -8,6 +8,8 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -20,6 +22,7 @@ import dev.ragnarok.fenrir.place.PlaceFactory.getLocalImageAlbumPlace
 import dev.ragnarok.fenrir.util.AppPerms.requestPermissionsAbs
 import dev.ragnarok.fenrir.util.ViewUtils.setupSwipeRefreshLayoutWithCurrentTheme
 import dev.ragnarok.fenrir.view.MySearchView
+import kotlin.math.max
 
 class LocalImageAlbumsFragment :
     BaseMvpFragment<LocalPhotoAlbumsPresenter, ILocalPhotoAlbumsView>(),
@@ -42,14 +45,34 @@ class LocalImageAlbumsFragment :
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_local_albums_gallery, container, false)
-        val toolbar: Toolbar = view.findViewById(R.id.toolbar)
+        val root = inflater.inflate(R.layout.fragment_local_albums_gallery, container, false)
+        val toolbar: Toolbar = root.findViewById(R.id.toolbar)
+        val columnCount = resources.getInteger(R.integer.photos_albums_column_count)
+        val manager: RecyclerView.LayoutManager =
+            StaggeredGridLayoutManager(columnCount, StaggeredGridLayoutManager.VERTICAL)
+        mRecyclerView = root.findViewById(R.id.list)
+        mRecyclerView?.layoutManager = manager
         if (!hasHideToolbarExtra()) {
             (requireActivity() as AppCompatActivity).setSupportActionBar(toolbar)
+
+            ViewCompat.setOnApplyWindowInsetsListener(root) { _, windowInsets ->
+                val insets =
+                    windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+                val imeFixedBottom =
+                    if (windowInsets.isVisible(WindowInsetsCompat.Type.ime())) max(
+                        windowInsets.getInsets(
+                            WindowInsetsCompat.Type.ime()
+                        ).bottom, insets.bottom
+                    ) else insets.bottom
+                root.findViewById<View>(R.id.actionbar)
+                    ?.setPadding(insets.left, insets.top, insets.right, 0)
+                mRecyclerView?.setPadding(insets.left, 0, insets.right, imeFixedBottom)
+                WindowInsetsCompat.CONSUMED
+            }
         } else {
             toolbar.visibility = View.GONE
         }
-        val mySearchView: MySearchView = view.findViewById(R.id.searchview)
+        val mySearchView: MySearchView = root.findViewById(R.id.searchview)
         mySearchView.setRightButtonVisibility(false)
         mySearchView.setLeftIcon(R.drawable.magnify)
         mySearchView.setOnQueryTextListener(object : MySearchView.OnQueryTextListener {
@@ -69,21 +92,17 @@ class LocalImageAlbumsFragment :
                 return false
             }
         })
-        mSwipeRefreshLayout = view.findViewById(R.id.refresh)
+        mSwipeRefreshLayout = root.findViewById(R.id.refresh)
         mSwipeRefreshLayout?.setOnRefreshListener(this)
         setupSwipeRefreshLayoutWithCurrentTheme(requireActivity(), mSwipeRefreshLayout)
-        val columnCount = resources.getInteger(R.integer.photos_albums_column_count)
-        val manager: RecyclerView.LayoutManager =
-            StaggeredGridLayoutManager(columnCount, StaggeredGridLayoutManager.VERTICAL)
-        mRecyclerView = view.findViewById(R.id.list)
-        mRecyclerView?.layoutManager = manager
+
         PicassoPauseOnScrollListener.addListener(mRecyclerView, LocalPhotoAlbumsAdapter.PICASSO_TAG)
         mAlbumsAdapter =
             LocalPhotoAlbumsAdapter(requireActivity(), emptyList(), Content_Local.PHOTO)
         mAlbumsAdapter?.setClickListener(this)
         mRecyclerView?.adapter = mAlbumsAdapter
-        mEmptyTextView = view.findViewById(R.id.empty)
-        return view
+        mEmptyTextView = root.findViewById(R.id.empty)
+        return root
     }
 
     override fun onClick(album: LocalImageAlbum) {

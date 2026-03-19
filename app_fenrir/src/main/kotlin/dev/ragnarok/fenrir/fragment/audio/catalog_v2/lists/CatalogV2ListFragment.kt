@@ -11,6 +11,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuProvider
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
@@ -172,6 +174,12 @@ class CatalogV2ListFragment : BaseMvpFragment<CatalogV2ListPresenter, ICatalogV2
                 loading?.alpha = 1f
             }
         })
+        ViewCompat.setOnApplyWindowInsetsListener(root) { _, windowInsets ->
+            val insets =
+                windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+            root.findViewById<View>(R.id.actionbar)?.setPadding(0, insets.top, 0, 0)
+            WindowInsetsCompat.CONSUMED
+        }
         return root
     }
 
@@ -276,7 +284,7 @@ class CatalogV2ListFragment : BaseMvpFragment<CatalogV2ListPresenter, ICatalogV2
                         null,
                         null
                     )
-                    args.putBoolean(AudiosFragment.EXTRA_IN_TABS_CONTAINER, true)
+                    args.putBoolean(Extra.IN_TABS_CONTAINER, true)
                     return AudiosFragment.newInstance(args)
                 }
 
@@ -286,7 +294,7 @@ class CatalogV2ListFragment : BaseMvpFragment<CatalogV2ListPresenter, ICatalogV2
                         requireArguments().getLong(Extra.OWNER_ID)
                     )
                     fragment.requireArguments()
-                        .putBoolean(AudiosFragment.EXTRA_IN_TABS_CONTAINER, true)
+                        .putBoolean(Extra.IN_TABS_CONTAINER, true)
                     return fragment
                 }
 
@@ -296,7 +304,7 @@ class CatalogV2ListFragment : BaseMvpFragment<CatalogV2ListPresenter, ICatalogV2
                         requireArguments().getLong(Extra.OWNER_ID), false, 0
                     )
                     fragment.requireArguments()
-                        .putBoolean(AudiosFragment.EXTRA_IN_TABS_CONTAINER, true)
+                        .putBoolean(Extra.IN_TABS_CONTAINER, true)
                     return fragment
                 }
             }

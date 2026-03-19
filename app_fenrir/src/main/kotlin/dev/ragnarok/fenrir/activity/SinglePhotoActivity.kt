@@ -11,10 +11,19 @@ import android.os.Build
 import android.os.Bundle
 import android.view.MotionEvent
 import android.view.View
+import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.RelativeLayout
+import androidx.activity.SystemBarStyle
+import androidx.activity.enableEdgeToEdge
 import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.core.view.insets.ProtectionLayout
+import androidx.core.view.iterator
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.squareup.picasso3.Callback
 import com.squareup.picasso3.Rotatable
@@ -26,6 +35,7 @@ import dev.ragnarok.fenrir.activity.slidr.Slidr.attach
 import dev.ragnarok.fenrir.activity.slidr.model.SlidrConfig
 import dev.ragnarok.fenrir.activity.slidr.model.SlidrListener
 import dev.ragnarok.fenrir.activity.slidr.model.SlidrPosition
+import dev.ragnarok.fenrir.applyAlpha
 import dev.ragnarok.fenrir.fragment.audio.AudioPlayerFragment
 import dev.ragnarok.fenrir.listener.AppStyleable
 import dev.ragnarok.fenrir.nonNullNoEmpty
@@ -41,7 +51,6 @@ import dev.ragnarok.fenrir.util.AppPerms
 import dev.ragnarok.fenrir.util.AppPerms.requestPermissionsAbs
 import dev.ragnarok.fenrir.util.DownloadWorkUtils
 import dev.ragnarok.fenrir.util.Utils
-import dev.ragnarok.fenrir.util.Utils.hasVanillaIceCreamTarget
 import dev.ragnarok.fenrir.util.coroutines.CancelableJob
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.delayTaskFlow
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.toMain
@@ -62,6 +71,8 @@ class SinglePhotoActivity : NoMainActivity(), PlaceProvider, AppStyleable {
     private var photo_prefix: String? = null
     private var mFullscreen = false
     private var mDownload: CircleCounterButton? = null
+    private var mDecorView: View? = null
+    private var canDownload = true
 
     @get:LayoutRes
     override val noMainContentView: Int
@@ -73,16 +84,38 @@ class SinglePhotoActivity : NoMainActivity(), PlaceProvider, AppStyleable {
         handleIntent(intent)
         mFullscreen = savedInstanceState?.getBoolean("mFullscreen") == true
 
+        mDecorView = window.decorView
+        mDownload = findViewById(R.id.button_download)
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.photo_single_root)) { v, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            val insets2 =
+                windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+            if (Utils.isLandscape(this)) {
+                v.setPadding(
+                    insets.left, 0,
+                    insets.right,
+                    insets.bottom
+                )
+            } else {
+                v.setPadding(
+                    insets2.left, 0,
+                    insets2.right,
+                    insets2.bottom
+                )
+            }
+            WindowInsetsCompat.CONSUMED
+        }
         url?.let {
+            canDownload = !it.contains("content://") && !it.contains("file://")
             mDownload?.visibility =
                 if (it.contains("content://") || it.contains("file://")) View.GONE else View.VISIBLE
         }
         url ?: run {
+            canDownload = false
             mDownload?.visibility = View.GONE
         }
         val ret = PhotoViewHolder(this)
         ret.bindTo(url)
-        mDownload = findViewById(R.id.button_download)
         val mContentRoot = findViewById<RelativeLayout>(R.id.photo_single_root)
         attach(
             this,
@@ -99,7 +132,9 @@ class SinglePhotoActivity : NoMainActivity(), PlaceProvider, AppStyleable {
                         tmp *= 4
                         tmp = Utils.clamp(1f - tmp, 0f, 1f)
                         mContentRoot?.setBackgroundColor(Color.argb(tmp, 0f, 0f, 0f))
-                        mDownload?.alpha = tmp
+                        if (canDownload) {
+                            mDownload?.alpha = tmp
+                        }
                         ret.photo.alpha = Utils.clamp(percent, 0f, 1f)
                     }
 
@@ -362,7 +397,35 @@ class SinglePhotoActivity : NoMainActivity(), PlaceProvider, AppStyleable {
     }
 
     private fun resolveFullscreenViews() {
-        mDownload?.visibility = if (mFullscreen) View.GONE else View.VISIBLE
+        mDownload?.visibility = if (mFullscreen || !canDownload) View.GONE else View.VISIBLE
+
+        if (mFullscreen) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                mDecorView?.layoutParams =
+                    WindowManager.LayoutParams(WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES)
+            }
+
+            WindowCompat.setDecorFitsSystemWindows(window, false)
+            mDecorView?.let {
+                WindowInsetsControllerCompat(window, it).let { controller ->
+                    controller.hide(WindowInsetsCompat.Type.systemBars())
+                    controller.systemBarsBehavior =
+                        WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+                }
+            }
+        } else {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                mDecorView?.layoutParams =
+                    WindowManager.LayoutParams(WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT)
+            }
+            WindowCompat.setDecorFitsSystemWindows(window, true)
+            mDecorView?.let {
+                WindowInsetsControllerCompat(
+                    window,
+                    it
+                ).show(WindowInsetsCompat.Type.systemBars())
+            }
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -374,23 +437,27 @@ class SinglePhotoActivity : NoMainActivity(), PlaceProvider, AppStyleable {
     override fun openMenu(open: Boolean) {}
 
     override fun setStatusbarColored(colored: Boolean, invertIcons: Boolean) {
-        val w = window
-        @Suppress("deprecation")
-        if (!hasVanillaIceCreamTarget()) {
-            w.statusBarColor =
-                if (colored) getStatusBarColor(this) else getStatusBarNonColored(
-                    this
-                )
-            w.navigationBarColor =
-                if (colored) getNavigationBarColor(this) else Color.BLACK
-        } else {
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
-                w.isNavigationBarContrastEnforced = colored
+        val statusBarColor = if (colored) getStatusBarColor(this) else getStatusBarNonColored(
+            this
+        )
+        val navigationBarColor = if (colored) getNavigationBarColor(this) else Color.BLACK
+
+        val statusBarStyle = if (invertIcons) SystemBarStyle.light(
+            statusBarColor.applyAlpha(180),
+            statusBarColor.applyAlpha(180)
+        ) else SystemBarStyle.dark(statusBarColor.applyAlpha(180))
+        val navigationBarStyle = if (invertIcons) SystemBarStyle.light(
+            navigationBarColor.applyAlpha(180),
+            navigationBarColor.applyAlpha(180)
+        ) else SystemBarStyle.dark(navigationBarColor.applyAlpha(180))
+
+        for (i in (window.decorView as ViewGroup)) {
+            if (i is ProtectionLayout) {
+                (window.decorView as ViewGroup).removeView(i)
             }
         }
-        val ins = WindowInsetsControllerCompat(w, w.decorView)
-        ins.isAppearanceLightStatusBars = invertIcons
-        ins.isAppearanceLightNavigationBars = invertIcons
+
+        enableEdgeToEdge(statusBarStyle, navigationBarStyle)
     }
 
     override fun onResume() {

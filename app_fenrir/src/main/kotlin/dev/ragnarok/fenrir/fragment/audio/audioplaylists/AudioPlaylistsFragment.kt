@@ -11,6 +11,9 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -21,6 +24,7 @@ import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.ActivityUtils.supportToolbarFor
 import dev.ragnarok.fenrir.activity.AudioSelectActivity.Companion.createIntent
+import dev.ragnarok.fenrir.activity.MainActivity
 import dev.ragnarok.fenrir.activity.SendAttachmentsActivity.Companion.startForSendAttachments
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
 import dev.ragnarok.fenrir.getParcelableArrayListExtraCompat
@@ -34,10 +38,12 @@ import dev.ragnarok.fenrir.place.PlaceFactory.getAudiosInAlbumPlace
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.HelperSimple
 import dev.ragnarok.fenrir.util.HelperSimple.needHelp
+import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.ViewUtils.setupSwipeRefreshLayoutWithCurrentTheme
 import dev.ragnarok.fenrir.util.toast.CustomSnackbars
 import dev.ragnarok.fenrir.view.MySearchView
 import dev.ragnarok.fenrir.view.navigation.AbsNavigationView
+import kotlin.math.max
 
 class AudioPlaylistsFragment : BaseMvpFragment<AudioPlaylistsPresenter, IAudioPlaylistsView>(),
     IAudioPlaylistsView, AudioPlaylistsAdapter.ClickListener {
@@ -61,7 +67,7 @@ class AudioPlaylistsFragment : BaseMvpFragment<AudioPlaylistsPresenter, IAudioPl
     private var isSelectMode = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        inTabsContainer = requireArguments().getBoolean(EXTRA_IN_TABS_CONTAINER)
+        inTabsContainer = requireArguments().getBoolean(Extra.IN_TABS_CONTAINER)
         isSelectMode = requireArguments().getBoolean(ACTION_SELECT)
     }
 
@@ -72,14 +78,44 @@ class AudioPlaylistsFragment : BaseMvpFragment<AudioPlaylistsPresenter, IAudioPl
     ): View? {
         val root = inflater.inflate(R.layout.fragment_audio_playlist, container, false)
         val toolbar: Toolbar = root.findViewById(R.id.toolbar)
+        val recyclerView: RecyclerView = root.findViewById(R.id.recycleView)
+        val columnCount = resources.getInteger(R.integer.photos_albums_column_count)
+        recyclerView.layoutManager = GridLayoutManager(requireActivity(), columnCount)
+        val mAdd: FloatingActionButton = root.findViewById(R.id.add_button)
         if (!inTabsContainer) {
             toolbar.visibility = View.VISIBLE
             (requireActivity() as AppCompatActivity).setSupportActionBar(toolbar)
+            if (requireActivity() is MainActivity) {
+                ViewCompat.setOnApplyWindowInsetsListener(root) { _, windowInsets ->
+                    val insets =
+                        windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+                    root.findViewById<View>(R.id.actionbar)?.setPadding(0, insets.top, 0, 0)
+                    WindowInsetsCompat.CONSUMED
+                }
+            } else {
+                ViewCompat.setOnApplyWindowInsetsListener(root) { _, windowInsets ->
+                    val insets =
+                        windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+                    val imeFixedBottom =
+                        if (windowInsets.isVisible(WindowInsetsCompat.Type.ime())) max(
+                            windowInsets.getInsets(
+                                WindowInsetsCompat.Type.ime()
+                            ).bottom, insets.bottom
+                        ) else insets.bottom
+                    root.findViewById<View>(R.id.actionbar)
+                        ?.setPadding(insets.left, insets.top, insets.right, 0)
+                    recyclerView.setPadding(insets.left, 0, insets.right, imeFixedBottom)
+                    (mAdd.layoutParams as? CoordinatorLayout.LayoutParams)?.bottomMargin =
+                        imeFixedBottom + Utils.dp(16f)
+                    (mAdd.layoutParams as? CoordinatorLayout.LayoutParams)?.rightMargin =
+                        insets.right + Utils.dp(16f)
+                    WindowInsetsCompat.CONSUMED
+                }
+            }
         } else {
             toolbar.visibility = View.GONE
         }
         mEmpty = root.findViewById(R.id.fragment_audio_playlist_empty_text)
-        val mAdd: FloatingActionButton = root.findViewById(R.id.add_button)
         if (presenter?.accountId != (presenter?.owner_id ?: true))
             mAdd.visibility = View.GONE else {
             mAdd.visibility = View.VISIBLE
@@ -89,9 +125,6 @@ class AudioPlaylistsFragment : BaseMvpFragment<AudioPlaylistsPresenter, IAudioPl
                 )
             }
         }
-        val recyclerView: RecyclerView = root.findViewById(R.id.recycleView)
-        val columnCount = resources.getInteger(R.integer.photos_albums_column_count)
-        recyclerView.layoutManager = GridLayoutManager(requireActivity(), columnCount)
         PicassoPauseOnScrollListener.addListener(recyclerView)
         recyclerView.addOnScrollListener(object : EndlessRecyclerOnScrollListener() {
             override fun onScrollToLastElement() {
@@ -271,7 +304,6 @@ class AudioPlaylistsFragment : BaseMvpFragment<AudioPlaylistsPresenter, IAudioPl
     }
 
     companion object {
-        const val EXTRA_IN_TABS_CONTAINER = "in_tabs_container"
         const val ACTION_SELECT = "AudioPlaylistsFragment.ACTION_SELECT"
         fun newInstance(accountId: Long, ownerId: Long): AudioPlaylistsFragment {
             val args = Bundle()

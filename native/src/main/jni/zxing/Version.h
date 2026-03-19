@@ -19,7 +19,7 @@
 // Version numbering
 #define ZXING_VERSION_MAJOR 3
 #define ZXING_VERSION_MINOR 0
-#define ZXING_VERSION_PATCH 1
+#define ZXING_VERSION_PATCH 2
 #define ZXING_VERSION_SUFFIX ""
 
-#define ZXING_VERSION_STR "3.0.1"
+#define ZXING_VERSION_STR "3.0.2"

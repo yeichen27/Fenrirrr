@@ -11,6 +11,9 @@ import android.view.ViewGroup
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -23,6 +26,7 @@ import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.ActivityUtils.supportToolbarFor
+import dev.ragnarok.fenrir.activity.MainActivity
 import dev.ragnarok.fenrir.activity.SendAttachmentsActivity.Companion.startForSendAttachments
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
 import dev.ragnarok.fenrir.fragment.base.horizontal.HorizontalPlaylistAdapter
@@ -42,10 +46,12 @@ import dev.ragnarok.fenrir.util.DownloadWorkUtils.CheckDirectory
 import dev.ragnarok.fenrir.util.DownloadWorkUtils.makeDownloadRequestAudio
 import dev.ragnarok.fenrir.util.HelperSimple
 import dev.ragnarok.fenrir.util.HelperSimple.needHelp
+import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.ViewUtils.setupSwipeRefreshLayoutWithCurrentTheme
 import dev.ragnarok.fenrir.util.toast.CustomSnackbars
 import dev.ragnarok.fenrir.view.MySearchView
 import dev.ragnarok.fenrir.view.navigation.AbsNavigationView
+import kotlin.math.max
 
 class AudiosFragment : BaseMvpFragment<AudiosPresenter, IAudiosView>(), IAudiosView,
     HorizontalPlaylistAdapter.Listener {
@@ -101,7 +107,7 @@ class AudiosFragment : BaseMvpFragment<AudiosPresenter, IAudiosView>(), IAudiosV
     private var mPlaylistAdapter: HorizontalPlaylistAdapter? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        inTabsContainer = requireArguments().getBoolean(EXTRA_IN_TABS_CONTAINER)
+        inTabsContainer = requireArguments().getBoolean(Extra.IN_TABS_CONTAINER)
         isSelectMode = requireArguments().getBoolean(ACTION_SELECT)
         isSaveMode = false
     }
@@ -113,9 +119,40 @@ class AudiosFragment : BaseMvpFragment<AudiosPresenter, IAudiosView>(), IAudiosV
     ): View? {
         val root = inflater.inflate(R.layout.fragment_music_main, container, false)
         val toolbar: Toolbar = root.findViewById(R.id.toolbar)
+        val recyclerView: RecyclerView = root.findViewById(R.id.recycler_view)
+        recyclerView.layoutManager = LinearLayoutManager(requireActivity())
+        val goto: FloatingActionButton = root.findViewById(R.id.goto_button)
         if (!inTabsContainer) {
             toolbar.visibility = View.VISIBLE
             (requireActivity() as AppCompatActivity).setSupportActionBar(toolbar)
+
+            if (requireActivity() is MainActivity) {
+                ViewCompat.setOnApplyWindowInsetsListener(root) { _, windowInsets ->
+                    val insets =
+                        windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+                    root.findViewById<View>(R.id.actionbar)?.setPadding(0, insets.top, 0, 0)
+                    WindowInsetsCompat.CONSUMED
+                }
+            } else {
+                ViewCompat.setOnApplyWindowInsetsListener(root) { _, windowInsets ->
+                    val insets =
+                        windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+                    val imeFixedBottom =
+                        if (windowInsets.isVisible(WindowInsetsCompat.Type.ime())) max(
+                            windowInsets.getInsets(
+                                WindowInsetsCompat.Type.ime()
+                            ).bottom, insets.bottom
+                        ) else insets.bottom
+                    root.findViewById<View>(R.id.actionbar)
+                        ?.setPadding(insets.left, insets.top, insets.right, 0)
+                    recyclerView.setPadding(insets.left, 0, insets.right, imeFixedBottom)
+                    (goto.layoutParams as? CoordinatorLayout.LayoutParams)?.bottomMargin =
+                        imeFixedBottom + Utils.dp(16f)
+                    (goto.layoutParams as? CoordinatorLayout.LayoutParams)?.rightMargin =
+                        insets.right + Utils.dp(16f)
+                    WindowInsetsCompat.CONSUMED
+                }
+            }
         } else {
             toolbar.visibility = View.GONE
         }
@@ -142,8 +179,6 @@ class AudiosFragment : BaseMvpFragment<AudiosPresenter, IAudiosView>(), IAudiosV
             presenter?.fireRefresh()
         }
         setupSwipeRefreshLayoutWithCurrentTheme(requireActivity(), mSwipeRefreshLayout)
-        val recyclerView: RecyclerView = root.findViewById(R.id.recycler_view)
-        recyclerView.layoutManager = LinearLayoutManager(requireActivity())
         PicassoPauseOnScrollListener.addListener(recyclerView)
         recyclerView.addOnScrollListener(object : EndlessRecyclerOnScrollListener() {
             override fun onScrollToLastElement() {
@@ -152,7 +187,6 @@ class AudiosFragment : BaseMvpFragment<AudiosPresenter, IAudiosView>(), IAudiosV
         })
         ItemTouchHelper(simpleItemTouchCallback).attachToRecyclerView(recyclerView)
         val save_mode: FloatingActionButton = root.findViewById(R.id.save_mode_button)
-        val Goto: FloatingActionButton = root.findViewById(R.id.goto_button)
         save_mode.visibility = when {
             isSelectMode -> View.GONE
             Settings.get()
@@ -162,19 +196,19 @@ class AudiosFragment : BaseMvpFragment<AudiosPresenter, IAudiosView>(), IAudiosV
         }
         save_mode.setOnClickListener {
             isSaveMode = !isSaveMode
-            Goto.setImageResource(if (isSaveMode) R.drawable.check else R.drawable.audio_player)
+            goto.setImageResource(if (isSaveMode) R.drawable.check else R.drawable.audio_player)
             save_mode.setImageResource(if (isSaveMode) R.drawable.ic_dismiss else R.drawable.save)
             mAudioRecyclerAdapter?.toggleSelectMode(isSaveMode)
             presenter?.fireUpdateSelectMode()
         }
         if (isSelectMode) {
-            Goto.setImageResource(R.drawable.check)
+            goto.setImageResource(R.drawable.check)
             save_mode.setImageResource(R.drawable.ic_dismiss)
         } else {
-            Goto.setImageResource(R.drawable.audio_player)
+            goto.setImageResource(R.drawable.audio_player)
             save_mode.setImageResource(R.drawable.save)
         }
-        Goto.setOnLongClickListener {
+        goto.setOnLongClickListener {
             if (!isSelectMode && !isSaveMode) {
                 val curr = currentAudio
                 if (curr != null) {
@@ -187,7 +221,7 @@ class AudiosFragment : BaseMvpFragment<AudiosPresenter, IAudiosView>(), IAudiosV
             }
             true
         }
-        Goto.setOnClickListener {
+        goto.setOnClickListener {
             if (isSelectMode) {
                 val intent = Intent()
                 intent.putParcelableArrayListExtra(
@@ -199,7 +233,7 @@ class AudiosFragment : BaseMvpFragment<AudiosPresenter, IAudiosView>(), IAudiosV
                 if (isSaveMode) {
                     val tracks: List<Audio> = presenter?.getSelected(true) ?: ArrayList()
                     isSaveMode = false
-                    Goto.setImageResource(R.drawable.audio_player)
+                    goto.setImageResource(R.drawable.audio_player)
                     save_mode.setImageResource(R.drawable.save)
                     mAudioRecyclerAdapter?.toggleSelectMode(isSaveMode)
                     presenter?.fireUpdateSelectMode()
@@ -384,7 +418,6 @@ class AudiosFragment : BaseMvpFragment<AudiosPresenter, IAudiosView>(), IAudiosV
     }
 
     companion object {
-        const val EXTRA_IN_TABS_CONTAINER = "in_tabs_container"
         const val ACTION_SELECT = "AudiosFragment.ACTION_SELECT"
         fun buildArgs(accountId: Long, ownerId: Long, albumId: Int?, access_key: String?): Bundle {
             val args = Bundle()

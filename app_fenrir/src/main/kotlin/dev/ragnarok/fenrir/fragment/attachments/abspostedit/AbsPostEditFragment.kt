@@ -24,7 +24,7 @@ abstract class AbsPostEditFragment<P : AbsPostEditPresenter<V>, V : IBasePostEdi
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         val root = super.onCreateView(inflater, container, savedInstanceState)
         val signatureRoot =
             inflater.inflate(R.layout.content_post_edit_under_body, underBodyContainer, false)

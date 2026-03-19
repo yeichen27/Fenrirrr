@@ -5,11 +5,11 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="8dp"
+    app:fill_color="#eeffffff"
     app:radius_bottom_left="10dp"
     app:radius_bottom_right="10dp"
     app:radius_top_left="0dp"
-    app:radius_top_right="0dp"
-    app:view_color="#eeffffff">
+    app:radius_top_right="0dp">
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/avatar"

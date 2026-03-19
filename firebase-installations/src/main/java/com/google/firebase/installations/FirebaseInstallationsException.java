@@ -44,7 +44,6 @@ public class FirebaseInstallationsException extends FirebaseException {
 
   @NonNull private final Status status;
 
-  @SuppressWarnings("deprecation")
   public FirebaseInstallationsException(@NonNull Status status) {
     this.status = status;
   }

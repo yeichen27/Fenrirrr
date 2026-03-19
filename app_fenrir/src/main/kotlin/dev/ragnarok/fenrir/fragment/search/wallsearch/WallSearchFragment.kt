@@ -90,10 +90,15 @@ class WallSearchFragment :
     }
 
     companion object {
-        fun newInstance(accountId: Long, criteria: WallSearchCriteria?): WallSearchFragment {
+        fun newInstance(
+            accountId: Long,
+            criteria: WallSearchCriteria?,
+            hideToolbar: Boolean
+        ): WallSearchFragment {
             val args = Bundle()
             args.putLong(Extra.ACCOUNT_ID, accountId)
             args.putParcelable(Extra.CRITERIA, criteria)
+            args.putBoolean(Extra.IN_TABS_CONTAINER, hideToolbar)
             val fragment = WallSearchFragment()
             fragment.arguments = args
             return fragment

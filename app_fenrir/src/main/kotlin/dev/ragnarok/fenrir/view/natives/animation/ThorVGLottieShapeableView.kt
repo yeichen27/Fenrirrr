@@ -36,7 +36,7 @@ class ThorVGLottieShapeableView @JvmOverloads constructor(
 ) :
     ShapeableImageView(context, attrs) {
     private val cache: ThorVGLottieNetworkCache = ThorVGLottieNetworkCache(context)
-    private var mDisposable = CancelableJob()
+    private var mDisposable: CancelableJob? = CancelableJob()
     private var animatedDrawable: ThorVGLottieDrawable? = null
     private var mListener: LottieAnimationListener? = null
 
@@ -155,7 +155,7 @@ class ThorVGLottieShapeableView @JvmOverloads constructor(
             filePathTmp = url
             isPlaying = autoPlay
         }
-        mDisposable.set(flow {
+        mDisposable?.set(flow {
             var call: Call? = null
             try {
                 val request: Request = Request.Builder()
@@ -281,7 +281,7 @@ class ThorVGLottieShapeableView @JvmOverloads constructor(
         cancelTask: Boolean
     ) {
         if (cancelTask) {
-            mDisposable.cancel()
+            mDisposable?.cancel()
         }
         if (animatedDrawable != null) {
             animatedDrawable?.callback = null

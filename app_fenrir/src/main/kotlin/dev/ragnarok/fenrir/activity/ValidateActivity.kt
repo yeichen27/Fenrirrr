@@ -4,13 +4,21 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
+import android.view.ViewGroup
 import android.webkit.CookieManager
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.SystemBarStyle
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.insets.ProtectionLayout
+import androidx.core.view.iterator
 import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.Includes
 import dev.ragnarok.fenrir.R
@@ -26,6 +34,7 @@ import dev.ragnarok.fenrir.util.Logger
 import dev.ragnarok.fenrir.util.coroutines.CompositeJob
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.sharedFlowToMain
 import kotlinx.coroutines.flow.filter
+import kotlin.math.max
 
 class ValidateActivity : AppCompatActivity() {
     private var validateProvider: IValidateProvider? = null
@@ -80,6 +89,43 @@ class ValidateActivity : AppCompatActivity() {
                 cancel()
             }
         })
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.item_root)) { v, windowInsets ->
+            val insets =
+                windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+            val imeFixedBottom =
+                if (windowInsets.isVisible(WindowInsetsCompat.Type.ime())) max(
+                    windowInsets.getInsets(
+                        WindowInsetsCompat.Type.ime()
+                    ).bottom, insets.bottom
+                ) else insets.bottom
+            v.setPadding(
+                insets.left, insets.top,
+                insets.right,
+                imeFixedBottom
+            )
+            WindowInsetsCompat.CONSUMED
+        }
+
+        val statusBarColor = Color.TRANSPARENT
+        val navigationBarColor = Color.TRANSPARENT
+        val invertIcons = !Settings.get().ui().isDarkModeEnabled(
+            this
+        )
+        val statusBarStyle = if (invertIcons) SystemBarStyle.light(
+            statusBarColor,
+            statusBarColor
+        ) else SystemBarStyle.dark(statusBarColor)
+        val navigationBarStyle = if (invertIcons) SystemBarStyle.light(
+            navigationBarColor,
+            navigationBarColor
+        ) else SystemBarStyle.dark(navigationBarColor)
+        for (i in (window.decorView as ViewGroup)) {
+            if (i is ProtectionLayout) {
+                (window.decorView as ViewGroup).removeView(i)
+            }
+        }
+        enableEdgeToEdge(statusBarStyle, navigationBarStyle)
     }
 
     internal fun cancel() {

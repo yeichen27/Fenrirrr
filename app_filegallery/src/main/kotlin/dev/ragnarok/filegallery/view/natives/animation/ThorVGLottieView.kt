@@ -33,7 +33,7 @@ import kotlin.coroutines.cancellation.CancellationException
 class ThorVGLottieView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null) :
     AppCompatImageView(context, attrs) {
     private val cache: ThorVGLottieNetworkCache = ThorVGLottieNetworkCache(context)
-    private var mDisposable = CancelableJob()
+    private var mDisposable: CancelableJob? = CancelableJob()
     private var animatedDrawable: ThorVGLottieDrawable? = null
     private var mListener: LottieAnimationListener? = null
 
@@ -152,7 +152,7 @@ class ThorVGLottieView @JvmOverloads constructor(context: Context, attrs: Attrib
             filePathTmp = url
             isPlaying = autoPlay
         }
-        mDisposable.set(flow {
+        mDisposable?.set(flow {
             var call: Call? = null
             try {
                 val request: Request = Request.Builder()
@@ -278,7 +278,7 @@ class ThorVGLottieView @JvmOverloads constructor(context: Context, attrs: Attrib
         cancelTask: Boolean
     ) {
         if (cancelTask) {
-            mDisposable.cancel()
+            mDisposable?.cancel()
         }
         if (animatedDrawable != null) {
             animatedDrawable?.callback = null

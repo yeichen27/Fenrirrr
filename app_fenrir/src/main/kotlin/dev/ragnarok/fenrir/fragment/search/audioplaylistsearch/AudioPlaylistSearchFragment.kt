@@ -111,11 +111,13 @@ class AudioPlaylistSearchFragment :
 
         fun newInstance(
             accountId: Long,
-            initialCriteria: AudioPlaylistSearchCriteria?
+            initialCriteria: AudioPlaylistSearchCriteria?,
+            hideToolbar: Boolean
         ): AudioPlaylistSearchFragment {
             val args = Bundle()
             args.putParcelable(Extra.CRITERIA, initialCriteria)
             args.putLong(Extra.ACCOUNT_ID, accountId)
+            args.putBoolean(Extra.IN_TABS_CONTAINER, hideToolbar)
             val fragment = AudioPlaylistSearchFragment()
             fragment.arguments = args
             return fragment
@@ -123,12 +125,14 @@ class AudioPlaylistSearchFragment :
 
         fun newInstanceSelect(
             accountId: Long,
-            initialCriteria: AudioPlaylistSearchCriteria?
+            initialCriteria: AudioPlaylistSearchCriteria?,
+            hideToolbar: Boolean
         ): AudioPlaylistSearchFragment {
             val args = Bundle()
             args.putParcelable(Extra.CRITERIA, initialCriteria)
             args.putLong(Extra.ACCOUNT_ID, accountId)
             args.putBoolean(ACTION_SELECT, true)
+            args.putBoolean(Extra.IN_TABS_CONTAINER, hideToolbar)
             val fragment = AudioPlaylistSearchFragment()
             fragment.arguments = args
             return fragment

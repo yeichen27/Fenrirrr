@@ -8,6 +8,8 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -56,7 +58,7 @@ class CatalogV2SectionFragment :
     private var supportSearch = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        inTabsContainer = requireArguments().getBoolean(EXTRA_IN_TABS_CONTAINER)
+        inTabsContainer = requireArguments().getBoolean(Extra.IN_TABS_CONTAINER)
         supportSearch = requireArguments().getBoolean(EXTRA_SEARCH)
     }
 
@@ -74,6 +76,12 @@ class CatalogV2SectionFragment :
         if (!inTabsContainer) {
             toolbar.visibility = View.VISIBLE
             (requireActivity() as AppCompatActivity).setSupportActionBar(toolbar)
+            ViewCompat.setOnApplyWindowInsetsListener(root) { _, windowInsets ->
+                val insets =
+                    windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+                root.findViewById<View>(R.id.actionbar)?.setPadding(0, insets.top, 0, 0)
+                WindowInsetsCompat.CONSUMED
+            }
         } else {
             toolbar.visibility = View.GONE
         }
@@ -204,6 +212,7 @@ class CatalogV2SectionFragment :
                     LinearLayoutManager(requireActivity())
                 }
             }
+            mAdapter?.setLayoutManager(it.layoutManager)
         }
     }
 
@@ -297,7 +306,6 @@ class CatalogV2SectionFragment :
     }
 
     companion object {
-        const val EXTRA_IN_TABS_CONTAINER = "in_tabs_container"
         const val EXTRA_SEARCH = "search_mode"
         fun newInstance(
             accountId: Long,
@@ -308,7 +316,7 @@ class CatalogV2SectionFragment :
             val args = Bundle()
             args.putLong(Extra.ACCOUNT_ID, accountId)
             args.putString(Extra.SECTION_ID, sectionId)
-            args.putBoolean(EXTRA_IN_TABS_CONTAINER, isHideToolbar)
+            args.putBoolean(Extra.IN_TABS_CONTAINER, isHideToolbar)
             args.putBoolean(EXTRA_SEARCH, supportSearch)
             val fragment = CatalogV2SectionFragment()
             fragment.arguments = args
@@ -319,7 +327,7 @@ class CatalogV2SectionFragment :
             val args = Bundle()
             args.putLong(Extra.ACCOUNT_ID, accountId)
             args.putString(Extra.SECTION_ID, sectionId)
-            args.putBoolean(EXTRA_IN_TABS_CONTAINER, false)
+            args.putBoolean(Extra.IN_TABS_CONTAINER, false)
             args.putBoolean(EXTRA_SEARCH, false)
             return args
         }

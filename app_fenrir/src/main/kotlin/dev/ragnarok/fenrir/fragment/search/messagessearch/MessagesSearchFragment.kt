@@ -162,11 +162,13 @@ class MessagesSearchFragment :
     companion object {
         fun newInstance(
             accountId: Long,
-            initialCriteria: MessageSearchCriteria?
+            initialCriteria: MessageSearchCriteria?,
+            hideToolbar: Boolean
         ): MessagesSearchFragment {
             val args = Bundle()
             args.putLong(Extra.ACCOUNT_ID, accountId)
             args.putParcelable(Extra.CRITERIA, initialCriteria)
+            args.putBoolean(Extra.IN_TABS_CONTAINER, hideToolbar)
             val fragment = MessagesSearchFragment()
             fragment.arguments = args
             return fragment

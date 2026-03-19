@@ -4,8 +4,7 @@
     android:id="@+id/photo_pager_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/black"
-    android:fitsSystemWindows="true">
+    android:background="@android:color/black">
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/view_pager"
@@ -23,6 +22,7 @@
         app:loopAnimation="true" />
 
     <LinearLayout
+        android:id="@+id/common_bottom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"

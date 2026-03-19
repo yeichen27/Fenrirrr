@@ -10,11 +10,8 @@ import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.FragmentManager
 import dev.ragnarok.filegallery.R
 import dev.ragnarok.filegallery.listener.BackPressCallback
-import dev.ragnarok.filegallery.settings.CurrentTheme.getNavigationBarColor
-import dev.ragnarok.filegallery.settings.CurrentTheme.getStatusBarColor
 import dev.ragnarok.filegallery.settings.theme.ThemesController.currentStyle
 import dev.ragnarok.filegallery.util.Utils
-import dev.ragnarok.filegallery.util.Utils.hasVanillaIceCreamTarget
 
 abstract class NoMainActivity : AppCompatActivity() {
     private var mToolbar: Toolbar? = null
@@ -34,12 +31,6 @@ abstract class NoMainActivity : AppCompatActivity() {
         Utils.prepareDensity(this)
         super.onCreate(savedInstanceState)
         setContentView(noMainContentView)
-        @Suppress("deprecation")
-        if (!hasVanillaIceCreamTarget()) {
-            val w = window
-            w.statusBarColor = getStatusBarColor(this)
-            w.navigationBarColor = getNavigationBarColor(this)
-        }
         supportFragmentManager.addOnBackStackChangedListener(mBackStackListener)
 
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {

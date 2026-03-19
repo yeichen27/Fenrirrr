@@ -6,9 +6,16 @@ import android.content.ClipboardManager
 import android.os.Bundle
 import android.util.TypedValue
 import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.activity.SystemBarStyle
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.insets.ProtectionLayout
+import androidx.core.view.iterator
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dev.ragnarok.fenrir.Extra
@@ -16,8 +23,11 @@ import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.slidr.Slidr
 import dev.ragnarok.fenrir.activity.slidr.model.SlidrConfig
 import dev.ragnarok.fenrir.activity.slidr.model.SlidrListener
+import dev.ragnarok.fenrir.applyAlpha
 import dev.ragnarok.fenrir.settings.CurrentTheme
+import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.toast.CustomToast
+import kotlin.math.max
 
 class DefaultErrorActivity : AppCompatActivity() {
     @SuppressLint("PrivateResource")
@@ -44,6 +54,42 @@ class DefaultErrorActivity : AppCompatActivity() {
                 }).build()
         )
         setContentView(R.layout.activity_crash_error)
+
+        val statusBarColor = CurrentTheme.getColorBackground(this)
+        val navigationBarColor = CurrentTheme.getColorBackground(this)
+        val invertIcons = !Settings.get().ui().isDarkModeEnabled(this)
+        val statusBarStyle = if (invertIcons) SystemBarStyle.light(
+            statusBarColor.applyAlpha(100),
+            statusBarColor.applyAlpha(100)
+        ) else SystemBarStyle.dark(statusBarColor.applyAlpha(100))
+        val navigationBarStyle = if (invertIcons) SystemBarStyle.light(
+            navigationBarColor.applyAlpha(100),
+            navigationBarColor.applyAlpha(100)
+        ) else SystemBarStyle.dark(navigationBarColor.applyAlpha(100))
+
+        for (i in (window.decorView as ViewGroup)) {
+            if (i is ProtectionLayout) {
+                (window.decorView as ViewGroup).removeView(i)
+            }
+        }
+        enableEdgeToEdge(statusBarStyle, navigationBarStyle)
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.item_root)) { v, windowInsets ->
+            val insets =
+                windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+            val imeFixedBottom =
+                if (windowInsets.isVisible(WindowInsetsCompat.Type.ime())) max(
+                    windowInsets.getInsets(
+                        WindowInsetsCompat.Type.ime()
+                    ).bottom, insets.bottom
+                ) else insets.bottom
+            v.setPadding(
+                insets.left, insets.top,
+                insets.right,
+                imeFixedBottom
+            )
+            WindowInsetsCompat.CONSUMED
+        }
         findViewById<MaterialButton>(R.id.crash_error_activity_restart_button).setOnClickListener {
             CrashUtils.restartApplication(
                 this

@@ -5,11 +5,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.checkbox.MaterialCheckBox
 import com.google.android.material.textfield.TextInputEditText
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
 import dev.ragnarok.fenrir.listener.TextWatcherAdapter
+import kotlin.math.max
 
 class AddProxyFragment : BaseMvpFragment<AddProxyPresenter, IAddProxyView>(), IAddProxyView {
     private var mAuth: MaterialCheckBox? = null
@@ -21,6 +24,23 @@ class AddProxyFragment : BaseMvpFragment<AddProxyPresenter, IAddProxyView>(), IA
     ): View? {
         val root = inflater.inflate(R.layout.fragment_proxy_add, container, false)
         (requireActivity() as AppCompatActivity).setSupportActionBar(root.findViewById(R.id.toolbar))
+
+        ViewCompat.setOnApplyWindowInsetsListener(root) { _, windowInsets ->
+            val insets =
+                windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+            val imeFixedBottom =
+                if (windowInsets.isVisible(WindowInsetsCompat.Type.ime())) max(
+                    windowInsets.getInsets(
+                        WindowInsetsCompat.Type.ime()
+                    ).bottom, insets.bottom
+                ) else insets.bottom
+            root.findViewById<View>(R.id.actionbar)
+                ?.setPadding(insets.left, insets.top, insets.right, 0)
+            root.findViewById<View>(R.id.scrollView)
+                ?.setPadding(insets.left, 0, insets.right, imeFixedBottom)
+            WindowInsetsCompat.CONSUMED
+        }
+
         mAuthFieldsRoot = root.findViewById(R.id.auth_fields_root)
         val mAddress: TextInputEditText = root.findViewById(R.id.address)
         mAddress.addTextChangedListener(object : TextWatcherAdapter() {

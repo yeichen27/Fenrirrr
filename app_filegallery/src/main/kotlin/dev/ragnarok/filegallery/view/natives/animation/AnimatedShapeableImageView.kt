@@ -34,7 +34,7 @@ open class AnimatedShapeableImageView @JvmOverloads constructor(
     private var animatedDrawable: AnimatedFileDrawable? = null
     private var attachedToWindow = false
     private var decoderCallback: OnDecoderInit? = null
-    private var mDisposable = CancelableJob()
+    private var mDisposable: CancelableJob? = CancelableJob()
 
     @LoadedFrom
     private var loadedFrom = LoadedFrom.NO
@@ -126,7 +126,7 @@ open class AnimatedShapeableImageView @JvmOverloads constructor(
             isPlaying = autoPlay
             tmpFade = true
         }
-        mDisposable.set(flow {
+        mDisposable?.set(flow {
             var call: Call? = null
             try {
                 val request: Request = Request.Builder()
@@ -183,7 +183,7 @@ open class AnimatedShapeableImageView @JvmOverloads constructor(
             tmpFade = true
             isPlaying = autoPlay
         }
-        mDisposable.set(flow {
+        mDisposable?.set(flow {
             if (isActive()) {
                 val rs = cache.writeTempCacheFile(resId)
                 emit(rs)
@@ -286,7 +286,7 @@ open class AnimatedShapeableImageView @JvmOverloads constructor(
         cancelTask: Boolean
     ) {
         if (cancelTask) {
-            mDisposable.cancel()
+            mDisposable?.cancel()
         }
         if (animatedDrawable != null) {
             animatedDrawable?.callback = null

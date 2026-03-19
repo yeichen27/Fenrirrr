@@ -12,9 +12,9 @@ import android.provider.MediaStore
 import android.util.Size
 import androidx.annotation.RequiresApi
 import androidx.core.graphics.scale
-import androidx.core.net.toUri
 import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.db.interfaces.ILocalMediaStorage
+import dev.ragnarok.fenrir.filePathToUri
 import dev.ragnarok.fenrir.getInt
 import dev.ragnarok.fenrir.getLong
 import dev.ragnarok.fenrir.getString
@@ -24,7 +24,6 @@ import dev.ragnarok.fenrir.model.LocalPhoto
 import dev.ragnarok.fenrir.model.LocalVideo
 import dev.ragnarok.fenrir.picasso.Content_Local
 import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.buildUriForPicasso
-import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.buildUriForPicassoNew
 import dev.ragnarok.fenrir.util.Utils.safeCountOf
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.isActive
 import kotlinx.coroutines.flow.Flow
@@ -106,7 +105,7 @@ internal class LocalMediaStorage(mRepositoryContext: AppStorages) : AbsStorage(m
                     result.add(
                         LocalPhoto()
                             .setImageId(imageId)
-                            .setFullImageUri(data?.toUri())
+                            .setFullImageUri(data?.filePathToUri())
                     )
                 }
                 cursor.close()
@@ -132,7 +131,7 @@ internal class LocalMediaStorage(mRepositoryContext: AppStorages) : AbsStorage(m
                     result.add(
                         LocalPhoto()
                             .setImageId(imageId)
-                            .setFullImageUri(data?.toUri())
+                            .setFullImageUri(data?.filePathToUri())
                     )
                 }
                 cursor.close()
@@ -271,7 +270,7 @@ internal class LocalMediaStorage(mRepositoryContext: AppStorages) : AbsStorage(m
         internal fun mapVideo(cursor: Cursor): LocalVideo {
             return LocalVideo(
                 cursor.getLong(BaseColumns._ID),
-                buildUriForPicassoNew(
+                buildUriForPicasso(
                     Content_Local.VIDEO,
                     cursor.getLong(BaseColumns._ID)
                 )
@@ -283,7 +282,7 @@ internal class LocalMediaStorage(mRepositoryContext: AppStorages) : AbsStorage(m
 
         internal fun mapAudio(accountId: Long, cursor: Cursor): Audio? {
             val id = cursor.getLong(BaseColumns._ID)
-            val data = buildUriForPicassoNew(Content_Local.AUDIO, id).toString()
+            val data = buildUriForPicasso(Content_Local.AUDIO, id).toString()
             if (cursor.getString(MediaStore.MediaColumns.DISPLAY_NAME)
                     .isNullOrEmpty()
             ) {
@@ -302,15 +301,10 @@ internal class LocalMediaStorage(mRepositoryContext: AppStorages) : AbsStorage(m
             if (dur != 0) {
                 dur /= 1000
             }
-            val ret =
-                Audio().setIsLocal().setId(data.hashCode()).setOwnerId(accountId).setDuration(dur)
-                    .setUrl(data).setTitle(TrackName).setArtist(Artist)
-            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                ret.setThumb_image_big(data).setThumb_image_little(data)
-            } else {
-                val uri = buildUriForPicasso(Content_Local.AUDIO, id).toString()
-                ret.setThumb_image_big(uri).setThumb_image_little(uri)
-            }
+            return Audio().setIsLocal().setId(data.hashCode()).setOwnerId(accountId)
+                .setDuration(dur)
+                .setUrl(data).setTitle(TrackName).setArtist(Artist).setThumb_image_big(data)
+                .setThumb_image_little(data)
         }
     }
 }

@@ -1,43 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <FrameLayout
+    <dev.ragnarok.fenrir.view.RoundCornerLinearView
         android:id="@+id/bottom_sheet"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="4dp"
+        android:orientation="vertical"
+        android:padding="16dp"
         app:behavior_hideable="true"
+        app:fill_alpha="237"
+        app:fill_color="?colorSurfaceContainerLow"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
-        tools:ignore="MissingPrefix">
+        app:radius_bottom_left="0dp"
+        app:radius_bottom_right="0dp"
+        app:radius_top_left="24dp"
+        app:radius_top_right="24dp"
+        app:view_stroke_color="?dividerColor"
+        app:view_stroke_width="1.2dp">
 
-        <com.google.android.material.card.MaterialCardView
+        <include
+            layout="@layout/header_navi_menu"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="4dp"
-            app:cardElevation="2dp"
-            app:contentPadding="8dp">
+            android:layout_height="wrap_content" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <include layout="@layout/header_navi_menu" />
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recycler_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scrollbars="none" />
-            </LinearLayout>
-
-        </com.google.android.material.card.MaterialCardView>
-
-    </FrameLayout>
-
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="none" />
+    </dev.ragnarok.fenrir.view.RoundCornerLinearView>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 

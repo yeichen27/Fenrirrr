@@ -3,10 +3,15 @@ package dev.ragnarok.filegallery
 import android.animation.Animator
 import android.animation.ObjectAnimator
 import android.animation.PropertyValuesHolder
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager.GET_SIGNATURES
+import android.content.pm.PackageManager.GET_SIGNING_CERTIFICATES
+import android.content.pm.Signature
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.graphics.Color
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcel
@@ -399,6 +404,28 @@ fun <T> MutableList<T>.insertAfter(index: Int, element: T) {
     }
 }
 
+fun Context.getSignature(): Signature? {
+    val appInfo = packageManager.getPackageInfo(
+        packageName,
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            GET_SIGNING_CERTIFICATES
+        } else {
+            @Suppress("deprecation")
+            GET_SIGNATURES
+        }
+    )
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+        if (appInfo.signingInfo?.apkContentsSigners.nonNullNoEmpty()) appInfo.signingInfo?.apkContentsSigners?.get(
+            0
+        ) else null
+    } else {
+        @Suppress("deprecation")
+        if (appInfo.signatures.nonNullNoEmpty()) {
+            appInfo.signatures?.get(0)
+        } else null
+    }
+}
+
 open class StubAnimatorListener : Animator.AnimatorListener {
     override fun onAnimationRepeat(animation: Animator) {}
 
@@ -603,6 +630,14 @@ fun String.toColor(): Int {
     return Color.RED
 }
 
+@ColorInt
+fun Int.applyAlpha(a: Int): Int {
+    val r = Color.red(this)
+    val g = Color.green(this)
+    val b = Color.blue(this)
+    return Color.argb(a, r, g, b)
+}
+
 fun String.filePathToUrl(filePrefixReplace: String? = null): String? {
     try {
         var path = File(this).toUri().toString()
@@ -610,6 +645,15 @@ fun String.filePathToUrl(filePrefixReplace: String? = null): String? {
             path = path.replaceFirst("file://", "$filePrefixReplace://")
         }
         return path
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+    return null
+}
+
+fun String.filePathToUri(): Uri? {
+    try {
+        return File(this).toUri()
     } catch (e: Exception) {
         e.printStackTrace()
     }

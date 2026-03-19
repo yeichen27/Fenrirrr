@@ -49,11 +49,13 @@ class DocsSearchFragment :
 
         fun newInstance(
             accountId: Long,
-            initialCriteria: DocumentSearchCriteria?
+            initialCriteria: DocumentSearchCriteria?,
+            hideToolbar: Boolean
         ): DocsSearchFragment {
             val args = Bundle()
             args.putParcelable(Extra.CRITERIA, initialCriteria)
             args.putLong(Extra.ACCOUNT_ID, accountId)
+            args.putBoolean(Extra.IN_TABS_CONTAINER, hideToolbar)
             val fragment = DocsSearchFragment()
             fragment.arguments = args
             return fragment

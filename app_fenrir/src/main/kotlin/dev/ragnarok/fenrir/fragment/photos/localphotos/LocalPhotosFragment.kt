@@ -10,6 +10,9 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -26,6 +29,7 @@ import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.AppPerms.requestPermissionsAbs
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.ViewUtils.setupSwipeRefreshLayoutWithCurrentTheme
+import kotlin.math.max
 
 class LocalPhotosFragment : BaseMvpFragment<LocalPhotosPresenter, ILocalPhotosView>(),
     ILocalPhotosView, LocalPhotosAdapter.ClickListener, SwipeRefreshLayout.OnRefreshListener {
@@ -47,14 +51,37 @@ class LocalPhotosFragment : BaseMvpFragment<LocalPhotosPresenter, ILocalPhotosVi
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_photo_gallery, container, false)
-        val toolbar: Toolbar = view.findViewById(R.id.toolbar)
+        val root = inflater.inflate(R.layout.fragment_photo_gallery, container, false)
+        val toolbar: Toolbar = root.findViewById(R.id.toolbar)
+        fabAttach = root.findViewById(R.id.fr_photo_gallery_attach)
+        fabAttach?.setOnClickListener {
+            presenter?.fireFabClick()
+        }
         if (!hasHideToolbarExtra()) {
             (requireActivity() as AppCompatActivity).setSupportActionBar(toolbar)
+
+            ViewCompat.setOnApplyWindowInsetsListener(root) { _, windowInsets ->
+                val insets =
+                    windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+                val imeFixedBottom =
+                    if (windowInsets.isVisible(WindowInsetsCompat.Type.ime())) max(
+                        windowInsets.getInsets(
+                            WindowInsetsCompat.Type.ime()
+                        ).bottom, insets.bottom
+                    ) else insets.bottom
+                root.findViewById<View>(R.id.actionbar)
+                    ?.setPadding(insets.left, insets.top, insets.right, 0)
+                mRecyclerView?.setPadding(insets.left, 0, insets.right, imeFixedBottom)
+                (fabAttach?.layoutParams as? CoordinatorLayout.LayoutParams)?.bottomMargin =
+                    imeFixedBottom + Utils.dp(16f)
+                (fabAttach?.layoutParams as? CoordinatorLayout.LayoutParams)?.rightMargin =
+                    insets.right + Utils.dp(16f)
+                WindowInsetsCompat.CONSUMED
+            }
         } else {
             toolbar.visibility = View.GONE
         }
-        mSwipeRefreshLayout = view.findViewById(R.id.refresh)
+        mSwipeRefreshLayout = root.findViewById(R.id.refresh)
         mSwipeRefreshLayout?.setOnRefreshListener(this)
         setupSwipeRefreshLayoutWithCurrentTheme(requireActivity(), mSwipeRefreshLayout)
         val columnCount = resources.getInteger(R.integer.local_gallery_column_count)
@@ -62,15 +89,11 @@ class LocalPhotosFragment : BaseMvpFragment<LocalPhotosPresenter, ILocalPhotosVi
             if (Settings.get().main().single_line_photos) Utils.getSingleElementsLayoutManager(
                 requireActivity()
             ) else GridLayoutManager(requireActivity(), columnCount)
-        mRecyclerView = view.findViewById(R.id.list)
+        mRecyclerView = root.findViewById(R.id.list)
         mRecyclerView?.layoutManager = manager
         PicassoPauseOnScrollListener.addListener(mRecyclerView, LocalPhotosAdapter.TAG)
-        mEmptyTextView = view.findViewById(R.id.empty)
-        fabAttach = view.findViewById(R.id.fr_photo_gallery_attach)
-        fabAttach?.setOnClickListener {
-            presenter?.fireFabClick()
-        }
-        return view
+        mEmptyTextView = root.findViewById(R.id.empty)
+        return root
     }
 
     override fun onPhotoClick(holder: LocalPhotosAdapter.ViewHolder, photo: LocalPhoto) {

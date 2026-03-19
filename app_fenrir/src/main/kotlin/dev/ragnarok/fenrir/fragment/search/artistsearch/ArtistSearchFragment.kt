@@ -45,11 +45,13 @@ class ArtistSearchFragment :
 
         fun newInstance(
             accountId: Long,
-            initialCriteria: ArtistSearchCriteria?
+            initialCriteria: ArtistSearchCriteria?,
+            hideToolbar: Boolean
         ): ArtistSearchFragment {
             val args = Bundle()
             args.putParcelable(Extra.CRITERIA, initialCriteria)
             args.putLong(Extra.ACCOUNT_ID, accountId)
+            args.putBoolean(Extra.IN_TABS_CONTAINER, hideToolbar)
             val fragment = ArtistSearchFragment()
             fragment.arguments = args
             return fragment
@@ -57,11 +59,13 @@ class ArtistSearchFragment :
 
         fun newInstanceSelect(
             accountId: Long,
-            initialCriteria: ArtistSearchCriteria?
+            initialCriteria: ArtistSearchCriteria?,
+            hideToolbar: Boolean
         ): ArtistSearchFragment {
             val args = Bundle()
             args.putParcelable(Extra.CRITERIA, initialCriteria)
             args.putLong(Extra.ACCOUNT_ID, accountId)
+            args.putBoolean(Extra.IN_TABS_CONTAINER, hideToolbar)
             val fragment = ArtistSearchFragment()
             fragment.arguments = args
             return fragment

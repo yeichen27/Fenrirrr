@@ -532,23 +532,6 @@ public class FloatingActionButton extends VisibilityAwareImageButton
     }
   }
 
-  /**
-   * Sets the content description for this view.
-   *
-   * <p>This method also sets the tooltip text to the given content description on API 26 (Android
-   * O) and above. It is not set on lower APIs to avoid overwriting any custom {@link
-   * View.OnLongClickListener}.
-   *
-   * @param contentDescription the content description to set
-   */
-  @Override
-  public void setContentDescription(@Nullable CharSequence contentDescription) {
-    super.setContentDescription(contentDescription);
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      setTooltipText(contentDescription);
-    }
-  }
-
   /** Sets the {@link ShapeAppearanceModel} for this {@link FloatingActionButton}. */
   @Override
   public void setShapeAppearanceModel(@NonNull ShapeAppearanceModel shapeAppearance) {
@@ -589,6 +572,43 @@ public class FloatingActionButton extends VisibilityAwareImageButton
   @Override
   public void setVisibility(int visibility) {
     super.setVisibility(visibility);
+  }
+
+  /**
+   * Sets the content description for this view.
+   *
+   * <p>On API 26 (Android O) and above, this method also sets the tooltip text to the content
+   * description if appropriate.
+   */
+  @Override
+  public void setContentDescription(@Nullable CharSequence contentDescription) {
+    super.setContentDescription(contentDescription);
+    updateTooltip();
+  }
+
+  /**
+   * Sets the clickable state of this view.
+   *
+   * <p>On API 26 (Android O) and above, if the view is not clickable, this method also clears the
+   * tooltip text to prevent the view from consuming touch events.
+   */
+  @Override
+  public void setClickable(boolean clickable) {
+    super.setClickable(clickable);
+    updateTooltip();
+  }
+
+  /**
+   * Updates the tooltip text based on the button's clickability. If the view is not clickable,
+   * tooltip text will be cleared to prevent the view from consuming touch events.
+   *
+   * <p>The tooltip is not set on lower APIs to avoid overwriting any custom {@link
+   * View.OnLongClickListener}.
+   */
+  private void updateTooltip() {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      setTooltipText(isClickable() ? getContentDescription() : null);
+    }
   }
 
   /**

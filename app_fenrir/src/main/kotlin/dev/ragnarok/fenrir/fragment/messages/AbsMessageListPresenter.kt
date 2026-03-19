@@ -167,13 +167,15 @@ abstract class AbsMessageListPresenter<V : IBasicMessageListView> internal const
         onActionModeCopyClick()
     }
 
-    open fun fireReactionModeClick(position: Int) {
+    open fun fireReactionModeClick() {
         if (Utils.isHiddenAccount(accountId)) {
             return
         }
-        if (position >= 0 && data.size > position) {
-            data[position].setReactionEditMode(!data[position].reactionEditMode)
-            safeNotifyItemChanged(position)
+        for (i in data.indices) {
+            if (data[i].isSelected) {
+                data[i].setReactionEditMode(!data[i].reactionEditMode)
+                safeNotifyItemChanged(i)
+            }
         }
     }
 

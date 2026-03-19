@@ -5,6 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dev.ragnarok.fenrir.Extra
@@ -27,6 +29,7 @@ import dev.ragnarok.fenrir.view.steppers.impl.CreatePhotoAlbumStep2Holder
 import dev.ragnarok.fenrir.view.steppers.impl.CreatePhotoAlbumStep3Holder
 import dev.ragnarok.fenrir.view.steppers.impl.CreatePhotoAlbumStep4Holder
 import dev.ragnarok.fenrir.view.steppers.impl.CreatePhotoAlbumStepsHost
+import kotlin.math.max
 
 class CreatePhotoAlbumFragment : BaseMvpFragment<EditPhotoAlbumPresenter, IEditPhotoAlbumView>(),
     BackPressCallback, IEditPhotoAlbumView, CreatePhotoAlbumStep4Holder.ActionListener,
@@ -41,6 +44,21 @@ class CreatePhotoAlbumFragment : BaseMvpFragment<EditPhotoAlbumPresenter, IEditP
     ): View? {
         val root = inflater.inflate(R.layout.fragment_create_photo_album, container, false)
         (requireActivity() as AppCompatActivity).setSupportActionBar(root.findViewById(R.id.toolbar))
+
+        ViewCompat.setOnApplyWindowInsetsListener(root) { _, windowInsets ->
+            val insets =
+                windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+            val imeFixedBottom =
+                if (windowInsets.isVisible(WindowInsetsCompat.Type.ime())) max(
+                    windowInsets.getInsets(
+                        WindowInsetsCompat.Type.ime()
+                    ).bottom, insets.bottom
+                ) else insets.bottom
+            root.findViewById<View>(R.id.actionbar)?.setPadding(0, insets.top, 0, 0)
+            root.setPadding(0, 0, 0, imeFixedBottom)
+            WindowInsetsCompat.CONSUMED
+        }
+
         mRecyclerView = root.findViewById(R.id.recycleView)
         mRecyclerView?.layoutManager = LinearLayoutManager(requireActivity())
         return root

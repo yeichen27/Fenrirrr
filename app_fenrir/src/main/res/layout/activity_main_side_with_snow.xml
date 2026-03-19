@@ -4,8 +4,7 @@
     android:id="@+id/my_drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?android:colorBackground"
-    android:fitsSystemWindows="true">
+    android:background="?android:colorBackground">
 
     <RelativeLayout
         android:id="@+id/main_root"
@@ -16,8 +15,7 @@
             android:id="@+id/fragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_above="@id/miniplayer_side_root"
-            android:clipToPadding="false" />
+            android:layout_above="@id/miniplayer_side_root" />
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/miniplayer_side_root"

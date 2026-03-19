@@ -11,6 +11,8 @@ import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.biometric.BiometricPrompt.PromptInfo
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
@@ -39,6 +41,18 @@ class EnterPinFragment : BaseMvpFragment<EnterPinPresenter, IEnterPinView>(), IE
         mValuesCircles[1] = root.findViewById(R.id.pincode_digit_1)
         mValuesCircles[2] = root.findViewById(R.id.pincode_digit_2)
         mValuesCircles[3] = root.findViewById(R.id.pincode_digit_3)
+
+        ViewCompat.setOnApplyWindowInsetsListener(root) { v, windowInsets ->
+            val insets =
+                windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+            v.setPadding(
+                insets.left,
+                insets.top,
+                insets.right,
+                insets.bottom
+            )
+            WindowInsetsCompat.CONSUMED
+        }
         return root
     }
 

@@ -118,4 +118,5 @@ object Extra {
     const val CODE = "code"
     const val DATA = "data"
     const val DB_ID = "db_id"
+    const val IN_TABS_CONTAINER = "in_tabs_container"
 }

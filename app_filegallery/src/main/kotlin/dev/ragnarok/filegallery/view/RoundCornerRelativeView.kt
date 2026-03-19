@@ -12,21 +12,26 @@ import android.widget.RelativeLayout
 import androidx.annotation.ColorInt
 import androidx.core.content.withStyledAttributes
 import dev.ragnarok.filegallery.R
+import dev.ragnarok.filegallery.util.Utils
 
 class RoundCornerRelativeView : RelativeLayout {
     private val VIEW_PAINT = Paint(Paint.ANTI_ALIAS_FLAG)
     private val PATH = Path()
     val DEFAULT_RADIUS = 12f
-    val DEFAULT_VIEW_COLOR = Color.RED
-    val DEFAULT_VIEW_ALPHA = 255
+    val DEFAULT_FILL_COLOR = Color.RED
+    val DEFAULT_STROKE_COLOR = Color.BLACK
+    val DEFAULT_FILL_ALPHA = 255
+    val DEFAULT_STROKE_ALPHA = 255
     val DEFAULT_IS_STROKE = false
     val DEFAULT_STROKE_WIDTH = 1f
     private var radius_top_left = DEFAULT_RADIUS
     private var radius_top_right = DEFAULT_RADIUS
     private var radius_bottom_left = DEFAULT_RADIUS
     private var radius_bottom_right = DEFAULT_RADIUS
-    private var viewColor = DEFAULT_VIEW_COLOR
-    private var viewAlpha = DEFAULT_VIEW_ALPHA
+    private var fillColor = DEFAULT_FILL_COLOR
+    private var strokeColor = DEFAULT_STROKE_COLOR
+    private var fillAlpha = DEFAULT_FILL_ALPHA
+    private var strokeAlpha = DEFAULT_STROKE_ALPHA
     private var isStroke = DEFAULT_IS_STROKE
     private var strokeWidth = DEFAULT_STROKE_WIDTH
 
@@ -66,10 +71,17 @@ class RoundCornerRelativeView : RelativeLayout {
                     R.styleable.RoundCornerLinearView_radius_bottom_right,
                     dp2px(DEFAULT_RADIUS)
                 )
-                viewColor =
-                    getColor(R.styleable.RoundCornerLinearView_view_color, DEFAULT_VIEW_COLOR)
-                viewAlpha =
-                    getInt(R.styleable.RoundCornerLinearView_view_alpha, DEFAULT_VIEW_ALPHA)
+                fillColor =
+                    getColor(R.styleable.RoundCornerLinearView_fill_color, DEFAULT_FILL_COLOR)
+                strokeColor =
+                    getColor(
+                        R.styleable.RoundCornerLinearView_view_stroke_color,
+                        DEFAULT_STROKE_COLOR
+                    )
+                fillAlpha =
+                    getInt(R.styleable.RoundCornerLinearView_fill_alpha, DEFAULT_FILL_ALPHA)
+                strokeAlpha =
+                    getInt(R.styleable.RoundCornerLinearView_stroke_alpha, DEFAULT_STROKE_ALPHA)
                 isStroke = getBoolean(
                     R.styleable.RoundCornerLinearView_view_is_stroke,
                     DEFAULT_IS_STROKE
@@ -82,13 +94,23 @@ class RoundCornerRelativeView : RelativeLayout {
         }
     }
 
-    fun setViewColor(@ColorInt viewColor: Int) {
-        this.viewColor = viewColor
+    fun setFillColor(@ColorInt fillColor: Int) {
+        this.fillColor = fillColor
         invalidate()
     }
 
-    fun setViewAlpha(viewAlpha: Int) {
-        this.viewAlpha = viewAlpha
+    fun setFillAlpha(fillAlpha: Int) {
+        this.fillAlpha = fillAlpha
+        invalidate()
+    }
+
+    fun setStrokeColor(@ColorInt strokeColor: Int) {
+        this.strokeColor = strokeColor
+        invalidate()
+    }
+
+    fun setStrokeAlpha(strokeAlpha: Int) {
+        this.strokeAlpha = strokeAlpha
         invalidate()
     }
 
@@ -122,16 +144,15 @@ class RoundCornerRelativeView : RelativeLayout {
         invalidate()
     }
 
-    override fun onDraw(canvas: Canvas) {
-        super.onDraw(canvas)
+    private fun doPaint(canvas: Canvas, @ColorInt color: Int, alpha: Int, isStrokeMode: Boolean) {
         val widthTmp = width - strokeWidth
         val heightTmp = height - strokeWidth
         if (widthTmp <= 0 || heightTmp <= 0) {
             return
         }
-        VIEW_PAINT.color = viewColor
-        VIEW_PAINT.alpha = viewAlpha
-        VIEW_PAINT.style = if (isStroke) Paint.Style.STROKE else Paint.Style.FILL
+        VIEW_PAINT.color = color
+        VIEW_PAINT.alpha = alpha
+        VIEW_PAINT.style = if (isStrokeMode) Paint.Style.STROKE else Paint.Style.FILL
         VIEW_PAINT.strokeWidth = strokeWidth
         VIEW_PAINT.shader = null
         VIEW_PAINT.strokeCap = Paint.Cap.ROUND
@@ -181,5 +202,18 @@ class RoundCornerRelativeView : RelativeLayout {
         PATH.lineTo(strokeWidth, radius_top_left)
         PATH.close()
         canvas.drawPath(PATH, VIEW_PAINT)
+    }
+
+    override fun onDraw(canvas: Canvas) {
+        super.onDraw(canvas)
+
+        if (!isStroke) {
+            doPaint(canvas, fillColor, fillAlpha, false)
+            if (strokeWidth > Utils.dp(1f)) {
+                doPaint(canvas, strokeColor, strokeAlpha, true)
+            }
+        } else {
+            doPaint(canvas, strokeColor, strokeAlpha, true)
+        }
     }
 }

@@ -19,6 +19,8 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuProvider
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import com.squareup.picasso3.Transformation
 import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.Extra
@@ -128,6 +130,14 @@ class WallPostFragment : PlaceSupportMvpFragment<WallPostPresenter, IWallPostVie
         })
         mAttachmentsViews = forPost(pRoot)
         (requireActivity() as AppCompatActivity).setSupportActionBar(pRoot.findViewById(R.id.toolbar))
+
+        ViewCompat.setOnApplyWindowInsetsListener(pRoot) { _, windowInsets ->
+            val insets =
+                windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+            pRoot.findViewById<View>(R.id.actionbar)?.setPadding(0, insets.top, 0, 0)
+            WindowInsetsCompat.CONSUMED
+        }
+
         mShareButton = pRoot.findViewById(R.id.share_button)
         mCommentsButton = pRoot.findViewById(R.id.comments_button)
         mLikeButton = pRoot.findViewById(R.id.like_button)

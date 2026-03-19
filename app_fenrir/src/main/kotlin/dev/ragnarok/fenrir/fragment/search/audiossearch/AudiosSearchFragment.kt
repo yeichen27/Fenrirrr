@@ -7,11 +7,15 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
+import dev.ragnarok.fenrir.activity.MainActivity
 import dev.ragnarok.fenrir.fragment.audio.audios.AudioRecyclerAdapter
 import dev.ragnarok.fenrir.fragment.search.abssearch.AbsSearchFragment
 import dev.ragnarok.fenrir.fragment.search.criteria.AudioSearchCriteria
@@ -23,6 +27,8 @@ import dev.ragnarok.fenrir.place.PlaceFactory.getPlayerPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getSingleURLPhotoPlace
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.AppPerms.requestPermissionsAbs
+import dev.ragnarok.fenrir.util.Utils
+import kotlin.math.max
 
 class AudiosSearchFragment :
     AbsSearchFragment<AudiosSearchPresenter, IAudioSearchView, Audio, AudioRecyclerAdapter>(),
@@ -35,6 +41,38 @@ class AudiosSearchFragment :
     ) {
         customToast?.showToast(R.string.permission_all_granted_text)
     }
+
+    override fun onCreateInsetListener(root: View) {
+        val goto: FloatingActionButton = root.findViewById(R.id.goto_button)
+        if (requireActivity() is MainActivity) {
+            ViewCompat.setOnApplyWindowInsetsListener(root) { _, windowInsets ->
+                val insets =
+                    windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+                root.findViewById<View>(R.id.actionbar)?.setPadding(0, insets.top, 0, 0)
+                WindowInsetsCompat.CONSUMED
+            }
+        } else {
+            ViewCompat.setOnApplyWindowInsetsListener(root) { _, windowInsets ->
+                val insets =
+                    windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+                val imeFixedBottom =
+                    if (windowInsets.isVisible(WindowInsetsCompat.Type.ime())) max(
+                        windowInsets.getInsets(
+                            WindowInsetsCompat.Type.ime()
+                        ).bottom, insets.bottom
+                    ) else insets.bottom
+                root.findViewById<View>(R.id.actionbar)
+                    ?.setPadding(insets.left, insets.top, insets.right, 0)
+                recyclerView?.setPadding(insets.left, 0, insets.right, imeFixedBottom)
+                (goto.layoutParams as? CoordinatorLayout.LayoutParams)?.bottomMargin =
+                    imeFixedBottom + Utils.dp(16f)
+                (goto.layoutParams as? CoordinatorLayout.LayoutParams)?.rightMargin =
+                    insets.right + Utils.dp(16f)
+                WindowInsetsCompat.CONSUMED
+            }
+        }
+    }
+
     private var isSelectMode = false
     override fun notifyDataAdded(position: Int, count: Int) {
         mAdapter?.notifyItemBindableRangeInserted(position, count)
@@ -54,11 +92,10 @@ class AudiosSearchFragment :
     }
 
     override fun postCreate(root: View) {
-        val Goto: FloatingActionButton = root.findViewById(R.id.goto_button)
-        val recyclerView: RecyclerView = root.findViewById(R.id.list)
-        if (isSelectMode) Goto.setImageResource(R.drawable.check) else Goto.setImageResource(R.drawable.audio_player)
+        val goto: FloatingActionButton = root.findViewById(R.id.goto_button)
+        if (isSelectMode) goto.setImageResource(R.drawable.check) else goto.setImageResource(R.drawable.audio_player)
         if (!isSelectMode) {
-            Goto.setOnLongClickListener {
+            goto.setOnLongClickListener {
                 val curr = currentAudio
                 if (curr != null) {
                     getPlayerPlace(Settings.get().accounts().current).tryOpenWith(requireActivity())
@@ -66,7 +103,7 @@ class AudiosSearchFragment :
                 false
             }
         }
-        Goto.setOnClickListener {
+        goto.setOnClickListener {
             if (isSelectMode) {
                 val intent = Intent()
                 intent.putParcelableArrayListExtra(
@@ -80,7 +117,7 @@ class AudiosSearchFragment :
                 if (curr != null) {
                     val index = presenter?.getAudioPos(curr) ?: -1
                     if (index >= 0) {
-                        recyclerView.scrollToPosition(index + mAdapter?.headersCount.orZero())
+                        recyclerView?.scrollToPosition(index + mAdapter?.headersCount.orZero())
                     } else customToast?.showToast(R.string.audio_not_found)
                 } else customToast?.showToastError(R.string.null_audio)
             }
@@ -129,10 +166,15 @@ class AudiosSearchFragment :
         const val ACTION_SELECT = "AudiosSearchFragment.ACTION_SELECT"
 
 
-        fun newInstance(accountId: Long, criteria: AudioSearchCriteria?): AudiosSearchFragment {
+        fun newInstance(
+            accountId: Long,
+            criteria: AudioSearchCriteria?,
+            hideToolbar: Boolean
+        ): AudiosSearchFragment {
             val args = Bundle()
             args.putLong(Extra.ACCOUNT_ID, accountId)
             args.putParcelable(Extra.CRITERIA, criteria)
+            args.putBoolean(Extra.IN_TABS_CONTAINER, hideToolbar)
             val fragment = AudiosSearchFragment()
             fragment.arguments = args
             return fragment
@@ -140,12 +182,14 @@ class AudiosSearchFragment :
 
         fun newInstanceSelect(
             accountId: Long,
-            criteria: AudioSearchCriteria?
+            criteria: AudioSearchCriteria?,
+            hideToolbar: Boolean
         ): AudiosSearchFragment {
             val args = Bundle()
             args.putLong(Extra.ACCOUNT_ID, accountId)
             args.putParcelable(Extra.CRITERIA, criteria)
             args.putBoolean(ACTION_SELECT, true)
+            args.putBoolean(Extra.IN_TABS_CONTAINER, hideToolbar)
             val fragment = AudiosSearchFragment()
             fragment.arguments = args
             return fragment

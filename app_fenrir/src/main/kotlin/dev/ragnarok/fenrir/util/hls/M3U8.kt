@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okio.Buffer
 import java.io.BufferedReader
 import java.io.Closeable
 import java.io.File
@@ -131,13 +132,22 @@ class M3U8 {
                         ).execute()
                         ret += if (response.isSuccessful) {
                             val v = response.header("Content-Length")
-                            response.body.close()
-                            response.close()
                             if (v.isNullOrEmpty()) {
-                                emit(0L)
-                                return@flow
+                                val source = response.body.source()
+                                var totalBytes = 0L
+                                val buffer = Buffer()
+                                while (source.read(buffer, 8192) != -1L) {
+                                    totalBytes += buffer.size
+                                    buffer.clear()
+                                }
+                                response.body.close()
+                                response.close()
+                                totalBytes
+                            } else {
+                                response.body.close()
+                                response.close()
+                                v.toLong()
                             }
-                            v.toLong()
                         } else {
                             emit(0L)
                             response.close()

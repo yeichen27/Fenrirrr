@@ -7,6 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -49,7 +51,7 @@ class AudiosRecommendationFragment :
     private var inTabsContainer = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        inTabsContainer = requireArguments().getBoolean(EXTRA_IN_TABS_CONTAINER)
+        inTabsContainer = requireArguments().getBoolean(Extra.IN_TABS_CONTAINER)
         isSaveMode = false
     }
 
@@ -63,6 +65,13 @@ class AudiosRecommendationFragment :
         if (!inTabsContainer) {
             toolbar.visibility = View.VISIBLE
             (requireActivity() as AppCompatActivity).setSupportActionBar(toolbar)
+
+            ViewCompat.setOnApplyWindowInsetsListener(root) { _, windowInsets ->
+                val insets =
+                    windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+                root.findViewById<View>(R.id.actionbar)?.setPadding(0, insets.top, 0, 0)
+                WindowInsetsCompat.CONSUMED
+            }
         } else {
             toolbar.visibility = View.GONE
         }
@@ -231,7 +240,6 @@ class AudiosRecommendationFragment :
     }
 
     companion object {
-        const val EXTRA_IN_TABS_CONTAINER = "in_tabs_container"
         fun newInstance(
             accountId: Long,
             ownerId: Long,

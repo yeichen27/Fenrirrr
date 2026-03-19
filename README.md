@@ -13,7 +13,7 @@
 
 <b>Инструкция по сборке:</b><br>
 Требуется:<br>
-  1. Android Studio Panda 1 2025.3.1 или выше. Kotlin 2.3.*<br>
+  1. Android Studio Panda 2 2025.3.2 или выше. Kotlin 2.3.*<br>
   2. Android SDK 36.1<br>
   3. Android NDK 29.0.14206865<br>
   4. CMake 4.1.2<br>

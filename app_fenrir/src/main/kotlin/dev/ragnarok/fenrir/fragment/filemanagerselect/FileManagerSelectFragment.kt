@@ -12,6 +12,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.annotation.StringRes
+import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -26,6 +29,7 @@ import dev.ragnarok.fenrir.listener.PicassoPauseOnScrollListener
 import dev.ragnarok.fenrir.listener.UpdatableNavigation
 import dev.ragnarok.fenrir.model.FileItem
 import dev.ragnarok.fenrir.settings.CurrentTheme
+import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.coroutines.CancelableJob
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.delayTaskFlow
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.toMain
@@ -33,6 +37,7 @@ import dev.ragnarok.fenrir.util.toast.CustomSnackbars
 import dev.ragnarok.fenrir.view.MySearchView
 import dev.ragnarok.fenrir.view.natives.animation.ThorVGLottieView
 import java.io.File
+import kotlin.math.max
 
 class FileManagerSelectFragment :
     BaseMvpFragment<FileManagerSelectPresenter, IFileManagerSelectView>(),
@@ -78,7 +83,27 @@ class FileManagerSelectFragment :
         savedInstanceState: Bundle?
     ): View {
         val root = inflater.inflate(R.layout.fragment_file_select_explorer, container, false)
+        mSelected = root.findViewById(R.id.selected_button)
         mRecyclerView = root.findViewById(R.id.list)
+        ViewCompat.setOnApplyWindowInsetsListener(root) { _, windowInsets ->
+            val insets =
+                windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+            val imeFixedBottom =
+                if (windowInsets.isVisible(WindowInsetsCompat.Type.ime())) max(
+                    windowInsets.getInsets(
+                        WindowInsetsCompat.Type.ime()
+                    ).bottom, insets.bottom
+                ) else insets.bottom
+            root.findViewById<View>(R.id.actionbar)
+                ?.setPadding(insets.left, insets.top, insets.right, 0)
+            mRecyclerView?.setPadding(insets.left, 0, insets.right, imeFixedBottom)
+            (mSelected?.layoutParams as? CoordinatorLayout.LayoutParams)?.bottomMargin =
+                imeFixedBottom + Utils.dp(16f)
+            (mSelected?.layoutParams as? CoordinatorLayout.LayoutParams)?.rightMargin =
+                insets.right + Utils.dp(16f)
+            WindowInsetsCompat.CONSUMED
+        }
+
         empty = root.findViewById(R.id.empty)
 
         mySearchView = root.findViewById(R.id.searchview)
@@ -132,7 +157,6 @@ class FileManagerSelectFragment :
         mAdapter?.setClickListener(this)
         mRecyclerView?.adapter = mAdapter
 
-        mSelected = root.findViewById(R.id.selected_button)
         mSelected?.setOnClickListener {
             val retIntent = Intent()
             retIntent.putExtra(Extra.PATH, presenter?.getCurrentDir())

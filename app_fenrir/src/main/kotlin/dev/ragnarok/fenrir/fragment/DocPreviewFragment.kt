@@ -12,6 +12,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuProvider
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
@@ -104,6 +106,16 @@ class DocPreviewFragment : BaseFragment(), MenuProvider {
     ): View? {
         rootView = inflater.inflate(R.layout.fragment_document_preview, container, false)
         (requireActivity() as AppCompatActivity).setSupportActionBar(rootView?.findViewById(R.id.toolbar))
+
+        rootView?.let {
+            ViewCompat.setOnApplyWindowInsetsListener(it) { _, windowInsets ->
+                val insets =
+                    windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+                it.findViewById<View>(R.id.actionbar)?.setPadding(0, insets.top, 0, 0)
+                WindowInsetsCompat.CONSUMED
+            }
+        }
+
         preview = rootView?.findViewById(R.id.fragment_document_preview)
         ivDocIcon = rootView?.findViewById(R.id.no_preview_icon)
         tvTitle = rootView?.findViewById(R.id.fragment_document_title)

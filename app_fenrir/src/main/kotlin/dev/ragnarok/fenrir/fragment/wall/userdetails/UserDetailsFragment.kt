@@ -13,6 +13,8 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -54,12 +56,20 @@ class UserDetailsFragment : BaseMvpFragment<UserDetailsPresenter, IUserDetailsVi
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_user_details, container, false)
-        (requireActivity() as AppCompatActivity).setSupportActionBar(view.findViewById(R.id.toolbar))
-        val recyclerView: RecyclerView = view.findViewById(R.id.recycler_view)
-        ivAvatar = view.findViewById(R.id.ivAvatar)
-        ivAvatarHighRes = view.findViewById(R.id.ivAvatarHighRes)
-        ivMail = view.findViewById(R.id.fabOpenChat)
+        val root = inflater.inflate(R.layout.fragment_user_details, container, false)
+        (requireActivity() as AppCompatActivity).setSupportActionBar(root.findViewById(R.id.toolbar))
+
+        ViewCompat.setOnApplyWindowInsetsListener(root) { _, windowInsets ->
+            val insets =
+                windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+            root.findViewById<View>(R.id.toolbar)?.setPadding(0, insets.top, 0, 0)
+            WindowInsetsCompat.CONSUMED
+        }
+
+        val recyclerView: RecyclerView = root.findViewById(R.id.recycler_view)
+        ivAvatar = root.findViewById(R.id.ivAvatar)
+        ivAvatarHighRes = root.findViewById(R.id.ivAvatarHighRes)
+        ivMail = root.findViewById(R.id.fabOpenChat)
         ivMail?.setOnClickListener { presenter?.fireChatClick() }
         recyclerView.layoutManager = LinearLayoutManager(requireActivity())
         ivAvatarHighRes?.setOnClickListener { presenter?.firePhotoClick() }
@@ -68,7 +78,7 @@ class UserDetailsFragment : BaseMvpFragment<UserDetailsPresenter, IUserDetailsVi
         recyclerView.adapter = menuAdapter
         val behavior = BottomSheetBehavior.from(recyclerView)
         behavior.addBottomSheetCallback(ProfileBottomSheetCallback())
-        return view
+        return root
     }
 
     override fun openChatWith(accountId: Long, messagesOwnerId: Long, peer: Peer) {

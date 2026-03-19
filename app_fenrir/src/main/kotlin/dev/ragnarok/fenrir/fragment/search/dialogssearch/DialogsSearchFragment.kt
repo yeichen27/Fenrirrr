@@ -40,10 +40,15 @@ class DialogsSearchFragment :
     }
 
     companion object {
-        fun newInstance(accountId: Long, criteria: DialogsSearchCriteria?): DialogsSearchFragment {
+        fun newInstance(
+            accountId: Long,
+            criteria: DialogsSearchCriteria?,
+            hideToolbar: Boolean
+        ): DialogsSearchFragment {
             val args = Bundle()
             args.putLong(Extra.ACCOUNT_ID, accountId)
             args.putParcelable(Extra.CRITERIA, criteria)
+            args.putBoolean(Extra.IN_TABS_CONTAINER, hideToolbar)
             val fragment = DialogsSearchFragment()
             fragment.arguments = args
             return fragment

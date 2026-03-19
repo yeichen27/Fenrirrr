@@ -19,6 +19,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.edit
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -213,6 +215,14 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
     ): View {
         val root =
             inflater.inflate(R.layout.preference_file_gallery_list_fragment, container, false)
+
+        (requireActivity() as AppCompatActivity).setSupportActionBar(root.findViewById(R.id.toolbar))
+        ViewCompat.setOnApplyWindowInsetsListener(root) { _, windowInsets ->
+            val insets =
+                windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+            root.findViewById<View>(R.id.actionbar)?.setPadding(0, insets.top, 0, 0)
+            WindowInsetsCompat.CONSUMED
+        }
         searchView = root.findViewById(R.id.searchview)
         searchView?.setRightButtonVisibility(false)
         searchView?.setLeftIcon(R.drawable.magnify)

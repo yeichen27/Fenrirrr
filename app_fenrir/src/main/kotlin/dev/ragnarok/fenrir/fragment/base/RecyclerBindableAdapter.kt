@@ -182,6 +182,15 @@ abstract class RecyclerBindableAdapter<T, VH : RecyclerView.ViewHolder>(private 
             }
 
             else -> {
+                if (manager is StaggeredGridLayoutManager && isSingleLineElement(position)
+                    && vh.itemView.layoutParams is StaggeredGridLayoutManager.LayoutParams
+                ) {
+
+                    (vh.itemView.layoutParams as StaggeredGridLayoutManager.LayoutParams).width =
+                        ViewGroup.LayoutParams.MATCH_PARENT
+                    (vh.itemView.layoutParams as StaggeredGridLayoutManager.LayoutParams).isFullSpan =
+                        true
+                }
                 //it's one of our items, display as required
                 onBindItemViewHolder(vh, position - headers.size, getItemType(position))
             }
@@ -244,14 +253,14 @@ abstract class RecyclerBindableAdapter<T, VH : RecyclerView.ViewHolder>(private 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
         if (manager == null) {
-            setManager(recyclerView.layoutManager)
+            setLayoutManager(recyclerView.layoutManager)
         }
         if (inflater == null) {
             inflater = LayoutInflater.from(recyclerView.context)
         }
     }
 
-    private fun setManager(manager: RecyclerView.LayoutManager?) {
+    fun setLayoutManager(manager: RecyclerView.LayoutManager?) {
         this.manager = manager
         if (this.manager is GridLayoutManager) {
             (this.manager as GridLayoutManager?)?.spanSizeLookup = spanSizeLookup
@@ -261,9 +270,11 @@ abstract class RecyclerBindableAdapter<T, VH : RecyclerView.ViewHolder>(private 
         }
     }
 
+    open fun isSingleLineElement(position: Int): Boolean = false
+
     protected fun getGridSpan(position: Int): Int {
         var tPosition = position
-        if (isHeader(tPosition) || isFooter(tPosition)) {
+        if (isHeader(tPosition) || isFooter(tPosition) || isSingleLineElement(tPosition)) {
             return maxGridSpan
         }
         tPosition -= headers.size

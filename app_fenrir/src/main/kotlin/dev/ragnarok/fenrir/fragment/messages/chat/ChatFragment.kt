@@ -34,6 +34,8 @@ import androidx.activity.result.contract.ActivityResultContracts.StartActivityFo
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.appcompat.widget.Toolbar
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -140,6 +142,7 @@ import dev.ragnarok.fenrir.view.natives.animation.ThorVGLottieView
 import me.minetsh.imaging.IMGEditActivity
 import java.io.File
 import java.lang.ref.WeakReference
+import kotlin.math.max
 
 class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatView,
     InputViewController.OnInputActionCallback,
@@ -313,6 +316,44 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
         toolbar?.menu?.let { prepareOptionsMenu(it) }
         toolbar?.setOnMenuItemClickListener {
             optionsMenuItemSelected(it)
+        }
+
+        if (requireActivity() is MainActivity) {
+            ViewCompat.setOnApplyWindowInsetsListener(root) { v, windowInsets ->
+                val insets =
+                    windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+                val imeFixedBottom =
+                    if (windowInsets.isVisible(WindowInsetsCompat.Type.ime())) max(
+                        windowInsets.getInsets(
+                            WindowInsetsCompat.Type.ime()
+                        ).bottom, insets.bottom
+                    ) else insets.bottom
+                v.setPadding(
+                    0,
+                    insets.top,
+                    0,
+                    imeFixedBottom
+                )
+                WindowInsetsCompat.CONSUMED
+            }
+        } else {
+            ViewCompat.setOnApplyWindowInsetsListener(root) { v, windowInsets ->
+                val insets =
+                    windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+                val imeFixedBottom =
+                    if (windowInsets.isVisible(WindowInsetsCompat.Type.ime())) max(
+                        windowInsets.getInsets(
+                            WindowInsetsCompat.Type.ime()
+                        ).bottom, insets.bottom
+                    ) else insets.bottom
+                v.setPadding(
+                    insets.left,
+                    insets.top,
+                    insets.right,
+                    imeFixedBottom
+                )
+                WindowInsetsCompat.CONSUMED
+            }
         }
 
         stickersKeywordsView = root.findViewById(R.id.stickers)
@@ -545,7 +586,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
                             icon = R.drawable.emoticon
                             iconColor = CurrentTheme.getColorSecondary(requireActivity())
                             onSelect {
-                                presenter?.fireReactionModeClick(position)
+                                presenter?.fireReactionModeClick()
                             }
                         }
                         item(R.string.select_more) {
@@ -665,6 +706,11 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
                     reference.get()?.presenter?.fireActionModeStarClick()
                     hide()
                 }
+
+                R.id.buttonReaction -> {
+                    reference.get()?.presenter?.fireReactionModeClick()
+                    hide()
+                }
             }
         }
 
@@ -677,6 +723,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
         val buttonSpam: View = rootView.findViewById(R.id.buttonSpam)
         val buttonPin: View = rootView.findViewById(R.id.buttonPin)
         val buttonStar: ImageView = rootView.findViewById(R.id.buttonStar)
+        val buttonReaction: ImageView = rootView.findViewById(R.id.buttonReaction)
         val titleView: TextView = rootView.findViewById(R.id.actionModeTitle)
 
         init {
@@ -688,6 +735,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
             buttonSpam.setOnClickListener(this)
             buttonPin.setOnClickListener(this)
             buttonStar.setOnClickListener(this)
+            buttonReaction.setOnClickListener(this)
         }
 
         fun show() {

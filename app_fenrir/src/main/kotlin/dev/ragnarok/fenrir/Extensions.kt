@@ -11,6 +11,7 @@ import android.content.pm.Signature
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.graphics.Color
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcel
@@ -633,6 +634,14 @@ fun String.toColor(): Int {
     return Color.RED
 }
 
+@ColorInt
+fun Int.applyAlpha(a: Int): Int {
+    val r = Color.red(this)
+    val g = Color.green(this)
+    val b = Color.blue(this)
+    return Color.argb(a, r, g, b)
+}
+
 fun String.filePathToUrl(filePrefixReplace: String? = null): String? {
     try {
         var path = File(this).toUri().toString()
@@ -640,6 +649,15 @@ fun String.filePathToUrl(filePrefixReplace: String? = null): String? {
             path = path.replaceFirst("file://", "$filePrefixReplace://")
         }
         return path
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+    return null
+}
+
+fun String.filePathToUri(): Uri? {
+    try {
+        return File(this).toUri()
     } catch (e: Exception) {
         e.printStackTrace()
     }

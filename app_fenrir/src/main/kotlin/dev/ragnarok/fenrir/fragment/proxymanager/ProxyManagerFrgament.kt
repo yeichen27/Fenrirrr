@@ -9,12 +9,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuProvider
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
 import dev.ragnarok.fenrir.model.ProxyConfig
 import dev.ragnarok.fenrir.place.PlaceFactory.proxyAddPlace
+import kotlin.math.max
 
 class ProxyManagerFrgament : BaseMvpFragment<ProxyManagerPresenter, IProxyManagerView>(),
     IProxyManagerView, ProxiesAdapter.ActionListener, MenuProvider {
@@ -27,6 +30,25 @@ class ProxyManagerFrgament : BaseMvpFragment<ProxyManagerPresenter, IProxyManage
     ): View {
         val root = inflater.inflate(R.layout.fragment_proxy_manager, container, false)
         (requireActivity() as AppCompatActivity).setSupportActionBar(root.findViewById(R.id.toolbar))
+
+        ViewCompat.setOnApplyWindowInsetsListener(root) { v, windowInsets ->
+            val insets =
+                windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+            val imeFixedBottom =
+                if (windowInsets.isVisible(WindowInsetsCompat.Type.ime())) max(
+                    windowInsets.getInsets(
+                        WindowInsetsCompat.Type.ime()
+                    ).bottom, insets.bottom
+                ) else insets.bottom
+            v.setPadding(
+                insets.left,
+                insets.top,
+                insets.right,
+                imeFixedBottom
+            )
+            WindowInsetsCompat.CONSUMED
+        }
+
         val recyclerView: RecyclerView = root.findViewById(R.id.recycler_view)
         recyclerView.layoutManager = LinearLayoutManager(requireActivity())
         mProxiesAdapter = ProxiesAdapter(mutableListOf(), this)

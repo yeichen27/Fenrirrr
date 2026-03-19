@@ -9,6 +9,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -20,6 +23,7 @@ import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.ActivityUtils.supportToolbarFor
 import dev.ragnarok.fenrir.activity.DualTabPhotoActivity.Companion.createIntent
+import dev.ragnarok.fenrir.activity.MainActivity
 import dev.ragnarok.fenrir.activity.SendAttachmentsActivity.Companion.startForSendAttachments
 import dev.ragnarok.fenrir.dialog.PostShareDialog.Methods
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
@@ -53,9 +57,11 @@ import dev.ragnarok.fenrir.place.PlaceUtil.goToPostCreation
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.upload.Upload
 import dev.ragnarok.fenrir.util.AppPerms.requestPermissionsAbs
+import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.shareLink
 import dev.ragnarok.fenrir.util.ViewUtils.setupSwipeRefreshLayoutWithCurrentTheme
 import dev.ragnarok.fenrir.view.navigation.AbsNavigationView
+import kotlin.math.max
 
 class DocsFragment : BaseMvpFragment<DocsListPresenter, IDocListView>(), IDocListView,
     DocsAdapter.ActionListener, DocsUploadAdapter.ActionListener,
@@ -99,6 +105,41 @@ class DocsFragment : BaseMvpFragment<DocsListPresenter, IDocListView>(), IDocLis
     ): View? {
         val root = inflater.inflate(R.layout.fragment_docs, container, false)
         (requireActivity() as AppCompatActivity).setSupportActionBar(root.findViewById(R.id.toolbar))
+
+        val buttonAdd: FloatingActionButton = root.findViewById(R.id.add_button)
+        buttonAdd.setOnClickListener {
+            presenter?.fireButtonAddClick()
+        }
+        if (requireActivity() is MainActivity) {
+            ViewCompat.setOnApplyWindowInsetsListener(root) { _, windowInsets ->
+                val insets =
+                    windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+                root.findViewById<View>(R.id.actionbar)?.setPadding(0, insets.top, 0, 0)
+                WindowInsetsCompat.CONSUMED
+            }
+        } else {
+            ViewCompat.setOnApplyWindowInsetsListener(root) { _, windowInsets ->
+                val insets =
+                    windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+                val imeFixedBottom =
+                    if (windowInsets.isVisible(WindowInsetsCompat.Type.ime())) max(
+                        windowInsets.getInsets(
+                            WindowInsetsCompat.Type.ime()
+                        ).bottom, insets.bottom
+                    ) else insets.bottom
+                root.findViewById<View>(R.id.actionbar)
+                    ?.setPadding(insets.left, insets.top, insets.right, 0)
+                mRecyclerView?.setPadding(insets.left, 0, insets.right, imeFixedBottom)
+                mUploadRoot?.setPadding(insets.left, 0, insets.right, imeFixedBottom)
+
+                (buttonAdd.layoutParams as? CoordinatorLayout.LayoutParams)?.bottomMargin =
+                    imeFixedBottom + Utils.dp(16f)
+                (buttonAdd.layoutParams as? CoordinatorLayout.LayoutParams)?.rightMargin =
+                    insets.right + Utils.dp(16f)
+                WindowInsetsCompat.CONSUMED
+            }
+        }
+
         mSwipeRefreshLayout = root.findViewById(R.id.refresh)
         mSwipeRefreshLayout?.setOnRefreshListener {
             presenter?.fireRefresh()
@@ -114,10 +155,6 @@ class DocsFragment : BaseMvpFragment<DocsListPresenter, IDocListView>(), IDocLis
         // и мы дальше по коду можем использовать переменную mImagesOnly
         mRecyclerView?.layoutManager = createLayoutManager(mImagesOnly)
         mDocsAdapter = createAdapter(mImagesOnly, mutableListOf())
-        val buttonAdd: FloatingActionButton = root.findViewById(R.id.add_button)
-        buttonAdd.setOnClickListener {
-            presenter?.fireButtonAddClick()
-        }
         val uploadRecyclerView: RecyclerView = root.findViewById(R.id.uploads_recycler_view)
         uploadRecyclerView.layoutManager =
             LinearLayoutManager(requireActivity(), LinearLayoutManager.HORIZONTAL, false)
