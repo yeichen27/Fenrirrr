@@ -70,8 +70,8 @@ class DualTabPhotosFragment : BaseFragment(), BackPressCallback {
                         WindowInsetsCompat.Type.ime()
                     ).bottom, insets.bottom
                 ) else insets.bottom
-            root.findViewById<View>(R.id.actionbar)
-                ?.setPadding(insets.left, insets.top, insets.right, 0)
+            root.findViewById<View>(R.id.toolbar)
+                ?.setPadding(0, insets.top, 0, 0)
             root.setPadding(insets.left, 0, insets.right, imeFixedBottom)
             WindowInsetsCompat.CONSUMED
         }

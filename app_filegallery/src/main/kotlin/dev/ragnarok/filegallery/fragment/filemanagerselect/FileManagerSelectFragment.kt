@@ -92,7 +92,7 @@ class FileManagerSelectFragment :
                         WindowInsetsCompat.Type.ime()
                     ).bottom, insets.bottom
                 ) else insets.bottom
-            root.findViewById<View>(R.id.actionbar)
+            root.findViewById<View>(R.id.fake_toolbar)
                 ?.setPadding(insets.left, insets.top, insets.right, 0)
             mRecyclerView?.setPadding(insets.left, 0, insets.right, imeFixedBottom)
             (mSelected?.layoutParams as? CoordinatorLayout.LayoutParams)?.bottomMargin =

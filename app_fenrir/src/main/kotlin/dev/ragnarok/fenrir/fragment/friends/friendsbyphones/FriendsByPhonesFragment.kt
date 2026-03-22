@@ -112,7 +112,7 @@ class FriendsByPhonesFragment : BaseMvpFragment<FriendsByPhonesPresenter, IFrien
         ViewCompat.setOnApplyWindowInsetsListener(root) { _, windowInsets ->
             val insets =
                 windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
-            root.findViewById<View>(R.id.actionbar)?.setPadding(0, insets.top, 0, 0)
+            root.findViewById<View>(R.id.toolbar)?.setPadding(0, insets.top, 0, 0)
             WindowInsetsCompat.CONSUMED
         }
 

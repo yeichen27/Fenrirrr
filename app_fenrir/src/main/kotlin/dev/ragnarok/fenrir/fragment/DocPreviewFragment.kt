@@ -111,7 +111,7 @@ class DocPreviewFragment : BaseFragment(), MenuProvider {
             ViewCompat.setOnApplyWindowInsetsListener(it) { _, windowInsets ->
                 val insets =
                     windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
-                it.findViewById<View>(R.id.actionbar)?.setPadding(0, insets.top, 0, 0)
+                it.findViewById<View>(R.id.toolbar)?.setPadding(0, insets.top, 0, 0)
                 WindowInsetsCompat.CONSUMED
             }
         }

@@ -130,7 +130,7 @@ class AudiosFragment : BaseMvpFragment<AudiosPresenter, IAudiosView>(), IAudiosV
                 ViewCompat.setOnApplyWindowInsetsListener(root) { _, windowInsets ->
                     val insets =
                         windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
-                    root.findViewById<View>(R.id.actionbar)?.setPadding(0, insets.top, 0, 0)
+                    root.findViewById<View>(R.id.toolbar)?.setPadding(0, insets.top, 0, 0)
                     WindowInsetsCompat.CONSUMED
                 }
             } else {
@@ -144,7 +144,9 @@ class AudiosFragment : BaseMvpFragment<AudiosPresenter, IAudiosView>(), IAudiosV
                             ).bottom, insets.bottom
                         ) else insets.bottom
                     root.findViewById<View>(R.id.actionbar)
-                        ?.setPadding(insets.left, insets.top, insets.right, 0)
+                        ?.setPadding(insets.left, 0, insets.right, 0)
+                    root.findViewById<View>(R.id.toolbar)
+                        ?.setPadding(0, insets.top, 0, 0)
                     recyclerView.setPadding(insets.left, 0, insets.right, imeFixedBottom)
                     (goto.layoutParams as? CoordinatorLayout.LayoutParams)?.bottomMargin =
                         imeFixedBottom + Utils.dp(16f)

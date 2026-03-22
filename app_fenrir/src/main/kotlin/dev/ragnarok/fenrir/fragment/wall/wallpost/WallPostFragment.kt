@@ -134,7 +134,7 @@ class WallPostFragment : PlaceSupportMvpFragment<WallPostPresenter, IWallPostVie
         ViewCompat.setOnApplyWindowInsetsListener(pRoot) { _, windowInsets ->
             val insets =
                 windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
-            pRoot.findViewById<View>(R.id.actionbar)?.setPadding(0, insets.top, 0, 0)
+            pRoot.findViewById<View>(R.id.toolbar)?.setPadding(0, insets.top, 0, 0)
             WindowInsetsCompat.CONSUMED
         }
 

@@ -40,7 +40,7 @@ class PostCreateFragment : AbsPostEditFragment<PostCreatePresenter, IPostCreateV
                         WindowInsetsCompat.Type.ime()
                     ).bottom, insets.bottom
                 ) else insets.bottom
-            root.findViewById<View>(R.id.actionbar)?.setPadding(0, insets.top, 0, 0)
+            root.findViewById<View>(R.id.toolbar)?.setPadding(0, insets.top, 0, 0)
             root.setPadding(0, 0, 0, imeFixedBottom)
             WindowInsetsCompat.CONSUMED
         }

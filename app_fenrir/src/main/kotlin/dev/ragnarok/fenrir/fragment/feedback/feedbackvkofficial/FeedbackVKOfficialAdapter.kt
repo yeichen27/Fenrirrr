@@ -56,7 +56,7 @@ class FeedbackVKOfficialAdapter(
         return Holder(
             LayoutInflater.from(
                 context
-            ).inflate(R.layout.item_answer_official, parent, false)
+            ).inflate(R.layout.item_feedback_official, parent, false)
         )
     }
 

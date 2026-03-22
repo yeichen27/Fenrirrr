@@ -11,7 +11,7 @@ appMinSDKDevelop = "29"
 appMinSDKNotDevelop = "26"
 appTargetSDK = "36"
 appVersionCode = "1000"
-appVersionName = "110"
+appVersionName = "111"
 
 # Androidx Libraries
 activityVersion = "1.13.0"

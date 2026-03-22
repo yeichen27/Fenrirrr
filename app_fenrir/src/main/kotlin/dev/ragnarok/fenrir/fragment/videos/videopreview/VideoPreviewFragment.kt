@@ -164,7 +164,7 @@ class VideoPreviewFragment : BaseMvpFragment<VideoPreviewPresenter, IVideoPrevie
             ViewCompat.setOnApplyWindowInsetsListener(it) { v, windowInsets ->
                 val insets =
                     windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
-                v.findViewById<View>(R.id.actionbar)?.setPadding(0, insets.top, 0, 0)
+                v.findViewById<View>(R.id.toolbar)?.setPadding(0, insets.top, 0, 0)
                 WindowInsetsCompat.CONSUMED
             }
         }

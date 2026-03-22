@@ -35,7 +35,9 @@ class AddProxyFragment : BaseMvpFragment<AddProxyPresenter, IAddProxyView>(), IA
                     ).bottom, insets.bottom
                 ) else insets.bottom
             root.findViewById<View>(R.id.actionbar)
-                ?.setPadding(insets.left, insets.top, insets.right, 0)
+                ?.setPadding(insets.left, 0, insets.right, 0)
+            root.findViewById<View>(R.id.toolbar)
+                ?.setPadding(0, insets.top, 0, 0)
             root.findViewById<View>(R.id.scrollView)
                 ?.setPadding(insets.left, 0, insets.right, imeFixedBottom)
             WindowInsetsCompat.CONSUMED
