@@ -17,6 +17,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textview.MaterialTextView
 import dev.ragnarok.filegallery.Extra
@@ -54,10 +55,13 @@ class FileManagerSelectFragment :
     private var mAnimationLoaded = false
     private var animLoad: ObjectAnimator? = null
     private var mySearchView: MySearchView? = null
+    private var appBarView: AppBarLayout? = null
+    private var appVerticalOffset = 0
 
     override fun onBackPressed(): Boolean {
         if (presenter?.canLoadUp() == true) {
-            mLayoutManager?.onSaveInstanceState()?.let { presenter?.backupDirectoryScroll(it) }
+            mLayoutManager?.onSaveInstanceState()
+                ?.let { presenter?.backupDirectoryScroll(it, appVerticalOffset) }
             presenter?.loadUp()
             mySearchView?.clear()
             return false
@@ -81,6 +85,10 @@ class FileManagerSelectFragment :
         savedInstanceState: Bundle?
     ): View {
         val root = inflater.inflate(R.layout.fragment_file_select_explorer, container, false)
+        appBarView = root.findViewById(R.id.actionbar)
+        appBarView?.addOnOffsetChangedListener { _, i ->
+            appVerticalOffset = i
+        }
         mSelected = root.findViewById(R.id.selected_button)
         mRecyclerView = root.findViewById(R.id.list)
         ViewCompat.setOnApplyWindowInsetsListener(root) { _, windowInsets ->
@@ -92,8 +100,9 @@ class FileManagerSelectFragment :
                         WindowInsetsCompat.Type.ime()
                     ).bottom, insets.bottom
                 ) else insets.bottom
+            appBarView?.setPadding(insets.left, 0, insets.right, 0)
             root.findViewById<View>(R.id.fake_toolbar)
-                ?.setPadding(insets.left, insets.top, insets.right, 0)
+                ?.setPadding(0, insets.top, 0, 0)
             mRecyclerView?.setPadding(insets.left, 0, insets.right, imeFixedBottom)
             (mSelected?.layoutParams as? CoordinatorLayout.LayoutParams)?.bottomMargin =
                 imeFixedBottom + Utils.dp(16f)
@@ -167,7 +176,8 @@ class FileManagerSelectFragment :
     override fun onClick(position: Int, item: FileItemSelect) {
         if (item.isDir) {
             val sel = File(item.file_path ?: return)
-            mLayoutManager?.onSaveInstanceState()?.let { presenter?.backupDirectoryScroll(it) }
+            mLayoutManager?.onSaveInstanceState()
+                ?.let { presenter?.backupDirectoryScroll(it, appVerticalOffset) }
             presenter?.setCurrent(sel)
         } else {
             val retIntent = Intent()
@@ -242,8 +252,13 @@ class FileManagerSelectFragment :
         }
     }
 
-    override fun restoreScroll(scroll: Parcelable) {
+    override fun restoreScroll(scroll: Parcelable, appVerticalOffset: Int) {
         mLayoutManager?.onRestoreInstanceState(scroll)
+        val layoutParams = appBarView?.layoutParams as? CoordinatorLayout.LayoutParams
+        val behavior = layoutParams?.behavior as? AppBarLayout.Behavior
+        behavior?.setTopAndBottomOffset(
+            appVerticalOffset
+        )
     }
 
     override fun onScrollTo(pos: Int) {

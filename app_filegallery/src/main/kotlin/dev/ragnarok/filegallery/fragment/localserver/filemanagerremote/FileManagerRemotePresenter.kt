@@ -20,7 +20,7 @@ class FileManagerRemotePresenter : RxSupportPresenter<IFileManagerRemoteView>() 
     private val fileList: ArrayList<FileRemote> = ArrayList()
     private val fileListSearch: ArrayList<FileRemote> = ArrayList()
     private var isLoading = false
-    private val directoryScrollPositions = HashMap<String?, Parcelable>()
+    private val directoryScrollPositions = HashMap<String?, Pair<Parcelable, Int>>()
     private var q: String? = null
     private var path: ArrayList<String> = ArrayList()
 
@@ -97,8 +97,8 @@ class FileManagerRemotePresenter : RxSupportPresenter<IFileManagerRemoteView>() 
         viewHost.resolveLoading(isLoading)
     }
 
-    fun backupDirectoryScroll(scroll: Parcelable) {
-        directoryScrollPositions[buildPath()] = scroll
+    fun backupDirectoryScroll(scroll: Parcelable, appVerticalOffset: Int) {
+        directoryScrollPositions[buildPath()] = Pair(scroll, appVerticalOffset)
     }
 
     fun loadUp() {
@@ -249,8 +249,8 @@ class FileManagerRemotePresenter : RxSupportPresenter<IFileManagerRemoteView>() 
                 view?.resolveLoading(isLoading)
                 view?.notifyAllChanged()
                 directoryScrollPositions.remove(buildPath())?.let { scroll ->
-                    view?.restoreScroll(scroll)
-                } ?: view?.restoreScroll(LinearLayoutManagerSavedState())
+                    view?.restoreScroll(scroll.first, scroll.second)
+                } ?: view?.restoreScroll(LinearLayoutManagerSavedState(), 0)
             }, {
                 view?.showThrowable(it)
                 isLoading = false

@@ -12,9 +12,11 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import dev.ragnarok.fenrir.module.parcel.ParcelNative
 import dev.ragnarok.filegallery.Extra
@@ -58,10 +60,13 @@ class FileManagerRemoteFragment :
     private var animLoad: ObjectAnimator? = null
     private var mySearchView: MySearchView? = null
     private var musicButton: FloatingActionButton? = null
+    private var appBarView: AppBarLayout? = null
+    private var appVerticalOffset = 0
 
     override fun onBackPressed(): Boolean {
         if (presenter?.canLoadUp() == true) {
-            mLayoutManager?.onSaveInstanceState()?.let { presenter?.backupDirectoryScroll(it) }
+            mLayoutManager?.onSaveInstanceState()
+                ?.let { presenter?.backupDirectoryScroll(it, appVerticalOffset) }
             presenter?.loadUp()
             mySearchView?.clear()
             return false
@@ -82,6 +87,12 @@ class FileManagerRemoteFragment :
         savedInstanceState: Bundle?
     ): View {
         val root = inflater.inflate(R.layout.fragment_file_remote_explorer, container, false)
+
+        appBarView = root.findViewById(R.id.actionbar)
+        appBarView?.addOnOffsetChangedListener { _, i ->
+            appVerticalOffset = i
+        }
+
         mRecyclerView = root.findViewById(R.id.list)
         empty = root.findViewById(R.id.empty)
 
@@ -132,7 +143,8 @@ class FileManagerRemoteFragment :
         mSwipeRefreshLayout?.setOnRefreshListener {
             mSwipeRefreshLayout?.isRefreshing = false
             if (presenter?.canRefresh() == true) {
-                mLayoutManager?.onSaveInstanceState()?.let { presenter?.backupDirectoryScroll(it) }
+                mLayoutManager?.onSaveInstanceState()
+                    ?.let { presenter?.backupDirectoryScroll(it, appVerticalOffset) }
                 presenter?.loadFiles()
             }
         }
@@ -163,7 +175,8 @@ class FileManagerRemoteFragment :
 
     override fun onClick(position: Int, item: FileRemote) {
         if (item.type == FileType.folder) {
-            mLayoutManager?.onSaveInstanceState()?.let { presenter?.backupDirectoryScroll(it) }
+            mLayoutManager?.onSaveInstanceState()
+                ?.let { presenter?.backupDirectoryScroll(it, appVerticalOffset) }
             presenter?.goFolder(item)
         } else {
             presenter?.onClickFile(item)
@@ -264,8 +277,13 @@ class FileManagerRemoteFragment :
         }
     }
 
-    override fun restoreScroll(scroll: Parcelable) {
+    override fun restoreScroll(scroll: Parcelable, appVerticalOffset: Int) {
         mLayoutManager?.onRestoreInstanceState(scroll)
+        val layoutParams = appBarView?.layoutParams as? CoordinatorLayout.LayoutParams
+        val behavior = layoutParams?.behavior as? AppBarLayout.Behavior
+        behavior?.setTopAndBottomOffset(
+            appVerticalOffset
+        )
     }
 
     override fun onScrollTo(pos: Int) {

@@ -45,7 +45,7 @@ class FileManagerPresenter(
     private val fileListSearch: ArrayList<FileItem> = ArrayList()
     private var isLoading = false
     private val basePath = path.absolutePath
-    private val directoryScrollPositions = HashMap<String, Parcelable>()
+    private val directoryScrollPositions = HashMap<String, Pair<Parcelable, Int>>()
     private val remotePlay: UploadDestination = forRemotePlay()
     private val uploadManager: IUploadManager = Includes.uploadManager
 
@@ -259,8 +259,8 @@ class FileManagerPresenter(
         }
     }
 
-    fun backupDirectoryScroll(scroll: Parcelable) {
-        directoryScrollPositions[path.absolutePath] = scroll
+    fun backupDirectoryScroll(scroll: Parcelable, appVerticalOffset: Int) {
+        directoryScrollPositions[path.absolutePath] = Pair(scroll, appVerticalOffset)
     }
 
     fun loadUp() {
@@ -324,8 +324,8 @@ class FileManagerPresenter(
             view?.resolveEmptyText(fileList.isEmpty())
             view?.notifyAllChanged()
             directoryScrollPositions.remove(path.absolutePath)?.let { scroll ->
-                view?.restoreScroll(scroll)
-            } ?: view?.restoreScroll(LinearLayoutManagerSavedState())
+                view?.restoreScroll(scroll.first, scroll.second)
+            } ?: view?.restoreScroll(LinearLayoutManagerSavedState(), 0)
             if (back && fileList.isEmpty() || !back) {
                 loadFiles(
                     back = false, caches = false, fromCache = true
@@ -335,7 +335,7 @@ class FileManagerPresenter(
                 view?.resolveLoading(isLoading)
             }
         }, {
-            view?.restoreScroll(LinearLayoutManagerSavedState())
+            view?.restoreScroll(LinearLayoutManagerSavedState(), 0)
             view?.showThrowable(it)
             loadFiles(
                 back = false, caches = false, fromCache = true

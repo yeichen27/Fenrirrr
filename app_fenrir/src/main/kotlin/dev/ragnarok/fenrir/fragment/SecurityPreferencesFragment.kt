@@ -14,6 +14,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import de.maxr1998.modernpreferences.AbsPreferencesFragment
 import de.maxr1998.modernpreferences.PreferenceScreen
@@ -59,6 +60,7 @@ class SecurityPreferencesFragment : AbsPreferencesFragment(),
     PreferencesAdapter.OnScreenChangeListener,
     BackPressCallback, CanBackPressedCallback {
     private var preferencesView: RecyclerView? = null
+    private var appBarView: AppBarLayout? = null
     private var layoutManager: LinearLayoutManager? = null
     private var searchView: MySearchView? = null
     private var sleepDataDisposable = CancelableJob()
@@ -101,6 +103,8 @@ class SecurityPreferencesFragment : AbsPreferencesFragment(),
         val root = inflater.inflate(R.layout.preference_fenrir_list_fragment, container, false)
         (requireActivity() as AppCompatActivity).setSupportActionBar(root.findViewById(R.id.toolbar))
 
+        appBarView = root.findViewById(R.id.actionbar)
+
         if (requireActivity() is MainActivity) {
             ViewCompat.setOnApplyWindowInsetsListener(root) { _, windowInsets ->
                 val insets =
@@ -118,8 +122,7 @@ class SecurityPreferencesFragment : AbsPreferencesFragment(),
                             WindowInsetsCompat.Type.ime()
                         ).bottom, insets.bottom
                     ) else insets.bottom
-                root.findViewById<View>(R.id.actionbar)
-                    ?.setPadding(insets.left, 0, insets.right, 0)
+                appBarView?.setPadding(insets.left, 0, insets.right, 0)
                 root.findViewById<View>(R.id.toolbar)
                     ?.setPadding(0, insets.top, 0, 0)
                 preferencesView?.setPadding(insets.left, 0, insets.right, imeFixedBottom)
@@ -194,7 +197,7 @@ class SecurityPreferencesFragment : AbsPreferencesFragment(),
     }
 
     override fun beforeScreenChange(screen: PreferenceScreen): Boolean {
-        preferencesView?.let { preferencesAdapter?.stopObserveScrollPosition(it) }
+        preferencesView?.let { preferencesAdapter?.stopObserveScrollPosition(it, appBarView) }
         return true
     }
 
@@ -203,7 +206,7 @@ class SecurityPreferencesFragment : AbsPreferencesFragment(),
         if (animation) {
             preferencesView?.scheduleLayoutAnimation()
         }
-        preferencesView?.let { preferencesAdapter?.restoreAndObserveScrollPosition(it) }
+        preferencesView?.let { preferencesAdapter?.restoreAndObserveScrollPosition(it, appBarView) }
         val actionBar = ActivityUtils.supportToolbarFor(this)
         if (actionBar != null) {
             if (screen.key == "root" || screen.title.isEmpty() && screen.titleRes == DISABLED_RESOURCE_ID) {
@@ -436,7 +439,7 @@ class SecurityPreferencesFragment : AbsPreferencesFragment(),
 
     override fun onDestroy() {
         sleepDataDisposable.cancel()
-        preferencesView?.let { preferencesAdapter?.stopObserveScrollPosition(it) }
+        preferencesView?.let { preferencesAdapter?.stopObserveScrollPosition(it, appBarView) }
         preferencesAdapter?.onScreenChangeListener = null
         preferencesView?.adapter = null
         super.onDestroy()

@@ -12,7 +12,7 @@ interface IFileManagerSelectView : IMvpView, IErrorView {
     fun resolveLoading(visible: Boolean)
     fun notifyAllChanged()
     fun updatePathString(file: String)
-    fun restoreScroll(scroll: Parcelable)
+    fun restoreScroll(scroll: Parcelable, appVerticalOffset: Int)
 
     fun onScrollTo(pos: Int)
     fun notifyItemChanged(pos: Int)

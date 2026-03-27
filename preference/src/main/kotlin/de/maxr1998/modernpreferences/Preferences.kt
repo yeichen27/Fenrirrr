@@ -568,6 +568,7 @@ class PreferenceScreen internal constructor(builder: Builder) : Preference(build
 
     var scrollPosition = 0
     var scrollOffset = 0
+    var appVerticalOffset = 0
 
     fun getSearchQuery(): String? {
         return searchQuery

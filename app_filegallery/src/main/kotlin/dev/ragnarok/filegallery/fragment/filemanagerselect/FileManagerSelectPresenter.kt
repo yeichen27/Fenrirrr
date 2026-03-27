@@ -21,7 +21,7 @@ class FileManagerSelectPresenter(
     private val fileList: ArrayList<FileItemSelect> = ArrayList()
     private val fileListSearch: ArrayList<FileItemSelect> = ArrayList()
     private var isLoading = false
-    private val directoryScrollPositions = HashMap<String, Parcelable>()
+    private val directoryScrollPositions = HashMap<String, Pair<Parcelable, Int>>()
     private var q: String? = null
 
     private val filter: FilenameFilter = FilenameFilter { dir, filename ->
@@ -106,8 +106,8 @@ class FileManagerSelectPresenter(
         }
     }
 
-    fun backupDirectoryScroll(scroll: Parcelable) {
-        directoryScrollPositions[path.absolutePath] = scroll
+    fun backupDirectoryScroll(scroll: Parcelable, appVerticalOffset: Int) {
+        directoryScrollPositions[path.absolutePath] = Pair(scroll, appVerticalOffset)
     }
 
     fun loadUp() {
@@ -155,8 +155,8 @@ class FileManagerSelectPresenter(
             view?.resolveLoading(isLoading)
             view?.notifyAllChanged()
             directoryScrollPositions.remove(path.absolutePath)?.let { scroll ->
-                view?.restoreScroll(scroll)
-            } ?: view?.restoreScroll(LinearLayoutManagerSavedState())
+                view?.restoreScroll(scroll.first, scroll.second)
+            } ?: view?.restoreScroll(LinearLayoutManagerSavedState(), 0)
         }, {
             view?.showThrowable(it)
             isLoading = false

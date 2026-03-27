@@ -33,10 +33,12 @@ import androidx.annotation.LayoutRes
 import androidx.annotation.MainThread
 import androidx.annotation.StringRes
 import androidx.annotation.VisibleForTesting
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.res.use
 import androidx.core.view.get
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.appbar.AppBarLayout
 import de.maxr1998.modernpreferences.helpers.DISABLED_RESOURCE_ID
 import de.maxr1998.modernpreferences.helpers.categoryHeader
 import de.maxr1998.modernpreferences.preferences.AccentButtonPreference
@@ -339,22 +341,34 @@ class PreferencesAdapter @VisibleForTesting constructor(
      *
      * Should be called from [OnScreenChangeListener.onScreenChanged].
      */
-    fun restoreAndObserveScrollPosition(preferenceView: RecyclerView) {
+    fun restoreAndObserveScrollPosition(
+        preferenceView: RecyclerView,
+        appBarView: AppBarLayout?
+    ) {
         with(currentScreen) {
-            if (scrollPosition != 0 || scrollOffset != 0) {
-                val layoutManager = preferenceView.layoutManager as LinearLayoutManager?
-                layoutManager?.scrollToPositionWithOffset(scrollPosition, scrollOffset)
-            } else {
-                val layoutManager = preferenceView.layoutManager as LinearLayoutManager?
-                layoutManager?.scrollToPositionWithOffset(0, 0)
-            }
+            val layoutManager = preferenceView.layoutManager as LinearLayoutManager?
+            layoutManager?.scrollToPositionWithOffset(scrollPosition, scrollOffset)
+            val layoutParams = appBarView?.layoutParams as? CoordinatorLayout.LayoutParams
+            val behavior = layoutParams?.behavior as? AppBarLayout.Behavior
+            behavior?.setTopAndBottomOffset(
+                appVerticalOffset
+            )
         }
+        appBarView?.addOnOffsetChangedListener(appBarOffsetListener)
         preferenceView.addOnScrollListener(scrollListener)
     }
 
-    fun stopObserveScrollPosition(preferenceView: RecyclerView) {
+    fun stopObserveScrollPosition(preferenceView: RecyclerView, appBarView: AppBarLayout?) {
         preferenceView.removeOnScrollListener(scrollListener)
+        appBarView?.removeOnOffsetChangedListener(appBarOffsetListener)
     }
+
+    private val appBarOffsetListener =
+        AppBarLayout.OnOffsetChangedListener { _, verticalOffset ->
+            currentScreen.apply {
+                appVerticalOffset = verticalOffset
+            }
+        }
 
     private val scrollListener = object : RecyclerView.OnScrollListener() {
         override fun onScrollStateChanged(r: RecyclerView, state: Int) {
@@ -456,7 +470,8 @@ class PreferencesAdapter @VisibleForTesting constructor(
                     screenStack[i].key,
                     screenStack[i].searchQuery,
                     screenStack[i].scrollPosition,
-                    screenStack[i].scrollOffset
+                    screenStack[i].scrollOffset,
+                    screenStack[i].appVerticalOffset
                 )
             )
         }
@@ -513,7 +528,7 @@ class PreferencesAdapter @VisibleForTesting constructor(
         }
         screenStack.push(root)
         if (screenStack.size != 2) return false
-        state.screens.forEach { (key, searchQuery, scrollPosition, scrollOffset) ->
+        state.screens.forEach { (key, searchQuery, scrollPosition, scrollOffset, appVerticalOffset) ->
             val screen = if (searchQuery == null) {
                 findScreenInRoot(screenStack[1], key)
             } else {
@@ -537,6 +552,7 @@ class PreferencesAdapter @VisibleForTesting constructor(
             if (screen != null) {
                 screen.scrollOffset = scrollOffset
                 screen.scrollPosition = scrollPosition
+                screen.appVerticalOffset = appVerticalOffset
                 screenStack.push(screen)
             }
         }
@@ -553,11 +569,13 @@ class PreferencesAdapter @VisibleForTesting constructor(
         val key: String,
         val searchQuery: String?,
         val scrollPosition: Int,
-        val scrollOffset: Int
+        val scrollOffset: Int,
+        val appVerticalOffset: Int
     ) : Parcelable {
         constructor(parcel: Parcel) : this(
             parcel.readString()!!,
             parcel.readString(),
+            parcel.readInt(),
             parcel.readInt(),
             parcel.readInt()
         )
@@ -567,6 +585,7 @@ class PreferencesAdapter @VisibleForTesting constructor(
             parcel.writeString(searchQuery)
             parcel.writeInt(scrollPosition)
             parcel.writeInt(scrollOffset)
+            parcel.writeInt(appVerticalOffset)
         }
 
         override fun describeContents(): Int {

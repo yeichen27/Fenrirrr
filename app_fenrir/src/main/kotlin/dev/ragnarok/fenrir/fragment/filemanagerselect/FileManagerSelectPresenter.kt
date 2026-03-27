@@ -8,6 +8,7 @@ import dev.ragnarok.fenrir.fragment.base.RxSupportPresenter
 import dev.ragnarok.fenrir.model.FileItem
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.Objects.safeEquals
+import dev.ragnarok.fenrir.util.Pair
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -23,7 +24,7 @@ class FileManagerSelectPresenter(
     private val fileList: ArrayList<FileItem> = ArrayList()
     private val fileListSearch: ArrayList<FileItem> = ArrayList()
     private var isLoading = false
-    private val directoryScrollPositions = HashMap<String, Parcelable>()
+    private val directoryScrollPositions = HashMap<String, Pair<Parcelable, Int>>()
     private var q: String? = null
 
     private val filter: FilenameFilter = FilenameFilter { dir, filename ->
@@ -108,8 +109,8 @@ class FileManagerSelectPresenter(
         }
     }
 
-    fun backupDirectoryScroll(scroll: Parcelable) {
-        directoryScrollPositions[path.absolutePath] = scroll
+    fun backupDirectoryScroll(scroll: Parcelable, appVerticalOffset: Int) {
+        directoryScrollPositions[path.absolutePath] = Pair(scroll, appVerticalOffset)
     }
 
     fun loadUp() {
@@ -157,8 +158,8 @@ class FileManagerSelectPresenter(
             view?.resolveLoading(isLoading)
             view?.notifyAllChanged()
             directoryScrollPositions.remove(path.absolutePath)?.let { scroll ->
-                view?.restoreScroll(scroll)
-            } ?: view?.restoreScroll(LinearLayoutManagerSavedState())
+                view?.restoreScroll(scroll.first, scroll.second)
+            } ?: view?.restoreScroll(LinearLayoutManagerSavedState(), 0)
         }, {
             view?.onError(it)
             isLoading = false

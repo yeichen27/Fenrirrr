@@ -15,6 +15,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.net.toFile
 import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
@@ -23,6 +24,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import dev.ragnarok.filegallery.Extra
@@ -82,6 +84,8 @@ class FileManagerFragment : BaseMvpFragment<FileManagerPresenter, IFileManagerVi
 
     private var mUploadAdapter: DocsUploadAdapter? = null
     private var mUploadRoot: View? = null
+    private var appBarView: AppBarLayout? = null
+    private var appVerticalOffset = 0
 
     private val requestPhotoUpdate = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -140,6 +144,11 @@ class FileManagerFragment : BaseMvpFragment<FileManagerPresenter, IFileManagerVi
     ): View? {
         val root = inflater.inflate(R.layout.fragment_file_explorer, container, false)
         (requireActivity() as AppCompatActivity).setSupportActionBar(root.findViewById(R.id.toolbar))
+
+        appBarView = root.findViewById(R.id.actionbar)
+        appBarView?.addOnOffsetChangedListener { _, i ->
+            appVerticalOffset = i
+        }
 
         ViewCompat.setOnApplyWindowInsetsListener(root) { _, windowInsets ->
             val insets =
@@ -264,7 +273,8 @@ class FileManagerFragment : BaseMvpFragment<FileManagerPresenter, IFileManagerVi
         if (item.type == FileType.folder) {
             val sel = File(item.file_path ?: return)
             if (presenter?.canRefresh() == true) {
-                mLayoutManager?.onSaveInstanceState()?.let { presenter?.backupDirectoryScroll(it) }
+                mLayoutManager?.onSaveInstanceState()
+                    ?.let { presenter?.backupDirectoryScroll(it, appVerticalOffset) }
                 presenter?.setCurrent(sel)
             } else {
                 PlaceFactory.getFileManagerPlace(
@@ -385,7 +395,8 @@ class FileManagerFragment : BaseMvpFragment<FileManagerPresenter, IFileManagerVi
 
     override fun onBackPressed(): Boolean {
         if (presenter?.canLoadUp() == true) {
-            mLayoutManager?.onSaveInstanceState()?.let { presenter?.backupDirectoryScroll(it) }
+            mLayoutManager?.onSaveInstanceState()
+                ?.let { presenter?.backupDirectoryScroll(it, appVerticalOffset) }
             presenter?.loadUp()
             mySearchView?.clear()
             return false
@@ -474,8 +485,13 @@ class FileManagerFragment : BaseMvpFragment<FileManagerPresenter, IFileManagerVi
         }
     }
 
-    override fun restoreScroll(scroll: Parcelable) {
+    override fun restoreScroll(scroll: Parcelable, appVerticalOffset: Int) {
         mLayoutManager?.onRestoreInstanceState(scroll)
+        val layoutParams = appBarView?.layoutParams as? CoordinatorLayout.LayoutParams
+        val behavior = layoutParams?.behavior as? AppBarLayout.Behavior
+        behavior?.setTopAndBottomOffset(
+            appVerticalOffset
+        )
     }
 
     override fun displayGalleryUnSafe(parcelNativePointer: Long, position: Int, reversed: Boolean) {
