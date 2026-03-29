@@ -7,11 +7,9 @@ import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.graphics.Bitmap
 import android.net.Uri
-import android.os.Build
 import android.os.StatFs
 import android.provider.MediaStore
 import androidx.core.content.ContextCompat
-import androidx.core.net.toUri
 import com.squareup.picasso3.BitmapSafeResize
 import com.squareup.picasso3.Picasso
 import dev.ragnarok.fenrir.Constants
@@ -130,33 +128,7 @@ class PicassoInstance @SuppressLint("CheckResult") private constructor(
         @SuppressLint("StaticFieldLeak")
         private var instance: PicassoInstance? = null
 
-        private fun buildUriForPicassoOld(@Content_Local type: Int, id: Long): Uri {
-            when (type) {
-                Content_Local.PHOTO -> return ContentUris.withAppendedId(
-                    "content://media/external/images/media/".toUri(),
-                    id
-                )
-
-                Content_Local.VIDEO -> return ContentUris.withAppendedId(
-                    "content://media/external/videos/media/".toUri(),
-                    id
-                )
-
-                Content_Local.AUDIO -> return ContentUris.withAppendedId(
-                    "content://media/external/audios/media/".toUri(),
-                    id
-                )
-            }
-            return ContentUris.withAppendedId(
-                "content://media/external/images/media/".toUri(),
-                id
-            )
-        }
-
         fun buildUriForPicasso(@Content_Local type: Int, id: Long): Uri {
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-                return buildUriForPicassoOld(type, id)
-            }
             when (type) {
                 Content_Local.PHOTO -> return ContentUris.withAppendedId(
                     MediaStore.Images.Media.EXTERNAL_CONTENT_URI,

@@ -153,10 +153,10 @@ class AudioLocalRecyclerAdapter(private val mContext: Context, private var data:
                             )
                             emit(true)
                         } else {
-                            throw Throwable("Can't update time")
+                            throw Throwable("Can't update time $fl")
                         }
                     } else {
-                        throw Throwable("Can't find file")
+                        throw Throwable("Can't find file $fl")
                     }
                 } else {
                     throw Throwable("Can't find file")

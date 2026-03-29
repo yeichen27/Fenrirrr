@@ -1,6 +1,7 @@
 package dev.ragnarok.fenrir.picasso
 
 import android.os.Build
+import android.provider.MediaStore
 import com.squareup.picasso3.Picasso
 import com.squareup.picasso3.Request
 import com.squareup.picasso3.RequestHandler
@@ -25,15 +26,18 @@ class PicassoLocalRequestHandler : RequestHandler() {
             val contentId = requestUri.lastPathSegment?.toLong()
                 ?: throw UnsupportedOperationException("request.uri.lastPathSegment == null")
             @Content_Local val ret: Int = when {
-                requestUri.path?.contains("videos") == true -> {
+                requestUri.toString()
+                    .contains(MediaStore.Video.Media.EXTERNAL_CONTENT_URI.toString()) -> {
                     Content_Local.VIDEO
                 }
 
-                requestUri.path?.contains("images") == true -> {
+                requestUri.toString()
+                    .contains(MediaStore.Images.Media.EXTERNAL_CONTENT_URI.toString()) -> {
                     Content_Local.PHOTO
                 }
 
-                requestUri.path?.contains("audios") == true -> {
+                requestUri.toString()
+                    .contains(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI.toString()) -> {
                     Content_Local.AUDIO
                 }
 
