@@ -29,6 +29,7 @@ import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.requireNonNull
 import dev.ragnarok.fenrir.util.Pair
 import dev.ragnarok.fenrir.util.Pair.Companion.create
+import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.listEmptyIfNull
 import dev.ragnarok.fenrir.util.Utils.safeCountOf
 import dev.ragnarok.fenrir.util.VKOwnIds
@@ -171,8 +172,11 @@ class WallsRepository(
         count: Int,
         wallFilter: Int
     ): Flow<List<Post>> {
+        val tmpOffset: Int? = if (Utils.isOfficialVKAccount(accountId)) null else offset
+        val tmpStartFrom: String? =
+            if (Utils.isOfficialVKAccount(accountId)) offset.toString() else null
         return networker.vkDefault(accountId)
-            .wall()[ownerId, null, offset, count, convertToApiFilter(wallFilter), true, Fields.FIELDS_BASE_OWNER]
+            .wall()[ownerId, null, tmpOffset, tmpStartFrom, count, convertToApiFilter(wallFilter), true, Fields.FIELDS_BASE_OWNER]
             .flatMapConcat { response ->
                 val owners = transformOwners(response.profiles, response.groups)
                 val dtos = listEmptyIfNull(response.posts)
@@ -205,8 +209,11 @@ class WallsRepository(
         wallFilter: Int,
         needStore: Boolean
     ): Flow<List<Post>> {
+        val tmpOffset: Int? = if (Utils.isOfficialVKAccount(accountId)) null else offset
+        val tmpStartFrom: String? =
+            if (Utils.isOfficialVKAccount(accountId)) offset.toString() else null
         return networker.vkDefault(accountId)
-            .wall()[ownerId, null, offset, count, convertToApiFilter(wallFilter), true, Fields.FIELDS_BASE_OWNER]
+            .wall()[ownerId, null, tmpOffset, tmpStartFrom, count, convertToApiFilter(wallFilter), true, Fields.FIELDS_BASE_OWNER]
             .flatMapConcat { response ->
                 val owners = transformOwners(response.profiles, response.groups)
                 val dtos = listEmptyIfNull(response.posts)

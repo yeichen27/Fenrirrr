@@ -8,6 +8,7 @@ import android.content.pm.ShortcutManager
 import android.graphics.Bitmap
 import android.graphics.drawable.Icon
 import androidx.core.content.ContextCompat
+import com.squareup.picasso3.MemoryPolicy
 import com.squareup.picasso3.Transformation
 import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.Includes
@@ -42,6 +43,7 @@ object ShortcutUtils {
             val size = getLauncherIconSize(context)
             avatar = with()
                 .load(url)
+                .memoryPolicy(MemoryPolicy.NO_CACHE, MemoryPolicy.NO_STORE)
                 .config(Bitmap.Config.ARGB_8888)
                 .transform(RoundTransformation())
                 .resize(size, size)
@@ -82,6 +84,7 @@ object ShortcutUtils {
             val size = getLauncherIconSize(context)
             avatar = with()
                 .load(url)
+                .memoryPolicy(MemoryPolicy.NO_CACHE, MemoryPolicy.NO_STORE)
                 .config(Bitmap.Config.ARGB_8888)
                 .transform(RoundTransformation())
                 .resize(size, size)
@@ -201,6 +204,7 @@ object ShortcutUtils {
             emit(
                 with()
                     .load(url)
+                    .memoryPolicy(MemoryPolicy.NO_CACHE, MemoryPolicy.NO_STORE)
                     .config(Bitmap.Config.ARGB_8888)
                     .transform(RoundTransformation())
                     .get() ?: throw UnsupportedOperationException()
@@ -252,6 +256,7 @@ object ShortcutUtils {
         bm = if (url.isEmpty()) {
             with()
                 .load(R.drawable.ic_avatar_unknown)
+                .memoryPolicy(MemoryPolicy.NO_CACHE, MemoryPolicy.NO_STORE)
                 .config(Bitmap.Config.ARGB_8888)
                 .transform(transformation)
                 .resize(appIconSize, appIconSize)
@@ -259,6 +264,7 @@ object ShortcutUtils {
         } else {
             with()
                 .load(url)
+                .memoryPolicy(MemoryPolicy.NO_CACHE, MemoryPolicy.NO_STORE)
                 .config(Bitmap.Config.ARGB_8888)
                 .transform(transformation)
                 .resize(appIconSize, appIconSize)

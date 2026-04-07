@@ -512,7 +512,6 @@ class MusicPlaybackService : Service() {
         }
         PicassoInstance.with()
             .load(albumCover)
-            .config(Bitmap.Config.ARGB_8888)
             .into(object : BitmapTarget {
                 override fun onBitmapLoaded(bitmap: Bitmap, from: LoadedFrom) {
                     coverBitmap = bitmap
@@ -529,13 +528,17 @@ class MusicPlaybackService : Service() {
     }
 
     internal fun updateMetadata() {
+        val tmpCoverBitmap = if (coverBitmap?.isRecycled == false) coverBitmap?.copy(
+            Bitmap.Config.ARGB_8888,
+            true
+        ) else null
         mMediaMetadataCompat = MediaMetadataCompat.Builder()
             .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, artistName)
             .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, albumName)
             .putString(MediaMetadataCompat.METADATA_KEY_TITLE, trackName)
             .putBitmap(
                 MediaMetadataCompat.METADATA_KEY_ART, Utils.firstNonNull(
-                    coverBitmap, BitmapFactory.decodeResource(
+                    tmpCoverBitmap, BitmapFactory.decodeResource(
                         resources, R.drawable.generic_audio_nowplaying_service
                     )
                 )

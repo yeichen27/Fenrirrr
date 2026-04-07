@@ -236,6 +236,7 @@ internal class WallApi(accountId: Long, provider: IServiceProvider) : AbsApi(acc
         ownerId: Long?,
         domain: String?,
         offset: Int?,
+        startFrom: String?,
         count: Int?,
         filter: String?,
         extended: Boolean?,
@@ -243,7 +244,7 @@ internal class WallApi(accountId: Long, provider: IServiceProvider) : AbsApi(acc
     ): Flow<WallResponse> {
         return provideService(IWallService(), TokenType.USER, TokenType.SERVICE)
             .flatMapConcat {
-                it[ownerId, domain, offset, count, filter, if (extended != null) if (extended) 1 else 0 else null, fields]
+                it[ownerId, domain, offset, startFrom, count, filter, if (extended != null) if (extended) 1 else 0 else null, fields]
                     .map(extractResponseWithErrorHandling())
             }
     }

@@ -132,7 +132,7 @@ class GifPagerActivity : AbsDocumentPreviewActivity<GifPagerPresenter, IGifPager
         }
         resolveFullscreenViews()
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.shortvideo_pager_root)) { _, windowInsets ->
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.gif_pager_root)) { _, windowInsets ->
             val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
             val insets2 =
                 windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
