@@ -10,8 +10,6 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.internal.InlinePrimitiveDescriptor
-import kotlinx.serialization.json.internal.JsonDecodingException
-import kotlinx.serialization.json.internal.JsonEncodingException
 import kotlinx.serialization.json.internal.SuppressAnimalSniffer
 import kotlinx.serialization.json.internal.lexer.StringJsonLexer
 import kotlinx.serialization.json.internal.printQuoted
@@ -127,7 +125,11 @@ fun JsonPrimitive(value: Nothing?): JsonNull = JsonNull
 fun JsonUnquotedLiteral(value: String?): JsonPrimitive {
     return when (value) {
         null -> JsonNull
-        JsonNull.content -> throw JsonEncodingException("Creating a literal unquoted value of 'null' is forbidden. If you want to create JSON null literal, use JsonNull object, otherwise, use JsonPrimitive")
+        JsonNull.content -> throw JsonEncodingException(
+            "Creating a literal unquoted value of 'null' is forbidden.",
+            hint = "If you want to create JSON null literal, use JsonNull object, otherwise, use JsonPrimitive"
+        )
+
         else -> JsonLiteral(
             value,
             isString = false,
@@ -357,4 +359,4 @@ internal fun unexpectedJson(key: String, expected: String): Nothing =
 
 // Use this function to avoid re-wrapping exception into NumberFormatException
 internal fun JsonPrimitive.parseLongImpl(): Long =
-    StringJsonLexer(content).consumeNumericLiteralFully()
+    StringJsonLexer(Json.Default, content).consumeNumericLiteralFully()

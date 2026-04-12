@@ -1,6 +1,7 @@
 package dev.ragnarok.fenrir.util.existfile
 
 import android.content.Context
+import dev.ragnarok.fenrir.kJson
 import dev.ragnarok.fenrir.model.Photo
 import dev.ragnarok.fenrir.model.wrappers.SelectablePhotoWrapper
 import dev.ragnarok.fenrir.nonNullNoEmpty
@@ -54,7 +55,8 @@ class FileExistJVM : AbsFileExist {
         }
         try {
             val reader = ReaderJsonLexer(
-                OkioSerialReader(audios.source().buffer())
+                reader = OkioSerialReader(audios.source().buffer()),
+                configuration = kJson.configuration
             )
             reader.consumeNextToken(WriteMode.LIST.begin)
             while (reader.canConsumeValue()) {

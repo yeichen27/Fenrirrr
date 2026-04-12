@@ -94,7 +94,8 @@ class CameraScanActivity : NoMainActivity(), AppStyleable {
                 ZXingWrapper.Format.QR_CODE,
                 ZXingWrapper.Format.EAN_8,
                 ZXingWrapper.Format.EAN_13,
-                ZXingWrapper.Format.CODE_128
+                ZXingWrapper.Format.CODE_128,
+                ZXingWrapper.Format.DATA_MATRIX
             )
             tryHarder = false
             tryInvert = false
@@ -688,7 +689,8 @@ class CameraScanActivity : NoMainActivity(), AppStyleable {
                     ZXingWrapper.Format.QR_CODE,
                     ZXingWrapper.Format.EAN_8,
                     ZXingWrapper.Format.EAN_13,
-                    ZXingWrapper.Format.CODE_128
+                    ZXingWrapper.Format.CODE_128,
+                    ZXingWrapper.Format.DATA_MATRIX
                 )
                 tryHarder = false
                 tryInvert = true

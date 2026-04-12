@@ -55,6 +55,7 @@ import com.google.android.material.animation.AnimatorSetCompat;
 import com.google.android.material.animation.ImageMatrixProperty;
 import com.google.android.material.animation.MatrixEvaluator;
 import com.google.android.material.animation.MotionSpec;
+import com.google.android.material.focus.FocusRingDrawable;
 import com.google.android.material.motion.MotionUtils;
 import com.google.android.material.ripple.RippleUtils;
 import com.google.android.material.shadow.ShadowViewDelegate;
@@ -177,18 +178,23 @@ class FloatingActionButtonImpl {
     }
     shapeDrawable.initializeElevationOverlay(view.getContext());
 
+    final Drawable rippleContent;
     if (borderWidth > 0) {
       borderDrawable = createBorderDrawable(borderWidth, backgroundTint);
-      rippleDrawable =
-              new RippleDrawable(
-                      RippleUtils.sanitizeRippleDrawableColor(rippleColor), new LayerDrawable(
-                      new Drawable[]{checkNotNull(borderDrawable), checkNotNull(shapeDrawable)}), null);
+      rippleContent =
+          new LayerDrawable(
+              new Drawable[] {checkNotNull(borderDrawable), checkNotNull(shapeDrawable)});
     } else {
       borderDrawable = null;
-      rippleDrawable =
-              new RippleDrawable(
-                      RippleUtils.sanitizeRippleDrawableColor(rippleColor), shapeDrawable, null);
+      rippleContent = shapeDrawable;
     }
+
+    RippleDrawable rippleDrawable =
+        new RippleDrawable(
+            RippleUtils.sanitizeRippleDrawableColor(rippleColor), rippleContent, null);
+    this.rippleDrawable = rippleDrawable;
+
+    FocusRingDrawable.layer(view.getContext(), rippleDrawable, shapeDrawable);
 
     contentBackground = rippleDrawable;
   }

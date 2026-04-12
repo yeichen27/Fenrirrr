@@ -22,6 +22,7 @@ import kotlinx.serialization.json.JsonClassDiscriminator
 import kotlinx.serialization.json.JsonDecoder
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonEncoder
+import kotlinx.serialization.json.JsonEncodingException
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonPrimitive
@@ -78,9 +79,10 @@ private fun Json.checkEncodingConflicts(
         }
         throw JsonEncodingException(
             "Class '$actualName' cannot be serialized $text because" +
-                    " it has property name that conflicts with JSON class discriminator '$classDiscriminator'. " +
-                    "You can either change class discriminator in JsonConfiguration, or " +
-                    "rename property with @SerialName annotation."
+                    " it has property name that conflicts with JSON class discriminator '$classDiscriminator'.",
+            hint = "You can either change class discriminator in JsonConfiguration, or " +
+                    "rename property with @SerialName annotation.",
+            classSerialName = actualName
         )
     }
 }
@@ -110,7 +112,7 @@ internal inline fun <T> JsonDecoder.decodeSerializableValuePolymorphic(
         try {
             deserializer.findPolymorphicSerializer(this, type)
         } catch (it: SerializationException) { //  Wrap SerializationException into JsonDecodingException to preserve input
-            throw JsonDecodingException(-1, it.message.orEmpty(), jsonTree.toString())
+            throw decodingExceptionOf(it.message.orEmpty()) { jsonTree.toString() }
         } as DeserializationStrategy<T>
     return json.readPolymorphicJson(discriminator, jsonTree, actualSerializer)
 }
@@ -129,5 +131,9 @@ internal fun throwJsonElementPolymorphicException(
     serialName: String?,
     element: JsonElement
 ): Nothing {
-    throw JsonEncodingException("Class with serial name $serialName cannot be serialized polymorphically because it is represented as ${element::class.simpleName}. Make sure that its JsonTransformingSerializer returns JsonObject, so class discriminator can be added to it.")
+    throw JsonEncodingException(
+        "Class with serial name $serialName cannot be serialized polymorphically because it is represented as ${element::class.simpleName}.",
+        hint = "Make sure that its JsonTransformingSerializer returns JsonObject, so class discriminator can be added to it.",
+        classSerialName = serialName
+    )
 }

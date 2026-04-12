@@ -4,11 +4,12 @@
 
 package kotlinx.serialization.json.internal.lexer
 
-import kotlinx.serialization.json.internal.JsonDecodingException
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.json.JsonConfiguration
 import kotlinx.serialization.json.internal.JsonPath
+import kotlinx.serialization.json.internal.decodingExceptionOf
 import kotlinx.serialization.json.internal.lexer.CharMappings.CHAR_TO_TOKEN
 import kotlinx.serialization.json.internal.lexer.CharMappings.ESCAPE_2_CHAR
-import kotlinx.serialization.json.internal.minify
 import kotlin.math.floor
 import kotlin.math.pow
 
@@ -149,7 +150,7 @@ internal fun escapeToChar(c: Int): Char = if (c < ESC2C_MAX) ESCAPE_2_CHAR[c] el
  * of them for the performance reasons (devirtualization of [CharSequence] and avoid
  * of additional spills).
  */
-internal abstract class AbstractJsonLexer {
+internal abstract class AbstractJsonLexer(internal val configuration: JsonConfiguration) {
 
     protected abstract val source: CharSequence
 
@@ -157,7 +158,7 @@ internal abstract class AbstractJsonLexer {
     internal var currentPosition: Int = 0 // position in source
 
     @JvmField
-    val path = JsonPath()
+    val path = JsonPath(configuration)
 
     @Suppress("NOTHING_TO_INLINE")
     protected inline fun Char.isWs() = this == ' ' || this == '\n' || this == '\r' || this == '\t'
@@ -238,7 +239,8 @@ internal abstract class AbstractJsonLexer {
     ): Nothing {
         // Slow path, never called in normal code, can avoid optimizing it
         val expected = tokenDescription(expectedToken)
-        val position = if (wasConsumed) currentPosition - 1 else currentPosition
+        val position =
+            if (wasConsumed && currentPosition > 0) currentPosition - 1 else currentPosition
         val s =
             if (currentPosition == source.length || position < 0) "EOF" else source[position].toString()
         fail(message(expected, s), position)
@@ -565,20 +567,12 @@ internal abstract class AbstractJsonLexer {
                 }
 
                 TC_END_LIST -> {
-                    if (tokenStack.last() != TC_BEGIN_LIST) throw JsonDecodingException(
-                        currentPosition,
-                        "found ] instead of } at path: $path",
-                        source
-                    )
+                    if (tokenStack.last() != TC_BEGIN_LIST) fail("found ] instead of }")
                     tokenStack.removeLastOrNull()
                 }
 
                 TC_END_OBJ -> {
-                    if (tokenStack.last() != TC_BEGIN_OBJ) throw JsonDecodingException(
-                        currentPosition,
-                        "found } instead of ] at path: $path",
-                        source
-                    )
+                    if (tokenStack.last() != TC_BEGIN_OBJ) fail("found } instead of ]")
                     tokenStack.removeLastOrNull()
                 }
 
@@ -598,19 +592,16 @@ internal abstract class AbstractJsonLexer {
         // but still would like an error to point to the beginning of the key, so we are backtracking it
         val processed = substring(0, currentPosition)
         val lastIndexOf = processed.lastIndexOf(key)
-        throw JsonDecodingException(
-            "Encountered an unknown key '$key' at offset $lastIndexOf at path: ${path.getPath()}\n$ignoreUnknownKeysHint\n" +
-                    "JSON input: ${source.minify(lastIndexOf)}"
+        fail(
+            "Encountered an unknown key '$key'",
+            lastIndexOf,
+            ignoreUnknownKeysHint,
         )
     }
 
-    fun fail(message: String, position: Int = currentPosition, hint: String = ""): Nothing {
-        val hintMessage = if (hint.isEmpty()) "" else "\n$hint"
-        throw JsonDecodingException(
-            position,
-            message + " at path: " + path.getPath() + hintMessage,
-            source
-        )
+    @OptIn(ExperimentalSerializationApi::class)
+    fun fail(message: String, position: Int = currentPosition, hint: String? = null): Nothing {
+        throw decodingExceptionOf(message, position, path.getPath(), hint, source)
     }
 
     fun consumeNumericLiteral(): Long {
@@ -638,26 +629,26 @@ internal abstract class AbstractJsonLexer {
         while (current != source.length) {
             val ch: Char = source[current]
             if ((ch == 'e' || ch == 'E') && !hasExponent) {
-                if (current == start) fail("Unexpected symbol $ch in numeric literal")
+                if (current == start) fail("Unexpected symbol '$ch' in numeric literal", current)
                 isExponentPositive = true
                 hasExponent = true
                 ++current
                 continue
             }
             if (ch == '-' && hasExponent) {
-                if (current == start) fail("Unexpected symbol '-' in numeric literal")
+                if (current == start) fail("Unexpected symbol '-' in numeric literal", current)
                 isExponentPositive = false
                 ++current
                 continue
             }
             if (ch == '+' && hasExponent) {
-                if (current == start) fail("Unexpected symbol '+' in numeric literal")
+                if (current == start) fail("Unexpected symbol '+' in numeric literal", current)
                 isExponentPositive = true
                 ++current
                 continue
             }
             if (ch == '-') {
-                if (current != start) fail("Unexpected symbol '-' in numeric literal")
+                if (current != start) fail("Unexpected symbol '-' in numeric literal", current)
                 isNegative = true
                 ++current
                 continue
@@ -666,7 +657,7 @@ internal abstract class AbstractJsonLexer {
             if (token != TC_OTHER) break
             ++current
             val digit = ch - '0'
-            if (digit !in 0..9) fail("Unexpected symbol '$ch' in numeric literal")
+            if (digit !in 0..9) fail("Unexpected symbol '$ch' in numeric literal", current - 1)
             if (hasExponent) {
                 exponentAccumulator = exponentAccumulator * 10 + digit
                 continue
@@ -676,11 +667,11 @@ internal abstract class AbstractJsonLexer {
         }
         val hasChars = current != start
         if (start == current || (isNegative && start == current - 1)) {
-            fail("Expected numeric literal")
+            fail("Expected numeric literal", current)
         }
         if (hasQuotation) {
             if (!hasChars) fail("EOF")
-            if (source[current] != STRING) fail("Expected closing quotation mark")
+            if (source[current] != STRING) fail("Expected closing quotation mark", current)
             ++current
         }
         currentPosition = current

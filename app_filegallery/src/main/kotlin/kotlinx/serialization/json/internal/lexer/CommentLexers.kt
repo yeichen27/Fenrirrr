@@ -4,6 +4,7 @@
 
 package kotlinx.serialization.json.internal.lexer
 
+import kotlinx.serialization.json.JsonConfiguration
 import kotlinx.serialization.json.internal.InternalJsonReader
 
 /*
@@ -20,7 +21,8 @@ import kotlinx.serialization.json.internal.InternalJsonReader
  generalized implementation to some CommentJsonLexer in between.
  */
 
-internal class StringJsonLexerWithComments(source: String) : StringJsonLexer(source) {
+internal class StringJsonLexerWithComments(source: String, configuration: JsonConfiguration) :
+    StringJsonLexer(source, configuration) {
     override fun consumeNextToken(): Byte {
         val source = source
         val cpos = skipWhitespaces()
@@ -97,8 +99,12 @@ internal class StringJsonLexerWithComments(source: String) : StringJsonLexer(sou
     }
 }
 
-internal class ReaderJsonLexerWithComments(reader: InternalJsonReader, buffer: CharArray) :
-    ReaderJsonLexer(reader, buffer) {
+internal class ReaderJsonLexerWithComments(
+    reader: InternalJsonReader,
+    buffer: CharArray,
+    configuration: JsonConfiguration
+) :
+    ReaderJsonLexer(reader, buffer, configuration) {
     override fun consumeNextToken(expected: Char) {
         ensureHaveChars()
         val source = source

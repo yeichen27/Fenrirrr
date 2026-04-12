@@ -710,6 +710,38 @@ class JsonBuilder internal constructor(json: Json) {
      */
     var serializersModule: SerializersModule = json.serializersModule
 
+    /**
+     * Specifies whether actual input data should be included in exception messages.
+     *
+     * When `false`, exception messages will not contain sensitive input data that could be logged
+     * or exposed in error reporting systems. This is the default and recommended setting for production
+     * environments where input data may contain sensitive or confidential information.
+     * With this setting disabled, [JsonDecodingException.input] will be null and [JsonDecodingException.path]
+     * will have `<debug info disabled>` where `Map` keys are supposed to be.
+     *
+     * When `true`, exception messages will include the actual input data that caused the error,
+     * which can be helpful for debugging purposes during development.
+     *
+     * While in experimental stage, this flag is `true` by default.
+     * It will be changed to `false` when API stabilizes to assume data is sensitive and unsafe by default.
+     *
+     * Example of usage:
+     * ```
+     * @Serializable
+     * data class User(val name: String, val age: Int)
+     *
+     * val json = Json { exceptionsWithDebugInfo = false }
+     * // Exception message will not contain the invalid input string
+     * json.decodeFromString<User>("""{"name":"John","age":"invalid"}""")
+     *
+     * val debugJson = Json { exceptionsWithDebugInfo = true }
+     * // Exception message will include `JSON Input: {"name":"John","age":"invalid"}` line
+     * debugJson.decodeFromString<User>("""{"name":"John","age":"invalid"}""")
+     * ```
+     */
+    @ExperimentalSerializationApi
+    var exceptionsWithDebugInfo: Boolean = json.configuration.exceptionsWithDebugInfo
+
     @OptIn(ExperimentalSerializationApi::class)
     internal fun build(): JsonConfiguration {
         if (useArrayPolymorphism) {
@@ -751,7 +783,8 @@ class JsonBuilder internal constructor(json: Json) {
             decodeEnumsCaseInsensitive,
             allowTrailingComma,
             allowComments,
-            classDiscriminatorMode
+            classDiscriminatorMode,
+            exceptionsWithDebugInfo
         )
     }
 }

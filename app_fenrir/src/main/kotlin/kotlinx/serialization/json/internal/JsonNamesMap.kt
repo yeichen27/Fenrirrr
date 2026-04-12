@@ -13,6 +13,7 @@ import kotlinx.serialization.descriptors.StructureKind
 import kotlinx.serialization.encoding.CompositeDecoder
 import kotlinx.serialization.internal.jsonCachedSerialNames
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonEncodingException
 import kotlinx.serialization.json.JsonIgnoreUnknownKeys
 import kotlinx.serialization.json.JsonNames
 import kotlinx.serialization.json.JsonNamingStrategy
@@ -26,7 +27,7 @@ private fun SerialDescriptor.buildDeserializationNamesMap(json: Json): Map<Strin
     fun MutableMap<String, Int>.putOrThrow(name: String, index: Int) {
         val entity = if (kind == SerialKind.ENUM) "enum value" else "property"
         if (name in this) {
-            throw JsonDecodingException(
+            throw decodingExceptionOf(
                 "The suggested name '$name' for $entity ${getElementName(index)} is already one of the names for $entity " +
                         "${getElementName(getValue(name))} in ${this@buildDeserializationNamesMap}"
             )
@@ -80,7 +81,8 @@ internal fun SerialDescriptor.serializationNamesIndices(
             val name = strategy.serialNameForJson(this, i, baseName)
             if (!trackingSet.add(name)) throw JsonEncodingException(
                 "The transformed name '$name' for property $baseName already exists " +
-                        "in ${this@serializationNamesIndices}"
+                        "in ${this@serializationNamesIndices}",
+                classSerialName = this@serializationNamesIndices.serialName,
             )
             name
         }

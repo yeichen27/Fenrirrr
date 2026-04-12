@@ -19,6 +19,7 @@ import kotlinx.serialization.internal.NamedValueEncoder
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonArraySerializer
+import kotlinx.serialization.json.JsonDecoder
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonElementSerializer
 import kotlinx.serialization.json.JsonEncoder
@@ -90,7 +91,7 @@ private sealed class AbstractJsonTreeEncoder(
         // First encode value, then check, to have a prettier error message
         putElement(tag, JsonPrimitive(value))
         if (!configuration.allowSpecialFloatingPointValues && !value.isFinite()) {
-            throw InvalidFloatingPointEncoded(value, tag, getCurrent().toString())
+            throw InvalidFloatingPointEncoded(value, tag)
         }
     }
 
@@ -110,7 +111,7 @@ private sealed class AbstractJsonTreeEncoder(
         // First encode value, then check, to have a prettier error message
         putElement(tag, JsonPrimitive(value))
         if (!configuration.allowSpecialFloatingPointValues && !value.isFinite()) {
-            throw InvalidFloatingPointEncoded(value, tag, getCurrent().toString())
+            throw InvalidFloatingPointEncoded(value, tag)
         }
     }
 
@@ -305,17 +306,16 @@ private class JsonTreeListEncoder(json: Json, nodeConsumer: (JsonElement) -> Uni
     override fun getCurrent(): JsonElement = JsonArray(array)
 }
 
-internal inline fun <reified T : JsonElement> cast(
+internal inline fun <reified T : JsonElement> JsonDecoder.cast(
     value: JsonElement,
     serialName: String,
     path: () -> String
 ): T {
     if (value !is T) {
-        throw JsonDecodingException(
-            -1,
-            "Expected ${T::class.simpleName}, but had ${value::class.simpleName} as the serialized body of $serialName at element: ${path()}",
-            value.toString()
-        )
+        throw decodingExceptionOf(
+            "Expected ${T::class.simpleName}, but had ${value::class.simpleName} as the serialized body of $serialName",
+            path = path()
+        ) { value.toString() }
     }
     return value
 }

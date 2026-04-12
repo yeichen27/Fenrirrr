@@ -32,6 +32,8 @@ class JsonConfiguration @OptIn(ExperimentalSerializationApi::class) internal con
     val allowTrailingComma: Boolean = false,
     val allowComments: Boolean = false,
     @ExperimentalSerializationApi val classDiscriminatorMode: ClassDiscriminatorMode = ClassDiscriminatorMode.POLYMORPHIC,
+
+    @ExperimentalSerializationApi var exceptionsWithDebugInfo: Boolean = true,
 ) {
 
     /** @suppress Dokka **/
@@ -42,7 +44,7 @@ class JsonConfiguration @OptIn(ExperimentalSerializationApi::class) internal con
                 "prettyPrintIndent='$prettyPrintIndent', coerceInputValues=$coerceInputValues, useArrayPolymorphism=$useArrayPolymorphism, " +
                 "classDiscriminator='$classDiscriminator', allowSpecialFloatingPointValues=$allowSpecialFloatingPointValues, " +
                 "useAlternativeNames=$useAlternativeNames, namingStrategy=$namingStrategy, decodeEnumsCaseInsensitive=$decodeEnumsCaseInsensitive, " +
-                "allowTrailingComma=$allowTrailingComma, allowComments=$allowComments, classDiscriminatorMode=$classDiscriminatorMode)"
+                "allowTrailingComma=$allowTrailingComma, allowComments=$allowComments, classDiscriminatorMode=$classDiscriminatorMode, exceptionsWithDebugInfo=$exceptionsWithDebugInfo)"
     }
 }
 

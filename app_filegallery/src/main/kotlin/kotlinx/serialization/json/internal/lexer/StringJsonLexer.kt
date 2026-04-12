@@ -5,14 +5,19 @@
 package kotlinx.serialization.json.internal.lexer
 
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonConfiguration
 
 internal fun StringJsonLexer(json: Json, source: String) =
-    if (!json.configuration.allowComments) StringJsonLexer(source) else StringJsonLexerWithComments(
-        source
-    )
+    if (!json.configuration.allowComments)
+        StringJsonLexer(source, json.configuration)
+    else
+        StringJsonLexerWithComments(source, json.configuration)
 
 @Suppress("unused")
-internal open class StringJsonLexer(final override val source: String) : AbstractJsonLexer() {
+internal open class StringJsonLexer(
+    override val source: String,
+    configuration: JsonConfiguration
+) : AbstractJsonLexer(configuration) {
     init {
         if (source.isNotEmpty() && source[0] == '\ufeff') {
             currentPosition++

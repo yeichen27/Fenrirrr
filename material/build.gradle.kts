@@ -6,7 +6,7 @@ plugins {
     alias(libs.plugins.android.library)
 }
 
-//1.14.0-alpha10
+//1.14.0-beta01
 
 fun isDevelopBuild() = libs.versions.developerBuild.get().toBoolean()
 fun Provider<String>.asInt() = get().toInt()
@@ -38,6 +38,7 @@ val srcDirs = arrayOf(
     "com/google/android/material/expandable",
     "com/google/android/material/floatingactionbutton",
     "com/google/android/material/floatingtoolbar",
+    "com/google/android/material/focus",
     "com/google/android/material/imageview",
     "com/google/android/material/internal",
     "com/google/android/material/loadingindicator",

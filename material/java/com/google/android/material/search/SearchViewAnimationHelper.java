@@ -42,12 +42,12 @@ import android.view.ViewParent;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.activity.BackEventCompat;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.annotation.VisibleForTesting;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.dynamicanimation.animation.FloatPropertyCompat;
 import androidx.dynamicanimation.animation.SpringAnimation;
@@ -116,7 +116,6 @@ class SearchViewAnimationHelper {
   private final FrameLayout toolbarContainer;
   private final Toolbar toolbar;
   private final Toolbar dummyToolbar;
-  private final LinearLayout textContainer;
   private final TextView searchPrefix;
   private final TextView dummyTextView;
   private final EditText editText;
@@ -124,13 +123,16 @@ class SearchViewAnimationHelper {
   private final View divider;
   private final TouchObserverFrameLayout contentContainer;
 
+  @VisibleForTesting @Nullable AnimationCoordinator activeCoordinator;
+  @VisibleForTesting @Nullable AnimatorSet activeTranslateAnimatorSet;
+
   private final MaterialMainContainerBackHelper backHelper;
   @Nullable private AnimatorSet backProgressAnimatorSet;
 
   private SearchBar searchBar;
 
   private final Context context;
-  private final AnimationDelegate animationDelegate;
+  @VisibleForTesting final AnimationDelegate animationDelegate;
 
   private final TimeInterpolator standardAccelerateInterpolator;
   private final TimeInterpolator standardDecelerateInterpolator;
@@ -154,7 +156,6 @@ class SearchViewAnimationHelper {
     this.clearButton = searchView.clearButton;
     this.divider = searchView.divider;
     this.contentContainer = searchView.contentContainer;
-    this.textContainer = searchView.textContainer;
 
     backHelper = new MaterialMainContainerBackHelper(rootView);
 
@@ -180,6 +181,7 @@ class SearchViewAnimationHelper {
   }
 
   void show() {
+    cancelPendingAnimations();
     if (searchBar != null) {
       startShowAnimationExpand();
     } else {
@@ -189,10 +191,22 @@ class SearchViewAnimationHelper {
 
   @CanIgnoreReturnValue
   AnimatorSet hide() {
+    cancelPendingAnimations();
     if (searchBar != null) {
       return startHideAnimationCollapse();
     } else {
       return startHideAnimationTranslate();
+    }
+  }
+
+  void cancelPendingAnimations() {
+    if (activeCoordinator != null) {
+      activeCoordinator.clear();
+      activeCoordinator = null;
+    }
+    if (activeTranslateAnimatorSet != null) {
+      activeTranslateAnimatorSet.cancel();
+      activeTranslateAnimatorSet = null;
     }
   }
 
@@ -230,10 +244,14 @@ class SearchViewAnimationHelper {
                     searchView.requestFocusAndShowKeyboardIfNeeded();
                   }
                   searchView.setTransitionState(SearchView.TransitionState.SHOWN);
+                  if (activeCoordinator == coordinator) {
+                    activeCoordinator = null;
+                  }
                 }
               });
 
           coordinator.start();
+          activeCoordinator = coordinator;
         });
   }
 
@@ -265,10 +283,14 @@ class SearchViewAnimationHelper {
               searchView.clearFocusAndHideKeyboard();
             }
             searchView.setTransitionState(SearchView.TransitionState.HIDDEN);
+            if (activeCoordinator == coordinator) {
+              activeCoordinator = null;
+            }
           }
         });
 
     coordinator.start();
+    activeCoordinator = coordinator;
 
     return animatorSet;
   }
@@ -298,9 +320,13 @@ class SearchViewAnimationHelper {
                     searchView.requestFocusAndShowKeyboardIfNeeded();
                   }
                   searchView.setTransitionState(SearchView.TransitionState.SHOWN);
+                  if (activeTranslateAnimatorSet == animatorSet) {
+                    activeTranslateAnimatorSet = null;
+                  }
                 }
               });
           animatorSet.start();
+          activeTranslateAnimatorSet = animatorSet;
         });
   }
 
@@ -323,9 +349,13 @@ class SearchViewAnimationHelper {
               searchView.clearFocusAndHideKeyboard();
             }
             searchView.setTransitionState(SearchView.TransitionState.HIDDEN);
+            if (activeTranslateAnimatorSet == animatorSet) {
+              activeTranslateAnimatorSet = null;
+            }
           }
         });
     animatorSet.start();
+    activeTranslateAnimatorSet = animatorSet;
     return animatorSet;
   }
 
@@ -438,6 +468,24 @@ class SearchViewAnimationHelper {
     if (drawable instanceof FadeThroughDrawable) {
       ((FadeThroughDrawable) drawable).setProgress(1);
     }
+  }
+
+  private boolean shouldInflateDummyToolbar() {
+    return searchBar.getMenuResId() != SearchBar.NO_RES_ID
+        && searchView.isMenuItemsAnimated()
+        && hasVisibleMenuItems(searchBar.getMenu());
+  }
+
+  private boolean hasVisibleMenuItems(@Nullable Menu menu) {
+    if (menu == null) {
+      return false;
+    }
+    for (int i = 0; i < menu.size(); i++) {
+      if (menu.getItem(i).isVisible()) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private void setMenuItemsNotClickable(Toolbar toolbar) {
@@ -590,7 +638,7 @@ class SearchViewAnimationHelper {
       if (menu != null) {
         menu.clear();
       }
-      if (searchBar.getMenuResId() != SearchBar.NO_RES_ID && searchView.isMenuItemsAnimated()) {
+      if (shouldInflateDummyToolbar()) {
         dummyToolbar.inflateMenu(searchBar.getMenuResId());
         setMenuItemsNotClickable(dummyToolbar);
         dummyToolbar.setVisibility(View.VISIBLE);
@@ -603,6 +651,9 @@ class SearchViewAnimationHelper {
     @Override
     public AnimatorSet getExpandCollapseAnimatorSet(boolean show) {
       AnimatorSet animatorSet = new AnimatorSet();
+      if (backProgressAnimatorSet == null) {
+        animatorSet.playTogether(getButtonsTranslationAnimator(show));
+      }
       animatorSet.playTogether(
           getScrimAlphaAnimator(show),
           getRootViewAnimator(show),
@@ -729,7 +780,11 @@ class SearchViewAnimationHelper {
 
     private Animator getDummyToolbarAnimator(boolean show) {
       return getTranslationAnimator(
-          show, dummyToolbar, getFromTranslationXEnd(dummyToolbar), getFromTranslationY());
+          show,
+          dummyToolbar,
+          getFromTranslationXEnd(dummyToolbar)
+              - (searchBar.getPaddingEnd() - dummyToolbar.getPaddingEnd()),
+          getFromTranslationY());
     }
 
     private Animator getHeaderContainerAnimator(boolean show) {
@@ -812,8 +867,10 @@ class SearchViewAnimationHelper {
       if (TextUtils.isEmpty(textView.getText()) || show) {
         textView = searchBar.getTextView();
       }
-      int startX =
-          getViewLeftFromSearchViewParent(textView) - (v.getLeft() + textContainer.getLeft());
+      int startX = getViewLeftFromSearchViewParent(textView) - getViewLeftFromSearchViewParent(v);
+      if (ViewUtils.isLayoutRtl(searchBar)) {
+        startX += textView.getWidth() - v.getWidth();
+      }
       return getTranslationAnimator(show, v, startX, getFromTranslationY());
     }
 
@@ -944,7 +1001,8 @@ class SearchViewAnimationHelper {
     }
   }
 
-  private class ContainedAnimationDelegate implements AnimationDelegate {
+  @VisibleForTesting
+  class ContainedAnimationDelegate implements AnimationDelegate {
     @Override
     public void setUpDummyToolbarIfNeeded() {
       setUpDummyTextViewIfNeeded();
@@ -962,7 +1020,7 @@ class SearchViewAnimationHelper {
       }
 
       // Inflate the dummy toolbar menu to match the search bar if needed.
-      if (searchBar.getMenuResId() != SearchBar.NO_RES_ID && searchView.isMenuItemsAnimated()) {
+      if (shouldInflateDummyToolbar()) {
         dummyToolbar.inflateMenu(searchBar.getMenuResId());
         setMenuItemsNotClickable(dummyToolbar);
       }
@@ -1145,16 +1203,18 @@ class SearchViewAnimationHelper {
       return animatorSet;
     }
 
+    @VisibleForTesting
     @Nullable
-    private View getStartSiblingView(@NonNull AppBarLayout appBarLayout) {
+    View getStartSiblingView(@NonNull AppBarLayout appBarLayout) {
       int startSiblingViewId = searchBar.getStartSiblingViewId();
       return startSiblingViewId != View.NO_ID
           ? appBarLayout.findViewById(startSiblingViewId)
           : getToolbarNavigationIconButton();
     }
 
+    @VisibleForTesting
     @Nullable
-    private View getEndSiblingView(@NonNull AppBarLayout appBarLayout) {
+    View getEndSiblingView(@NonNull AppBarLayout appBarLayout) {
       int endSiblingViewId = searchBar.getEndSiblingViewId();
       return endSiblingViewId != View.NO_ID
           ? appBarLayout.findViewById(endSiblingViewId)
@@ -1204,19 +1264,19 @@ class SearchViewAnimationHelper {
       return animator;
     }
 
-    private SpringAnimation getToolbarWidthSpringAnimation(boolean show, Toolbar tb) {
+    private SpringAnimation getToolbarWidthSpringAnimation(boolean show, Toolbar toolbar) {
       int searchBarWidth = searchBar.getWidth();
       int toolbarWidth = getToolbarWidth();
       int startWidth = show ? searchBarWidth : toolbarWidth;
       int endWidth = show ? toolbarWidth : searchBarWidth;
       SpringAnimation animation =
-          getSpringAnimation(tb, getWidthViewProperty(), startWidth, endWidth);
+          getSpringAnimation(toolbar, getWidthViewProperty(), startWidth, endWidth);
       animation.addEndListener(
           (dynamicAnimation, canceled, value, velocity) -> {
             if (show) {
               // Make sure toolbar width is set back to match parent at the end in case animation is
               // canceled
-              setWidth(tb, LayoutParams.MATCH_PARENT);
+              setWidth(toolbar, LayoutParams.MATCH_PARENT);
             }
           });
       return animation;
@@ -1248,12 +1308,12 @@ class SearchViewAnimationHelper {
       return containerWidth - containerHorizontalPaddings - toolbarHorizontalMargins;
     }
 
-    private SpringAnimation getToolbarTranslationXSpringAnimation(boolean show, Toolbar tb) {
-      int translationX = getToolbarTranslationX();
+    private SpringAnimation getToolbarTranslationXSpringAnimation(boolean show, Toolbar toolbar) {
+      int translationX = getToolbarTranslationX(toolbar);
       int startTranslationX = show ? translationX : 0;
       int endTranslationX = show ? 0 : translationX;
       return getSpringAnimation(
-          tb, SpringAnimation.TRANSLATION_X, startTranslationX, endTranslationX);
+          toolbar, SpringAnimation.TRANSLATION_X, startTranslationX, endTranslationX);
     }
 
     /**
@@ -1273,11 +1333,17 @@ class SearchViewAnimationHelper {
     }
 
     /** Returns the X translation needed from toolbar to align with the {@link SearchBar}. */
-    private int getToolbarTranslationX() {
+    private int getToolbarTranslationX(Toolbar toolbar) {
       int searchBarLeft = getViewLeftFromSearchViewParent(searchBar);
       int toolbarContainerPaddingStart = toolbarContainer.getPaddingStart();
       MarginLayoutParams lp = (MarginLayoutParams) toolbar.getLayoutParams();
       int toolbarMarginStart = lp.getMarginStart();
+
+      if (ViewUtils.isLayoutRtl(searchBar)) {
+        return searchBarLeft
+            + searchBar.getWidth()
+            - (toolbarContainer.getWidth() - toolbarContainerPaddingStart - toolbarMarginStart);
+      }
       return searchBarLeft - toolbarContainerPaddingStart - toolbarMarginStart;
     }
 
@@ -1323,7 +1389,11 @@ class SearchViewAnimationHelper {
       if (TextUtils.isEmpty(textView.getText()) || show) {
         textView = searchBar.getTextView();
       }
-      float translationX = getTranslationXBetweenViews(textView, view) - getToolbarTranslationX();
+      float translationX =
+          getTranslationXBetweenViews(textView, view) - getToolbarTranslationX(toolbar);
+      if (ViewUtils.isLayoutRtl(searchBar)) {
+        translationX += textView.getWidth() - view.getWidth();
+      }
       float startTranslationX = show ? translationX : 0;
       float endTranslationX = show ? 0 : translationX;
       return getSpringAnimation(
