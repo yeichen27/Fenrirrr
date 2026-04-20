@@ -474,7 +474,8 @@ int UYVYToNV12(const uint8_t* src_uyvy,
                int width,
                int height);
 
-// Convert NV21 to NV12.
+// Convert NV21 to NV12. The conversion is bidirectional (swapping UV plane
+// byte pairs), so NV12ToNV21 is an alias for NV21ToNV12.
 LIBYUV_API
 int NV21ToNV12(const uint8_t* src_y,
                int src_stride_y,
@@ -486,6 +487,8 @@ int NV21ToNV12(const uint8_t* src_y,
                int dst_stride_uv,
                int width,
                int height);
+
+#define NV12ToNV21 NV21ToNV12
 
 LIBYUV_API
 int YUY2ToY(const uint8_t* src_yuy2,
@@ -1077,8 +1080,8 @@ int I420Interpolate(const uint8_t* src0_y,
 // Shuffle ARGB channel order.  e.g. BGRA to ARGB.
 // shuffler is 16 bytes.
 LIBYUV_API
-int ARGBShuffle(const uint8_t* src_bgra,
-                int src_stride_bgra,
+int ARGBShuffle(const uint8_t* src_argb,
+                int src_stride_argb,
                 uint8_t* dst_argb,
                 int dst_stride_argb,
                 const uint8_t* shuffler,

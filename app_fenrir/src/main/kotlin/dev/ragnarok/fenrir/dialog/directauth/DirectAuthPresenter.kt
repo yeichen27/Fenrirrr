@@ -113,15 +113,28 @@ class DirectAuthPresenter(savedInstanceState: Bundle?) :
                 val phone = t.phone
                 smsSid = sid
                 when {
-                    "2fa_sms".equals(type, ignoreCase = true) || "2fa_libverify".equals(
+                    "2fa_sms".equals(type, ignoreCase = true) || "2fa_callreset".equals(
+                        type,
+                        ignoreCase = true
+                    ) || "2fa_libverify".equals(
                         type,
                         ignoreCase = true
                     ) -> {
                         requireSmsCode = true
                         RedirectUrl = t.validationURL
+                        if ("2fa_callreset".equals(
+                                type,
+                                ignoreCase = true
+                            )
+                        ) {
+                            view?.updateSmsDescription(t.description)
+                        }
                     }
 
-                    "2fa_app".equals(type, ignoreCase = true) -> {
+                    "2fa_app".equals(type, ignoreCase = true) || "2fa_push".equals(
+                        type,
+                        ignoreCase = true
+                    ) -> {
                         requireAppCode = true
                     }
 
@@ -133,7 +146,7 @@ class DirectAuthPresenter(savedInstanceState: Bundle?) :
                         }
                     }
                 }
-                if (!sid.isNullOrEmpty() && requireSmsCode) {
+                if (phone.nonNullNoEmpty() && !sid.isNullOrEmpty() && requireSmsCode) {
                     appendJob(
                         networker.vkAuth()
                             .validatePhone(
@@ -144,7 +157,7 @@ class DirectAuthPresenter(savedInstanceState: Bundle?) :
                                 sid,
                                 Constants.AUTH_API_VERSION,
                                 libverify_support = true,
-                                allow_callreset = true
+                                allow_callreset = false
                             )
                             .delayedFlow(1000)
                             .fromIOToMain({ }) {

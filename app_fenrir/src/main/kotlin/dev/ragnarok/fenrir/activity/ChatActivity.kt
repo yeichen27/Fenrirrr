@@ -118,7 +118,7 @@ class ChatActivity : NoMainActivity(), PlaceProvider, AppStyleable, ServiceConne
             val inputManager = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager?
             inputManager?.hideSoftInputFromWindow(
                 window.decorView.rootView.windowToken,
-                InputMethodManager.HIDE_NOT_ALWAYS
+                0
             )
         } catch (_: Exception) {
         }

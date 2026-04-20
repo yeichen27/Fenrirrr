@@ -136,9 +136,6 @@
     <string name="channel_keep_work_manager">WorkManager</string>
     <string name="foreground_downloader">Менеджер загрузок</string>
     <string name="saved">Сохранено</string>
-    <string name="pause">пауза</string>
-    <string name="previous">предыдущий</string>
-    <string name="next">следующий</string>
     <string name="play">Воспроизвести</string>
     <string name="no_system_equalizer">Нет системного эквалайзера</string>
     <string name="equalizer">Эквалайзер</string>
@@ -265,4 +262,6 @@
     <string name="saved_to_param_file_name">Сохранено в %1$s</string>
     <string name="long_click_photo">Долгое нажатие на фото</string>
     <string name="photo_zoom_enable_list">Листать приближенные изображения</string>
+    <string name="shuffle">Перемешивать</string>
+    <string name="repeat_mode">Повтор</string>
 </resources>

@@ -24,7 +24,7 @@
 #define _TVG_LOTTIE_EXPRESSIONS_H_
 
 #include "tvgCommon.h"
-#include "tvgLottieData.h"
+#include "tvgLottieCommon.h"
 
 struct LottieExpression;
 struct LottieComposition;
@@ -66,6 +66,13 @@ struct LottieExpressions
         }
         jerry_value_free(bm_rt);
         return true;
+    }
+
+    template<typename Property>
+    bool result(float frameNo, Point3& out, LottieExpression* exp)
+    {
+        // TODO:
+        return false;
     }
 
     template<typename Property>

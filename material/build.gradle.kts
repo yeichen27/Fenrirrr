@@ -78,17 +78,22 @@ val srcDirs = arrayOf(
 android {
     namespace = "com.google.android.material"
 
-    sourceSets.named("main") {
-        java.directories.clear()
-        java.directories.addAll(setOf("java"))
-
-        java.filter.include(srcDirs.map { "$it/**/*.java" })
-        java.filter.exclude("**/build/**")
-        srcDirs.forEach {
-            res.directories.add("java/$it/res")
-            //res.directories.add("java/$it/res-public")
+    sourceSets {
+        named("main") {
+            java.directories.clear()
+            java.directories.add("java")
+            srcDirs.forEach {
+                res.directories.add("java/$it/res")
+                res.directories.add("java/$it/res-public")
+            }
         }
     }
+
+    tasks.withType<JavaCompile>().configureEach {
+        include(srcDirs.map { "$it/**/*.java" })
+        exclude("**/build/**")
+    }
+
     compileSdk {
         version = preview(libs.versions.appCompileSDK.get())
     }

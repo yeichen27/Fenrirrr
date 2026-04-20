@@ -148,10 +148,14 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
 
     private fun onServiceBindEvent(@PlayerStatus status: Int) {
         when (status) {
-            PlayerStatus.UPDATE_TRACK_INFO -> {
+            PlayerStatus.UPDATE_METADATA -> {
                 updatePlaybackControls()
                 updateNowPlayingInfo()
                 resolveControlViews()
+            }
+
+            PlayerStatus.UPDATE_TRACK_INFO -> {
+                resolveTotalTime()
             }
 
             PlayerStatus.UPDATE_PLAY_PAUSE -> {
@@ -171,12 +175,15 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
                 }
             }
 
-            PlayerStatus.REPEATMODE_CHANGED -> {
+            PlayerStatus.REPEAT_MODE_CHANGED -> {
                 mRepeatButton?.updateRepeatState()
             }
 
-            PlayerStatus.SHUFFLEMODE_CHANGED -> {
+            PlayerStatus.SHUFFLE_MODE_CHANGED -> {
                 mShuffleButton?.updateShuffleState()
+                updatePlaybackControls()
+                updateNowPlayingInfo()
+                resolveControlViews()
                 updateCovers()
             }
 
@@ -561,7 +568,7 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
             var newpos = mStartSeekPos - delta
             if (newpos < 0) {
                 // move to previous track
-                MusicPlaybackController.previous(requireActivity())
+                MusicPlaybackController.previous()
                 val duration = MusicPlaybackController.duration()
                 mStartSeekPos += duration
                 newpos += duration

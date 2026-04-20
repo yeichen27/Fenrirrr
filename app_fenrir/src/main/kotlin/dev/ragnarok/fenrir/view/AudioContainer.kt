@@ -257,7 +257,7 @@ class AudioContainer : LinearLayout {
                 true
             )
         )
-        if (canPlayAfterCurrent(audio)) {
+        if (canPlayAfterCurrent()) {
             menus.add(
                 OptionRequest(
                     AudioOption.play_item_after_current_audio,
@@ -737,7 +737,7 @@ class AudioContainer : LinearLayout {
 
     private fun onServiceBindEvent(@PlayerStatus status: Int) {
         when (status) {
-            PlayerStatus.UPDATE_TRACK_INFO, PlayerStatus.UPDATE_PLAY_PAUSE, PlayerStatus.SERVICE_KILLED -> {
+            PlayerStatus.UPDATE_METADATA, PlayerStatus.UPDATE_PLAY_PAUSE, PlayerStatus.SERVICE_KILLED -> {
                 currAudio = currentAudio
                 if (childCount < audios.size) return
                 var g = 0
@@ -749,7 +749,7 @@ class AudioContainer : LinearLayout {
                 }
             }
 
-            PlayerStatus.REPEATMODE_CHANGED, PlayerStatus.SHUFFLEMODE_CHANGED, PlayerStatus.UPDATE_PLAY_LIST -> {}
+            PlayerStatus.REPEAT_MODE_CHANGED, PlayerStatus.SHUFFLE_MODE_CHANGED, PlayerStatus.UPDATE_PLAY_LIST, PlayerStatus.UPDATE_TRACK_INFO -> {}
         }
     }
 

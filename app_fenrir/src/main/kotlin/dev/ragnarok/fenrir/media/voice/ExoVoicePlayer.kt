@@ -11,8 +11,6 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.exoplayer.source.ProgressiveMediaSource
 import dev.ragnarok.fenrir.UserAgentTool
-import dev.ragnarok.fenrir.media.exo.ExoUtil.pausePlayer
-import dev.ragnarok.fenrir.media.exo.ExoUtil.startPlayer
 import dev.ragnarok.fenrir.media.voice.IVoicePlayer.IErrorListener
 import dev.ragnarok.fenrir.media.voice.IVoicePlayer.IPlayerStatusListener
 import dev.ragnarok.fenrir.model.ProxyConfig
@@ -120,9 +118,9 @@ class ExoVoicePlayer(context: Context, config: ProxyConfig?) : IVoicePlayer {
     private fun setSupposedToBePlaying(supposedToBePlaying: Boolean) {
         this.supposedToBePlaying = supposedToBePlaying
         if (supposedToBePlaying) {
-            startPlayer(exoPlayer)
+            exoPlayer?.play()
         } else {
-            pausePlayer(exoPlayer)
+            exoPlayer?.pause()
         }
     }
 

@@ -165,7 +165,7 @@ object ViewUtils {
                 context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
             inputManager?.hideSoftInputFromWindow(
                 (context as Activity).window.decorView.rootView.windowToken,
-                InputMethodManager.HIDE_NOT_ALWAYS
+                0
             )
         } catch (_: Exception) {
         }

@@ -212,13 +212,13 @@ class AudioRecyclerAdapter(
 
     private fun onServiceBindEvent(@PlayerStatus status: Int) {
         when (status) {
-            PlayerStatus.UPDATE_TRACK_INFO, PlayerStatus.SERVICE_KILLED, PlayerStatus.UPDATE_PLAY_PAUSE -> {
+            PlayerStatus.UPDATE_METADATA, PlayerStatus.SERVICE_KILLED, PlayerStatus.UPDATE_PLAY_PAUSE -> {
                 updateAudio(currAudio)
                 currAudio = currentAudio
                 updateAudio(currAudio)
             }
 
-            PlayerStatus.REPEATMODE_CHANGED, PlayerStatus.SHUFFLEMODE_CHANGED, PlayerStatus.UPDATE_PLAY_LIST -> {}
+            PlayerStatus.REPEAT_MODE_CHANGED, PlayerStatus.SHUFFLE_MODE_CHANGED, PlayerStatus.UPDATE_PLAY_LIST, PlayerStatus.UPDATE_TRACK_INFO -> {}
         }
     }
 
@@ -233,7 +233,7 @@ class AudioRecyclerAdapter(
     /*
     private void onServiceBindEvent(@PlayerStatus int status) {
         switch (status) {
-            case PlayerStatus.UPDATE_TRACK_INFO:
+            case PlayerStatus.UPDATE_METADATA:
                 Audio old = currAudio;
                 currAudio = MusicPlaybackController.getCurrentAudio();
                 if (!Objects.equals(old, currAudio)) {
@@ -254,6 +254,7 @@ class AudioRecyclerAdapter(
             case PlayerStatus.REPEATMODE_CHANGED:
             case PlayerStatus.SHUFFLEMODE_CHANGED:
             case PlayerStatus.UPDATE_PLAY_LIST:
+            case PlayerStatus.UPDATE_TRACK_INFO:
                 break;
         }
     }
@@ -307,7 +308,7 @@ class AudioRecyclerAdapter(
                 true
             )
         )
-        if (canPlayAfterCurrent(audio)) {
+        if (canPlayAfterCurrent()) {
             menus.add(
                 OptionRequest(
                     AudioOption.play_item_after_current_audio,

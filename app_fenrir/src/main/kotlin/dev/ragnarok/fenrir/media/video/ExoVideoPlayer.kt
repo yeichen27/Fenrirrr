@@ -14,8 +14,6 @@ import androidx.media3.exoplayer.hls.HlsMediaSource
 import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.exoplayer.source.ProgressiveMediaSource
 import dev.ragnarok.fenrir.UserAgentTool
-import dev.ragnarok.fenrir.media.exo.ExoUtil.pausePlayer
-import dev.ragnarok.fenrir.media.exo.ExoUtil.startPlayer
 import dev.ragnarok.fenrir.media.video.IVideoPlayer.IUpdatePlayListener
 import dev.ragnarok.fenrir.model.InternalVideoSize
 import dev.ragnarok.fenrir.model.ProxyConfig
@@ -56,7 +54,7 @@ class ExoVideoPlayer(
         player?.setMediaSource(source)
         player?.setPlaybackSpeed(if (playbackSpeed) 2f else 1f)
         player?.prepare()
-        startPlayer(player)
+        player?.play()
     }
 
     private fun createPlayer(context: Context): ExoPlayer {
@@ -80,7 +78,7 @@ class ExoVideoPlayer(
             player?.prepare()
             prepareCalled = true
         }
-        startPlayer(player)
+        player?.play()
     }
 
     override fun pause() {
@@ -88,7 +86,7 @@ class ExoVideoPlayer(
             return
         }
         supposedToBePlaying = false
-        pausePlayer(player)
+        player?.pause()
     }
 
     override val isPlaybackSpeed: Boolean

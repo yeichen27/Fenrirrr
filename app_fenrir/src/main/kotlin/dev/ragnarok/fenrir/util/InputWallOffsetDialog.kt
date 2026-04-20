@@ -75,7 +75,7 @@ class InputWallOffsetDialog internal constructor(
         input.postDelayed({
             val inputMethodManager =
                 context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
-            inputMethodManager?.showSoftInput(input, InputMethodManager.SHOW_IMPLICIT)
+            inputMethodManager?.showSoftInput(input, 0)
         }, 500)
         input.addTextChangedListener(object : TextWatcherAdapter() {
             override fun afterTextChanged(s: Editable?) {

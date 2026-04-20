@@ -72,13 +72,13 @@ class FileManagerRemoteAdapter(private var context: Context, private var data: L
 
     private fun onServiceBindEvent(@PlayerStatus status: Int) {
         when (status) {
-            PlayerStatus.UPDATE_TRACK_INFO, PlayerStatus.SERVICE_KILLED, PlayerStatus.UPDATE_PLAY_PAUSE -> {
+            PlayerStatus.UPDATE_METADATA, PlayerStatus.SERVICE_KILLED, PlayerStatus.UPDATE_PLAY_PAUSE -> {
                 updateAudio(currAudio)
                 currAudio = MusicPlaybackController.currentAudio
                 updateAudio(currAudio)
             }
 
-            PlayerStatus.REPEATMODE_CHANGED, PlayerStatus.SHUFFLEMODE_CHANGED, PlayerStatus.UPDATE_PLAY_LIST -> {}
+            PlayerStatus.REPEAT_MODE_CHANGED, PlayerStatus.SHUFFLE_MODE_CHANGED, PlayerStatus.UPDATE_PLAY_LIST, PlayerStatus.UPDATE_TRACK_INFO -> {}
         }
     }
 
@@ -191,7 +191,7 @@ class FileManagerRemoteAdapter(private var context: Context, private var data: L
                 true
             )
         )
-        if (MusicPlaybackController.canPlayAfterCurrent(t)) {
+        if (MusicPlaybackController.canPlayAfterCurrent()) {
             menus.add(
                 OptionRequest(
                     FileLocalServerOption.play_item_after_current_audio,

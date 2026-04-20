@@ -249,6 +249,14 @@ class DirectAuthDialog : BaseMvpDialogFragment<DirectAuthPresenter, IDirectAuthV
         )
     }
 
+    override fun updateSmsDescription(description: String?) {
+        if (description.isNullOrEmpty()) {
+            mSmsAuthHelp?.setText(R.string.sms_auth_help)
+        } else {
+            mSmsAuthHelp?.text = description
+        }
+    }
+
     companion object {
         const val ACTION_LOGIN_COMPLETE = "ACTION_LOGIN_COMPLETE"
         const val ACTION_LOGIN_VIA_WEB = "ACTION_LOGIN_VIA_WEB"

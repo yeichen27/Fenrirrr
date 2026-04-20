@@ -259,6 +259,7 @@
   <inspection_tool class="AndroidLintNonResizeableActivity" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintNotConstructor" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintNotInterpolated" enabled="false" level="ERROR" enabled_by_default="false" />
+  <inspection_tool class="AndroidLintNotShrinkingResources" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="AndroidLintNotSibling" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="AndroidLintNotificationIconCompatibility" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintNotificationId0" enabled="false" level="ERROR" enabled_by_default="false" />
@@ -275,6 +276,7 @@
   <inspection_tool class="AndroidLintOutdatedLibrary" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintOverdraw" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintOverrideAbstract" enabled="false" level="ERROR" enabled_by_default="false" />
+  <inspection_tool class="AndroidLintPackageManagerCheckPermission" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="AndroidLintPackagedPrivateKey" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="AndroidLintParcelClassLoader" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintParcelCreator" enabled="false" level="ERROR" enabled_by_default="false" />
@@ -376,6 +378,7 @@
   <inspection_tool class="AndroidLintTextConcatSpace" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintTextFields" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintTextViewEdits" enabled="false" level="WARNING" enabled_by_default="false" />
+  <inspection_tool class="AndroidLintThreadConstraint" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="AndroidLintTilePreviewImageFormat" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="AndroidLintTileProviderPermissions" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintTooDeepLayout" enabled="false" level="WARNING" enabled_by_default="false" />
@@ -469,7 +472,6 @@
   <inspection_tool class="AndroidLintWrongGradleMethod" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="AndroidLintWrongRegion" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintWrongSdkInt" enabled="false" level="ERROR" enabled_by_default="false" />
-  <inspection_tool class="AndroidLintWrongThread" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="AndroidLintWrongViewCast" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="AndroidLintXmlEscapeNeeded" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="AndroidMissingOnClickHandler" enabled="false" level="WARNING" enabled_by_default="false" />
@@ -1284,6 +1286,7 @@
   <inspection_tool class="PreviewParameterProviderOnFirstParameter" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="PreviewPickerAnnotation" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="PreviewShouldNotBeCalledRecursively" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+  <inspection_tool class="PreviewWrapperUsage" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="PrimitiveArrayArgumentToVariableArgMethod" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="PrivatePropertyName" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
   <inspection_tool class="PropertyName" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
@@ -1579,6 +1582,7 @@
   <inspection_tool class="SystemGetProperty" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="SystemOutErr" enabled="false" level="INFORMATION" enabled_by_default="false" />
   <inspection_tool class="SystemRunFinalizersOnExit" enabled="false" level="WARNING" enabled_by_default="false" />
+  <inspection_tool class="SystemUi" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="TailRecursion" enabled="false" level="INFORMATION" enabled_by_default="false" />
   <inspection_tool class="TestFailedLine" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="TestFunctionName" enabled="false" level="WEAK WARNING" enabled_by_default="false" />

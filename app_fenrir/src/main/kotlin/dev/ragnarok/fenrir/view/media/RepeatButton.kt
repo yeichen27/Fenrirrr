@@ -5,9 +5,9 @@ import android.util.AttributeSet
 import android.view.View
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.AppCompatImageButton
+import androidx.media3.common.Player
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.media.music.MusicPlaybackController
-import dev.ragnarok.fenrir.media.music.MusicPlaybackService
 
 class RepeatButton(context: Context, attrs: AttributeSet?) : AppCompatImageButton(
     context, attrs
@@ -19,19 +19,19 @@ class RepeatButton(context: Context, attrs: AttributeSet?) : AppCompatImageButto
 
     fun updateRepeatState() {
         when (MusicPlaybackController.repeatMode) {
-            MusicPlaybackService.REPEAT_ALL -> setImageDrawable(
+            Player.REPEAT_MODE_ALL -> setImageDrawable(
                 AppCompatResources.getDrawable(
                     context, R.drawable.repeat
                 )
             )
 
-            MusicPlaybackService.REPEAT_CURRENT -> setImageDrawable(
+            Player.REPEAT_MODE_ONE -> setImageDrawable(
                 AppCompatResources.getDrawable(
                     context, R.drawable.repeat_once
                 )
             )
 
-            MusicPlaybackService.REPEAT_NONE -> setImageDrawable(
+            Player.REPEAT_MODE_OFF -> setImageDrawable(
                 AppCompatResources.getDrawable(
                     context, R.drawable.repeat_off
                 )

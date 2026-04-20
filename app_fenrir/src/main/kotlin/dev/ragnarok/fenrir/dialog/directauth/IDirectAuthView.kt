@@ -38,4 +38,6 @@ interface IDirectAuthView : IMvpView, IErrorView {
     fun startDefaultValidation(url: String?)
 
     fun openVKIdCaptcha(redirect_uri: String?, domain: String?)
+
+    fun updateSmsDescription(description: String?)
 }

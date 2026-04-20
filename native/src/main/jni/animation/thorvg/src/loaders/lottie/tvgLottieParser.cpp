@@ -192,36 +192,35 @@ bool LottieParser::getValue(PathSet& path)
     auto pt = pts.begin();
 
     //Store manipulated results
-    RenderPath temp;
+    RenderPath swap;
 
     //Reuse the buffers
-    temp.pts.data = path.pts;
-    temp.pts.reserved = path.ptsCnt;
-    temp.cmds.data = path.cmds;
-    temp.cmds.reserved = path.cmdsCnt;
+    swap.pts.data = path.pts;
+    swap.pts.reserved = path.ptsCnt;
+    swap.cmds.data = path.cmds;
+    swap.cmds.reserved = path.cmdsCnt;
 
     size_t extra = closed ? 3 : 0;
-    temp.pts.reserve(pts.count * 3 + 1 + extra);
-    temp.cmds.reserve(pts.count + 2);
+    swap.pts.reserve(pts.count * 3 + 1 + extra);
+    swap.cmds.reserve(pts.count + 2);
 
-    temp.moveTo(*pt);
+    swap.moveTo(*pt);
 
     for (++pt, ++out, ++in; pt < pts.end(); ++pt, ++out, ++in) {
-        temp.cubicTo(*(pt - 1) + *(out - 1), *pt + *in, *pt);
+        swap.cubicTo(*(pt - 1) + *(out - 1), *pt + *in, *pt);
     }
 
     if (closed) {
-        temp.cubicTo(pts.last() + outs.last(), pts.first() + ins.first(), pts.first());
-        temp.close();
+        swap.cubicTo(pts.last() + outs.last(), pts.first() + ins.first(), pts.first());
+        swap.close();
     }
 
-    path.pts = temp.pts.data;
-    path.cmds = temp.cmds.data;
-    path.ptsCnt = temp.pts.count;
-    path.cmdsCnt = temp.cmds.count;
+    path.pts = swap.pts.data;
+    path.cmds = swap.cmds.data;
+    path.ptsCnt = swap.pts.count;
+    path.cmdsCnt = swap.cmds.count;
 
-    temp.pts.data = nullptr;
-    temp.cmds.data = nullptr;
+    swap.dismiss();
 
     return false;
 }
@@ -315,6 +314,23 @@ bool LottieParser::getValue(Point& pt)
     return true;
 }
 
+bool LottieParser::getValue(Point3& pt)
+{
+    if (peekType() == kNullType) return false;
+    if (peekType() == kArrayType) {
+        enterArray();
+        if (!nextArrayValue()) return false;
+    }
+
+    pt.x = getFloat();
+    pt.y = getFloat();
+    pt.z = getFloat();
+
+    while (nextArrayValue())
+        getFloat();  // drop
+
+    return true;
+}
 
 bool LottieParser::getValue(RGB32& color)
 {
@@ -568,7 +584,6 @@ LottieEllipse* LottieParser::parseEllipse()
     return ellipse;
 }
 
-
 LottieTransform* LottieParser::parseTransform(bool ddd)
 {
     auto transform = new LottieTransform;
@@ -576,7 +591,7 @@ LottieTransform* LottieParser::parseTransform(bool ddd)
     context.parent = transform;
 
     if (ddd) {
-        transform->rotationEx = new LottieTransform::RotationEx;
+        transform->ddd = new LottieTransform::Dimension3;
         TVGLOG("LOTTIE", "3D transform(ddd) is not totally compatible.");
     }
 
@@ -604,9 +619,10 @@ LottieTransform* LottieParser::parseTransform(bool ddd)
         else if (KEY_AS("s")) parseProperty(transform->scale, transform);
         else if (KEY_AS("r")) parseProperty(transform->rotation, transform);
         else if (KEY_AS("o")) parseProperty(transform->opacity, transform);
-        else if (transform->rotationEx && KEY_AS("rx")) parseProperty(transform->rotationEx->x);
-        else if (transform->rotationEx && KEY_AS("ry")) parseProperty(transform->rotationEx->y);
-        else if (transform->rotationEx && KEY_AS("rz")) parseProperty(transform->rotation);
+        else if (transform->ddd && KEY_AS("rx")) parseProperty(transform->ddd->rx);
+        else if (transform->ddd && KEY_AS("ry")) parseProperty(transform->ddd->ry);
+        else if (transform->ddd && KEY_AS("rz")) parseProperty(transform->rotation);
+        else if (transform->ddd && KEY_AS("or")) parseProperty(transform->ddd->orient);
         else if (KEY_AS("sk")) parseProperty(transform->skewAngle, transform);
         else if (KEY_AS("sa")) parseProperty(transform->skewAxis, transform);
         else skip();
@@ -1343,16 +1359,14 @@ bool LottieParser::parseEffect(LottieEffect* effect, void(LottieParser::*func)(L
 {
     //custom effect expects dynamic property allocations
     auto custom = (effect->type == LottieEffect::Custom) ? true : false;
-    LottieFxCustom::Property* property = nullptr;
-
     enterArray();
     int idx = 0;
     while (nextArrayValue()) {
         enterObject();
+        LottieFxCustom::Property* property = nullptr;
         while (auto key = nextObjectKey()) {
             if (custom && KEY_AS("ty")) property = static_cast<LottieFxCustom*>(effect)->property(getInt());
-            else if (KEY_AS("v"))
-            {
+            else if (KEY_AS("v") && (!custom || property)) {
                 if (peekType() == kObjectType) {
                     enterObject();
                     while (auto key = nextObjectKey()) {
@@ -1570,6 +1584,9 @@ LottieLayer* LottieParser::parseLayer(LottieLayer* precomp)
 
     layer->prepare(&color);
 
+    layer->effect = !layer->effects.empty();
+    precomp->effect |= layer->effect;
+
     return layer;
 }
 
@@ -1594,17 +1611,20 @@ LottieLayer* LottieParser::parseLayers(LottieLayer* root)
 void LottieParser::postProcess(Array<LottieGlyph*>& glyphs)
 {
     //aggregate font characters
-    for (uint32_t g = 0; g < glyphs.count; ++g) {
-        auto glyph = glyphs[g];
-        for (uint32_t i = 0; i < comp->fonts.count; ++i) {
-            auto& font = comp->fonts[i];
+    ARRAY_FOREACH(g, glyphs) {
+        auto glyph = *g;
+        ARRAY_FOREACH(f, comp->fonts) {
+            auto font = *f;
             if (!strcmp(font->family, glyph->family) && !strcmp(font->style, glyph->style)) {
                 font->chars.push(glyph);
-                tvg::free(glyph->family);
-                tvg::free(glyph->style);
+                free(glyph->family);
+                free(glyph->style);
+                glyph->family = glyph->style = nullptr;
+                glyph = nullptr;
                 break;
             }
         }
+        delete(glyph);
     }
 }
 

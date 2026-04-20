@@ -8,6 +8,7 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.os.IBinder
 import android.os.RemoteException
+import androidx.media3.common.Player
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.model.Audio
 import dev.ragnarok.fenrir.orZero
@@ -27,13 +28,14 @@ object MusicPlaybackController {
 
     fun publishFromServiceState(action: String) {
         val result = when (action) {
-            MusicPlaybackService.PREPARED, MusicPlaybackService.PLAYSTATE_CHANGED -> PlayerStatus.UPDATE_PLAY_PAUSE
+            MusicPlaybackService.PREPARED, MusicPlaybackService.PLAY_STATE_CHANGED -> PlayerStatus.UPDATE_PLAY_PAUSE
 
-            MusicPlaybackService.SHUFFLEMODE_CHANGED -> PlayerStatus.SHUFFLEMODE_CHANGED
+            MusicPlaybackService.SHUFFLE_MODE_CHANGED -> PlayerStatus.SHUFFLE_MODE_CHANGED
 
-            MusicPlaybackService.REPEATMODE_CHANGED -> PlayerStatus.REPEATMODE_CHANGED
+            MusicPlaybackService.REPEAT_MODE_CHANGED -> PlayerStatus.REPEAT_MODE_CHANGED
 
-            MusicPlaybackService.META_CHANGED -> PlayerStatus.UPDATE_TRACK_INFO
+            MusicPlaybackService.META_CHANGED -> PlayerStatus.UPDATE_METADATA
+            MusicPlaybackService.TRACK_CHANGED -> PlayerStatus.UPDATE_TRACK_INFO
             MusicPlaybackService.QUEUE_CHANGED -> PlayerStatus.UPDATE_PLAY_LIST
             else -> PlayerStatus.SERVICE_KILLED
         }
@@ -131,10 +133,11 @@ object MusicPlaybackController {
     /**
      * Changes to the previous track.
      */
-    fun previous(context: Context) {
-        val previous = Intent(context, MusicPlaybackService::class.java)
-        previous.action = MusicPlaybackService.PREVIOUS_ACTION
-        context.startService(previous)
+    fun previous() {
+        try {
+            mService?.prev()
+        } catch (_: Exception) {
+        }
     }
 
     /**
@@ -182,17 +185,17 @@ object MusicPlaybackController {
         try {
             mService?.let {
                 when (it.repeatMode) {
-                    MusicPlaybackService.REPEAT_NONE -> it.repeatMode =
-                        MusicPlaybackService.REPEAT_ALL
+                    Player.REPEAT_MODE_OFF -> it.repeatMode =
+                        Player.REPEAT_MODE_ALL
 
-                    MusicPlaybackService.REPEAT_ALL -> {
-                        it.repeatMode = MusicPlaybackService.REPEAT_CURRENT
+                    Player.REPEAT_MODE_ALL -> {
+                        it.repeatMode = Player.REPEAT_MODE_ONE
                         if (it.shuffleMode != MusicPlaybackService.SHUFFLE_NONE) {
                             it.shuffleMode = MusicPlaybackService.SHUFFLE_NONE
                         }
                     }
 
-                    else -> it.repeatMode = MusicPlaybackService.REPEAT_NONE
+                    else -> it.repeatMode = Player.REPEAT_MODE_OFF
                 }
             }
         } catch (_: RemoteException) {
@@ -208,8 +211,8 @@ object MusicPlaybackController {
                 when (it.shuffleMode) {
                     MusicPlaybackService.SHUFFLE_NONE -> {
                         it.shuffleMode = MusicPlaybackService.SHUFFLE
-                        if (it.repeatMode == MusicPlaybackService.REPEAT_CURRENT) {
-                            it.repeatMode = MusicPlaybackService.REPEAT_ALL
+                        if (it.repeatMode == Player.REPEAT_MODE_ONE) {
+                            it.repeatMode = Player.REPEAT_MODE_ALL
                         }
                     }
 
@@ -223,9 +226,9 @@ object MusicPlaybackController {
         }
     }
 
-    fun canPlayAfterCurrent(audio: Audio): Boolean {
+    fun canPlayAfterCurrent(): Boolean {
         try {
-            return mService?.canPlayAfterCurrent(audio) == true
+            return mService?.canPlayAfterCurrent() == true
         } catch (_: RemoteException) {
         }
         return false
@@ -268,7 +271,7 @@ object MusicPlaybackController {
     val repeatMode: Int
         get() {
             try {
-                return mService?.repeatMode ?: MusicPlaybackService.REPEAT_NONE
+                return mService?.repeatMode ?: Player.REPEAT_MODE_OFF
             } catch (_: RemoteException) {
             }
             return 0
@@ -454,7 +457,7 @@ object MusicPlaybackController {
             mService = IAudioPlayerService.Stub.asInterface(service)
             mCallback?.onServiceConnected(className, service)
             SERVICE_BIND_PUBLISHER.myEmit(PlayerStatus.UPDATE_PLAY_LIST)
-            SERVICE_BIND_PUBLISHER.myEmit(PlayerStatus.UPDATE_TRACK_INFO)
+            SERVICE_BIND_PUBLISHER.myEmit(PlayerStatus.UPDATE_METADATA)
         }
 
         override fun onServiceDisconnected(className: ComponentName) {

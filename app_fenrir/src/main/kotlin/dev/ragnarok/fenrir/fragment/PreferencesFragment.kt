@@ -1438,7 +1438,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 selItems(R.array.array_lifecycle_names, R.array.array_lifecycle_items),
                 parentFragmentManager
             ) {
-                initialSelection = "300000"
+                initialSelection = Constants.AUDIO_PLAYER_SERVICE_IDLE.toString()
                 titleRes = R.string.lifecycle_music_service
             }
 

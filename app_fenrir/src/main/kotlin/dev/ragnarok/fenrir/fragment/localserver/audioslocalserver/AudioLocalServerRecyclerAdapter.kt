@@ -161,7 +161,7 @@ class AudioLocalServerRecyclerAdapter(
                 true
             )
         )
-        if (canPlayAfterCurrent(audio)) {
+        if (canPlayAfterCurrent()) {
             menus.add(
                 OptionRequest(
                     AudioLocalServerOption.play_item_after_current_audio,
@@ -520,13 +520,13 @@ class AudioLocalServerRecyclerAdapter(
 
     private fun onServiceBindEvent(@PlayerStatus status: Int) {
         when (status) {
-            PlayerStatus.UPDATE_TRACK_INFO, PlayerStatus.SERVICE_KILLED, PlayerStatus.UPDATE_PLAY_PAUSE -> {
+            PlayerStatus.UPDATE_METADATA, PlayerStatus.SERVICE_KILLED, PlayerStatus.UPDATE_PLAY_PAUSE -> {
                 updateAudio(currAudio)
                 currAudio = currentAudio
                 updateAudio(currAudio)
             }
 
-            PlayerStatus.REPEATMODE_CHANGED, PlayerStatus.SHUFFLEMODE_CHANGED, PlayerStatus.UPDATE_PLAY_LIST -> {}
+            PlayerStatus.REPEAT_MODE_CHANGED, PlayerStatus.SHUFFLE_MODE_CHANGED, PlayerStatus.UPDATE_PLAY_LIST, PlayerStatus.UPDATE_TRACK_INFO -> {}
         }
     }
 

@@ -146,7 +146,7 @@ class MiniPlayerView : FrameLayout, CustomSeekBar.CustomSeekBarListener {
 
     private fun onServiceBindEvent(@PlayerStatus status: Int) {
         when (status) {
-            PlayerStatus.UPDATE_TRACK_INFO -> {
+            PlayerStatus.UPDATE_METADATA -> {
                 updateVisibility()
                 updateNowPlayingInfo()
                 updatePlaybackControls()
@@ -166,7 +166,7 @@ class MiniPlayerView : FrameLayout, CustomSeekBar.CustomSeekBarListener {
                 resolveControlViews()
             }
 
-            PlayerStatus.REPEATMODE_CHANGED, PlayerStatus.SHUFFLEMODE_CHANGED, PlayerStatus.UPDATE_PLAY_LIST -> {
+            PlayerStatus.REPEAT_MODE_CHANGED, PlayerStatus.SHUFFLE_MODE_CHANGED, PlayerStatus.UPDATE_PLAY_LIST, PlayerStatus.UPDATE_TRACK_INFO -> {
             }
         }
     }

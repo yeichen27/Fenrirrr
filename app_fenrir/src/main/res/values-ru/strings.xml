@@ -1220,8 +1220,6 @@
     <string name="last_closed_page">Последняя закрытая</string>
     <string name="open_links_in_app">Открывать ссылки в приложении</string>
     <string name="pause">пауза</string>
-    <string name="previous">предыдущий</string>
-    <string name="next">следующий</string>
     <string name="family">Семья</string>
     <string name="force_cache">Принудительно слушать из загрузок</string>
     <string name="activity_until_now">текущее время</string>
@@ -1722,4 +1720,6 @@
     <string name="photo_zoom_enable_list">Листать приближенные изображения</string>
     <string name="only_not_viewed_followers">Показывать только непросмотренных подписчиков</string>
     <string name="sms_auth_help">Если не получилось войти, в браузере открываем настройки VK ID -> Двухфакторная аутентификация -> Резервные коды, и вводим вместо пароля!</string>
+    <string name="shuffle">Перемешивать</string>
+    <string name="repeat_mode">Повтор</string>
 </resources>

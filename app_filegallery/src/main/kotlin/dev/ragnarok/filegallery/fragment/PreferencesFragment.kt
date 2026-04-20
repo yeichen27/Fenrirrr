@@ -37,12 +37,33 @@ import de.maxr1998.modernpreferences.AbsPreferencesFragment
 import de.maxr1998.modernpreferences.PreferenceScreen
 import de.maxr1998.modernpreferences.PreferencesAdapter
 import de.maxr1998.modernpreferences.PreferencesExtra
-import de.maxr1998.modernpreferences.helpers.*
+import de.maxr1998.modernpreferences.helpers.DISABLED_RESOURCE_ID
+import de.maxr1998.modernpreferences.helpers.accentButtonPref
+import de.maxr1998.modernpreferences.helpers.customText
+import de.maxr1998.modernpreferences.helpers.editText
+import de.maxr1998.modernpreferences.helpers.multiLineText
+import de.maxr1998.modernpreferences.helpers.onCheckedChange
+import de.maxr1998.modernpreferences.helpers.onClick
+import de.maxr1998.modernpreferences.helpers.onMultiLineTextChange
+import de.maxr1998.modernpreferences.helpers.onSeek
+import de.maxr1998.modernpreferences.helpers.onSelectionChange
+import de.maxr1998.modernpreferences.helpers.onTextBeforeChanged
+import de.maxr1998.modernpreferences.helpers.onTextChanged
+import de.maxr1998.modernpreferences.helpers.pref
+import de.maxr1998.modernpreferences.helpers.screen
+import de.maxr1998.modernpreferences.helpers.seekBar
+import de.maxr1998.modernpreferences.helpers.singleChoice
+import de.maxr1998.modernpreferences.helpers.subScreen
+import de.maxr1998.modernpreferences.helpers.switch
 import de.maxr1998.modernpreferences.preferences.CustomTextPreference
 import dev.ragnarok.fenrir.module.FenrirNative
-import dev.ragnarok.filegallery.*
+import dev.ragnarok.filegallery.BuildConfig
+import dev.ragnarok.filegallery.Constants
 import dev.ragnarok.filegallery.Constants.forceDeveloperMode
+import dev.ragnarok.filegallery.Extra
+import dev.ragnarok.filegallery.Includes
 import dev.ragnarok.filegallery.Includes.provideApplicationContext
+import dev.ragnarok.filegallery.R
 import dev.ragnarok.filegallery.activity.ActivityFeatures
 import dev.ragnarok.filegallery.activity.ActivityUtils
 import dev.ragnarok.filegallery.activity.EnterPinActivity
@@ -50,6 +71,8 @@ import dev.ragnarok.filegallery.activity.FileManagerSelectActivity
 import dev.ragnarok.filegallery.api.adapters.AbsDtoAdapter.Companion.asJsonObjectSafe
 import dev.ragnarok.filegallery.api.adapters.AbsDtoAdapter.Companion.asPrimitiveSafe
 import dev.ragnarok.filegallery.api.adapters.AbsDtoAdapter.Companion.hasObject
+import dev.ragnarok.filegallery.kJson
+import dev.ragnarok.filegallery.kJsonPretty
 import dev.ragnarok.filegallery.listener.BackPressCallback
 import dev.ragnarok.filegallery.listener.CanBackPressedCallback
 import dev.ragnarok.filegallery.listener.OnSectionResumeCallback
@@ -58,12 +81,14 @@ import dev.ragnarok.filegallery.model.LocalServerSettings
 import dev.ragnarok.filegallery.model.PlayerCoverBackgroundSettings
 import dev.ragnarok.filegallery.model.SectionItem
 import dev.ragnarok.filegallery.model.SlidrSettings
+import dev.ragnarok.filegallery.nonNullNoEmpty
 import dev.ragnarok.filegallery.picasso.PicassoInstance.Companion.clear_cache
 import dev.ragnarok.filegallery.place.PlaceFactory
 import dev.ragnarok.filegallery.settings.CurrentTheme.getColorPrimary
 import dev.ragnarok.filegallery.settings.CurrentTheme.getColorSecondary
 import dev.ragnarok.filegallery.settings.Settings
 import dev.ragnarok.filegallery.settings.backup.SettingsBackup
+import dev.ragnarok.filegallery.trimmedNonNullNoEmpty
 import dev.ragnarok.filegallery.util.CoverSafeResize
 import dev.ragnarok.filegallery.util.Utils
 import dev.ragnarok.filegallery.util.Utils.getAppVersionName
@@ -76,7 +101,10 @@ import dev.ragnarok.filegallery.util.toast.CustomSnackbars
 import dev.ragnarok.filegallery.util.toast.CustomToast.Companion.createCustomToast
 import dev.ragnarok.filegallery.view.MySearchView
 import dev.ragnarok.filegallery.view.natives.animation.ThorVGLottieView
-import kotlinx.serialization.json.*
+import kotlinx.serialization.json.JsonObjectBuilder
+import kotlinx.serialization.json.intOrNull
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.put
 import kotlinx.serialization.prefs.Preferences
 import okio.buffer
 import okio.source
@@ -552,7 +580,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 selItems(R.array.array_lifecycle_names, R.array.array_lifecycle_items),
                 parentFragmentManager
             ) {
-                initialSelection = "300000"
+                initialSelection = Constants.AUDIO_PLAYER_SERVICE_IDLE.toString()
                 titleRes = R.string.lifecycle_music_service
             }
 

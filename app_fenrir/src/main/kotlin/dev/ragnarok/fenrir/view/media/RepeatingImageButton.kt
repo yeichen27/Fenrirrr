@@ -33,7 +33,7 @@ class RepeatingImageButton(context: Context, attrs: AttributeSet?) : AppCompatIm
 
     override fun onClick(view: View) {
         if (view.id == R.id.action_button_previous) {
-            MusicPlaybackController.previous(context)
+            MusicPlaybackController.previous()
         } else if (view.id == R.id.action_button_next) {
             MusicPlaybackController.next()
         }

@@ -35,22 +35,23 @@ foreach (ffmpeg_lib avutil swresample avcodec avformat swscale)
 endforeach ()
 
 add_library(thorvg STATIC
-        animation/thorvg/src/renderer/sw_engine/tvgSwFill.cpp
-        animation/thorvg/src/renderer/sw_engine/tvgSwImage.cpp
-        animation/thorvg/src/renderer/sw_engine/tvgSwMath.cpp
-        animation/thorvg/src/renderer/sw_engine/tvgSwMemPool.cpp
-        animation/thorvg/src/renderer/sw_engine/tvgSwPostEffect.cpp
-        animation/thorvg/src/renderer/sw_engine/tvgSwRaster.cpp
-        animation/thorvg/src/renderer/sw_engine/tvgSwRenderer.cpp
-        animation/thorvg/src/renderer/sw_engine/tvgSwRle.cpp
-        animation/thorvg/src/renderer/sw_engine/tvgSwShape.cpp
-        animation/thorvg/src/renderer/sw_engine/tvgSwStroke.cpp
+        animation/thorvg/src/renderer/cpu_engine/tvgSwFill.cpp
+        animation/thorvg/src/renderer/cpu_engine/tvgSwImage.cpp
+        animation/thorvg/src/renderer/cpu_engine/tvgSwMath.cpp
+        animation/thorvg/src/renderer/cpu_engine/tvgSwMemPool.cpp
+        animation/thorvg/src/renderer/cpu_engine/tvgSwPostEffect.cpp
+        animation/thorvg/src/renderer/cpu_engine/tvgSwRaster.cpp
+        animation/thorvg/src/renderer/cpu_engine/tvgSwRenderer.cpp
+        animation/thorvg/src/renderer/cpu_engine/tvgSwRle.cpp
+        animation/thorvg/src/renderer/cpu_engine/tvgSwShape.cpp
+        animation/thorvg/src/renderer/cpu_engine/tvgSwStroke.cpp
         animation/thorvg/src/renderer/tvgAccessor.cpp
         animation/thorvg/src/renderer/tvgAnimation.cpp
         animation/thorvg/src/renderer/tvgCanvas.cpp
         animation/thorvg/src/renderer/tvgFill.cpp
         animation/thorvg/src/renderer/tvgInitializer.cpp
         animation/thorvg/src/renderer/tvgLoader.cpp
+        animation/thorvg/src/renderer/tvgLoaderMgr.cpp
         animation/thorvg/src/renderer/tvgPaint.cpp
         animation/thorvg/src/renderer/tvgPicture.cpp
         animation/thorvg/src/renderer/tvgRender.cpp
@@ -69,10 +70,10 @@ add_library(thorvg STATIC
         animation/thorvg/src/loaders/lottie/tvgLottieParser.cpp
         animation/thorvg/src/loaders/lottie/tvgLottieParserHandler.cpp
         animation/thorvg/src/loaders/raw/tvgRawLoader.cpp
+        animation/thorvg/src/loaders/svg/tvgSvgBuilder.cpp
         animation/thorvg/src/loaders/svg/tvgSvgCssStyle.cpp
         animation/thorvg/src/loaders/svg/tvgSvgLoader.cpp
         animation/thorvg/src/loaders/svg/tvgSvgPath.cpp
-        animation/thorvg/src/loaders/svg/tvgSvgSceneBuilder.cpp
         animation/thorvg/src/loaders/svg/tvgSvgUtil.cpp
         animation/thorvg/src/loaders/svg/tvgXmlParser.cpp
         animation/thorvg/src/common/tvgColor.cpp
@@ -85,7 +86,7 @@ target_compile_options(thorvg PRIVATE
 target_include_directories(thorvg PRIVATE
         animation/thorvg/inc
         animation/thorvg/src/renderer
-        animation/thorvg/src/renderer/sw_engine
+        animation/thorvg/src/renderer/cpu_engine
         animation/thorvg/src/loaders/lottie
         animation/thorvg/src/loaders/raw
         animation/thorvg/src/loaders/svg

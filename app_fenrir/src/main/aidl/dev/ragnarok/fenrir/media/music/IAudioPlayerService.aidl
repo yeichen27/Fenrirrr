@@ -7,7 +7,7 @@ interface IAudioPlayerService {
     void openFile(in Audio audio);
     void open(in List<Audio> list, int position);
     void playAfterCurrent(in Audio audio);
-    boolean canPlayAfterCurrent(in Audio audio);
+    boolean canPlayAfterCurrent();
     void skip(int position);
     void stop();
     void pause();
@@ -16,8 +16,8 @@ interface IAudioPlayerService {
     void next();
     void closeMiniPlayer();
     boolean getMiniplayerVisibility();
-    void setShuffleMode(int shufflemode);
-    void setRepeatMode(int repeatmode);
+    void setShuffleMode(int shuffleMode);
+    void setRepeatMode(int repeatMode);
     void refresh();
     boolean isPlaying();
     boolean isPreparing();
@@ -33,7 +33,6 @@ interface IAudioPlayerService {
     String getAlbumName();
     String getPath();
     String getAlbumCover();
-    int getQueuePosition();
     int getShuffleMode();
     int getRepeatMode();
     int getAudioSessionId();
@@ -41,4 +40,3 @@ interface IAudioPlayerService {
     long getBufferPosition();
     void doNotDestroyWhenActivityRecreated();
 }
-

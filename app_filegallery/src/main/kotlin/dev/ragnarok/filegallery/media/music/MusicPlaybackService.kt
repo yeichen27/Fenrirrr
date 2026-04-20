@@ -1,33 +1,27 @@
 package dev.ragnarok.filegallery.media.music
 
 import android.annotation.SuppressLint
-import android.app.Notification
-import android.app.NotificationManager
-import android.app.Service
-import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
-import android.content.pm.ServiceInfo
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.drawable.Drawable
 import android.media.audiofx.AudioEffect
-import android.os.Build
+import android.net.Uri
 import android.os.IBinder
-import android.os.PowerManager
-import android.support.v4.media.MediaMetadataCompat
-import android.support.v4.media.session.MediaControllerCompat
-import android.support.v4.media.session.MediaSessionCompat
-import android.support.v4.media.session.PlaybackStateCompat
 import android.util.Log
-import androidx.core.content.ContextCompat
-import androidx.media.session.MediaButtonReceiver
+import androidx.annotation.OptIn
+import androidx.camera.camera2.adapter.future
+import androidx.core.graphics.scale
+import androidx.core.net.toUri
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
+import androidx.media3.common.MediaItem
+import androidx.media3.common.MediaMetadata
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
-import androidx.media3.common.Player.PlayWhenReadyChangeReason
+import androidx.media3.common.Player.MediaItemTransitionReason
+import androidx.media3.common.util.BitmapLoader
+import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.DefaultDataSource
 import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.DefaultRenderersFactory.EXTENSION_RENDERER_MODE_OFF
@@ -36,97 +30,81 @@ import androidx.media3.exoplayer.DefaultRenderersFactory.EXTENSION_RENDERER_MODE
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.exoplayer.source.ProgressiveMediaSource
-import com.squareup.picasso3.BitmapTarget
-import com.squareup.picasso3.Picasso.LoadedFrom
+import androidx.media3.session.CacheBitmapLoader
+import androidx.media3.session.CommandButton
+import androidx.media3.session.DefaultMediaNotificationProvider
+import androidx.media3.session.MediaSession
+import androidx.media3.session.MediaSessionService
+import com.google.common.collect.ImmutableList
+import com.google.common.util.concurrent.ListenableFuture
 import dev.ragnarok.filegallery.Constants
 import dev.ragnarok.filegallery.Extra
 import dev.ragnarok.filegallery.R
 import dev.ragnarok.filegallery.getParcelableArrayListExtraCompat
-import dev.ragnarok.filegallery.insertAfter
-import dev.ragnarok.filegallery.media.exo.ExoUtil
 import dev.ragnarok.filegallery.model.Audio
 import dev.ragnarok.filegallery.orZero
 import dev.ragnarok.filegallery.picasso.PicassoInstance
 import dev.ragnarok.filegallery.settings.Settings
-import dev.ragnarok.filegallery.util.AppPerms
+import dev.ragnarok.filegallery.util.AppNotificationChannels
 import dev.ragnarok.filegallery.util.Logger
 import dev.ragnarok.filegallery.util.Utils
-import dev.ragnarok.filegallery.util.Utils.makeMediaItem
 import dev.ragnarok.filegallery.util.coroutines.CancelableJob
 import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.delayTaskFlow
 import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.toMain
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.asCoroutineDispatcher
 import java.lang.ref.WeakReference
+import java.util.concurrent.Executors
 
-class MusicPlaybackService : Service() {
+@OptIn(UnstableApi::class)
+class MusicPlaybackService : MediaSessionService() {
     private val mBinder: IBinder = ServiceStub(this)
-    private var mPlayer: MultiPlayer? = null
-    private var shutdownDelayedDisposable = CancelableJob()
-    var isPlaying = false
-        private set
 
-    /**
-     * Used to track what type of audio focus loss caused the playback to pause
-     */
-    private var errorsCount = 0
     private var onceCloseMiniPlayer = false
     private var mAnyActivityInForeground = false
-    private var mMediaSession: MediaSessionCompat? = null
-    private var mTransportController: MediaControllerCompat.TransportControls? = null
-    private var mPlayPos = -1
-    private var coverAudio: String? = null
-    private var coverBitmap: Bitmap? = null
-    private var albumTitle: String? = null
-    private var mShuffleMode = SHUFFLE_NONE
-    private var mRepeatMode = REPEAT_NONE
-    private var mPlayList: ArrayList<Audio>? = null
-    private var mPlayListOrig: ArrayList<Audio>? = null
-    private var mNotificationHelper: NotificationHelper? = null
-    private var mMediaMetadataCompat: MediaMetadataCompat? = null
-    private var inForeground: Boolean = false
-    private var wakeLock: PowerManager.WakeLock? = null
-    private var mIntentReceiver: BroadcastReceiver? = null
+    private lateinit var mediaSession: MediaSession
+    private lateinit var musicPlayer: MusicPlayer
+    private lateinit var customCommands: List<CommandButton>
+    private var shutdownDelayedDisposable = CancelableJob()
+
+    private val MONO_SCHEDULER =
+        CoroutineScope(Executors.newSingleThreadExecutor().asCoroutineDispatcher())
+
+    override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaSession =
+        mediaSession
+
     override fun onBind(intent: Intent): IBinder {
+        super.onBind(intent)
         if (Constants.IS_DEBUG) Logger.d(TAG, "Service bound, intent = $intent")
-        cancelShutdown()
         mAnyActivityInForeground = false
         return mBinder
     }
 
-    fun goForeground(id: Int, notification: Notification?, mManager: NotificationManager?) {
-        if (notification == null || mManager == null) {
-            return
+    internal fun trunkBitmap(bitmap: Bitmap, maxResolution: Int): Bitmap {
+        if (maxResolution < 0 || bitmap.width <= 0 || bitmap.height <= 0 || bitmap.width <= maxResolution && bitmap.height <= maxResolution) {
+            return bitmap
         }
-        try {
-            if (inForeground && AppPerms.hasNotificationPermissionSimple(this)) {
-                mManager.notify(id, notification)
-                return
-            }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                startForeground(
-                    id,
-                    notification,
-                    ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK
-                )
-            } else {
-                startForeground(id, notification)
-            }
-            inForeground = true
-        } catch (_: Exception) {
+        var mWidth = bitmap.width
+        var mHeight = bitmap.height
+        val mCo = mHeight.coerceAtMost(mWidth).toFloat() / mHeight.coerceAtLeast(mWidth)
+        if (mWidth > mHeight) {
+            mWidth = maxResolution
+            mHeight = (maxResolution * mCo).toInt()
+        } else {
+            mHeight = maxResolution
+            mWidth = (maxResolution * mCo).toInt()
         }
-    }
-
-    @SuppressLint("WrongConstant")
-    fun outForeground(removeNotification: Boolean) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && !removeNotification) {
-            return
+        if (mWidth <= 0 || mHeight <= 0) {
+            return bitmap
         }
-        inForeground = false
-        stopForeground(if (removeNotification) STOP_FOREGROUND_REMOVE else 0)
+        val tmp = bitmap.scale(mWidth, mHeight)
+        bitmap.recycle()
+        return tmp
     }
 
     override fun onUnbind(intent: Intent): Boolean {
         if (Constants.IS_DEBUG) Logger.d(TAG, "Service unbound")
-        if (isPlaying || mAnyActivityInForeground) {
+        if (musicPlayer.isPlaying || mAnyActivityInForeground) {
             Logger.d(
                 TAG,
                 "onUnbind, mIsSupposedToBePlaying || mPausedByTransientLossOfFocus || isPreparing()"
@@ -134,12 +112,12 @@ class MusicPlaybackService : Service() {
             return true
         }
         Logger.d(TAG, "onUnbind, stopSelf(mServiceStartId)")
-        terminate()
+        pauseAllPlayersAndStopSelf()
         return true
     }
 
     override fun onRebind(intent: Intent) {
-        cancelShutdown()
+        super.onRebind(intent)
         mAnyActivityInForeground = false
     }
 
@@ -147,820 +125,220 @@ class MusicPlaybackService : Service() {
     override fun onCreate() {
         if (Constants.IS_DEBUG) Logger.d(TAG, "Creating service")
         super.onCreate()
-        if (wakeLock == null) {
-            val powerManager = getSystemService(POWER_SERVICE) as PowerManager?
-            wakeLock = powerManager?.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, javaClass.name)
-            wakeLock?.setReferenceCounted(false)
-        }
-        mNotificationHelper = NotificationHelper(this)
-        setUpRemoteControlClient()
 
-        IDLE_DELAY = Settings.get().main().musicLifecycle
+        musicPlayer = MusicPlayer(this)
+        mediaSession =
+            MediaSession.Builder(application, musicPlayer.exoplayer)
+                .setId(resources.getString(R.string.app_name))
+                .setSessionActivity(NotificationHelper.getAudioPlayerPendingIntent(this))
+                .setBitmapLoader(CacheBitmapLoader(object : BitmapLoader {
+                    private val limit by lazy { MediaSession.getBitmapDimensionLimit(this@MusicPlaybackService) }
+                    override fun supportsMimeType(p0: String): Boolean {
+                        return true
+                    }
 
-        mPlayer = MultiPlayer(this)
-        val filter = IntentFilter()
-        filter.addAction(SERVICECMD)
-        filter.addAction(TOGGLEPAUSE_ACTION)
-        filter.addAction(SWIPE_DISMISS_ACTION)
-        filter.addAction(PAUSE_ACTION)
-        filter.addAction(STOP_ACTION)
-        filter.addAction(NEXT_ACTION)
-        filter.addAction(PREVIOUS_ACTION)
-        filter.addAction(REPEAT_ACTION)
-        filter.addAction(SHUFFLE_ACTION)
+                    override fun decodeBitmap(p0: ByteArray): ListenableFuture<Bitmap> {
+                        return MONO_SCHEDULER.future {
+                            try {
+                                trunkBitmap(
+                                    BitmapFactory.decodeByteArray(
+                                        p0,
+                                        0,
+                                        p0.size,
+                                        BitmapFactory.Options().apply {
+                                            outConfig = Bitmap.Config.ARGB_8888
+                                            inMutable = true
+                                        }), limit
+                                )
+                            } catch (_: Exception) {
+                                BitmapFactory.decodeResource(
+                                    resources, R.drawable.generic_audio_nowplaying_service
+                                )
+                            }
+                        }
+                    }
 
-        mIntentReceiver = object : BroadcastReceiver() {
-            override fun onReceive(context: Context, intent: Intent) {
-                handleCommandIntent(intent)
-            }
-        }
-        ContextCompat.registerReceiver(
-            this,
-            mIntentReceiver,
-            filter,
-            ContextCompat.RECEIVER_EXPORTED
+                    override fun loadBitmap(p0: Uri): ListenableFuture<Bitmap> {
+                        return MONO_SCHEDULER.future {
+                            if (p0.toString() == "file://null") {
+                                BitmapFactory.decodeResource(
+                                    resources, R.drawable.generic_audio_nowplaying_service
+                                )
+                            } else {
+                                try {
+                                    trunkBitmap(
+                                        PicassoInstance.with().load(p0).get()?.copy(
+                                            Bitmap.Config.ARGB_8888,
+                                            true
+                                        ) ?: BitmapFactory.decodeResource(
+                                            resources, R.drawable.generic_audio_nowplaying_service
+                                        ), limit
+                                    )
+                                } catch (_: Exception) {
+                                    BitmapFactory.decodeResource(
+                                        resources, R.drawable.generic_audio_nowplaying_service
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                }))
+                .build()
+
+        setMediaNotificationProvider(
+            DefaultMediaNotificationProvider.Builder(this)
+                .setChannelName(R.string.audio_channel)
+                .setChannelId(AppNotificationChannels.AUDIO_CHANNEL_ID)
+                .setNotificationId(
+                    NotificationHelper.FILE_GALLERY_MUSIC_SERVICE
+                ).build().apply {
+                    setSmallIcon(R.drawable.song)
+                }
         )
+        addSession(mediaSession)
 
-        // Listen for the idle state
-        scheduleDelayedShutdown()
+        customCommands =
+            listOf(
+                CommandButton.Builder(CommandButton.ICON_SHUFFLE_OFF)
+                    .setDisplayName(getString(R.string.shuffle))
+                    .setPlayerCommand(Player.COMMAND_SET_SHUFFLE_MODE, true)
+                    .build(),
+                CommandButton.Builder(CommandButton.ICON_SHUFFLE_ON)
+                    .setDisplayName(getString(R.string.shuffle))
+                    .setPlayerCommand(Player.COMMAND_SET_SHUFFLE_MODE, false)
+                    .build(),
+                CommandButton.Builder(CommandButton.ICON_REPEAT_OFF)
+                    .setDisplayName(getString(R.string.repeat_mode))
+                    .setPlayerCommand(Player.COMMAND_SET_REPEAT_MODE, Player.REPEAT_MODE_ALL)
+                    .build(),
+                CommandButton.Builder(CommandButton.ICON_REPEAT_ALL)
+                    .setDisplayName(getString(R.string.repeat_mode))
+                    .setPlayerCommand(Player.COMMAND_SET_REPEAT_MODE, Player.REPEAT_MODE_ONE)
+                    .build(),
+                CommandButton.Builder(CommandButton.ICON_REPEAT_ONE)
+                    .setDisplayName(getString(R.string.repeat_mode))
+                    .setPlayerCommand(Player.COMMAND_SET_REPEAT_MODE, Player.REPEAT_MODE_OFF)
+                    .build(),
+            )
+
+        refreshMediaButtonCustomLayout()
         notifyChange(META_CHANGED)
+        scheduleDelayedShutdown()
     }
-
-    private fun setUpRemoteControlClient() {
-        mMediaSession =
-            MediaSessionCompat(application, resources.getString(R.string.app_name), null, null)
-        val playbackStateCompat = PlaybackStateCompat.Builder()
-            .setActions(
-                PlaybackStateCompat.ACTION_SEEK_TO or
-                        PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS or
-                        PlaybackStateCompat.ACTION_SKIP_TO_NEXT or
-                        PlaybackStateCompat.ACTION_PLAY or
-                        PlaybackStateCompat.ACTION_PAUSE or
-                        PlaybackStateCompat.ACTION_STOP
-            )
-            .setState(
-                if (isPlaying) PlaybackStateCompat.STATE_PLAYING else PlaybackStateCompat.STATE_PAUSED,
-                position(),
-                1.0f
-            )
-            .build()
-        mMediaSession?.setPlaybackState(playbackStateCompat)
-        mMediaSession?.setCallback(mMediaSessionCallback)
-        mMediaSession?.isActive = true
-        updateRemoteControlClient(META_CHANGED)
-        mTransportController = mMediaSession?.controller?.transportControls
-    }
-
-    private val mMediaSessionCallback: MediaSessionCompat.Callback =
-        object : MediaSessionCompat.Callback() {
-            override fun onPlay() {
-                super.onPlay()
-                play()
-            }
-
-            override fun onPause() {
-                super.onPause()
-                pause()
-            }
-
-            override fun onSkipToNext() {
-                super.onSkipToNext()
-                gotoNext(true)
-            }
-
-            override fun onSkipToPrevious() {
-                super.onSkipToPrevious()
-                prev()
-            }
-
-            override fun onStop() {
-                super.onStop()
-                pause()
-                Logger.d(javaClass.simpleName, "Stopping services. onStop()")
-                terminate()
-            }
-
-            override fun onSeekTo(pos: Long) {
-                super.onSeekTo(pos)
-                seek(pos)
-            }
-        }
 
     override fun onDestroy() {
-        shutdownDelayedDisposable.cancel()
-        wakeLock?.release()
-        wakeLock = null
         if (Constants.IS_DEBUG) Logger.d(TAG, "Destroying service")
-        val audioEffectsIntent = Intent(AudioEffect.ACTION_CLOSE_AUDIO_EFFECT_CONTROL_SESSION)
-        audioEffectsIntent.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, audioSessionId)
-        audioEffectsIntent.putExtra(AudioEffect.EXTRA_PACKAGE_NAME, packageName)
-        sendBroadcast(audioEffectsIntent)
-        mPlayer?.release()
-        mPlayer = null
-        mMediaSession?.release()
-        mMediaSession = null
-        mIntentReceiver?.let {
-            try {
-                unregisterReceiver(it)
-            } catch (e: Exception) {
-                if (Constants.IS_DEBUG) {
-                    e.printStackTrace()
-                }
-            }
-        }
-        mIntentReceiver = null
-        mNotificationHelper?.killNotification()
-        mNotificationHelper = null
+        shutdownDelayedDisposable.cancel()
+        mediaSession.release()
+        musicPlayer.release()
         super.onDestroy()
     }
+
+    internal fun scheduleDelayedShutdown() {
+        val delay = Settings.get().main().musicLifecycle
+        shutdownDelayedDisposable.cancel()
+        if (Constants.IS_DEBUG) Log.v(TAG, "Scheduling shutdown in $delay ms")
+        shutdownDelayedDisposable.set(
+            delayTaskFlow(delay.toLong())
+                .toMain { pauseAllPlayersAndStopSelf() })
+    }
+
+    internal fun notifyChange(what: String) {
+        if (Constants.IS_DEBUG) Logger.d(TAG, "notifyChange: what = $what")
+        MusicPlaybackController.publishFromServiceState(what)
+    }
+
+    internal fun getRepeatCommand() =
+        when (musicPlayer.repeatMode) {
+            Player.REPEAT_MODE_OFF -> customCommands[2]
+            Player.REPEAT_MODE_ALL -> customCommands[3]
+            Player.REPEAT_MODE_ONE -> customCommands[4]
+            else -> throw IllegalArgumentException()
+        }
+
+    internal fun getShufflingCommand() =
+        if (musicPlayer.shuffleMode)
+            customCommands[1]
+        else
+            customCommands[0]
+
+    internal fun refreshMediaButtonCustomLayout() {
+        mediaSession.setMediaButtonPreferences(
+            ImmutableList.of(
+                getRepeatCommand(),
+                getShufflingCommand()
+            )
+        )
+    }
+
+    internal val audioSessionId: Int
+        get() {
+            synchronized(this) { return musicPlayer.lastAudioSessionId }
+        }
+
+    internal var shuffleMode: Boolean
+        get() = musicPlayer.shuffleMode
+        set(shuffleMode) {
+            synchronized(this) {
+                if (musicPlayer.shuffleMode == shuffleMode) {
+                    return
+                }
+                musicPlayer.shuffleMode = shuffleMode
+                notifyChange(SHUFFLE_MODE_CHANGED)
+                refreshMediaButtonCustomLayout()
+            }
+        }
+
+    internal var repeatMode: Int
+        get() = musicPlayer.repeatMode
+        set(repeatMode) {
+            synchronized(this) {
+                musicPlayer.repeatMode = repeatMode
+                notifyChange(REPEAT_MODE_CHANGED)
+                refreshMediaButtonCustomLayout()
+            }
+        }
 
     /**
      * {@inheritDoc}
      */
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        val ret = super.onStartCommand(intent, flags, startId)
         if (Constants.IS_DEBUG) Logger.d(TAG, "Got new intent $intent, startId = $startId")
-        intent?.let {
-            handleCommandIntent(it)
-            MediaButtonReceiver.handleIntent(mMediaSession, it)
-        }
-        scheduleDelayedShutdown()
-        return START_STICKY
+
+        handleCommandIntent(intent)
+        return ret
     }
 
-    internal fun terminate() {
-        if (!stopSelfResult(-1)) {
-            onDestroy()
-        }
-    }
-
-    internal fun releaseServiceUiAndStop() {
-        if (isPlaying || mAnyActivityInForeground) {
-            return
-        }
-        if (Constants.IS_DEBUG) Logger.d(TAG, "Nothing is playing anymore, releasing notification")
-        terminate()
-    }
-
-    internal fun handleCommandIntent(intent: Intent) {
-        val action = intent.action
-        val command = if (SERVICECMD == action) intent.getStringExtra(CMDNAME) else null
+    internal fun handleCommandIntent(intent: Intent?) {
+        val action = intent?.action ?: return
         if (Constants.IS_DEBUG) Logger.d(
             TAG,
-            "handleCommandIntent: action = $action, command = $command"
+            "handleCommandIntent: action = $action"
         )
-        if (SWIPE_DISMISS_ACTION == action) {
-            terminate()
-        }
-        if (CMDNEXT == command || NEXT_ACTION == action) {
-            mTransportController?.skipToNext()
-        }
-        if (CMDPREVIOUS == command || PREVIOUS_ACTION == action) {
-            mTransportController?.skipToPrevious()
-        }
-        if (CMDTOGGLEPAUSE == command || TOGGLEPAUSE_ACTION == action) {
-            if (isPlaying) {
-                mTransportController?.pause()
-            } else {
-                mTransportController?.play()
-            }
-        }
-        if (CMDPAUSE == command || PAUSE_ACTION == action) {
-            mTransportController?.pause()
-        }
-        if (CMDPLAY == command) {
-            play()
-        }
-        if (CMDSTOP == command || STOP_ACTION == action) {
-            mTransportController?.pause()
-            seek(0)
-            releaseServiceUiAndStop()
-        }
-        if (REPEAT_ACTION == action) {
-            cycleRepeat()
-        }
-        if (SHUFFLE_ACTION == action) {
-            cycleShuffle()
-        }
-        if (CMDPLAYLIST == action) {
-            val apiAudios: ArrayList<Audio>? =
+        if (ACTION_PLAYLIST == action) {
+            val audios: ArrayList<Audio>? =
                 intent.getParcelableArrayListExtraCompat(Extra.AUDIOS)
             val position = intent.getIntExtra(Extra.POSITION, 0)
             val forceShuffle = intent.getIntExtra(Extra.SHUFFLE_MODE, SHUFFLE_NONE)
-            shuffleMode = forceShuffle
-            if (apiAudios != null)
-                open(apiAudios, position)
-        }
-    }
-
-    /**
-     * Updates the notification, considering the current play and activity state
-     */
-    private fun updateNotification() {
-        mNotificationHelper?.buildNotification(
-            this,
-            artistName,
-            trackName,
-            isPlaying,
-            Utils.firstNonNull(
-                coverBitmap,
-                BitmapFactory.decodeResource(resources, R.drawable.generic_audio_nowplaying_service)
-            ),
-            mMediaSession?.sessionToken
-        )
-    }
-
-    private fun scheduleDelayedShutdown() {
-        shutdownDelayedDisposable.cancel()
-        if (Constants.IS_DEBUG) Log.v(TAG, "Scheduling shutdown in $IDLE_DELAY ms")
-        shutdownDelayedDisposable.set(
-            delayTaskFlow(IDLE_DELAY.toLong())
-                .toMain { terminate() })
-    }
-
-    private fun cancelShutdown() {
-        if (Constants.IS_DEBUG) Logger.d(
-            TAG,
-            "Cancelling delayed shutdown"
-        )
-        shutdownDelayedDisposable.cancel()
-    }
-
-    /**
-     * Stops playback
-     *
-     * @param goToIdle True to go to the idle state, false otherwise
-     */
-    private fun stop(goToIdle: Boolean) {
-        if (Constants.IS_DEBUG) Logger.d(TAG, "Stopping playback, goToIdle = $goToIdle")
-        if (mPlayer?.isInitialized == true) {
-            mPlayer?.stop()
-        }
-        if (goToIdle) {
-            scheduleDelayedShutdown()
-            isPlaying = false
-        } else {
-            outForeground(false) //надо подумать
-        }
-    }
-
-    internal val isInitialized: Boolean
-        get() = mPlayer?.isInitialized == true
-
-    internal val isPreparing: Boolean
-        get() = mPlayer?.isPreparing == true
-
-    /**
-     * Called to open a new file as the current track and prepare the next for
-     * playback
-     */
-    internal fun playCurrentTrack(UpdateMeta: Boolean) {
-        synchronized(this) {
-            Logger.d(TAG, "playCurrentTrack, mPlayListLen: " + Utils.safeCountOf(mPlayList))
-            if (mPlayList.isNullOrEmpty()) {
-                return
+            if (audios != null) {
+                musicPlayer.setSources(audios)
+                shuffleMode = forceShuffle != 0
+                musicPlayer.playAt(position)
             }
-            stop(false)
-            mPlayList?.let {
-                if (it.size - 1 < mPlayPos) {
-                    mPlayPos = 0
-                }
-            }
-            val current = mPlayList?.get(mPlayPos)
-            openFile(current, UpdateMeta)
         }
     }
 
-    /**
-     * @param force True to force the player onto the track next, false
-     * otherwise.
-     * @return The next position to play.
-     */
-    private fun getNextPosition(force: Boolean): Int {
-        if (!force && mRepeatMode == REPEAT_CURRENT) {
-            return mPlayPos.coerceAtLeast(0)
-        }
-        return if (mPlayPos >= Utils.safeCountOf(mPlayList) - 1) {
-            if (mRepeatMode == REPEAT_NONE && !force) {
-                return -1
-            }
-            if (mRepeatMode == REPEAT_ALL || force) {
-                0
-            } else -1
-        } else {
-            mPlayPos + 1
-        }
-    }
-
-    /**
-     * Notify the change-receivers that something has changed.
-     */
-    internal fun notifyChange(what: String) {
-        if (Constants.IS_DEBUG) Logger.d(TAG, "notifyChange: what = $what")
-        updateRemoteControlClient(what)
-        if (what == POSITION_CHANGED) {
-            return
-        }
-        MusicPlaybackController.publishFromServiceState(what)
-        if (what == PLAYSTATE_CHANGED) {
-            mNotificationHelper?.updatePlayState(isPlaying)
-        }
-    }
-
-    /**
-     * Updates the lockscreen controls.
-     *
-     * @param what The broadcast
-     */
-    private fun updateRemoteControlClient(what: String) {
-        when (what) {
-            PLAYSTATE_CHANGED, POSITION_CHANGED -> {
-                val playState =
-                    if (isPlaying) PlaybackStateCompat.STATE_PLAYING else PlaybackStateCompat.STATE_PAUSED
-                val pmc = PlaybackStateCompat.Builder()
-                    .setState(playState, position(), 1.0f)
-                    .setActions(
-                        PlaybackStateCompat.ACTION_SEEK_TO or
-                                PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS or
-                                PlaybackStateCompat.ACTION_SKIP_TO_NEXT or
-                                PlaybackStateCompat.ACTION_PLAY or
-                                PlaybackStateCompat.ACTION_PAUSE or
-                                PlaybackStateCompat.ACTION_STOP
-                    )
-                    .build()
-                mMediaSession?.setPlaybackState(pmc)
-            }
-
-            META_CHANGED -> fetchCoverAndUpdateMetadata()
-        }
-    }
-
-    private fun fetchCoverAndUpdateMetadata() {
-        updateMetadata()
-        if (coverBitmap != null || albumCover.isNullOrEmpty()) {
-            return
-        }
-        PicassoInstance.with()
-            .load(albumCover)
-            .config(Bitmap.Config.ARGB_8888)
-            .into(object : BitmapTarget {
-                override fun onBitmapLoaded(bitmap: Bitmap, from: LoadedFrom) {
-                    coverBitmap = bitmap
-                    updateMetadata()
-                }
-
-                override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
-                }
-
-                override fun onBitmapFailed(e: Exception, errorDrawable: Drawable?) {
-                }
-
-            })
-    }
-
-    internal fun updateMetadata() {
-        val tmpCoverBitmap = if (coverBitmap?.isRecycled == false) coverBitmap?.copy(
-            Bitmap.Config.ARGB_8888,
-            true
-        ) else null
-        mMediaMetadataCompat = MediaMetadataCompat.Builder()
-            .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, artistName)
-            .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, albumName)
-            .putString(MediaMetadataCompat.METADATA_KEY_TITLE, trackName)
-            .putBitmap(
-                MediaMetadataCompat.METADATA_KEY_ART, Utils.firstNonNull(
-                    tmpCoverBitmap, BitmapFactory.decodeResource(
-                        resources, R.drawable.generic_audio_nowplaying_service
-                    )
-                )
-            )
-            .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, duration())
-            .build()
-        mMediaSession?.setMetadata(mMediaMetadataCompat)
-        updateNotification()
-    }
-
-    /**
-     * Opens a file and prepares it for playback
-     *
-     * @param audio The path of the file to open
-     */
-    fun openFile(audio: Audio?, UpdateMeta: Boolean) {
-        synchronized(this) {
-            if (audio == null) {
-                stop(true)
-                return
-            }
-
-            if (UpdateMeta) {
-                errorsCount = 0
-                coverAudio = null
-                albumTitle = null
-                coverBitmap = null
-                onceCloseMiniPlayer = false
-            }
-            mPlayer?.setDataSource(audio)
-            if (audio.thumb_image != null && UpdateMeta) {
-                coverAudio = audio.thumb_image
-            }
-            if (UpdateMeta) {
-                albumTitle = audio.artist
-            }
-            fetchCoverAndUpdateMetadata()
-            notifyChange(META_CHANGED)
-        }
-    }
-
-    /**
-     * Returns the audio session ID
-     *
-     * @return The current media player audio session ID
-     */
-    val audioSessionId: Int
-        get() {
-            synchronized(this) { return mPlayer?.audioSessionId ?: -1 }
-        }
-
-    /**
-     * Returns the audio session ID
-     *
-     * @return The current media player audio session ID
-     */
-    val bufferPercent: Int
-        get() {
-            synchronized(this) { return mPlayer?.bufferPercent.orZero() }
-        }
-
-    fun doNotDestroyWhenActivityRecreated() {
+    internal fun doNotDestroyWhenActivityRecreated() {
         synchronized(this) {
             mAnyActivityInForeground = true
         }
     }
 
-    val bufferPos: Long
-        get() {
-            synchronized(this) { return mPlayer?.bufferPos.orZero() }
-        }
-
-    var shuffleMode: Int
-        get() = mShuffleMode
-        set(shufflemode) {
-            synchronized(this) {
-                if (mShuffleMode == shufflemode && Utils.safeCountOf(mPlayList) > 0) {
-                    return
-                }
-                mShuffleMode = shufflemode
-                notifyChange(SHUFFLEMODE_CHANGED)
-                if (mShuffleMode == SHUFFLE) {
-                    mPlayList?.shuffle()
-                    skip(0, true)
-                } else {
-                    val ps = mPlayListOrig?.indexOf(mPlayList?.get(mPlayPos))
-                    ps?.let {
-                        mPlayPos = if (it < 0) {
-                            mPlayList?.get(mPlayPos)?.let { it1 -> mPlayListOrig?.add(0, it1) }
-                            0
-                        } else {
-                            it
-                        }
-                    }
-                    mPlayList?.clear()
-                    mPlayListOrig?.let { mPlayList?.addAll(it) }
-                    notifyChange(META_CHANGED)
-                }
-            }
-        }
-
-    var repeatMode: Int
-        get() = mRepeatMode
-        set(repeatmode) {
-            synchronized(this) {
-                mRepeatMode = repeatmode
-                notifyChange(REPEATMODE_CHANGED)
-            }
-        }
-
-    val queuePosition: Int
-        get() {
-            synchronized(this) { return mPlayPos }
-        }
-
-    val path: String?
-        get() {
-            synchronized(this) {
-                val apiAudio = currentTrack ?: return null
-                return apiAudio.url
-            }
-        }
-
-    val albumName: String?
-        get() {
-            synchronized(this) {
-                return if (currentTrack == null) {
-                    null
-                } else albumTitle
-            }
-        }
-
-    /**
-     * Returns the album cover
-     *
-     * @return url
-     */
-
-    internal val albumCover: String?
-        get() {
-            synchronized(this) {
-                return if (currentTrack == null) {
-                    null
-                } else coverAudio
-            }
-        }
-
-    val trackName: String?
-        get() {
-            synchronized(this) {
-                val current = currentTrack ?: return null
-                return current.title
-            }
-        }
-
-    val artistName: String?
-        get() {
-            synchronized(this) {
-                val current = currentTrack ?: return null
-                return current.artist
-            }
-        }
-
-    val currentTrack: Audio?
-        get() {
-            synchronized(this) {
-                mPlayList?.let {
-                    if (mPlayPos >= 0 && it.size > mPlayPos) {
-                        return it[mPlayPos]
-                    }
-                }
-            }
-            return null
-        }
-
-    val currentTrackPos: Int
-        get() {
-            synchronized(this) {
-                mPlayList?.let {
-                    if (mPlayPos >= 0 && it.size > mPlayPos) {
-                        return mPlayPos
-                    }
-                }
-            }
-            return -1
-        }
-
-    fun seek(position: Long): Long {
-        var positiontemp = position
-        mPlayer?.let {
-            if (it.isInitialized) {
-                if (positiontemp < 0) {
-                    positiontemp = 0
-                } else if (positiontemp > it.duration()) {
-                    positiontemp = it.duration()
-                }
-                val result = it.seek(positiontemp)
-                notifyChange(POSITION_CHANGED)
-                return result
-            }
-        }
-        return -1
-    }
-
-    fun position(): Long {
-        return if (mPlayer?.isInitialized == true) {
-            mPlayer?.position() ?: -1
-        } else -1
-    }
-
-    fun duration(): Long {
-        return if (mPlayer?.isInitialized == true) {
-            mPlayer?.duration() ?: -1
-        } else -1
-    }
-
-    val queue: List<Audio>
-        get() {
-            synchronized(this) {
-                val len = Utils.safeCountOf(mPlayList)
-                val list: MutableList<Audio> = ArrayList(len)
-                for (i in 0 until len) {
-                    mPlayList?.let {
-                        list.add(i, it[i])
-                    }
-                }
-                return list
-            }
-        }
-
-    private val currentTrackNotSyncPos: Int
-        get() {
-            mPlayList?.let {
-                if (mPlayPos >= 0 && it.size > mPlayPos) {
-                    return mPlayPos
-                }
-            }
-            return -1
-        }
-
-    fun canPlayAfterCurrent(audio: Audio): Boolean {
-        synchronized(this) {
-            val current = currentTrackNotSyncPos
-            return !(mPlayList.isNullOrEmpty() || current == -1 || mPlayList?.get(current) == audio)
-        }
-    }
-
-    fun playAfterCurrent(audio: Audio) {
-        synchronized(this) {
-            val current = currentTrackNotSyncPos
-            if (mPlayList.isNullOrEmpty() || current == -1 || mPlayList?.get(current) == audio) {
-                return
-            }
-            mPlayList?.insertAfter(current, audio)
-            notifyChange(QUEUE_CHANGED)
-        }
-    }
-
-    /**
-     * Opens a list for playback
-     *
-     * @param list     The list of tracks to open
-     * @param position The position to start playback at
-     */
-    fun open(list: List<Audio>, position: Int) {
-        synchronized(this) {
-            val oldAudio = currentTrack
-            mPlayList = ArrayList(list)
-            if (mShuffleMode == SHUFFLE)
-                mPlayList?.shuffle()
-            mPlayListOrig = ArrayList(list)
-            notifyChange(QUEUE_CHANGED)
-            mPlayPos = if (position >= 0) {
-                position
-            } else {
-                0
-            }
-            playCurrentTrack(true)
-            if (oldAudio !== currentTrack) {
-                notifyChange(META_CHANGED)
-            }
-        }
-    }
-
-    fun play() {
-        mPlayer?.let {
-            if (it.isInitialized) {
-                val duration = it.duration()
-                if (mRepeatMode != REPEAT_CURRENT && duration > 2000 && it.position() >= duration - 2000) {
-                    gotoNext(false)
-                }
-                it.start()
-                if (!isPlaying) {
-                    isPlaying = true
-                    notifyChange(PLAYSTATE_CHANGED)
-                }
-                cancelShutdown()
-                fetchCoverAndUpdateMetadata()
-            }
-        }
-    }
-
-    /**
-     * Temporarily pauses playback.
-     */
-    fun pause() {
-        if (Constants.IS_DEBUG) Logger.d(TAG, "Pausing playback")
-        synchronized(this) {
-            if (isPlaying) {
-                mPlayer?.pause()
-                scheduleDelayedShutdown()
-                isPlaying = false
-                notifyChange(PLAYSTATE_CHANGED)
-            }
-        }
-    }
-
-    private fun pauseNonSync() {
-        if (Constants.IS_DEBUG) Logger.d(TAG, "Pausing playback")
-        if (isPlaying) {
-            mPlayer?.pause()
-            scheduleDelayedShutdown()
-            isPlaying = false
-            notifyChange(PLAYSTATE_CHANGED)
-        }
-    }
-
-    /**
-     * Changes from the current track to the next track
-     */
-    fun gotoNext(force: Boolean): Boolean {
-        if (Constants.IS_DEBUG) Logger.d(TAG, "Going to next track")
-        synchronized(this) {
-            if (Utils.safeCountOf(mPlayList) <= 0) {
-                if (Constants.IS_DEBUG) Logger.d(TAG, "No play queue")
-                scheduleDelayedShutdown()
-                return true
-            }
-            val pos = getNextPosition(force)
-            if (Constants.IS_DEBUG) Logger.d(TAG, pos.toString())
-            if (pos < 0) {
-                seek(0)
-                pauseNonSync()
-                return false
-            }
-            mPlayPos = pos
-            stop(false)
-            mPlayPos = pos
-            playCurrentTrack(true)
-            notifyChange(META_CHANGED)
-        }
-        return true
-    }
-
-    fun skip(pos: Int, force: Boolean) {
-        if (!force && pos == currentTrackPos)
-            return
-        if (Constants.IS_DEBUG) Logger.d(TAG, "Going to next track")
-        synchronized(this) {
-            if (Utils.safeCountOf(mPlayList) <= 0) {
-                if (Constants.IS_DEBUG) Logger.d(TAG, "No play queue")
-                scheduleDelayedShutdown()
-                return
-            }
-            if (Constants.IS_DEBUG) Logger.d(TAG, pos.toString())
-            if (pos < 0) {
-                seek(0)
-                pauseNonSync()
-                return
-            }
-            mPlayPos = pos
-            stop(false)
-            mPlayPos = pos
-            playCurrentTrack(true)
-            notifyChange(META_CHANGED)
-        }
-    }
-
-    /**
-     * Changes from the current track to the previous played track
-     */
-    fun prev() {
-        if (Constants.IS_DEBUG) Logger.d(TAG, "Going to previous track")
-        synchronized(this) {
-            if (mPlayPos > 0) {
-                mPlayPos--
-            } else {
-                mPlayPos = Utils.safeCountOf(mPlayList) - 1
-            }
-            stop(false)
-            playCurrentTrack(true)
-            notifyChange(META_CHANGED)
-        }
-    }
-
-    private fun cycleRepeat() {
-        when (mRepeatMode) {
-            REPEAT_NONE -> repeatMode = REPEAT_ALL
-            REPEAT_ALL -> {
-                repeatMode = REPEAT_CURRENT
-                if (mShuffleMode != SHUFFLE_NONE) {
-                    shuffleMode = SHUFFLE_NONE
-                }
-            }
-
-            else -> repeatMode = REPEAT_NONE
-        }
-    }
-
-    private fun cycleShuffle() {
-        when (mShuffleMode) {
-            SHUFFLE -> shuffleMode = SHUFFLE_NONE
-            SHUFFLE_NONE -> {
-                shuffleMode = SHUFFLE
-                if (mRepeatMode == REPEAT_CURRENT) {
-                    repeatMode = REPEAT_ALL
-                }
-            }
-        }
-    }
-
-    /**
-     * Called when one of the lists should refresh or requery.
-     */
-    fun refresh() {
-        notifyChange(REFRESH)
-    }
-
-    @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
-    private class MultiPlayer(service: MusicPlaybackService) {
+    internal class MusicPlayer(service: MusicPlaybackService) {
         val mService: WeakReference<MusicPlaybackService> = WeakReference(service)
-        var mCurrentMediaPlayer: ExoPlayer = ExoPlayer.Builder(
+        val exoplayer: ExoPlayer = ExoPlayer.Builder(
             service, DefaultRenderersFactory(service)
                 .setExtensionRendererMode(
                     when (Settings.get().main().fFmpegPlugin) {
@@ -971,116 +349,211 @@ class MusicPlaybackService : Service() {
                     }
                 )
         ).build()
-        var isInitialized = false
         var isPreparing = false
+            private set
+        var isPrepared = false
+            private set
+        var isPlaying = false
+            private set
+        var lastAudioSessionId = C.AUDIO_SESSION_ID_UNSET
+
+        private var errorsCount = 0
+        private var hasErrorPlayback = false
         val factory = Utils.getExoPlayerFactory(
             Constants.USER_AGENT
         )
         val factoryLocal =
             DefaultDataSource.Factory(service)
 
-        /**
-         * @param remoteUrl The path of the file, or the http/rtsp URL of the stream
-         * you want to play
-         * return True if the `player` has been prepared and is
-         * ready to play, false otherwise
-         */
-        fun setDataSource(remoteUrl: String?) {
-            isPreparing = true
+        internal fun makeMediaSource(audio: Audio): MediaSource {
             val url = Utils.firstNonEmptyString(
-                remoteUrl,
+                audio.url,
                 "file:///android_asset/audio_error.ogg"
             )
-            val mediaSource: MediaSource =
-                if (url?.contains("file://") == true || url?.contains("content://") == true) {
-                    ProgressiveMediaSource.Factory(factoryLocal)
-                        .createMediaSource(makeMediaItem(url))
-                } else {
-                    ProgressiveMediaSource.Factory(
-                        factory
-                    ).createMediaSource(makeMediaItem(url))
-                }
-            mCurrentMediaPlayer.setMediaSource(mediaSource)
-            mCurrentMediaPlayer.prepare()
-            mCurrentMediaPlayer.setAudioAttributes(
+            val mediaItem =
+                MediaItem.Builder().setUri(url).setMediaId("${audio.id}_${audio.ownerId}")
+                    .setTag(audio)
+                    .setMediaMetadata(
+                        MediaMetadata.Builder().setTitle(audio.title).setArtist(audio.artist)
+                            .setAlbumTitle(audio.artist)
+                            .setArtworkUri(audio.thumb_image?.toUri() ?: "file://null".toUri())
+                            .build()
+                    )
+                    .build()
+            return if (url?.contains("file://") == true || url?.contains("content://") == true) {
+                ProgressiveMediaSource.Factory(factoryLocal)
+                    .createMediaSource(mediaItem)
+            } else {
+                ProgressiveMediaSource.Factory(
+                    factory
+                ).createMediaSource(mediaItem)
+            }
+        }
+
+        fun setSources(audios: List<Audio>) {
+            errorsCount = 0
+            hasErrorPlayback = false
+            isPreparing = true
+            val sources = ArrayList<MediaSource>(audios.size)
+            for (i in audios) {
+                sources.add(makeMediaSource(i))
+            }
+            exoplayer.setMediaSources(sources)
+            exoplayer.prepare()
+            exoplayer.setAudioAttributes(
                 AudioAttributes.Builder().setContentType(C.AUDIO_CONTENT_TYPE_MUSIC)
                     .setUsage(C.USAGE_MEDIA).build(), true
             )
-            val intent = Intent(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION)
-            intent.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, audioSessionId)
-            intent.putExtra(AudioEffect.EXTRA_PACKAGE_NAME, mService.get()?.packageName)
-            mService.get()?.sendBroadcast(intent)
-            mService.get()?.notifyChange(PLAYSTATE_CHANGED)
         }
 
-        fun setDataSource(audio: Audio) {
-            setDataSource(audio.url)
+        fun insertSourceAfterCurrent(audio: Audio) {
+            exoplayer.addMediaSource(exoplayer.currentMediaItemIndex, makeMediaSource(audio))
         }
 
-        fun start() {
-            ExoUtil.startPlayer(mCurrentMediaPlayer)
+        fun play() {
+            if (isPrepared) {
+                exoplayer.play()
+            }
+        }
+
+        fun prev() {
+            exoplayer.seekToPrevious()
+        }
+
+        fun next() {
+            exoplayer.seekToNext()
+        }
+
+        fun playAt(position: Int) {
+            exoplayer.seekTo(position, 0)
+            exoplayer.play()
         }
 
         fun stop() {
-            this.isInitialized = false
             isPreparing = false
-            mCurrentMediaPlayer.stop()
-            mCurrentMediaPlayer.clearMediaItems()
+            isPrepared = false
+            isPlaying = false
+            exoplayer.stop()
         }
 
         fun release() {
             stop()
-            mCurrentMediaPlayer.release()
+            exoplayer.clearMediaItems()
+            exoplayer.release()
+            mService.get()?.broadcastAudioSessionClose()
         }
 
         fun pause() {
-            ExoUtil.pausePlayer(mCurrentMediaPlayer)
+            if (isPlaying) {
+                exoplayer.pause()
+            }
         }
 
-        fun duration(): Long {
-            return mCurrentMediaPlayer.duration
-        }
+        val duration: Long
+            get() = if (exoplayer.duration == C.TIME_UNSET) -1 else exoplayer.duration
 
-        fun position(): Long {
-            return mCurrentMediaPlayer.currentPosition
-        }
+        val position: Long
+            get() = if (exoplayer.currentPosition == C.TIME_UNSET) -1 else exoplayer.currentPosition
 
         fun seek(whereto: Long): Long {
-            mCurrentMediaPlayer.seekTo(whereto)
+            exoplayer.seekTo(whereto)
             return whereto
         }
 
-        val audioSessionId: Int
-            get() = mCurrentMediaPlayer.audioSessionId
-
         val bufferPercent: Int
-            get() = mCurrentMediaPlayer.bufferedPercentage
+            get() = exoplayer.bufferedPercentage
 
         val bufferPos: Long
-            get() = mCurrentMediaPlayer.bufferedPosition
+            get() = exoplayer.bufferedPosition
 
-        /**
-         * Constructor of `MultiPlayer`
-         */
+        val itemIndex: Int
+            get() = exoplayer.currentMediaItemIndex
+
+        val queueIndex: Int
+            get() {
+                if (exoplayer.shuffleModeEnabled) {
+                    val s = getShuffleOrderIndexes()
+                    for (i in 0 until s.size) {
+                        if (s[i] == exoplayer.currentMediaItemIndex) {
+                            return i
+                        }
+                    }
+                    return 0
+                }
+                return exoplayer.currentMediaItemIndex
+            }
+
+        val currentAudio: Audio?
+            get() = exoplayer.currentMediaItem?.localConfiguration?.tag as? Audio
+
+        fun getShuffleOrderIndexes(): List<Int> {
+            val result = mutableListOf<Int>()
+            if (exoplayer.shuffleModeEnabled) {
+                val shuffleOrder = exoplayer.shuffleOrder
+                var index = shuffleOrder.firstIndex
+
+                while (index != C.INDEX_UNSET) {
+                    result.add(index)
+                    index = shuffleOrder.getNextIndex(index)
+                }
+            } else {
+                for (i in 0 until exoplayer.mediaItemCount) {
+                    result.add(i)
+                }
+            }
+
+            return result
+        }
+
+        val currentAudios: List<Audio>
+            get() {
+                val ret = ArrayList<Audio>(exoplayer.mediaItemCount)
+                for (i in getShuffleOrderIndexes()) {
+                    val audio = exoplayer.getMediaItemAt(i).localConfiguration?.tag as? Audio
+                    if (audio != null) {
+                        ret.add(audio)
+                    }
+                }
+                return ret
+            }
+
+        val currentMediaItem: MediaItem?
+            get() = exoplayer.currentMediaItem
+
+        var shuffleMode: Boolean
+            get() = exoplayer.shuffleModeEnabled
+            set(shuffleMode) {
+                if (exoplayer.shuffleModeEnabled == shuffleMode) {
+                    return
+                }
+                exoplayer.shuffleModeEnabled = shuffleMode
+            }
+
+        var repeatMode: Int
+            get() = exoplayer.repeatMode
+            set(repeatMode) {
+                exoplayer.repeatMode = repeatMode
+            }
+
         init {
-            mCurrentMediaPlayer.setHandleAudioBecomingNoisy(true)
-            mCurrentMediaPlayer.setWakeMode(C.WAKE_MODE_NETWORK)
+            exoplayer.setHandleAudioBecomingNoisy(true)
+            exoplayer.setWakeMode(C.WAKE_MODE_NETWORK)
 
-            mCurrentMediaPlayer.repeatMode = Player.REPEAT_MODE_OFF
+            exoplayer.repeatMode = Player.REPEAT_MODE_OFF
 
-            mCurrentMediaPlayer.addListener(object : Player.Listener {
-
+            exoplayer.addListener(object : Player.Listener {
                 override fun onPlaybackStateChanged(@Player.State state: Int) {
                     when (state) {
                         Player.STATE_READY -> if (isPreparing) {
                             isPreparing = false
-                            isInitialized = true
+                            isPrepared = true
                             mService.get()?.notifyChange(PREPARED)
-                            mService.get()?.play()
+                            exoplayer.play()
                         }
 
-                        Player.STATE_ENDED -> if (!isPreparing && isInitialized) {
-                            isInitialized = mService.get()?.gotoNext(false) == false
+                        Player.STATE_ENDED -> {
+                            pause()
+                            seek(0)
                         }
 
                         else -> {
@@ -1088,27 +561,89 @@ class MusicPlaybackService : Service() {
                     }
                 }
 
+                override fun onIsPlayingChanged(isPlaying: Boolean) {
+                    super.onIsPlayingChanged(isPlaying)
+                    if (isPlaying && hasErrorPlayback) {
+                        hasErrorPlayback = false
+                    }
+                    if (!isPlaying) {
+                        mService.get()?.scheduleDelayedShutdown()
+                    } else {
+                        mService.get()?.shutdownDelayedDisposable?.cancel()
+                    }
+                }
+
                 override fun onPlayWhenReadyChanged(
                     playWhenReady: Boolean,
-                    @PlayWhenReadyChangeReason reason: Int
+                    @Player.PlayWhenReadyChangeReason reason: Int
                 ) {
-                    if (mService.get()?.isPlaying != playWhenReady) {
-                        mService.get()?.isPlaying = playWhenReady
-                        mService.get()?.notifyChange(PLAYSTATE_CHANGED)
+                    if (isPlaying != playWhenReady) {
+                        isPlaying = playWhenReady
+                        mService.get()?.notifyChange(PLAY_STATE_CHANGED)
                     }
+                }
+
+                override fun onMediaItemTransition(
+                    mediaItem: MediaItem?,
+                    @MediaItemTransitionReason reason: Int
+                ) {
+                    super.onMediaItemTransition(mediaItem, reason)
+                    if (reason == Player.MEDIA_ITEM_TRANSITION_REASON_SEEK
+                        || reason == Player.MEDIA_ITEM_TRANSITION_REASON_AUTO
+                        || reason == Player.MEDIA_ITEM_TRANSITION_REASON_PLAYLIST_CHANGED
+                    ) {
+                        mService.get()?.onceCloseMiniPlayer = false
+                        mService.get()?.notifyChange(META_CHANGED)
+                    }
+                }
+
+                override fun onEvents(player: Player, events: Player.Events) {
+                    super.onEvents(player, events)
+                    if (events.contains(Player.EVENT_SHUFFLE_MODE_ENABLED_CHANGED) || events.contains(
+                            Player.EVENT_REPEAT_MODE_CHANGED
+                        )
+                        && !events.contains(Player.EVENT_TIMELINE_CHANGED)
+                    ) {
+                        mService.get()?.refreshMediaButtonCustomLayout()
+                    } else if (events.contains(Player.EVENT_TRACKS_CHANGED)
+                        && !events.contains(Player.EVENT_TIMELINE_CHANGED)
+                    ) {
+                        mService.get()?.notifyChange(TRACK_CHANGED)
+                    }
+                }
+
+                override fun onAudioSessionIdChanged(audioSessionId: Int) {
+                    super.onAudioSessionIdChanged(audioSessionId)
+                    lastAudioSessionId = audioSessionId
+                    mService.get()?.broadcastAudioSession()
                 }
 
                 override fun onPlayerError(error: PlaybackException) {
                     mService.get()?.let {
-                        it.errorsCount++
-                        if (it.errorsCount > 10) {
-                            it.errorsCount = 0
-                            it.terminate()
+                        errorsCount++
+                        if (errorsCount > 4) {
+                            errorsCount = 0
+                            if (hasErrorPlayback) {
+                                it.pauseAllPlayersAndStopSelf()
+                            } else if (exoplayer.hasNextMediaItem()) {
+                                hasErrorPlayback = true
+                                val pos = exoplayer.currentMediaItemIndex
+                                exoplayer.stop()
+                                exoplayer.prepare()
+                                exoplayer.seekTo(
+                                    pos + 1,
+                                    0
+                                )
+                                exoplayer.play()
+                            }
                         } else {
-                            val playbackPos = mCurrentMediaPlayer.currentPosition
-                            it.playCurrentTrack(false)
-                            mCurrentMediaPlayer.seekTo(playbackPos)
-                            it.notifyChange(META_CHANGED)
+                            exoplayer.stop()
+                            exoplayer.prepare()
+                            exoplayer.seekTo(
+                                exoplayer.currentMediaItemIndex,
+                                exoplayer.currentPosition
+                            )
+                            exoplayer.play()
                         }
                     }
                 }
@@ -1116,10 +651,192 @@ class MusicPlaybackService : Service() {
         }
     }
 
+    internal fun broadcastAudioSession() {
+        if (musicPlayer.lastAudioSessionId != C.AUDIO_SESSION_ID_UNSET) {
+            Log.i(TAG, "broadcast audio session open: $musicPlayer.lastAudioSessionId")
+            sendBroadcast(Intent(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION).apply {
+                putExtra(AudioEffect.EXTRA_PACKAGE_NAME, packageName)
+                putExtra(AudioEffect.EXTRA_AUDIO_SESSION, musicPlayer.lastAudioSessionId)
+                putExtra(AudioEffect.EXTRA_CONTENT_TYPE, AudioEffect.CONTENT_TYPE_MUSIC)
+            })
+        } else {
+            Log.e(TAG, "session id is 0? why????? THIS MIGHT BREAK EQUALIZER")
+        }
+    }
+
+    internal fun broadcastAudioSessionClose() {
+        if (musicPlayer.lastAudioSessionId != C.AUDIO_SESSION_ID_UNSET) {
+            Log.i(TAG, "broadcast audio session close: $musicPlayer.lastAudioSessionId")
+            sendBroadcast(Intent(AudioEffect.ACTION_CLOSE_AUDIO_EFFECT_CONTROL_SESSION).apply {
+                putExtra(AudioEffect.EXTRA_PACKAGE_NAME, packageName)
+                putExtra(AudioEffect.EXTRA_AUDIO_SESSION, musicPlayer.lastAudioSessionId)
+            })
+            musicPlayer.lastAudioSessionId = C.AUDIO_SESSION_ID_UNSET
+        }
+    }
+
+    internal fun openFile(audio: Audio) {
+        synchronized(this) {
+            musicPlayer.setSources(listOf(audio))
+            notifyChange(QUEUE_CHANGED)
+            musicPlayer.play()
+        }
+    }
+
+    internal fun open(list: List<Audio>, position: Int) {
+        synchronized(this) {
+            musicPlayer.setSources(list)
+            notifyChange(QUEUE_CHANGED)
+            musicPlayer.playAt(position)
+        }
+    }
+
+    internal val bufferPercent: Int
+        get() {
+            synchronized(this) { return musicPlayer.bufferPercent.orZero() }
+        }
+
+    internal val bufferPos: Long
+        get() {
+            synchronized(this) { return musicPlayer.bufferPos.orZero() }
+        }
+
+    internal val path: String?
+        get() {
+            synchronized(this) { return musicPlayer.currentAudio?.url }
+        }
+
+    internal val albumName: String?
+        get() {
+            synchronized(this) { return musicPlayer.currentAudio?.artist }
+        }
+
+    internal val albumCover: String?
+        get() {
+            synchronized(this) { return musicPlayer.currentAudio?.thumb_image }
+        }
+
+    internal val trackName: String?
+        get() {
+            synchronized(this) { return musicPlayer.currentAudio?.title }
+        }
+
+    internal val artistName: String?
+        get() {
+            synchronized(this) { return musicPlayer.currentAudio?.artist }
+        }
+
+    internal val currentTrack: Audio?
+        get() {
+            synchronized(this) { return musicPlayer.currentAudio }
+        }
+
+    internal val currentTrackPos: Int
+        get() {
+            synchronized(this) {
+                return musicPlayer.queueIndex
+            }
+        }
+
+    internal fun seek(position: Long): Long {
+        if (musicPlayer.isPrepared) {
+            var positionTemp = position
+            if (positionTemp < 0) {
+                positionTemp = 0
+            } else if (positionTemp > musicPlayer.duration) {
+                positionTemp = musicPlayer.duration
+            }
+            val result = musicPlayer.seek(positionTemp)
+            return result
+        }
+        return -1
+    }
+
+    internal fun position(): Long {
+        return if (musicPlayer.isPrepared) musicPlayer.position else -1
+    }
+
+    internal fun duration(): Long {
+        return if (musicPlayer.isPrepared) musicPlayer.duration else -1
+    }
+
+    internal val queue: List<Audio>
+        get() = synchronized(this) { musicPlayer.currentAudios }
+
+    internal fun canPlayAfterCurrent(): Boolean {
+        synchronized(this) {
+            val current = musicPlayer.itemIndex
+            return current >= 0
+        }
+    }
+
+    internal fun playAfterCurrent(audio: Audio) {
+        synchronized(this) {
+            val current = musicPlayer.itemIndex
+            if (current <= 0) {
+                return
+            }
+            musicPlayer.insertSourceAfterCurrent(audio)
+            notifyChange(QUEUE_CHANGED)
+        }
+    }
+
+    internal fun play() {
+        synchronized(this) {
+            if (musicPlayer.isPrepared) {
+                musicPlayer.play()
+            }
+        }
+    }
+
+    internal fun pause() {
+        if (Constants.IS_DEBUG) Logger.d(TAG, "Pausing playback")
+        synchronized(this) {
+            if (musicPlayer.isPlaying) {
+                musicPlayer.pause()
+            }
+        }
+    }
+
+    internal fun prev() {
+        if (Constants.IS_DEBUG) Logger.d(TAG, "Going to previous track")
+        synchronized(this) {
+            musicPlayer.prev()
+        }
+    }
+
+    internal fun next() {
+        if (Constants.IS_DEBUG) Logger.d(TAG, "Going to previous track")
+        synchronized(this) {
+            musicPlayer.next()
+        }
+    }
+
+    internal fun skip(pos: Int, force: Boolean) {
+        if (!force && pos == currentTrackPos)
+            return
+        var tmpPos = pos
+        if (musicPlayer.shuffleMode) {
+            val s = musicPlayer.getShuffleOrderIndexes()
+            if (s.size <= tmpPos) {
+                return
+            }
+            tmpPos = s[tmpPos]
+        }
+        if (Constants.IS_DEBUG) Logger.d(TAG, "Going to next track")
+        synchronized(this) {
+            musicPlayer.playAt(tmpPos)
+        }
+    }
+
+    internal fun refresh() {
+        notifyChange(REFRESH)
+    }
+
     private class ServiceStub(service: MusicPlaybackService) : IAudioPlayerService.Stub() {
         private val mService: WeakReference<MusicPlaybackService> = WeakReference(service)
         override fun openFile(audio: Audio) {
-            mService.get()?.openFile(audio, true)
+            mService.get()?.openFile(audio)
         }
 
         override fun open(list: List<Audio>, position: Int) {
@@ -1128,7 +845,7 @@ class MusicPlaybackService : Service() {
 
         override fun stop() {
             mService.get()?.pause()
-            mService.get()?.releaseServiceUiAndStop()
+            mService.get()?.pauseAllPlayersAndStopSelf()
         }
 
         override fun pause() {
@@ -1144,15 +861,15 @@ class MusicPlaybackService : Service() {
         }
 
         override fun next() {
-            mService.get()?.gotoNext(true)
+            mService.get()?.next()
         }
 
-        override fun setShuffleMode(shufflemode: Int) {
-            mService.get()?.shuffleMode = shufflemode
+        override fun setShuffleMode(shuffleMode: Int) {
+            mService.get()?.shuffleMode = shuffleMode != 0
         }
 
-        override fun setRepeatMode(repeatmode: Int) {
-            mService.get()?.repeatMode = repeatmode
+        override fun setRepeatMode(repeatMode: Int) {
+            mService.get()?.repeatMode = repeatMode
         }
 
         override fun closeMiniPlayer() {
@@ -1164,19 +881,19 @@ class MusicPlaybackService : Service() {
         }
 
         override fun isPlaying(): Boolean {
-            return mService.get()?.isPlaying == true
+            return mService.get()?.musicPlayer?.isPlaying == true
         }
 
         override fun isPreparing(): Boolean {
-            return mService.get()?.isPreparing == true
+            return mService.get()?.musicPlayer?.isPreparing == true
         }
 
         override fun isInitialized(): Boolean {
-            return mService.get()?.isInitialized == true
+            return mService.get()?.musicPlayer?.isPrepared == true
         }
 
-        override fun canPlayAfterCurrent(audio: Audio): Boolean {
-            return mService.get()?.canPlayAfterCurrent(audio) == true
+        override fun canPlayAfterCurrent(): Boolean {
+            return mService.get()?.canPlayAfterCurrent() == true
         }
 
         override fun playAfterCurrent(audio: Audio) {
@@ -1235,16 +952,12 @@ class MusicPlaybackService : Service() {
             return mService.get()?.path
         }
 
-        override fun getQueuePosition(): Int {
-            return mService.get()?.queuePosition ?: -1
-        }
-
         override fun getShuffleMode(): Int {
-            return mService.get()?.shuffleMode ?: SHUFFLE_NONE
+            return if (mService.get()?.shuffleMode == true) SHUFFLE else SHUFFLE_NONE
         }
 
         override fun getRepeatMode(): Int {
-            return mService.get()?.repeatMode ?: REPEAT_NONE
+            return mService.get()?.repeatMode ?: Player.REPEAT_MODE_OFF
         }
 
         override fun getAudioSessionId(): Int {
@@ -1266,43 +979,20 @@ class MusicPlaybackService : Service() {
 
     companion object {
         private const val TAG = "MusicPlaybackService"
-        const val PLAYSTATE_CHANGED = "dev.ragnarok.filegallery.player.playstatechanged"
-        const val POSITION_CHANGED = "dev.ragnarok.filegallery.player.positionchanged"
-        const val META_CHANGED = "dev.ragnarok.filegallery.player.metachanged"
-        const val PREPARED = "dev.ragnarok.filegallery.player.prepared"
-        const val REPEATMODE_CHANGED = "dev.ragnarok.filegallery.player.repeatmodechanged"
-        const val SHUFFLEMODE_CHANGED = "dev.ragnarok.filegallery.player.shufflemodechanged"
-        const val QUEUE_CHANGED = "dev.ragnarok.filegallery.player.queuechanged"
-        const val SERVICECMD = "dev.ragnarok.filegallery.player.musicservicecommand"
-        const val TOGGLEPAUSE_ACTION = "dev.ragnarok.filegallery.player.togglepause"
-        const val PAUSE_ACTION = "dev.ragnarok.filegallery.player.pause"
-        const val STOP_ACTION = "dev.ragnarok.filegallery.player.stop"
-        const val SWIPE_DISMISS_ACTION = "dev.ragnarok.filegallery.player.swipe_dismiss"
-        const val PREVIOUS_ACTION = "dev.ragnarok.filegallery.player.previous"
-        const val NEXT_ACTION = "dev.ragnarok.filegallery.player.next"
-        const val REPEAT_ACTION = "dev.ragnarok.filegallery.player.repeat"
-        const val SHUFFLE_ACTION = "dev.ragnarok.filegallery.player.shuffle"
 
-        const val REFRESH = "dev.ragnarok.filegallery.player.refresh"
-
-        /**
-         * Called to update the remote control client
-         */
-        const val CMDNAME = "command"
-        const val CMDTOGGLEPAUSE = "togglepause"
-        const val CMDSTOP = "stop"
-        const val CMDPAUSE = "pause"
-        const val CMDPLAY = "play"
-        const val CMDPREVIOUS = "previous"
-        const val CMDNEXT = "next"
-        const val CMDPLAYLIST = "playlist"
+        const val PLAY_STATE_CHANGED = "dev.ragnarok.filegallery.media.music.play_state_changed"
+        const val META_CHANGED = "dev.ragnarok.filegallery.media.music.meta_changed"
+        const val TRACK_CHANGED = "dev.ragnarok.filegallery.media.music.track_changed"
+        const val PREPARED = "dev.ragnarok.filegallery.media.music.prepared"
         const val SHUFFLE_NONE = 0
         const val SHUFFLE = 1
-        const val REPEAT_NONE = 0
-        const val REPEAT_CURRENT = 1
-        const val REPEAT_ALL = 2
-        private var IDLE_DELAY = Constants.AUDIO_PLAYER_SERVICE_IDLE
-        private const val MAX_QUEUE_SIZE = 200
+        const val REPEAT_MODE_CHANGED = "dev.ragnarok.filegallery.media.music.repeat_mode_changed"
+        const val SHUFFLE_MODE_CHANGED = "dev.ragnarok.filegallery.media.music.shuffle_mode_changed"
+        const val QUEUE_CHANGED = "dev.ragnarok.filegallery.media.music.queue_changed"
+        const val REFRESH = "dev.ragnarok.filegallery.media.music.refresh"
+
+        const val ACTION_PLAYLIST = "start_playlist"
+        const val MAX_QUEUE_SIZE = 200
 
         fun startForPlayList(
             context: Context,
@@ -1345,7 +1035,7 @@ class MusicPlaybackService : Service() {
                 }
             }
             val intent = Intent(context, MusicPlaybackService::class.java)
-            intent.action = CMDPLAYLIST
+            intent.action = ACTION_PLAYLIST
             intent.putParcelableArrayListExtra(Extra.AUDIOS, target)
             intent.putExtra(Extra.POSITION, targetPosition)
             intent.putExtra(Extra.SHUFFLE_MODE, if (forceShuffle) SHUFFLE else SHUFFLE_NONE)

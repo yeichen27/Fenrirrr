@@ -65,7 +65,7 @@ class InputTextDialog internal constructor(val context: Context) {
         input.postDelayed({
             val inputMethodManager =
                 context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
-            inputMethodManager?.showSoftInput(input, InputMethodManager.SHOW_IMPLICIT)
+            inputMethodManager?.showSoftInput(input, 0)
         }, 500)
     }
 

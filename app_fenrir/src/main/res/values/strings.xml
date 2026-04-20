@@ -1460,8 +1460,6 @@
     <string name="last_closed_page">Last closed</string>
     <string name="open_links_in_app">Open links in the app</string>
     <string name="pause">paused</string>
-    <string name="previous">previous</string>
-    <string name="next">next</string>
     <string name="skype" translatable="false">Skype</string>
     <string name="family">Family</string>
     <string name="instagram" translatable="false">Instagram</string>
@@ -1974,4 +1972,6 @@
     <string name="photo_zoom_enable_list">Scroll through zoomed images</string>
     <string name="only_not_viewed_followers">Show only unseen followers</string>
     <string name="sms_auth_help">If you can\'t log in, open VK ID settings in your browser -> Two-factor authentication -> Backup codes, and enter them instead of your password!</string>
+    <string name="shuffle">Shuffle</string>
+    <string name="repeat_mode">Repeat</string>
 </resources>

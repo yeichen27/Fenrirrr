@@ -128,7 +128,7 @@ class ChatActivityBubbles : NoMainActivity(), PlaceProvider, AppStyleable, Servi
             val inputManager = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager?
             inputManager?.hideSoftInputFromWindow(
                 window.decorView.rootView.windowToken,
-                InputMethodManager.HIDE_NOT_ALWAYS
+                0
             )
         } catch (_: Exception) {
         }

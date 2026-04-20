@@ -212,7 +212,7 @@ class MySearchView : FrameLayout {
         mInput?.postDelayed({
             val inputMethodManager =
                 context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
-            inputMethodManager?.showSoftInput(mInput, InputMethodManager.SHOW_IMPLICIT)
+            inputMethodManager?.showSoftInput(mInput, 0)
         }, 500)
     }
 

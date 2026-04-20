@@ -1273,7 +1273,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
             val inputManager = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager?
             inputManager?.hideSoftInputFromWindow(
                 window.decorView.rootView.windowToken,
-                InputMethodManager.HIDE_NOT_ALWAYS
+                0
             )
         } catch (_: Exception) {
         }
