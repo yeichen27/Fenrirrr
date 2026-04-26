@@ -1720,6 +1720,6 @@
     <string name="photo_zoom_enable_list">Листать приближенные изображения</string>
     <string name="only_not_viewed_followers">Показывать только непросмотренных подписчиков</string>
     <string name="sms_auth_help">Если не получилось войти, в браузере открываем настройки VK ID -> Двухфакторная аутентификация -> Резервные коды, и вводим вместо пароля!</string>
-    <string name="shuffle">Перемешивать</string>
     <string name="repeat_mode">Повтор</string>
+    <string name="saving_network_traffic">Экономия трафика</string>
 </resources>

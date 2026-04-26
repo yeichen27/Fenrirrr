@@ -116,6 +116,9 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+
         mFullscreen = savedInstanceState?.getBoolean("mFullscreen") == true
 
         mDecorView = window.decorView

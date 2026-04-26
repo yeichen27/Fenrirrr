@@ -439,7 +439,7 @@ internal class MainSettings(context: Context) : IMainSettings {
 
     override val isAutoplay_video_on_posts: Int
         get() = try {
-            if (!FenrirNative.isNativeLoaded) {
+            if (!FenrirNative.isNativeLoaded || isSaving_network_traffic) {
                 0
             } else {
                 getPreferences(app).getString("autoplay_video_on_posts", "2")?.trim()?.toInt()
@@ -474,6 +474,8 @@ internal class MainSettings(context: Context) : IMainSettings {
         get() = getPreferences(app).getBoolean("force_cache", false)
     override val isUse_api_5_90_for_audio: Boolean
         get() = getPreferences(app).getBoolean("use_api_5_90_for_audio", true)
+    override val isSaving_network_traffic: Boolean
+        get() = getPreferences(app).getBoolean("saving_network_traffic", false)
     override val isDisable_history: Boolean
         get() = getPreferences(app).getBoolean("disable_history", false)
     override val isShow_wall_cover: Boolean

@@ -60,7 +60,7 @@ import kotlin.coroutines.CoroutineContext
 class Picasso internal constructor(
     @get:JvmName("-context") internal val context: Context,
     @get:JvmName("-dispatcher") internal val dispatcher: Dispatcher,
-    @get:JvmName("-callFactory") internal val callFactory: OkHttpClient,
+    @get:JvmName("-callFactory") internal val callFactory: OkHttpClient?,
     private val closeableCache: Cache?,
     @get:JvmName("-cache") internal val cache: PlatformLruCache,
     @get:JvmName("-listener") internal val listener: Listener?,
@@ -112,7 +112,9 @@ class Picasso internal constructor(
             add(ContentStreamRequestHandler(context))
             add(AssetRequestHandler(context))
             add(FileRequestHandler(context))
-            add(NetworkRequestHandler(callFactory))
+            callFactory?.let {
+                add(NetworkRequestHandler(it))
+            }
         }
     }
 
@@ -555,6 +557,7 @@ class Picasso internal constructor(
         private var defaultBitmapConfig: Config? = null
         private var indicatorsEnabled = false
         private var loggingEnabled = false
+        private var offline = false
 
         /** Start building a new [Picasso] instance.  */
         constructor(context: Context) {
@@ -595,6 +598,10 @@ class Picasso internal constructor(
          */
         fun client(client: OkHttpClient) = apply {
             callFactory = client
+        }
+
+        fun setOffline(offline: Boolean) = apply {
+            this.offline = offline
         }
 
         /**
@@ -664,7 +671,7 @@ class Picasso internal constructor(
         /** Create the [Picasso] instance. */
         fun build(): Picasso {
             var unsharedCache: Cache? = null
-            if (callFactory == null) {
+            if (callFactory == null && !offline) {
                 val cacheDir = createDefaultCacheDir(context)
                 val maxSize = calculateDiskCacheSize(cacheDir)
                 unsharedCache = Cache(cacheDir, maxSize)
@@ -691,7 +698,7 @@ class Picasso internal constructor(
             }
 
             return Picasso(
-                context, dispatcher, callFactory!!, unsharedCache, cache!!, listener,
+                context, dispatcher, callFactory, unsharedCache, cache!!, listener,
                 requestTransformers, requestHandlers, eventListeners, defaultBitmapConfig,
                 indicatorsEnabled, loggingEnabled
             )

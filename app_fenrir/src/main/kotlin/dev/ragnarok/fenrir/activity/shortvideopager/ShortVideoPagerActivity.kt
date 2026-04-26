@@ -103,6 +103,9 @@ class ShortVideoPagerActivity : BaseMvpActivity<ShortVideoPagerPresenter, IShort
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+
         mFullscreen = savedInstanceState?.getBoolean("mFullscreen") == true
         mDecorView = window.decorView
         transformation = CurrentTheme.createTransformationForAvatar()

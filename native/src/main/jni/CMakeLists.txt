@@ -50,7 +50,6 @@ add_library(thorvg STATIC
         animation/thorvg/src/renderer/tvgCanvas.cpp
         animation/thorvg/src/renderer/tvgFill.cpp
         animation/thorvg/src/renderer/tvgInitializer.cpp
-        animation/thorvg/src/renderer/tvgLoader.cpp
         animation/thorvg/src/renderer/tvgLoaderMgr.cpp
         animation/thorvg/src/renderer/tvgPaint.cpp
         animation/thorvg/src/renderer/tvgPicture.cpp

@@ -38,7 +38,7 @@ class VideosInteractor(private val networker: INetworker, private val cache: ISt
         offset: Int
     ): Flow<List<Video>> {
         return networker.vkDefault(accountId)
-            .video()[ownerId, null, albumId, count, offset, true]
+            .video()[ownerId, null, if (albumId == 0) null else albumId, count, offset, true]
             .flatMapConcat { items ->
                 val dtos = listEmptyIfNull(
                     items.items

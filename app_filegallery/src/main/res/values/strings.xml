@@ -400,6 +400,5 @@
     <string name="saved_to_param_file_name">Saved in %1$s</string>
     <string name="long_click_photo">Long press on the photo</string>
     <string name="photo_zoom_enable_list">Scroll through zoomed images</string>
-    <string name="shuffle">Shuffle</string>
     <string name="repeat_mode">Repeat</string>
 </resources>

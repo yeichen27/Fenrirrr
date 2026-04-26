@@ -262,6 +262,64 @@ void RAWToARGBRow_AVX2(const uint8_t* src_raw, uint8_t* dst_argb, int width) {
       : "memory", "cc", "xmm0", "xmm1", "xmm2", "xmm3", "xmm4", "xmm5", "xmm6");
 }
 
+#ifdef HAS_RAWTOARGBROW_AVX512BW
+static const uint32_t kPermdRAWToARGB_AVX512BW[16] = {
+    0, 1, 2, 3, 3, 4, 5, 6, 6, 7, 8, 9, 9, 10, 11, 12};
+
+void RGBToARGBRow_AVX512BW(const uint8_t* src_raw, uint8_t* dst_argb, const uint32_t* shuffler, int width) {
+  asm volatile(
+      "vpternlogd  $0xff,%%zmm6,%%zmm6,%%zmm6    \n"  // 0xffffffff
+      "vpslld      $0x18,%%zmm6,%%zmm6           \n"  // 0xff000000
+      "movabs      $0xffffffffffff,%%rax         \n"  // 48 bytes mask
+      "kmovq       %%rax,%%k1                    \n"
+      "vmovdqu32   %3,%%zmm5                     \n"
+      "vbroadcasti32x4 %4,%%zmm4                 \n"
+
+      LABELALIGN  //
+      "1:          \n"
+      "vmovdqu8    (%0),%%zmm0%{%%k1%}%{z%}      \n"
+      "vmovdqu8    48(%0),%%zmm1%{%%k1%}%{z%}    \n"
+      "vmovdqu8    96(%0),%%zmm2%{%%k1%}%{z%}    \n"
+      "vmovdqu8    144(%0),%%zmm3%{%%k1%}%{z%}   \n"
+      "lea         192(%0),%0                    \n"
+      "vpermd      %%zmm0,%%zmm5,%%zmm0          \n"
+      "vpermd      %%zmm1,%%zmm5,%%zmm1          \n"
+      "vpermd      %%zmm2,%%zmm5,%%zmm2          \n"
+      "vpermd      %%zmm3,%%zmm5,%%zmm3          \n"
+      "vpshufb     %%zmm4,%%zmm0,%%zmm0          \n"
+      "vpshufb     %%zmm4,%%zmm1,%%zmm1          \n"
+      "vpshufb     %%zmm4,%%zmm2,%%zmm2          \n"
+      "vpshufb     %%zmm4,%%zmm3,%%zmm3          \n"
+      "vpord       %%zmm6,%%zmm0,%%zmm0          \n"
+      "vpord       %%zmm6,%%zmm1,%%zmm1          \n"
+      "vpord       %%zmm6,%%zmm2,%%zmm2          \n"
+      "vpord       %%zmm6,%%zmm3,%%zmm3          \n"
+      "vmovdqu32   %%zmm0,(%1)                   \n"
+      "vmovdqu32   %%zmm1,0x40(%1)               \n"
+      "vmovdqu32   %%zmm2,0x80(%1)               \n"
+      "vmovdqu32   %%zmm3,0xc0(%1)               \n"
+      "lea         0x100(%1),%1                  \n"
+      "sub         $0x40,%2                      \n"
+      "jg          1b                            \n"
+      "vzeroupper  \n"
+      : "+r"(src_raw),                  // %0
+        "+r"(dst_argb),                 // %1
+        "+r"(width)                     // %2
+      : "m"(kPermdRAWToARGB_AVX512BW),  // %3
+        "m"(*shuffler)                  // %4
+      : "memory", "cc", "rax", "k1", "zmm0", "zmm1", "zmm2", "zmm3", "zmm4", "zmm5", "zmm6");
+}
+
+void RAWToARGBRow_AVX512BW(const uint8_t* src_raw, uint8_t* dst_argb, int width) {
+  RGBToARGBRow_AVX512BW(src_raw, dst_argb, (const uint32_t*)&kShuffleMaskRAWToARGB, width);
+}
+
+void RGB24ToARGBRow_AVX512BW(const uint8_t* src_rgb24, uint8_t* dst_argb, int width) {
+  RGBToARGBRow_AVX512BW(src_rgb24, dst_argb, (const uint32_t*)&kShuffleMaskRGB24ToARGB, width);
+}
+#endif
+
+
 // Same code as RAWToARGB with different shuffler and A in low bits
 void RAWToRGBARow_SSSE3(const uint8_t* src_raw, uint8_t* dst_rgba, int width) {
   asm volatile(

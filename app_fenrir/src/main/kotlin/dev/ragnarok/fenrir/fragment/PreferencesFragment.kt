@@ -516,6 +516,13 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 titleRes = R.string.use_api_5_90_for_audio
                 defaultValue = true
             }
+            switch("saving_network_traffic") {
+                titleRes = R.string.saving_network_traffic
+                defaultValue = false
+                onCheckedChange {
+                    Includes.proxySettings.broadcastUpdate(null)
+                }
+            }
             subScreen("audio_catalog_v2") {
                 titleRes = R.string.audio_catalog_v2
                 visible = Utils.isOfficialVKCurrent

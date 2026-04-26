@@ -111,7 +111,6 @@ class ViewHostDelegate<P : IPresenter<V>, V : IMvpView> {
         override fun onCleared() {
             presenter?.destroy()
             presenter = null
-            super.onCleared()
         }
     }
 

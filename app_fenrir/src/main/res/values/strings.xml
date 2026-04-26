@@ -1972,6 +1972,6 @@
     <string name="photo_zoom_enable_list">Scroll through zoomed images</string>
     <string name="only_not_viewed_followers">Show only unseen followers</string>
     <string name="sms_auth_help">If you can\'t log in, open VK ID settings in your browser -> Two-factor authentication -> Backup codes, and enter them instead of your password!</string>
-    <string name="shuffle">Shuffle</string>
     <string name="repeat_mode">Repeat</string>
+    <string name="saving_network_traffic">Saving network traffic</string>
 </resources>

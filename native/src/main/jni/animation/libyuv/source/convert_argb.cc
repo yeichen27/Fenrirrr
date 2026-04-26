@@ -3638,6 +3638,22 @@ int RGB24ToARGB(const uint8_t* src_rgb24,
     }
   }
 #endif
+#if defined(HAS_RGB24TOARGBROW_AVX2)
+  if (TestCpuFlag(kCpuHasAVX2)) {
+    RGB24ToARGBRow = RGB24ToARGBRow_Any_AVX2;
+    if (IS_ALIGNED(width, 32)) {
+      RGB24ToARGBRow = RGB24ToARGBRow_AVX2;
+    }
+  }
+#endif
+#if defined(HAS_RGB24TOARGBROW_AVX512BW)
+  if (TestCpuFlag(kCpuHasAVX512BW)) {
+    RGB24ToARGBRow = RGB24ToARGBRow_Any_AVX512BW;
+    if (IS_ALIGNED(width, 64)) {
+      RGB24ToARGBRow = RGB24ToARGBRow_AVX512BW;
+    }
+  }
+#endif
 #if defined(HAS_RGB24TOARGBROW_NEON)
   if (TestCpuFlag(kCpuHasNEON)) {
     RGB24ToARGBRow = RGB24ToARGBRow_Any_NEON;
@@ -3672,8 +3688,7 @@ int RGB24ToARGB(const uint8_t* src_rgb24,
     RGB24ToARGBRow = RGB24ToARGBRow_RVV;
   }
 #endif
-
-  for (y = 0; y < height; ++y) {
+for (y = 0; y < height; ++y) {
     RGB24ToARGBRow(src_rgb24, dst_argb, width);
     src_rgb24 += src_stride_rgb24;
     dst_argb += dst_stride_argb;
@@ -3720,6 +3735,14 @@ int RAWToARGB(const uint8_t* src_raw,
     RAWToARGBRow = RAWToARGBRow_Any_AVX2;
     if (IS_ALIGNED(width, 32)) {
       RAWToARGBRow = RAWToARGBRow_AVX2;
+    }
+  }
+#endif
+#if defined(HAS_RAWTOARGBROW_AVX512BW)
+  if (TestCpuFlag(kCpuHasAVX512BW)) {
+    RAWToARGBRow = RAWToARGBRow_Any_AVX512BW;
+    if (IS_ALIGNED(width, 64)) {
+      RAWToARGBRow = RAWToARGBRow_AVX512BW;
     }
   }
 #endif
@@ -5311,7 +5334,7 @@ int NV12ToRGB565(const uint8_t* src_y,
                             width, height);
 }
 
-// Convert I420 to RGBA with matrix.
+// Convert I422 to RGBA with matrix.
 LIBYUV_API
 int I420ToRGBAMatrix(const uint8_t* src_y,
                      int src_stride_y,

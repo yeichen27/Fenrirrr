@@ -212,7 +212,7 @@ bool LottieLoader::open(const char* data, uint32_t size, const LoaderOps* _ops, 
     auto ops = static_cast<const PictureOps*>(_ops);
     if (ops->caller != tvg::Type::Picture) return false;
 
-    colorReplaceInternal = *ops->colorReplacement;
+    colorReplaceInternal = ops->colorReplacement ? *ops->colorReplacement : ColorReplace();
     if (copy) {
         content = tvg::malloc<char>(size + 1);
         memcpy((char*)content, data, size);
@@ -236,7 +236,8 @@ bool LottieLoader::open(const char* path, const LoaderOps* ops)
         dirName = tvg::dirname(path);
         copy = true;
         builder->resolver = static_cast<const PictureOps*>(ops)->resolver;
-        colorReplaceInternal = *static_cast<const PictureOps*>(ops)->colorReplacement;
+        auto cr = static_cast<const PictureOps*>(ops)->colorReplacement;
+        colorReplaceInternal = cr ? *cr : ColorReplace();
         return header();
     }
 #endif

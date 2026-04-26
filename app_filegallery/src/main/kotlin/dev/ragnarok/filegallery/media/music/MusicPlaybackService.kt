@@ -7,6 +7,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.media.audiofx.AudioEffect
 import android.net.Uri
+import android.os.Bundle
 import android.os.IBinder
 import android.util.Log
 import androidx.annotation.OptIn
@@ -30,12 +31,16 @@ import androidx.media3.exoplayer.DefaultRenderersFactory.EXTENSION_RENDERER_MODE
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.exoplayer.source.ProgressiveMediaSource
+import androidx.media3.exoplayer.source.ShuffleOrder
 import androidx.media3.session.CacheBitmapLoader
 import androidx.media3.session.CommandButton
 import androidx.media3.session.DefaultMediaNotificationProvider
 import androidx.media3.session.MediaSession
 import androidx.media3.session.MediaSessionService
+import androidx.media3.session.SessionCommand
+import androidx.media3.session.SessionResult
 import com.google.common.collect.ImmutableList
+import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
 import dev.ragnarok.filegallery.Constants
 import dev.ragnarok.filegallery.Extra
@@ -55,6 +60,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.asCoroutineDispatcher
 import java.lang.ref.WeakReference
 import java.util.concurrent.Executors
+import kotlin.random.Random
 
 @OptIn(UnstableApi::class)
 class MusicPlaybackService : MediaSessionService() {
@@ -131,6 +137,55 @@ class MusicPlaybackService : MediaSessionService() {
             MediaSession.Builder(application, musicPlayer.exoplayer)
                 .setId(resources.getString(R.string.app_name))
                 .setSessionActivity(NotificationHelper.getAudioPlayerPendingIntent(this))
+                .setCallback(object : MediaSession.Callback {
+                    override fun onConnect(
+                        session: MediaSession,
+                        controller: MediaSession.ControllerInfo
+                    ): MediaSession.ConnectionResult {
+                        val sessionCommands =
+                            MediaSession.ConnectionResult.DEFAULT_SESSION_COMMANDS.buildUpon()
+                                .add(SessionCommand(CUSTOM_COMMAND_CLOSE, Bundle.EMPTY))
+                                .add(SessionCommand(CUSTOM_COMMAND_DISABLE_REPEAT, Bundle.EMPTY))
+                                .add(SessionCommand(CUSTOM_COMMAND_REPEAT_MODE_ONCE, Bundle.EMPTY))
+                                .add(SessionCommand(CUSTOM_COMMAND_REPEAT_MODE_ALL, Bundle.EMPTY))
+                                .build()
+                        return MediaSession.ConnectionResult.accept(
+                            sessionCommands,
+                            MediaSession.ConnectionResult.DEFAULT_PLAYER_COMMANDS
+                        )
+                    }
+
+                    override fun onCustomCommand(
+                        session: MediaSession,
+                        controller: MediaSession.ControllerInfo,
+                        customCommand: SessionCommand,
+                        args: Bundle
+                    ): ListenableFuture<SessionResult> {
+                        return when (customCommand.customAction) {
+                            CUSTOM_COMMAND_CLOSE -> {
+                                pauseAllPlayersAndStopSelf()
+                                Futures.immediateFuture(SessionResult(SessionResult.RESULT_SUCCESS))
+                            }
+
+                            CUSTOM_COMMAND_DISABLE_REPEAT -> {
+                                repeatMode = Player.REPEAT_MODE_OFF
+                                Futures.immediateFuture(SessionResult(SessionResult.RESULT_SUCCESS))
+                            }
+
+                            CUSTOM_COMMAND_REPEAT_MODE_ONCE -> {
+                                repeatMode = Player.REPEAT_MODE_ONE
+                                Futures.immediateFuture(SessionResult(SessionResult.RESULT_SUCCESS))
+                            }
+
+                            CUSTOM_COMMAND_REPEAT_MODE_ALL -> {
+                                repeatMode = Player.REPEAT_MODE_ALL
+                                Futures.immediateFuture(SessionResult(SessionResult.RESULT_SUCCESS))
+                            }
+
+                            else -> super.onCustomCommand(session, controller, customCommand, args)
+                        }
+                    }
+                })
                 .setBitmapLoader(CacheBitmapLoader(object : BitmapLoader {
                     private val limit by lazy { MediaSession.getBitmapDimensionLimit(this@MusicPlaybackService) }
                     override fun supportsMimeType(p0: String): Boolean {
@@ -200,26 +255,28 @@ class MusicPlaybackService : MediaSessionService() {
 
         customCommands =
             listOf(
-                CommandButton.Builder(CommandButton.ICON_SHUFFLE_OFF)
-                    .setDisplayName(getString(R.string.shuffle))
-                    .setPlayerCommand(Player.COMMAND_SET_SHUFFLE_MODE, true)
-                    .build(),
-                CommandButton.Builder(CommandButton.ICON_SHUFFLE_ON)
-                    .setDisplayName(getString(R.string.shuffle))
-                    .setPlayerCommand(Player.COMMAND_SET_SHUFFLE_MODE, false)
+                CommandButton.Builder(CommandButton.ICON_UNDEFINED)
+                    .setCustomIconResId(R.drawable.close)
+                    .setDisplayName(getString(R.string.close))
+                    .setSessionCommand(SessionCommand(CUSTOM_COMMAND_CLOSE, Bundle.EMPTY))
                     .build(),
                 CommandButton.Builder(CommandButton.ICON_REPEAT_OFF)
                     .setDisplayName(getString(R.string.repeat_mode))
-                    .setPlayerCommand(Player.COMMAND_SET_REPEAT_MODE, Player.REPEAT_MODE_ALL)
+                    .setSessionCommand(SessionCommand(CUSTOM_COMMAND_REPEAT_MODE_ALL, Bundle.EMPTY))
                     .build(),
                 CommandButton.Builder(CommandButton.ICON_REPEAT_ALL)
                     .setDisplayName(getString(R.string.repeat_mode))
-                    .setPlayerCommand(Player.COMMAND_SET_REPEAT_MODE, Player.REPEAT_MODE_ONE)
+                    .setSessionCommand(
+                        SessionCommand(
+                            CUSTOM_COMMAND_REPEAT_MODE_ONCE,
+                            Bundle.EMPTY
+                        )
+                    )
                     .build(),
                 CommandButton.Builder(CommandButton.ICON_REPEAT_ONE)
                     .setDisplayName(getString(R.string.repeat_mode))
-                    .setPlayerCommand(Player.COMMAND_SET_REPEAT_MODE, Player.REPEAT_MODE_OFF)
-                    .build(),
+                    .setSessionCommand(SessionCommand(CUSTOM_COMMAND_DISABLE_REPEAT, Bundle.EMPTY))
+                    .build()
             )
 
         refreshMediaButtonCustomLayout()
@@ -251,23 +308,17 @@ class MusicPlaybackService : MediaSessionService() {
 
     internal fun getRepeatCommand() =
         when (musicPlayer.repeatMode) {
-            Player.REPEAT_MODE_OFF -> customCommands[2]
-            Player.REPEAT_MODE_ALL -> customCommands[3]
-            Player.REPEAT_MODE_ONE -> customCommands[4]
+            Player.REPEAT_MODE_OFF -> customCommands[1]
+            Player.REPEAT_MODE_ALL -> customCommands[2]
+            Player.REPEAT_MODE_ONE -> customCommands[3]
             else -> throw IllegalArgumentException()
         }
 
-    internal fun getShufflingCommand() =
-        if (musicPlayer.shuffleMode)
-            customCommands[1]
-        else
-            customCommands[0]
-
     internal fun refreshMediaButtonCustomLayout() {
-        mediaSession.setMediaButtonPreferences(
+        mediaSession.setCustomLayout(
             ImmutableList.of(
-                getRepeatCommand(),
-                getShufflingCommand()
+                customCommands[0],
+                getRepeatCommand()
             )
         )
     }
@@ -540,6 +591,7 @@ class MusicPlaybackService : MediaSessionService() {
             exoplayer.setWakeMode(C.WAKE_MODE_NETWORK)
 
             exoplayer.repeatMode = Player.REPEAT_MODE_OFF
+            exoplayer.shuffleOrder = MusicShuffleOrder(0)
 
             exoplayer.addListener(object : Player.Listener {
                 override fun onPlaybackStateChanged(@Player.State state: Int) {
@@ -604,6 +656,20 @@ class MusicPlaybackService : MediaSessionService() {
                         )
                         && !events.contains(Player.EVENT_TIMELINE_CHANGED)
                     ) {
+                        if (events.contains(Player.EVENT_SHUFFLE_MODE_ENABLED_CHANGED)) {
+                            if (player.shuffleModeEnabled) {
+                                val s = getShuffleOrderIndexes()
+                                for (i in s.indices) {
+                                    if (s[i] == itemIndex) {
+                                        if (i > 0) {
+                                            exoplayer.shuffleOrder =
+                                                exoplayer.shuffleOrder.cloneAndMove(i, i, 0)
+                                        }
+                                        break
+                                    }
+                                }
+                            }
+                        }
                         mService.get()?.refreshMediaButtonCustomLayout()
                     } else if (events.contains(Player.EVENT_TRACKS_CHANGED)
                         && !events.contains(Player.EVENT_TIMELINE_CHANGED)
@@ -765,8 +831,7 @@ class MusicPlaybackService : MediaSessionService() {
 
     internal fun canPlayAfterCurrent(): Boolean {
         synchronized(this) {
-            val current = musicPlayer.itemIndex
-            return current >= 0
+            return musicPlayer.itemIndex >= 0 && !musicPlayer.shuffleMode
         }
     }
 
@@ -831,6 +896,128 @@ class MusicPlaybackService : MediaSessionService() {
 
     internal fun refresh() {
         notifyChange(REFRESH)
+    }
+
+    class MusicShuffleOrder private constructor(
+        private val shuffled: IntArray,
+        private val random: Random
+    ) : ShuffleOrder {
+        private val indexInShuffled: IntArray = IntArray(shuffled.size)
+
+        constructor(length: Int) : this(length, Random(System.nanoTime()))
+        constructor(length: Int, randomSeed: Long) : this(length, Random(randomSeed))
+        constructor(shuffledIndices: IntArray, randomSeed: Long) : this(
+            shuffledIndices.copyOf(
+                shuffledIndices.size
+            ), Random(randomSeed)
+        )
+
+        private constructor(length: Int, random: Random) : this(
+            createShuffledList(length, random),
+            random
+        )
+
+        init {
+            for (i in shuffled.indices) {
+                indexInShuffled[shuffled[i]] = i
+            }
+        }
+
+        override fun getLength(): Int {
+            return shuffled.size
+        }
+
+        override fun getNextIndex(index: Int): Int {
+            var shuffledIndex = indexInShuffled[index]
+            return if (++shuffledIndex < shuffled.size) shuffled[shuffledIndex] else C.INDEX_UNSET
+        }
+
+        override fun getPreviousIndex(index: Int): Int {
+            var shuffledIndex = indexInShuffled[index]
+            return if (--shuffledIndex >= 0) shuffled[shuffledIndex] else C.INDEX_UNSET
+        }
+
+        override fun getLastIndex(): Int {
+            return if (shuffled.isNotEmpty()) shuffled[shuffled.size - 1] else C.INDEX_UNSET
+        }
+
+        override fun getFirstIndex(): Int {
+            return if (shuffled.isNotEmpty()) shuffled[0] else C.INDEX_UNSET
+        }
+
+        override fun cloneAndInsert(insertionIndex: Int, insertionCount: Int): ShuffleOrder {
+            val insertionPoints = IntArray(insertionCount)
+            val insertionValues = IntArray(insertionCount)
+            for (i in 0..<insertionCount) {
+                insertionPoints[i] = random.nextInt(shuffled.size + 1)
+                val swapIndex = random.nextInt(i + 1)
+                insertionValues[i] = insertionValues[swapIndex]
+                insertionValues[swapIndex] = i + insertionIndex
+            }
+            insertionPoints.sort()
+            val newShuffled = IntArray(shuffled.size + insertionCount)
+            var indexInOldShuffled = 0
+            var indexInInsertionList = 0
+            for (i in 0..<shuffled.size + insertionCount) {
+                if (indexInInsertionList < insertionCount
+                    && indexInOldShuffled == insertionPoints[indexInInsertionList]
+                ) {
+                    newShuffled[i] = insertionValues[indexInInsertionList++]
+                } else {
+                    newShuffled[i] = shuffled[indexInOldShuffled++]
+                    if (newShuffled[i] >= insertionIndex) {
+                        newShuffled[i] += insertionCount
+                    }
+                }
+            }
+            return MusicShuffleOrder(newShuffled, Random(random.nextLong()))
+        }
+
+        override fun cloneAndRemove(indexFrom: Int, indexToExclusive: Int): ShuffleOrder {
+            val numberOfElementsToRemove = indexToExclusive - indexFrom
+            val newShuffled = IntArray(shuffled.size - numberOfElementsToRemove)
+            var foundElementsCount = 0
+            for (i in shuffled.indices) {
+                if (shuffled[i] in indexFrom..<indexToExclusive) {
+                    foundElementsCount++
+                } else {
+                    newShuffled[i - foundElementsCount] =
+                        if (shuffled[i] >= indexFrom) shuffled[i] - numberOfElementsToRemove else shuffled[i]
+                }
+            }
+            return MusicShuffleOrder(newShuffled, Random(random.nextLong()))
+        }
+
+        override fun cloneAndMove(
+            indexFrom: Int,
+            indexToExclusive: Int,
+            newIndexFrom: Int
+        ): ShuffleOrder {
+            val newShuffled = IntArray(shuffled.size)
+            for (i in shuffled.indices) {
+                newShuffled[i] = shuffled[i]
+            }
+            val tmp = newShuffled[indexFrom]
+            newShuffled[indexFrom] = newShuffled[newIndexFrom]
+            newShuffled[newIndexFrom] = tmp
+            return MusicShuffleOrder(newShuffled, random)
+        }
+
+        override fun cloneAndClear(): ShuffleOrder {
+            return MusicShuffleOrder( /* length= */0, Random(random.nextLong()))
+        }
+
+        companion object {
+            internal fun createShuffledList(length: Int, random: Random): IntArray {
+                val shuffled = IntArray(length)
+                for (i in 0..<length) {
+                    val swapIndex = random.nextInt(i + 1)
+                    shuffled[i] = shuffled[swapIndex]
+                    shuffled[swapIndex] = i
+                }
+                return shuffled
+            }
+        }
     }
 
     private class ServiceStub(service: MusicPlaybackService) : IAudioPlayerService.Stub() {
@@ -990,6 +1177,14 @@ class MusicPlaybackService : MediaSessionService() {
         const val SHUFFLE_MODE_CHANGED = "dev.ragnarok.filegallery.media.music.shuffle_mode_changed"
         const val QUEUE_CHANGED = "dev.ragnarok.filegallery.media.music.queue_changed"
         const val REFRESH = "dev.ragnarok.filegallery.media.music.refresh"
+
+        const val CUSTOM_COMMAND_CLOSE = "dev.ragnarok.filegallery.media.music.custom_command_close"
+        const val CUSTOM_COMMAND_DISABLE_REPEAT =
+            "dev.ragnarok.filegallery.media.music.custom_command_disable_repeat"
+        const val CUSTOM_COMMAND_REPEAT_MODE_ONCE =
+            "dev.ragnarok.filegallery.media.music.custom_command_repeat_mode_once"
+        const val CUSTOM_COMMAND_REPEAT_MODE_ALL =
+            "dev.ragnarok.filegallery.media.music.custom_command_repeat_mode_all"
 
         const val ACTION_PLAYLIST = "start_playlist"
         const val MAX_QUEUE_SIZE = 200

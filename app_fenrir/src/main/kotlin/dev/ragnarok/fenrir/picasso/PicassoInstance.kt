@@ -96,7 +96,6 @@ class PicassoInstance @SuppressLint("CheckResult") private constructor(
         CoverSafeResize.setMaxResolution(Settings.get().main().maxThumbResolution)
         val picassoBuilder = Picasso.Builder(app)
             .defaultBitmapConfig(Bitmap.Config.ARGB_8888)
-            .client(builder.build())
             .withCacheSize(calculateMemoryCacheSize(app))
             .addRequestHandler(PicassoLocalRequestHandler())
             .addRequestHandler(PicassoMediaMetadataHandler())
@@ -104,6 +103,11 @@ class PicassoInstance @SuppressLint("CheckResult") private constructor(
             .addRequestHandler(PicassoFullLocalRequestHandler(app))
         if (Settings.get().main().picassoDispatcher == 1) {
             picassoBuilder.dispatchers()
+        }
+        if (Settings.get().main().isSaving_network_traffic) {
+            picassoBuilder.setOffline(true)
+        } else {
+            picassoBuilder.client(builder.build())
         }
         return picassoBuilder.build()
     }
