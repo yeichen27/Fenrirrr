@@ -13,7 +13,6 @@ import android.util.Base64
 import android.webkit.MimeTypeMap
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.core.content.FileProvider
 import androidx.work.ForegroundInfo
 import androidx.work.WorkManager
 import androidx.work.Worker
@@ -40,6 +39,7 @@ import dev.ragnarok.fenrir.util.AppPerms
 import dev.ragnarok.fenrir.util.AppTextUtils.getDateFromUnixTime
 import dev.ragnarok.fenrir.util.DownloadWorkUtils.CheckDirectory
 import dev.ragnarok.fenrir.util.DownloadWorkUtils.makeLegalFilename
+import dev.ragnarok.fenrir.util.FileUtil
 import dev.ragnarok.fenrir.util.Utils.appLocale
 import dev.ragnarok.fenrir.util.Utils.makeImmutablePendingIntent
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.inMainThread
@@ -512,8 +512,8 @@ class ChatDownloadWorker(context: Context, workerParams: WorkerParameters) :
             )
             val intent_open = Intent(Intent.ACTION_VIEW)
             intent_open.setDataAndType(
-                FileProvider.getUriForFile(
-                    applicationContext, Constants.FILE_PROVIDER_AUTHORITY, html
+                FileUtil.getExportedUriForFile(
+                    applicationContext, html
                 ), MimeTypeMap.getSingleton()
                     .getMimeTypeFromExtension(getFileExtension(html))
             ).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
@@ -675,8 +675,8 @@ class ChatDownloadWorker(context: Context, workerParams: WorkerParameters) :
             )
             val intent_open = Intent(Intent.ACTION_VIEW)
             intent_open.setDataAndType(
-                FileProvider.getUriForFile(
-                    applicationContext, Constants.FILE_PROVIDER_AUTHORITY, html
+                FileUtil.getExportedUriForFile(
+                    applicationContext, html
                 ), MimeTypeMap.getSingleton()
                     .getMimeTypeFromExtension(getFileExtension(html))
             ).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)

@@ -8,8 +8,6 @@ import android.util.Base64
 import android.webkit.MimeTypeMap
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.core.content.FileProvider
-import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.longpoll.AppNotificationChannels
 import dev.ragnarok.fenrir.longpoll.NotificationHelper
@@ -443,8 +441,8 @@ class PostDownload(private val context: Context) {
                 )
                 val intent_open = Intent(Intent.ACTION_VIEW)
                 intent_open.setDataAndType(
-                    FileProvider.getUriForFile(
-                        context, Constants.FILE_PROVIDER_AUTHORITY, html
+                    FileUtil.getExportedUriForFile(
+                        context, html
                     ), MimeTypeMap.getSingleton()
                         .getMimeTypeFromExtension(ChatDownloadWorker.getFileExtension(html))
                 ).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)

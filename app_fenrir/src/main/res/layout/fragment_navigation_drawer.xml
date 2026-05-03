@@ -19,6 +19,7 @@
         app:radius_bottom_right="0dp"
         app:radius_top_left="24dp"
         app:radius_top_right="24dp"
+        app:stroke_exclude_bottom="true"
         app:view_stroke_color="?dividerColor"
         app:view_stroke_width="1.2dp">
 

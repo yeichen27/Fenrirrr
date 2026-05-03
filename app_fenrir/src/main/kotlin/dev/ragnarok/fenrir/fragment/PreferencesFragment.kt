@@ -24,7 +24,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.widget.ImageView
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.appcompat.app.AppCompatActivity
@@ -511,34 +510,12 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                     true
                 }
             }
-            switch("use_api_5_90_for_audio") {
-                summaryRes = R.string.use_api_5_90_for_audio_summary
-                titleRes = R.string.use_api_5_90_for_audio
-                defaultValue = true
-            }
+
             switch("saving_network_traffic") {
                 titleRes = R.string.saving_network_traffic
                 defaultValue = false
                 onCheckedChange {
                     Includes.proxySettings.broadcastUpdate(null)
-                }
-            }
-            subScreen("audio_catalog_v2") {
-                titleRes = R.string.audio_catalog_v2
-                visible = Utils.isOfficialVKCurrent
-
-                switch("audio_catalog_v2_enable") {
-                    defaultValue = true
-                    titleRes = R.string.turn_on
-                }
-
-                pref("audio_catalog_v2_sort_list") {
-                    titleRes = R.string.catalog_v2_edit_list
-                    dependency = "audio_catalog_v2_enable"
-                    onClick {
-                        PlaceFactory.catalogV2ListEditPlace.tryOpenWith(requireActivity())
-                        true
-                    }
                 }
             }
             singleChoice(
@@ -882,19 +859,6 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 titleRes = R.string.new_loading_dialog
             }
 
-            singleChoice(
-                "autoplay_video_on_posts",
-                selItems(
-                    R.array.array_autoplay_video_on_posts_names,
-                    R.array.array_autoplay_video_on_posts_items
-                ),
-                parentFragmentManager
-            ) {
-                dependency = "enable_native"
-                initialSelection = "2"
-                titleRes = R.string.autoplay_video_on_posts
-            }
-
             switch("only_not_viewed_followers") {
                 defaultValue = false
                 titleRes = R.string.only_not_viewed_followers
@@ -953,21 +917,6 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 titleRes = R.string.use_internal_downloader
             }
 
-            switch("do_auto_play_video") {
-                defaultValue = true
-                titleRes = R.string.do_auto_play_video
-            }
-
-            switch("video_controller_to_decor") {
-                defaultValue = false
-                titleRes = R.string.video_controller_to_decor
-            }
-
-            switch("video_swipes") {
-                defaultValue = true
-                titleRes = R.string.video_swipes
-            }
-
             singleChoice(
                 "end_list_anim",
                 selItems(R.array.array_end_list_anim_names, R.array.array_end_list_anim_items),
@@ -982,6 +931,38 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 titleRes = R.string.disable_history
             }
 
+        }
+
+        subScreen("video_settings") {
+            titleRes = R.string.video_settings
+            iconRes = R.drawable.video_settings
+            collapseIcon = true
+            singleChoice(
+                "autoplay_video_on_posts",
+                selItems(
+                    R.array.array_autoplay_video_on_posts_names,
+                    R.array.array_autoplay_video_on_posts_items
+                ),
+                parentFragmentManager
+            ) {
+                dependency = "enable_native"
+                initialSelection = "1"
+                titleRes = R.string.autoplay_video_on_posts
+            }
+            switch("do_auto_play_video") {
+                defaultValue = false
+                titleRes = R.string.do_auto_play_video
+            }
+
+            switch("video_controller_to_decor") {
+                defaultValue = false
+                titleRes = R.string.video_controller_to_decor
+            }
+
+            switch("video_swipes") {
+                defaultValue = true
+                titleRes = R.string.video_swipes
+            }
         }
 
         subScreen("photo_settings") {
@@ -1006,7 +987,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 selItems(R.array.preview_preview_size, R.array.preview_preview_size_values),
                 parentFragmentManager
             ) {
-                initialSelection = "4"
+                initialSelection = "3"
                 titleRes = R.string.photo_preview_size_title
                 onSelectionChange {
                     Settings.get().main().notifyPrefPreviewSizeChanged()
@@ -1026,7 +1007,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 ),
                 parentFragmentManager
             ) {
-                initialSelection = "0"
+                initialSelection = "1"
                 titleRes = R.string.long_click_photo
             }
 
@@ -1058,7 +1039,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 titleRes = R.string.change_upload_size
             }
             switch("instant_photo_display") {
-                defaultValue = Settings.get().main().isInstant_photo_display
+                defaultValue = false
                 titleRes = R.string.instant_photo_display
             }
 
@@ -1067,7 +1048,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 selItems(R.array.picasso_dispatcher_names, R.array.picasso_dispatcher_values),
                 parentFragmentManager
             ) {
-                initialSelection = Settings.get().main().picassoDispatcher.toString()
+                initialSelection = "1"
                 titleRes = R.string.picasso_dispatcher
                 onSelectionChange {
                     clear_cache()
@@ -1376,6 +1357,30 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
             titleRes = R.string.music_settings
             iconRes = R.drawable.player_settings
             collapseIcon = true
+            subScreen("audio_catalog_v2") {
+                titleRes = R.string.audio_catalog_v2
+                visible = Utils.isOfficialVKCurrent
+
+                switch("audio_catalog_v2_enable") {
+                    defaultValue = true
+                    titleRes = R.string.turn_on
+                }
+
+                pref("audio_catalog_v2_sort_list") {
+                    titleRes = R.string.catalog_v2_edit_list
+                    dependency = "audio_catalog_v2_enable"
+                    onClick {
+                        PlaceFactory.catalogV2ListEditPlace.tryOpenWith(requireActivity())
+                        true
+                    }
+                }
+            }
+
+            switch("use_api_5_90_for_audio") {
+                summaryRes = R.string.use_api_5_90_for_audio_summary
+                titleRes = R.string.use_api_5_90_for_audio
+                defaultValue = true
+            }
             switch("audio_round_icon") {
                 defaultValue = true
                 titleRes = R.string.audio_round_icon
@@ -1752,7 +1757,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 selItems(R.array.array_parser_names, R.array.array_parser_items),
                 parentFragmentManager
             ) {
-                initialSelection = "0"
+                initialSelection = "1"
                 titleRes = R.string.parser_type
                 onSelectionChange {
                     Utils.currentParser = it.toInt()
@@ -1844,7 +1849,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 selItems(R.array.array_rendering_mode_names, R.array.array_rendering_mode_items),
                 parentFragmentManager
             ) {
-                initialSelection = "0"
+                initialSelection = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) "2" else "0"
                 titleRes = R.string.rendering_mode
                 visible = Build.VERSION.SDK_INT >= Build.VERSION_CODES.P
                 onSelectionChange {
@@ -2115,9 +2120,6 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 onClick {
                     val view = View.inflate(requireActivity(), R.layout.dialog_about_us, null)
                     val anim: ThorVGLottieView = view.findViewById(R.id.lottie_animation)
-                    val txt: TextView =
-                        view.findViewById(dev.ragnarok.fenrir_common.R.id.sub_header)
-                    txt.setText(Common.getAboutUsHeader(Settings.get().main().paganSymbol))
                     val cbc = Common.getAboutUsAnimation(
                         Settings.get().main().paganSymbol,
                         requireActivity()

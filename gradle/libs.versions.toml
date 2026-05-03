@@ -1,6 +1,6 @@
 [versions]
 # APP
-developerBuild = "true"
+developerBuild = "false"
 
 agpVersion = "9.2.0"
 appCompileSDK = "37"
@@ -11,7 +11,7 @@ appMinSDKDevelop = "29"
 appMinSDKNotDevelop = "26"
 appTargetSDK = "37"
 appVersionCode = "1000"
-appVersionName = "115"
+appVersionName = "116"
 
 # Androidx Libraries
 activityVersion = "1.13.0"
@@ -71,7 +71,7 @@ okhttpLibraryVersion = "5.3.2"
 okioVersion = "3.17.0"
 guavaVersion = "33.6.0-android"
 errorProneVersion = "2.49.0"
-checkerQualAndroidVersion = "4.0.0"
+checkerQualAndroidVersion = "4.1.0"
 jspecifyAnnotationVersion = "1.0.0"
 desugarLibraryVersion = "2.1.5"
 

@@ -2,12 +2,11 @@ package dev.ragnarok.filegallery.settings
 
 import android.content.Context
 import android.content.res.Configuration
+import android.os.Build
 import android.os.Environment
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.edit
 import de.maxr1998.modernpreferences.PreferenceScreen.Companion.getPreferences
-import dev.ragnarok.fenrir.module.FenrirNative
-import dev.ragnarok.fenrir.module.FileUtils
 import dev.ragnarok.filegallery.Constants
 import dev.ragnarok.filegallery.Constants.forceDeveloperMode
 import dev.ragnarok.filegallery.kJson
@@ -213,10 +212,14 @@ internal class MainSettings(context: Context) : IMainSettings {
         }
 
     override val rendering_mode: Int
-        get() = try {
-            getPreferences(app).getString("rendering_bitmap_mode", "0")!!.trim().toInt()
-        } catch (_: Exception) {
-            0
+        get() {
+            val defMode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) 2 else 0
+            return try {
+                getPreferences(app).getString("rendering_bitmap_mode", defMode.toString())!!.trim()
+                    .toInt()
+            } catch (_: Exception) {
+                defMode
+            }
         }
 
     override val fFmpegPlugin: Int
@@ -243,17 +246,7 @@ internal class MainSettings(context: Context) : IMainSettings {
         get() = getPreferences(app).getBoolean("show_photos_line", true)
 
     override val isInstant_photo_display: Boolean
-        get() {
-            if (!getPreferences(app).contains("instant_photo_display")) {
-                getPreferences(app).edit {
-                    putBoolean(
-                        "instant_photo_display",
-                        FenrirNative.isNativeLoaded && FileUtils.threadsCount > 4
-                    )
-                }
-            }
-            return getPreferences(app).getBoolean("instant_photo_display", false)
-        }
+        get() = getPreferences(app).getBoolean("instant_photo_display", false)
 
     override val isAudio_round_icon: Boolean
         get() = getPreferences(app).getBoolean("audio_round_icon", true)
@@ -288,10 +281,10 @@ internal class MainSettings(context: Context) : IMainSettings {
     @get:ParserType
     override val currentParser: Int
         get() = try {
-            getPreferences(app).getString("current_parser", "0")!!
+            getPreferences(app).getString("current_parser", "1")!!
                 .trim().toInt()
         } catch (_: Exception) {
-            ParserType.JSON
+            ParserType.MSGPACK
         }
 
     override val isCompress_incoming_traffic: Boolean
@@ -337,26 +330,18 @@ internal class MainSettings(context: Context) : IMainSettings {
 
     override val longClickPhoto: Int
         get() = try {
-            getPreferences(app).getString("long_click_photo", "0")?.trim()?.toInt()
-                ?: 0
+            getPreferences(app).getString("long_click_photo", "1")?.trim()?.toInt()
+                ?: 1
         } catch (_: Exception) {
-            0
+            1
         }
 
     override val picassoDispatcher: Int
         get() = try {
-            if (!getPreferences(app).contains("picasso_dispatcher")) {
-                getPreferences(app).edit {
-                    putString(
-                        "picasso_dispatcher",
-                        if (FenrirNative.isNativeLoaded && FileUtils.threadsCount > 4) "1" else "0"
-                    )
-                }
-            }
-            getPreferences(app).getString("picasso_dispatcher", "0")!!
+            getPreferences(app).getString("picasso_dispatcher", "1")!!
                 .trim().toInt()
         } catch (_: Exception) {
-            0
+            1
         }
 
     @get:Lang

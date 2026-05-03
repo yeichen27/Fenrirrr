@@ -135,11 +135,13 @@
             android:id="@+id/current_path"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:drawableStart="@drawable/dir_icon"
             android:gravity="center"
             android:paddingStart="12dp"
             android:paddingTop="4dp"
             android:paddingEnd="12dp"
             android:paddingBottom="4dp"
+            android:stateListAnimator="@animator/clicked"
             android:textColor="#ffffff" />
     </dev.ragnarok.filegallery.view.RoundCornerLinearView>
 

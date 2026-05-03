@@ -42,6 +42,10 @@ class DrawerCategory : Parcelable {
             SwitchableCategory.FEED -> R.string.feed
             SwitchableCategory.FEEDBACK -> R.string.drawer_feedback
             SwitchableCategory.SEARCH -> R.string.search
+            SwitchableCategory.CLIPS -> R.string.clips
+            SwitchableCategory.BIRTHDAYS -> R.string.birthdays
+            SwitchableCategory.SETTINGS -> R.string.settings
+            SwitchableCategory.ACCOUNTS -> R.string.accounts
             else -> {
                 throw IllegalArgumentException()
             }

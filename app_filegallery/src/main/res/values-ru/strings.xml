@@ -192,7 +192,7 @@
     <string name="import_export_settings">Импорт/Экспорт</string>
     <string name="viewpager_page_transform">Анимация Viewpager2</string>
     <string name="player_cover_transform">Анимация свайпа обложки плеера</string>
-    <string name="developer">Разработчик: Умеров Артём</string>
+    <string name="developer">Разработчик: Умеров А.</string>
     <string name="repo">Репозиторий: https://github.com/umerov1999/Fenrir-for-VK</string>
     <string name="repo_local_server">Репозиторий: https://github.com/umerov1999/FenrirMediaServer/releases</string>
     <string name="tag_count_a">%1$d метка</string>
@@ -263,4 +263,5 @@
     <string name="long_click_photo">Долгое нажатие на фото</string>
     <string name="photo_zoom_enable_list">Листать приближенные изображения</string>
     <string name="repeat_mode">Повтор</string>
+    <string name="select_storage">Выберите хранилище</string>
 </resources>

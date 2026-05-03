@@ -13,7 +13,6 @@ import android.os.Build
 import android.webkit.MimeTypeMap
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.core.content.FileProvider
 import androidx.core.net.toUri
 import androidx.work.Data
 import androidx.work.ForegroundInfo
@@ -536,9 +535,8 @@ object DownloadWorkUtils {
 
                 val intent_open = Intent(Intent.ACTION_VIEW)
                 intent_open.setDataAndType(
-                    FileProvider.getUriForFile(
+                    FileUtil.getExportedUriForFile(
                         applicationContext,
-                        Constants.FILE_PROVIDER_AUTHORITY,
                         File(file_v.build())
                     ), MimeTypeMap.getSingleton()
                         .getMimeTypeFromExtension(file_v.ext)
@@ -601,9 +599,8 @@ object DownloadWorkUtils {
 
                 val intent_open = Intent(Intent.ACTION_VIEW)
                 intent_open.setDataAndType(
-                    FileProvider.getUriForFile(
+                    FileUtil.getExportedUriForFile(
                         applicationContext,
-                        Constants.FILE_PROVIDER_AUTHORITY,
                         File(file_v.build())
                     ), MimeTypeMap.getSingleton()
                         .getMimeTypeFromExtension(file_v.ext)

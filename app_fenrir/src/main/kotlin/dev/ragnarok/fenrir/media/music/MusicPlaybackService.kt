@@ -485,7 +485,7 @@ class MusicPlaybackService : MediaSessionService() {
         }
 
         fun insertSourceAfterCurrent(audio: Audio) {
-            exoplayer.addMediaSource(exoplayer.currentMediaItemIndex, makeMediaSource(audio))
+            exoplayer.addMediaSource(exoplayer.currentMediaItemIndex + 1, makeMediaSource(audio))
         }
 
         fun play() {

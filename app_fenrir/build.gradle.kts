@@ -90,6 +90,7 @@ android {
         }
         debug {
             isMinifyEnabled = false
+            //noinspection NotShrinkingResources
             isShrinkResources = false
         }
     }
@@ -107,6 +108,7 @@ android {
                 libs.versions.vkClientSecret.commaString()
             )
         }
+        /*
         create("kate") {
             applicationId = "dev.ragnarok.fenrir_kate"
             dimension = "type"
@@ -118,6 +120,7 @@ android {
                 libs.versions.kateClientSecret.commaString()
             )
         }
+         */
     }
 }
 

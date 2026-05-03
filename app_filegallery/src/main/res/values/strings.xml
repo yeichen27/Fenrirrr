@@ -318,7 +318,7 @@
     <string name="import_export_settings">Import/Export</string>
     <string name="viewpager_page_transform">Viewpager2 animation</string>
     <string name="player_cover_transform">Player cover swipe animation</string>
-    <string name="developer">Developer: Artyom Umerov</string>
+    <string name="developer">Developer: Umerov A.</string>
     <string name="repo">Repository: https://github.com/umerov1999/Fenrir-for-VK</string>
     <string name="repo_local_server">Repository: https://github.com/umerov1999/FenrirMediaServer/releases</string>
     <string name="tag_count_a">%1$d tag</string>
@@ -401,4 +401,5 @@
     <string name="long_click_photo">Long press on the photo</string>
     <string name="photo_zoom_enable_list">Scroll through zoomed images</string>
     <string name="repeat_mode">Repeat</string>
+    <string name="select_storage">Select storage</string>
 </resources>

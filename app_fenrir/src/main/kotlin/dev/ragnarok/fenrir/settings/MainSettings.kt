@@ -3,6 +3,7 @@ package dev.ragnarok.fenrir.settings
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
+import android.os.Build
 import android.os.Environment
 import androidx.core.content.edit
 import de.maxr1998.modernpreferences.PreferenceScreen.Companion.getPreferences
@@ -17,7 +18,6 @@ import dev.ragnarok.fenrir.model.ParserType
 import dev.ragnarok.fenrir.model.PhotoSize
 import dev.ragnarok.fenrir.model.catalog_v2_audio.CatalogV2SortListCategory
 import dev.ragnarok.fenrir.module.FenrirNative
-import dev.ragnarok.fenrir.module.FileUtils
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.settings.ISettings.IMainSettings
@@ -122,11 +122,11 @@ internal class MainSettings(context: Context) : IMainSettings {
     @PhotoSize
     private fun restorePhotoPreviewSize(): Int {
         return try {
-            getPreferences(app).getString("photo_preview_size", PhotoSize.Y.toString())!!
+            getPreferences(app).getString("photo_preview_size", PhotoSize.X.toString())!!
                 .trim()
                 .toInt()
         } catch (_: Exception) {
-            PhotoSize.Y
+            PhotoSize.X
         }
     }
 
@@ -442,11 +442,11 @@ internal class MainSettings(context: Context) : IMainSettings {
             if (!FenrirNative.isNativeLoaded || isSaving_network_traffic) {
                 0
             } else {
-                getPreferences(app).getString("autoplay_video_on_posts", "2")?.trim()?.toInt()
-                    ?: 0
+                getPreferences(app).getString("autoplay_video_on_posts", "1")?.trim()?.toInt()
+                    ?: 1
             }
         } catch (_: Exception) {
-            0
+            1
         }
 
     override val isStrip_news_repost: Boolean
@@ -672,10 +672,10 @@ internal class MainSettings(context: Context) : IMainSettings {
     @get:ParserType
     override val currentParser: Int
         get() = try {
-            getPreferences(app).getString("current_parser", "0")!!
+            getPreferences(app).getString("current_parser", "1")!!
                 .trim().toInt()
         } catch (_: Exception) {
-            ParserType.JSON
+            ParserType.MSGPACK
         }
     override val isPhoto_to_user_dir: Boolean
         get() = getPreferences(app).getBoolean("photo_to_user_dir", true)
@@ -702,23 +702,13 @@ internal class MainSettings(context: Context) : IMainSettings {
     override val isChange_upload_size: Boolean
         get() = getPreferences(app).getBoolean("change_upload_size", false)
     override val isInstant_photo_display: Boolean
-        get() {
-            if (!getPreferences(app).contains("instant_photo_display")) {
-                getPreferences(app).edit {
-                    putBoolean(
-                        "instant_photo_display",
-                        FenrirNative.isNativeLoaded && FileUtils.threadsCount > 4
-                    )
-                }
-            }
-            return getPreferences(app).getBoolean("instant_photo_display", false)
-        }
+        get() = getPreferences(app).getBoolean("instant_photo_display", false)
     override val isShow_photos_line: Boolean
         get() = getPreferences(app).getBoolean("show_photos_line", true)
     override val isShow_photos_date: Boolean
         get() = getPreferences(app).getBoolean("show_photos_date", false)
     override val isDo_auto_play_video: Boolean
-        get() = getPreferences(app).getBoolean("do_auto_play_video", true)
+        get() = getPreferences(app).getBoolean("do_auto_play_video", false)
     override val isVideo_controller_to_decor: Boolean
         get() = getPreferences(app).getBoolean("video_controller_to_decor", false)
     override val isVideo_swipes: Boolean
@@ -825,18 +815,49 @@ internal class MainSettings(context: Context) : IMainSettings {
 
     override var catalogV2ListSort: List<Int>
         get() {
-            val ret = getPreferences(app).getString("catalog_v2_list_json", null)
-            return if (ret == null) {
-                listOf(
-                    CatalogV2SortListCategory.TYPE_CATALOG,
-                    CatalogV2SortListCategory.TYPE_LOCAL_AUDIO,
-                    CatalogV2SortListCategory.TYPE_LOCAL_SERVER_AUDIO,
-                    CatalogV2SortListCategory.TYPE_AUDIO,
-                    CatalogV2SortListCategory.TYPE_PLAYLIST,
-                    CatalogV2SortListCategory.TYPE_RECOMMENDATIONS
-                )
-            } else {
-                kJson.decodeFromString(ListSerializer(Int.serializer()), ret)
+            val defaults = listOf(
+                CatalogV2SortListCategory.TYPE_CATALOG,
+                CatalogV2SortListCategory.TYPE_LOCAL_AUDIO,
+                CatalogV2SortListCategory.TYPE_LOCAL_SERVER_AUDIO,
+                CatalogV2SortListCategory.TYPE_AUDIO,
+                CatalogV2SortListCategory.TYPE_PLAYLIST,
+                CatalogV2SortListCategory.TYPE_RECOMMENDATIONS
+            )
+
+            val jsonString =
+                getPreferences(app).getString("catalog_v2_list_json", null) ?: return defaults
+
+            return try {
+                val data = kJson.decodeFromString(ListSerializer(Int.serializer()), jsonString)
+                var needClear = false
+                for (i in data) {
+                    var has = false
+                    for (s in defaults) {
+                        if (s == i) {
+                            has = true
+                            break
+                        }
+                    }
+                    if (!has) {
+                        needClear = true
+                        break
+                    }
+                }
+                if (needClear) {
+                    throw UnsupportedOperationException()
+                }
+                data
+            } catch (_: Exception) {
+                getPreferences(app).edit {
+                    putString(
+                        "catalog_v2_list_json",
+                        kJson.encodeToString(
+                            ListSerializer(Int.serializer()),
+                            defaults
+                        )
+                    )
+                }
+                defaults
             }
         }
         set(settings) {
@@ -857,11 +878,14 @@ internal class MainSettings(context: Context) : IMainSettings {
             Lang.DEFAULT
         }
     override val rendering_mode: Int
-        get() = try {
-            getPreferences(app).getString("rendering_bitmap_mode", "0")!!
-                .trim().toInt()
-        } catch (_: Exception) {
-            0
+        get() {
+            val defMode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) 2 else 0
+            return try {
+                getPreferences(app).getString("rendering_bitmap_mode", defMode.toString())!!.trim()
+                    .toInt()
+            } catch (_: Exception) {
+                defMode
+            }
         }
     override val endListAnimation: Int
         get() = try {
@@ -920,28 +944,20 @@ internal class MainSettings(context: Context) : IMainSettings {
 
     override val longClickPhoto: Int
         get() = try {
-            getPreferences(app).getString("long_click_photo", "0")?.trim()?.toInt()
-                ?: 0
+            getPreferences(app).getString("long_click_photo", "1")?.trim()?.toInt()
+                ?: 1
         } catch (_: Exception) {
-            0
+            1
         }
     override val isEnable_dirs_files_count: Boolean
         get() = getPreferences(app).getBoolean("enable_dirs_files_count", true)
 
     override val picassoDispatcher: Int
         get() = try {
-            if (!getPreferences(app).contains("picasso_dispatcher")) {
-                getPreferences(app).edit {
-                    putString(
-                        "picasso_dispatcher",
-                        if (FenrirNative.isNativeLoaded && FileUtils.threadsCount > 4) "1" else "0"
-                    )
-                }
-            }
-            getPreferences(app).getString("picasso_dispatcher", "0")!!
+            getPreferences(app).getString("picasso_dispatcher", "1")!!
                 .trim().toInt()
         } catch (_: Exception) {
-            0
+            1
         }
 
     override val isOnlyNotViewedFollowers: Boolean

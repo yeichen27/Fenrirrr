@@ -24,7 +24,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
 import androidx.appcompat.widget.Toolbar
-import androidx.core.content.FileProvider
 import androidx.core.net.toFile
 import androidx.core.net.toUri
 import androidx.core.view.MenuProvider
@@ -41,7 +40,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.squareup.picasso3.Callback
 import com.squareup.picasso3.Rotatable
 import dev.ragnarok.fenrir.module.FenrirNative
-import dev.ragnarok.filegallery.Constants
 import dev.ragnarok.filegallery.Extra
 import dev.ragnarok.filegallery.R
 import dev.ragnarok.filegallery.StubAnimatorListener
@@ -68,6 +66,7 @@ import dev.ragnarok.filegallery.settings.CurrentTheme.getStatusBarColor
 import dev.ragnarok.filegallery.settings.CurrentTheme.getStatusBarNonColored
 import dev.ragnarok.filegallery.settings.Settings
 import dev.ragnarok.filegallery.util.DownloadWorkUtils
+import dev.ragnarok.filegallery.util.FileUtil
 import dev.ragnarok.filegallery.util.Utils
 import dev.ragnarok.filegallery.util.coroutines.CancelableJob
 import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.delayTaskFlow
@@ -310,13 +309,14 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
                 intent_send.type = "image/*"
                 val listImage: ArrayList<Uri> = ArrayList(Utils.listSelected.size)
                 for (i in Utils.listSelected) {
-                    listImage.add(
-                        FileProvider.getUriForFile(
-                            this,
-                            Constants.FILE_PROVIDER_AUTHORITY,
-                            i.toUri().toFile()
+                    FileUtil.getExportedUriForFile(
+                        this,
+                        i.toUri().toFile()
+                    )?.let { file ->
+                        listImage.add(
+                            file
                         )
-                    )
+                    }
                 }
                 intent_send.putParcelableArrayListExtra(
                     Intent.EXTRA_STREAM, listImage

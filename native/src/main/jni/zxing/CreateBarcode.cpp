@@ -12,10 +12,7 @@
 #include "DecoderResult.h"
 #include "DetectorResult.h"
 #include "JSON.h"
-
-#if !defined(ZXING_READERS) && !defined(ZXING_WRITERS)
 #include "Version.h"
-#endif
 
 #ifdef ZXING_READERS
 #include "ReadBarcode.h"
@@ -45,6 +42,10 @@ struct CreatorOptions::Data
 	// structured_append (idx, cnt, ID)
 
 	mutable unique_zint_symbol zint;
+
+#ifndef __cpp_aggregate_paren_init // make XCode 14.x happy
+	Data(BarcodeFormat format, std::string options) : format(format), options(std::move(options)) {}
+#endif
 };
 
 // TODO: check return type
@@ -311,6 +312,9 @@ zint_symbol* CreatorOptions::zint() const
 
 Barcode CreateBarcode(const void* data, int size, int mode, const CreatorOptions& opts)
 {
+	if (!data || size < 1)
+		throw std::invalid_argument("Can not create a barcode from NULL or empty data");
+
 	auto zint = opts.zint();
 
 	zint->input_mode = mode == UNICODE_MODE && opts.gs1() && (opts.format() & BarcodeFormat::AllGS1) ? GS1_MODE : mode;
@@ -392,6 +396,7 @@ Barcode CreateBarcode(const void* data, int size, int mode, const CreatorOptions
 #endif
 
 	res.zint = std::move(opts.d->zint);
+	res.zintMutex = std::make_unique<std::mutex>();
 
 	return res;
 }

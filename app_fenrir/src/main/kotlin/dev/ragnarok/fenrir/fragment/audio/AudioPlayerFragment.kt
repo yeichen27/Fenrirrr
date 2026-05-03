@@ -19,6 +19,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.net.toUri
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -847,8 +848,16 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
 
     private fun shareAudio() {
         val current = MusicPlaybackController.currentAudio ?: return
-        if (current.isLocal || current.isLocalServer) {
+        if (current.isLocalServer) {
             createCustomToast(requireActivity(), view)?.showToastError(R.string.not_supported)
+            return
+        } else if (current.isLocal) {
+            val intent_send = Intent(Intent.ACTION_SEND)
+            intent_send.type = "audio/*"
+            intent_send.putExtra(
+                Intent.EXTRA_STREAM, current.url?.toUri()
+            ).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            requireActivity().startActivity(intent_send)
             return
         }
         requestShare.launch(

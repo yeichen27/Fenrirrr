@@ -7,6 +7,7 @@ import android.widget.FrameLayout
 import androidx.drawerlayout.widget.DrawerLayout
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.model.DrawerCategory
+import dev.ragnarok.fenrir.model.SwitchableCategory
 import dev.ragnarok.fenrir.model.drawer.AbsMenuItem
 import dev.ragnarok.fenrir.model.drawer.IconMenuItem
 import dev.ragnarok.fenrir.model.drawer.RecentChat
@@ -69,6 +70,8 @@ abstract class AbsNavigationView : FrameLayout {
         const val PAGE_NOTIFICATION = 11
         const val PAGE_SEARCH = 12
         const val PAGE_STORIES = 13
+        const val PAGE_CLIPS = 14
+        const val PAGE_BIRTHDAYS = 15
 
         val SECTION_ITEM_FRIENDS: SectionMenuItem =
             IconMenuItem(PAGE_FRIENDS, R.drawable.friends, R.string.friends)
@@ -86,6 +89,18 @@ abstract class AbsNavigationView : FrameLayout {
             PAGE_STORIES,
             R.drawable.story_outline,
             R.string.stories
+        )
+
+        val SECTION_ITEM_CLIPS: SectionMenuItem = IconMenuItem(
+            PAGE_CLIPS,
+            R.drawable.clip_outline,
+            R.string.clips
+        )
+
+        val SECTION_ITEM_BIRTHDAYS: SectionMenuItem = IconMenuItem(
+            PAGE_BIRTHDAYS,
+            R.drawable.cake,
+            R.string.birthdays
         )
 
         val SECTION_ITEM_GROUPS: SectionMenuItem =
@@ -114,5 +129,27 @@ abstract class AbsNavigationView : FrameLayout {
 
         val SECTION_ITEM_ACCOUNTS: SectionMenuItem =
             IconMenuItem(PAGE_ACCOUNTS, R.drawable.account_circle, R.string.accounts)
+
+        fun getItemBySwitchableCategory(@SwitchableCategory type: String): AbsMenuItem? {
+            return when (type) {
+                SwitchableCategory.FRIENDS -> SECTION_ITEM_FRIENDS
+                SwitchableCategory.DIALOGS -> SECTION_ITEM_DIALOGS
+                SwitchableCategory.FEED -> SECTION_ITEM_FEED
+                SwitchableCategory.FEEDBACK -> SECTION_ITEM_FEEDBACK
+                SwitchableCategory.STORIES -> SECTION_ITEM_STORIES
+                SwitchableCategory.CLIPS -> SECTION_ITEM_CLIPS
+                SwitchableCategory.BIRTHDAYS -> SECTION_ITEM_BIRTHDAYS
+                SwitchableCategory.GROUPS -> SECTION_ITEM_GROUPS
+                SwitchableCategory.PHOTOS -> SECTION_ITEM_PHOTOS
+                SwitchableCategory.VIDEOS -> SECTION_ITEM_VIDEOS
+                SwitchableCategory.MUSIC -> SECTION_ITEM_AUDIOS
+                SwitchableCategory.DOCS -> SECTION_ITEM_DOCS
+                SwitchableCategory.FAVES -> SECTION_ITEM_BOOKMARKS
+                SwitchableCategory.SEARCH -> SECTION_ITEM_SEARCH
+                SwitchableCategory.SETTINGS -> SECTION_ITEM_SETTINGS
+                SwitchableCategory.ACCOUNTS -> SECTION_ITEM_ACCOUNTS
+                else -> null
+            }
+        }
     }
 }

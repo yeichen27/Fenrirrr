@@ -269,6 +269,14 @@ class AudioLocalRecyclerAdapter(private val mContext: Context, private var data:
         )
         menus.add(
             OptionRequest(
+                AudioLocalOption.share_button,
+                mContext.getString(R.string.share),
+                R.drawable.ic_outline_share,
+                true
+            )
+        )
+        menus.add(
+            OptionRequest(
                 AudioLocalOption.strip_metadata_item_audio,
                 mContext.getString(R.string.strip_metadata),
                 R.drawable.ic_outline_delete,
@@ -314,6 +322,15 @@ class AudioLocalRecyclerAdapter(private val mContext: Context, private var data:
                 )
 
                 AudioLocalOption.bitrate_item_audio -> getLocalBitrate(audio.url)
+                AudioLocalOption.share_button -> {
+                    val intent_send = Intent(Intent.ACTION_SEND)
+                    intent_send.type = "audio/*"
+                    intent_send.putExtra(
+                        Intent.EXTRA_STREAM, audio.url?.toUri()
+                    ).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    mContext.startActivity(intent_send)
+                }
+
                 AudioLocalOption.strip_metadata_item_audio -> {
                     audio.url?.let { it ->
                         audioListDisposable += stripMetadata(it).fromIOToMain(

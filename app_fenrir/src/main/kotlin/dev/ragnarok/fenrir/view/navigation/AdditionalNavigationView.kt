@@ -224,9 +224,6 @@ class AdditionalNavigationView : AbsNavigationView, MenuListAdapter.ActionListen
                 }
             }
 
-//        items.add(new DividerMenuItem());
-            mDrawerItems?.add(SECTION_ITEM_SETTINGS)
-            mDrawerItems?.add(SECTION_ITEM_ACCOUNTS)
             if (mRecentChats.nonNullNoEmpty() && Settings.get()
                     .main().isEnable_show_recent_dialogs
             ) {
@@ -247,9 +244,6 @@ class AdditionalNavigationView : AbsNavigationView, MenuListAdapter.ActionListen
             }
         }
 
-//        items.add(new DividerMenuItem());
-        items.add(SECTION_ITEM_SETTINGS)
-        items.add(SECTION_ITEM_ACCOUNTS)
         if (mRecentChats.nonNullNoEmpty() && Settings.get().main().isEnable_show_recent_dialogs) {
             mRecentChats?.let { items.addAll(it) }
         }
@@ -392,19 +386,5 @@ class AdditionalNavigationView : AbsNavigationView, MenuListAdapter.ActionListen
 
     override fun onDrawerItemLongClick(item: AbsMenuItem) {
         selectItem(item, true)
-    }
-
-    private fun getItemBySwitchableCategory(@SwitchableCategory type: String): AbsMenuItem? {
-        return when (type) {
-            SwitchableCategory.FRIENDS -> SECTION_ITEM_FRIENDS
-            SwitchableCategory.STORIES -> SECTION_ITEM_STORIES
-            SwitchableCategory.GROUPS -> SECTION_ITEM_GROUPS
-            SwitchableCategory.PHOTOS -> SECTION_ITEM_PHOTOS
-            SwitchableCategory.VIDEOS -> SECTION_ITEM_VIDEOS
-            SwitchableCategory.MUSIC -> SECTION_ITEM_AUDIOS
-            SwitchableCategory.DOCS -> SECTION_ITEM_DOCS
-            SwitchableCategory.FAVES -> SECTION_ITEM_BOOKMARKS
-            else -> null
-        }
     }
 }

@@ -730,32 +730,24 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                             false
                         )
                     )
-                    if (Utils.isOfficialVKCurrent) {
-                        menus.add(
-                            OptionRequest(
-                                2,
-                                getString(R.string.clips),
-                                R.drawable.clip_outline,
-                                true
-                            )
-                        )
-                    }
                     menus.add(
                         OptionRequest(
-                            3,
+                            2,
                             getString(R.string.settings),
                             R.drawable.preferences,
                             true
                         )
                     )
-                    menus.add(
-                        OptionRequest(
-                            4,
-                            getString(R.string.scan_qr),
-                            R.drawable.qr_code,
-                            false
+                    if (FenrirNative.isNativeLoaded) {
+                        menus.add(
+                            OptionRequest(
+                                3,
+                                getString(R.string.scan_qr),
+                                R.drawable.qr_code,
+                                false
+                            )
                         )
-                    )
+                    }
                     menus.show(
                         supportFragmentManager,
                         "main_activity_options"
@@ -790,16 +782,11 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                             }
 
                             2 -> {
-                                PlaceFactory.getShortVideoPlace(mAccountId, null)
-                                    .tryOpenWith(this@MainActivity)
-                            }
-
-                            3 -> {
                                 PlaceFactory.getPreferencesPlace(mAccountId)
                                     .tryOpenWith(this@MainActivity)
                             }
 
-                            4 if FenrirNative.isNativeLoaded -> {
+                            3 if FenrirNative.isNativeLoaded -> {
                                 val intent =
                                     Intent(
                                         this@MainActivity,
@@ -1126,101 +1113,125 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
             return
         }
         val sectionDrawerItem = item as SectionMenuItem
-        if (sectionDrawerItem.section == AbsNavigationView.PAGE_ACCOUNTS) {
-            startAccountsActivity()
-            return
-        }
-        if (sectionDrawerItem.section == AbsNavigationView.PAGE_STORIES) {
-            PlaceFactory.getHistoryVideoPreviewPlace(
-                mAccountId,
-                ArrayList(),
-                0
-            ).tryOpenWith(this)
-            return
-        }
-        mCurrentFrontSection = item
-        navigationView?.selectPage(item)
-        if (Settings.get().main().isDo_not_clear_back_stack && menu && isPlaying) {
-            doClearBackStack = !doClearBackStack
-        }
-        if (doClearBackStack) {
-            clearBackStack()
-        }
-        val aid = mAccountId
         when (sectionDrawerItem.section) {
-            AbsNavigationView.PAGE_DIALOGS -> openPlace(
-                PlaceFactory.getDialogsPlace(
-                    aid,
-                    aid,
-                    null
-                )
-            )
+            AbsNavigationView.PAGE_ACCOUNTS -> {
+                startAccountsActivity()
+                return
+            }
 
-            AbsNavigationView.PAGE_FRIENDS -> openPlace(
-                PlaceFactory.getFriendsFollowersPlace(
-                    aid,
-                    aid,
-                    FriendsTabsFragment.TAB_ALL_FRIENDS,
-                    null
-                )
-            )
+            AbsNavigationView.PAGE_STORIES -> {
+                PlaceFactory.getHistoryVideoPreviewPlace(
+                    mAccountId,
+                    ArrayList(),
+                    0
+                ).tryOpenWith(this)
+                return
+            }
 
-            AbsNavigationView.PAGE_GROUPS -> openPlace(
-                PlaceFactory.getCommunitiesPlace(
-                    aid,
-                    aid
-                )
-            )
+            AbsNavigationView.PAGE_CLIPS -> {
+                PlaceFactory.getShortVideoPlace(mAccountId, null)
+                    .tryOpenWith(this@MainActivity)
+                return
+            }
 
-            AbsNavigationView.PAGE_PREFERENSES -> openPlace(PlaceFactory.getPreferencesPlace(aid))
-            AbsNavigationView.PAGE_MUSIC -> openPlace(PlaceFactory.getAudiosPlace(aid, aid))
-            AbsNavigationView.PAGE_DOCUMENTS -> openPlace(
-                PlaceFactory.getDocumentsPlace(
-                    aid,
-                    aid,
-                    DocsListPresenter.ACTION_SHOW
-                )
-            )
+            else -> {
+                mCurrentFrontSection = item
+                navigationView?.selectPage(item)
+                if (Settings.get().main().isDo_not_clear_back_stack && menu && isPlaying) {
+                    doClearBackStack = !doClearBackStack
+                }
+                if (doClearBackStack) {
+                    clearBackStack()
+                }
+                val aid = mAccountId
+                when (sectionDrawerItem.section) {
+                    AbsNavigationView.PAGE_DIALOGS -> openPlace(
+                        PlaceFactory.getDialogsPlace(
+                            aid,
+                            aid,
+                            null
+                        )
+                    )
 
-            AbsNavigationView.PAGE_FEED -> openPlace(PlaceFactory.getFeedPlace(aid))
-            AbsNavigationView.PAGE_NOTIFICATION -> openPlace(
-                PlaceFactory.getNotificationsPlace(
-                    aid
-                )
-            )
+                    AbsNavigationView.PAGE_FRIENDS -> openPlace(
+                        PlaceFactory.getFriendsFollowersPlace(
+                            aid,
+                            aid,
+                            FriendsTabsFragment.TAB_ALL_FRIENDS,
+                            null
+                        )
+                    )
 
-            AbsNavigationView.PAGE_PHOTOS -> openPlace(
-                PlaceFactory.getVKPhotoAlbumsPlace(
-                    aid,
-                    aid,
-                    IVKPhotosView.ACTION_SHOW_PHOTOS,
-                    null
-                )
-            )
+                    AbsNavigationView.PAGE_BIRTHDAYS -> openPlace(
+                        PlaceFactory.getFriendsBirthdaysPlace(
+                            aid,
+                            aid
+                        )
+                    )
 
-            AbsNavigationView.PAGE_VIDEOS -> openPlace(
-                PlaceFactory.getVideosPlace(
-                    aid,
-                    aid,
-                    IVideosListView.ACTION_SHOW
-                )
-            )
+                    AbsNavigationView.PAGE_GROUPS -> openPlace(
+                        PlaceFactory.getCommunitiesPlace(
+                            aid,
+                            aid
+                        )
+                    )
 
-            AbsNavigationView.PAGE_BOOKMARKS -> openPlace(
-                PlaceFactory.getBookmarksPlace(
-                    aid,
-                    FaveTabsFragment.TAB_PAGES
-                )
-            )
+                    AbsNavigationView.PAGE_PREFERENSES -> openPlace(
+                        PlaceFactory.getPreferencesPlace(
+                            aid
+                        )
+                    )
 
-            AbsNavigationView.PAGE_SEARCH -> openPlace(
-                PlaceFactory.getSearchPlace(
-                    aid,
-                    SearchTabsFragment.TAB_PEOPLE
-                )
-            )
+                    AbsNavigationView.PAGE_MUSIC -> openPlace(PlaceFactory.getAudiosPlace(aid, aid))
+                    AbsNavigationView.PAGE_DOCUMENTS -> openPlace(
+                        PlaceFactory.getDocumentsPlace(
+                            aid,
+                            aid,
+                            DocsListPresenter.ACTION_SHOW
+                        )
+                    )
 
-            else -> throw IllegalArgumentException("Unknown place!!! $item")
+                    AbsNavigationView.PAGE_FEED -> openPlace(PlaceFactory.getFeedPlace(aid))
+                    AbsNavigationView.PAGE_NOTIFICATION -> openPlace(
+                        PlaceFactory.getNotificationsPlace(
+                            aid
+                        )
+                    )
+
+                    AbsNavigationView.PAGE_PHOTOS -> openPlace(
+                        PlaceFactory.getVKPhotoAlbumsPlace(
+                            aid,
+                            aid,
+                            IVKPhotosView.ACTION_SHOW_PHOTOS,
+                            null
+                        )
+                    )
+
+                    AbsNavigationView.PAGE_VIDEOS -> openPlace(
+                        PlaceFactory.getVideosPlace(
+                            aid,
+                            aid,
+                            IVideosListView.ACTION_SHOW
+                        )
+                    )
+
+                    AbsNavigationView.PAGE_BOOKMARKS -> openPlace(
+                        PlaceFactory.getBookmarksPlace(
+                            aid,
+                            FaveTabsFragment.TAB_PAGES
+                        )
+                    )
+
+                    AbsNavigationView.PAGE_SEARCH -> openPlace(
+                        PlaceFactory.getSearchPlace(
+                            aid,
+                            SearchTabsFragment.TAB_PEOPLE
+                        )
+                    )
+
+                    else -> throw IllegalArgumentException("Unknown place!!! $item")
+                }
+            }
         }
     }
 

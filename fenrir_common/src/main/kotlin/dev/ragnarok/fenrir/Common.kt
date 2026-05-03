@@ -3,7 +3,6 @@ package dev.ragnarok.fenrir
 import android.content.Context
 import androidx.annotation.DrawableRes
 import androidx.annotation.RawRes
-import androidx.annotation.StringRes
 import androidx.core.graphics.toColorInt
 import dev.ragnarok.fenrir_common.R
 
@@ -103,12 +102,6 @@ object Common {
             return R.drawable.ic_maple_leaf
         }
         return R.drawable.ic_snowflake
-    }
-
-    @Suppress("UNUSED_PARAMETER")
-    @StringRes
-    fun getAboutUsHeader(paganSymbol: Int): Int {
-        return R.string.first_pagan
     }
 
     @Suppress("UNUSED_PARAMETER")

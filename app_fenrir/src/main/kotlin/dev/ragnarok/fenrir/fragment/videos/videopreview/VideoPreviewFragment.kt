@@ -729,15 +729,77 @@ class VideoPreviewFragment : BaseMvpFragment<VideoPreviewPresenter, IVideoPrevie
             .setAdapter(adapter) { _, which ->
                 val item = items[which]
                 when (item.key) {
-                    Menu.P_240 -> video.mp4link240?.let { playDirectVkLinkInExternalPlayer(it) }
-                    Menu.P_360 -> video.mp4link360?.let { playDirectVkLinkInExternalPlayer(it) }
-                    Menu.P_480 -> video.mp4link480?.let { playDirectVkLinkInExternalPlayer(it) }
-                    Menu.P_720 -> video.mp4link720?.let { playDirectVkLinkInExternalPlayer(it) }
-                    Menu.P_1080 -> video.mp4link1080?.let { playDirectVkLinkInExternalPlayer(it) }
-                    Menu.P_1440 -> video.mp4link1440?.let { playDirectVkLinkInExternalPlayer(it) }
-                    Menu.P_2160 -> video.mp4link2160?.let { playDirectVkLinkInExternalPlayer(it) }
-                    Menu.LIVE -> video.live?.let { playDirectVkLinkInExternalPlayer(it) }
-                    Menu.HLS -> video.hls?.let { playDirectVkLinkInExternalPlayer(it) }
+                    Menu.P_240 -> video.mp4link240?.let {
+                        playDirectVkLinkInExternalPlayer(
+                            it,
+                            false,
+                            video.title
+                        )
+                    }
+
+                    Menu.P_360 -> video.mp4link360?.let {
+                        playDirectVkLinkInExternalPlayer(
+                            it,
+                            false,
+                            video.title
+                        )
+                    }
+
+                    Menu.P_480 -> video.mp4link480?.let {
+                        playDirectVkLinkInExternalPlayer(
+                            it,
+                            false,
+                            video.title
+                        )
+                    }
+
+                    Menu.P_720 -> video.mp4link720?.let {
+                        playDirectVkLinkInExternalPlayer(
+                            it,
+                            false,
+                            video.title
+                        )
+                    }
+
+                    Menu.P_1080 -> video.mp4link1080?.let {
+                        playDirectVkLinkInExternalPlayer(
+                            it,
+                            false,
+                            video.title
+                        )
+                    }
+
+                    Menu.P_1440 -> video.mp4link1440?.let {
+                        playDirectVkLinkInExternalPlayer(
+                            it,
+                            false,
+                            video.title
+                        )
+                    }
+
+                    Menu.P_2160 -> video.mp4link2160?.let {
+                        playDirectVkLinkInExternalPlayer(
+                            it,
+                            false,
+                            video.title
+                        )
+                    }
+
+                    Menu.LIVE -> video.live?.let {
+                        playDirectVkLinkInExternalPlayer(
+                            it,
+                            true,
+                            video.title
+                        )
+                    }
+
+                    Menu.HLS -> video.hls?.let {
+                        playDirectVkLinkInExternalPlayer(
+                            it,
+                            true,
+                            video.title
+                        )
+                    }
                 }
             }
             .setNegativeButton(R.string.button_cancel, null)
@@ -812,9 +874,13 @@ class VideoPreviewFragment : BaseMvpFragment<VideoPreviewPresenter, IVideoPrevie
             .show()
     }
 
-    private fun playDirectVkLinkInExternalPlayer(url: String) {
+    private fun playDirectVkLinkInExternalPlayer(url: String, isHLS: Boolean, title: String?) {
         val intent = Intent(Intent.ACTION_VIEW)
-        intent.setDataAndType(url.toUri(), "video/mp4")
+        intent.setDataAndType(url.toUri(), if (!isHLS) "video/mp4" else "application/x-mpegURL")
+        title?.let {
+            intent.putExtra("com.android.extra.filename", "$it." + if (!isHLS) "mp4" else "m3u8")
+            intent.putExtra("title", it)
+        }
         startActivity(intent)
     }
 

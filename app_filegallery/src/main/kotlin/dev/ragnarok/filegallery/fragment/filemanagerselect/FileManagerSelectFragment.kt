@@ -3,9 +3,14 @@ package dev.ragnarok.filegallery.fragment.filemanagerselect
 import android.animation.Animator
 import android.animation.ObjectAnimator
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.os.Parcelable
+import android.os.storage.StorageManager
+import android.os.storage.StorageVolume
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -27,7 +32,10 @@ import dev.ragnarok.filegallery.fragment.base.BaseMvpFragment
 import dev.ragnarok.filegallery.listener.BackPressCallback
 import dev.ragnarok.filegallery.listener.PicassoPauseOnScrollListener
 import dev.ragnarok.filegallery.listener.UpdatableNavigation
+import dev.ragnarok.filegallery.modalbottomsheetdialogfragment.ModalBottomSheetDialogFragment
+import dev.ragnarok.filegallery.modalbottomsheetdialogfragment.OptionRequest
 import dev.ragnarok.filegallery.model.FileItemSelect
+import dev.ragnarok.filegallery.nonNullNoEmpty
 import dev.ragnarok.filegallery.settings.CurrentTheme
 import dev.ragnarok.filegallery.util.Utils
 import dev.ragnarok.filegallery.util.coroutines.CancelableJob
@@ -37,6 +45,7 @@ import dev.ragnarok.filegallery.util.toast.CustomToast
 import dev.ragnarok.filegallery.view.MySearchView
 import dev.ragnarok.filegallery.view.natives.animation.ThorVGLottieView
 import java.io.File
+import java.lang.reflect.Method
 import kotlin.math.max
 
 class FileManagerSelectFragment :
@@ -78,6 +87,14 @@ class FileManagerSelectFragment :
         File(requireArguments().getString(Extra.PATH)!!),
         requireArguments().getString(Extra.EXT)
     )
+
+    @Throws(ReflectiveOperationException::class)
+    internal fun getReflectedMethod(
+        declaringClass: Class<*>,
+        methodName: String,
+        vararg parameterTypes: Class<*>
+    ) = declaringClass.getDeclaredMethod(methodName, *parameterTypes)
+        .also { it.isAccessible = true }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -140,6 +157,56 @@ class FileManagerSelectFragment :
         PicassoPauseOnScrollListener.addListener(mRecyclerView)
         tvCurrentDir = root.findViewById(R.id.current_path)
         loading = root.findViewById(R.id.loading)
+
+        tvCurrentDir?.setOnClickListener {
+            var getPathMethod: Method? = null
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.R) {
+                getPathMethod = getReflectedMethod(StorageVolume::class.java, "getPathFile")
+            }
+
+            val menus = ModalBottomSheetDialogFragment.Builder()
+            menus.header(
+                getString(R.string.select_storage),
+                R.drawable.check, null
+            )
+            menus.columns(1)
+
+            val storageManager =
+                requireActivity().getSystemService(Context.STORAGE_SERVICE) as? StorageManager
+            var s = 0
+            for (i in storageManager?.storageVolumes.orEmpty()) {
+                if (i.state != Environment.MEDIA_MOUNTED) {
+                    continue
+                }
+                val path = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+                    (getPathMethod?.invoke(i) as? File)?.absolutePath
+                } else {
+                    i.directory?.absolutePath
+                }
+                if (path.isNullOrEmpty()) {
+                    continue
+                }
+                menus.add(
+                    OptionRequest(
+                        s++,
+                        path,
+                        R.drawable.dir_icon,
+                        true
+                    )
+                )
+            }
+            menus.show(
+                requireActivity().supportFragmentManager,
+                "select_storage"
+            ) { _, option ->
+                option.title.nonNullNoEmpty {
+                    val s = File(it)
+                    if (s.exists() && s.canRead()) {
+                        presenter?.setCurrent(s)
+                    }
+                }
+            }
+        }
 
         animLoad = ObjectAnimator.ofFloat(loading, View.ALPHA, 0.0f).setDuration(1000)
         animLoad?.addListener(object : StubAnimatorListener() {

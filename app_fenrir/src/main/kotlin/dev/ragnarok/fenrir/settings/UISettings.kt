@@ -76,53 +76,55 @@ internal class UISettings(context: Context) : IUISettings {
     override fun getDefaultPage(accountId: Long): Place {
         val preferences = getPreferences(app)
         val page = preferences.getString(PreferencesFragment.KEY_DEFAULT_CATEGORY, "last_closed")
-        if ("last_closed" == page) {
+        return if ("last_closed" == page) {
             when (getPreferences(app).getInt("last_closed_place_type", Place.DIALOGS)) {
-                Place.DIALOGS -> return getDialogsPlace(accountId, accountId, null)
-                Place.FEED -> return getFeedPlace(accountId)
-                Place.FRIENDS_AND_FOLLOWERS -> return getFriendsFollowersPlace(
+                Place.DIALOGS -> getDialogsPlace(accountId, accountId, null)
+                Place.FEED -> getFeedPlace(accountId)
+                Place.FRIENDS_AND_FOLLOWERS -> getFriendsFollowersPlace(
                     accountId,
                     accountId,
                     FriendsTabsFragment.TAB_ALL_FRIENDS,
                     null
                 )
 
-                Place.NOTIFICATIONS -> return getNotificationsPlace(accountId)
-                Place.COMMUNITIES -> return getCommunitiesPlace(accountId, accountId)
-                Place.VK_PHOTO_ALBUMS -> return getVKPhotoAlbumsPlace(
+                Place.NOTIFICATIONS -> getNotificationsPlace(accountId)
+                Place.COMMUNITIES -> getCommunitiesPlace(accountId, accountId)
+                Place.VK_PHOTO_ALBUMS -> getVKPhotoAlbumsPlace(
                     accountId,
                     accountId,
                     null,
                     null
                 )
 
-                Place.AUDIOS -> return getAudiosPlace(accountId, accountId)
-                Place.DOCS -> return getDocumentsPlace(accountId, accountId, null)
-                Place.BOOKMARKS -> return getBookmarksPlace(accountId, FaveTabsFragment.TAB_PAGES)
-                Place.SEARCH -> return getSearchPlace(accountId, SearchTabsFragment.TAB_PEOPLE)
-                Place.VIDEOS -> return getVideosPlace(accountId, accountId, null)
-                Place.PREFERENCES -> return getPreferencesPlace(accountId)
+                Place.AUDIOS -> getAudiosPlace(accountId, accountId)
+                Place.DOCS -> getDocumentsPlace(accountId, accountId, null)
+                Place.BOOKMARKS -> getBookmarksPlace(accountId, FaveTabsFragment.TAB_PAGES)
+                Place.SEARCH -> getSearchPlace(accountId, SearchTabsFragment.TAB_PEOPLE)
+                Place.VIDEOS -> getVideosPlace(accountId, accountId, null)
+                Place.PREFERENCES -> getPreferencesPlace(accountId)
+                else -> getDialogsPlace(accountId, accountId, null)
             }
-        }
-        return when (page) {
-            "1" -> getFriendsFollowersPlace(
-                accountId,
-                accountId,
-                FriendsTabsFragment.TAB_ALL_FRIENDS,
-                null
-            )
+        } else {
+            when (page) {
+                "1" -> getFriendsFollowersPlace(
+                    accountId,
+                    accountId,
+                    FriendsTabsFragment.TAB_ALL_FRIENDS,
+                    null
+                )
 
-            "3" -> getFeedPlace(accountId)
-            "4" -> getNotificationsPlace(accountId)
-            "5" -> getCommunitiesPlace(accountId, accountId)
-            "6" -> getVKPhotoAlbumsPlace(accountId, accountId, null, null)
-            "7" -> getVideosPlace(accountId, accountId, null)
-            "8" -> getAudiosPlace(accountId, accountId)
-            "9" -> getDocumentsPlace(accountId, accountId, null)
-            "10" -> getBookmarksPlace(accountId, FaveTabsFragment.TAB_PAGES)
-            "11" -> getSearchPlace(accountId, SearchTabsFragment.TAB_PEOPLE)
-            "12" -> getOwnerWallPlace(accountId, accountId, null)
-            else -> getDialogsPlace(accountId, accountId, null)
+                "3" -> getFeedPlace(accountId)
+                "4" -> getNotificationsPlace(accountId)
+                "5" -> getCommunitiesPlace(accountId, accountId)
+                "6" -> getVKPhotoAlbumsPlace(accountId, accountId, null, null)
+                "7" -> getVideosPlace(accountId, accountId, null)
+                "8" -> getAudiosPlace(accountId, accountId)
+                "9" -> getDocumentsPlace(accountId, accountId, null)
+                "10" -> getBookmarksPlace(accountId, FaveTabsFragment.TAB_PAGES)
+                "11" -> getSearchPlace(accountId, SearchTabsFragment.TAB_PEOPLE)
+                "12" -> getOwnerWallPlace(accountId, accountId, null)
+                else -> getDialogsPlace(accountId, accountId, null)
+            }
         }
     }
 

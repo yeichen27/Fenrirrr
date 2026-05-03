@@ -12,7 +12,6 @@ import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.Person
 import androidx.core.app.RemoteInput
-import androidx.core.content.FileProvider
 import androidx.core.content.pm.ShortcutInfoCompat
 import androidx.core.content.pm.ShortcutManagerCompat
 import androidx.core.graphics.drawable.IconCompat
@@ -44,6 +43,7 @@ import dev.ragnarok.fenrir.service.QuickReplyService.Companion.intentForReadMess
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.settings.theme.ThemesController.toastColor
 import dev.ragnarok.fenrir.util.AppPerms
+import dev.ragnarok.fenrir.util.FileUtil
 import dev.ragnarok.fenrir.util.ShortcutUtils.chatOpenIntent
 import dev.ragnarok.fenrir.util.Utils.createOkHttp
 import dev.ragnarok.fenrir.util.Utils.declOfNum
@@ -573,7 +573,7 @@ object NotificationHelper {
                     throw Exception(mContext.getString(R.string.error))
                 }
             }
-            urit = FileProvider.getUriForFile(mContext, Constants.FILE_PROVIDER_AUTHORITY, file)
+            urit = FileUtil.getExportedUriForFile(mContext, file)
             mContext.grantUriPermission(
                 "com.android.systemui",
                 urit,

@@ -213,7 +213,7 @@
     <string-array name="array_autoplay_video_on_posts_names">
         <item>Disable</item>
         <item>Only GIF (cache)</item>
-        <item>All video on post (network)</item>
+        <item>All video on post (network, cpu)</item>
     </string-array>
 
     <string-array name="array_autoplay_video_on_posts_items" translatable="false">
@@ -1732,10 +1732,11 @@
     <string name="do_auto_play_video">Auto select video quality</string>
     <string name="video_not_have_link">Video has no link</string>
     <string name="change_upload_size">Show picture sending quality settings</string>
-    <string name="wall_themed">Pagan decoration</string>
+    <string name="wall_themed">Decoration for vikings</string>
     <string name="runes_show">Show runes</string>
     <string name="pagan_symbol">Symbol</string>
     <string name="photo_settings">Viewing photos</string>
+    <string name="video_settings">Viewing videos</string>
     <string name="canceled_by_receiver">Canceled by recipient</string>
     <string name="canceled_by_initiator">Canceled by the initiator</string>
     <string name="call_reached">Completed</string>
@@ -1974,4 +1975,5 @@
     <string name="sms_auth_help">If you can\'t log in, open VK ID settings in your browser -> Two-factor authentication -> Backup codes, and enter them instead of your password!</string>
     <string name="repeat_mode">Repeat</string>
     <string name="saving_network_traffic">Saving network traffic</string>
+    <string name="select_storage">Select storage</string>
 </resources>

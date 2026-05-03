@@ -601,6 +601,7 @@ add_library(zxing STATIC
         zxing/GenericGF.cpp
         zxing/HybridBinarizer.cpp
         zxing/JSON.cpp
+        zxing/LocalGrid.cpp
         zxing/ReedSolomonDecoder.cpp
         zxing/ZXingCpp.cpp
 )

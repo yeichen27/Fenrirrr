@@ -275,19 +275,17 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
         }
 
         searchView?.let {
-            it.setOnBackButtonClickListener(
-                object : MySearchView.OnBackButtonClickListener {
-                    override fun onBackButtonClick() {
-                        if (it.text.nonNullNoEmpty() && it.text?.trimmedNonNullNoEmpty() == true) {
-                            preferencesAdapter?.findPreferences(
-                                requireActivity(),
-                                (it.text ?: return).toString(),
-                                root
-                            )
-                        }
+            it.setOnBackButtonClickListener(object : MySearchView.OnBackButtonClickListener {
+                override fun onBackButtonClick() {
+                    if (it.text.nonNullNoEmpty() && it.text.trimmedNonNullNoEmpty()) {
+                        preferencesAdapter?.findPreferences(
+                            requireActivity(),
+                            (it.text ?: return).toString(),
+                            root
+                        )
                     }
                 }
-            )
+            })
             it.setOnQueryTextListener(object : MySearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(query: String?): Boolean {
                     sleepDataDisposable.cancel()
@@ -459,7 +457,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 ),
                 parentFragmentManager
             ) {
-                initialSelection = "0"
+                initialSelection = "1"
                 titleRes = R.string.long_click_photo
             }
 
@@ -493,7 +491,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
             }
 
             switch("instant_photo_display") {
-                defaultValue = Settings.get().main().isInstant_photo_display
+                defaultValue = false
                 titleRes = R.string.instant_photo_display
             }
 
@@ -502,7 +500,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 selItems(R.array.picasso_dispatcher_names, R.array.picasso_dispatcher_values),
                 parentFragmentManager
             ) {
-                initialSelection = Settings.get().main().picassoDispatcher.toString()
+                initialSelection = "1"
                 titleRes = R.string.picasso_dispatcher
                 onSelectionChange {
                     clear_cache()
@@ -767,7 +765,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 ),
                 parentFragmentManager
             ) {
-                initialSelection = "0"
+                initialSelection = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) "2" else "0"
                 titleRes = R.string.rendering_mode
                 dependency = "developer_mode"
                 visible = Build.VERSION.SDK_INT >= Build.VERSION_CODES.P
@@ -801,7 +799,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 selItems(R.array.array_parser_names, R.array.array_parser_items),
                 parentFragmentManager
             ) {
-                initialSelection = "0"
+                initialSelection = "1"
                 titleRes = R.string.parser_type
                 onSelectionChange {
                     Utils.currentParser = it.toInt()

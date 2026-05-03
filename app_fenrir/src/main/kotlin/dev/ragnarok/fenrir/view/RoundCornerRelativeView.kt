@@ -34,6 +34,10 @@ class RoundCornerRelativeView : RelativeLayout {
     private var strokeAlpha = DEFAULT_STROKE_ALPHA
     private var isStroke = DEFAULT_IS_STROKE
     private var strokeWidth = DEFAULT_STROKE_WIDTH
+    private var excludeStrokeTop = false
+    private var excludeStrokeBottom = false
+    private var excludeStrokeLeft = false
+    private var excludeStrokeRight = false
 
     constructor(context: Context) : super(context, null)
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
@@ -90,6 +94,23 @@ class RoundCornerRelativeView : RelativeLayout {
                     R.styleable.RoundCornerLinearView_view_stroke_width,
                     dp2px(DEFAULT_STROKE_WIDTH)
                 )
+
+                excludeStrokeTop = getBoolean(
+                    R.styleable.RoundCornerLinearView_stroke_exclude_top,
+                    false
+                )
+                excludeStrokeBottom = getBoolean(
+                    R.styleable.RoundCornerLinearView_stroke_exclude_bottom,
+                    false
+                )
+                excludeStrokeLeft = getBoolean(
+                    R.styleable.RoundCornerLinearView_stroke_exclude_left,
+                    false
+                )
+                excludeStrokeRight = getBoolean(
+                    R.styleable.RoundCornerLinearView_stroke_exclude_right,
+                    false
+                )
             }
         }
     }
@@ -144,6 +165,14 @@ class RoundCornerRelativeView : RelativeLayout {
         invalidate()
     }
 
+    fun setStrokeExclude(top: Boolean, bottom: Boolean, left: Boolean, right: Boolean) {
+        excludeStrokeTop = top
+        excludeStrokeBottom = bottom
+        excludeStrokeLeft = left
+        excludeStrokeRight = right
+        invalidate()
+    }
+
     private fun doPaint(canvas: Canvas, @ColorInt color: Int, alpha: Int, isStrokeMode: Boolean) {
         val widthTmp = width - strokeWidth
         val heightTmp = height - strokeWidth
@@ -159,47 +188,82 @@ class RoundCornerRelativeView : RelativeLayout {
         VIEW_PAINT.strokeJoin = Paint.Join.ROUND
         PATH.reset()
         PATH.fillType = Path.FillType.EVEN_ODD
-        PATH.moveTo(strokeWidth, radius_top_left)
-        PATH.arcTo(
-            strokeWidth,
-            strokeWidth,
-            2 * radius_top_left,
-            2 * radius_top_left,
-            180f,
-            90f,
-            false
-        )
-        PATH.lineTo(widthTmp - radius_top_right, strokeWidth)
-        PATH.arcTo(
-            widthTmp - 2 * radius_top_right,
-            strokeWidth,
-            widthTmp,
-            2 * radius_top_right,
-            270f,
-            90f,
-            false
-        )
-        PATH.lineTo(widthTmp, heightTmp - radius_bottom_right)
-        PATH.arcTo(
-            widthTmp - 2 * radius_bottom_right,
-            heightTmp - 2 * radius_bottom_right,
-            widthTmp,
-            heightTmp,
-            0f,
-            90f,
-            false
-        )
-        PATH.lineTo(radius_bottom_left, heightTmp)
-        PATH.arcTo(
-            strokeWidth,
-            heightTmp - 2 * radius_bottom_left,
-            2 * radius_bottom_left,
-            heightTmp,
-            90f,
-            90f,
-            false
-        )
-        PATH.lineTo(strokeWidth, radius_top_left)
+        var isMove: Boolean
+        if (!excludeStrokeTop || !isStrokeMode) {
+            isMove = false
+            PATH.moveTo(strokeWidth, radius_top_left)
+            if (radius_top_left > 0f) {
+                PATH.arcTo(
+                    strokeWidth,
+                    strokeWidth,
+                    2 * radius_top_left,
+                    2 * radius_top_left,
+                    180f,
+                    90f,
+                    false
+                )
+            }
+            PATH.lineTo(widthTmp - radius_top_right, strokeWidth)
+        } else {
+            isMove = true
+        }
+        if (!excludeStrokeRight || !isStrokeMode) {
+            if (isMove) {
+                isMove = false
+                PATH.moveTo(widthTmp - radius_top_right, strokeWidth)
+            }
+            if (radius_top_right > 0f) {
+                PATH.arcTo(
+                    widthTmp - 2 * radius_top_right,
+                    strokeWidth,
+                    widthTmp,
+                    2 * radius_top_right,
+                    270f,
+                    90f,
+                    false
+                )
+            }
+            PATH.lineTo(widthTmp, heightTmp - radius_bottom_right)
+        } else {
+            isMove = true
+        }
+        if (!excludeStrokeBottom || !isStrokeMode) {
+            if (isMove) {
+                isMove = false
+                PATH.moveTo(widthTmp, heightTmp - radius_bottom_right)
+            }
+            if (radius_bottom_right > 0f) {
+                PATH.arcTo(
+                    widthTmp - 2 * radius_bottom_right,
+                    heightTmp - 2 * radius_bottom_right,
+                    widthTmp,
+                    heightTmp,
+                    0f,
+                    90f,
+                    false
+                )
+            }
+            PATH.lineTo(radius_bottom_left, heightTmp)
+        } else {
+            isMove = true
+        }
+        if (!excludeStrokeLeft || !isStrokeMode) {
+            if (isMove) {
+                PATH.moveTo(radius_bottom_left, heightTmp)
+            }
+            if (radius_bottom_left > 0f) {
+                PATH.arcTo(
+                    strokeWidth,
+                    heightTmp - 2 * radius_bottom_left,
+                    2 * radius_bottom_left,
+                    heightTmp,
+                    90f,
+                    90f,
+                    false
+                )
+            }
+            PATH.lineTo(strokeWidth, radius_top_left)
+        }
         PATH.close()
         canvas.drawPath(PATH, VIEW_PAINT)
     }

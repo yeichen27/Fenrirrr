@@ -86,6 +86,7 @@ android {
         }
         debug {
             isMinifyEnabled = false
+            //noinspection NotShrinkingResources
             isShrinkResources = false
         }
     }

@@ -14,7 +14,11 @@ import androidx.annotation.StringDef
     SwitchableCategory.DOCS,
     SwitchableCategory.FAVES,
     SwitchableCategory.SEARCH,
-    SwitchableCategory.STORIES
+    SwitchableCategory.STORIES,
+    SwitchableCategory.CLIPS,
+    SwitchableCategory.BIRTHDAYS,
+    SwitchableCategory.SETTINGS,
+    SwitchableCategory.ACCOUNTS
 )
 @Retention(
     AnnotationRetention.SOURCE
@@ -33,5 +37,9 @@ annotation class SwitchableCategory {
         const val FAVES = "faves"
         const val SEARCH = "search"
         const val STORIES = "stories"
+        const val CLIPS = "clips"
+        const val BIRTHDAYS = "birthdays"
+        const val SETTINGS = "settings"
+        const val ACCOUNTS = "accounts"
     }
 }

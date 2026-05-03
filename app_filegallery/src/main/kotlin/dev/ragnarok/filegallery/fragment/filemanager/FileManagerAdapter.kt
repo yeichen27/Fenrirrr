@@ -12,7 +12,6 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
-import androidx.core.content.FileProvider
 import androidx.core.net.toFile
 import androidx.core.net.toUri
 import androidx.fragment.app.FragmentActivity
@@ -37,6 +36,7 @@ import dev.ragnarok.filegallery.settings.CurrentTheme
 import dev.ragnarok.filegallery.settings.Settings
 import dev.ragnarok.filegallery.toColor
 import dev.ragnarok.filegallery.util.AppTextUtils.pluralNumerical
+import dev.ragnarok.filegallery.util.FileUtil
 import dev.ragnarok.filegallery.util.Utils
 import dev.ragnarok.filegallery.util.coroutines.CancelableJob
 import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.fromIOToMain
@@ -349,9 +349,8 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
                     FileManagerOption.open_with_item -> {
                         val intent_open = Intent(Intent.ACTION_VIEW)
                         intent_open.setDataAndType(
-                            FileProvider.getUriForFile(
+                            FileUtil.getExportedUriForFile(
                                 context,
-                                Constants.FILE_PROVIDER_AUTHORITY,
                                 File(audio.file_path ?: return@show)
                             ), MimeTypeMap.getSingleton()
                                 .getMimeTypeFromExtension(File(audio.file_path).extension)
@@ -368,9 +367,8 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
                                 ).extension
                             )
                         intent_send.putExtra(
-                            Intent.EXTRA_STREAM, FileProvider.getUriForFile(
+                            Intent.EXTRA_STREAM, FileUtil.getExportedUriForFile(
                                 context,
-                                Constants.FILE_PROVIDER_AUTHORITY,
                                 File(audio.file_path)
                             )
                         ).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
@@ -517,9 +515,8 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
                     FileManagerOption.open_with_item -> {
                         val intent_open = Intent(Intent.ACTION_VIEW)
                         intent_open.setDataAndType(
-                            FileProvider.getUriForFile(
+                            FileUtil.getExportedUriForFile(
                                 context,
-                                Constants.FILE_PROVIDER_AUTHORITY,
                                 File(file.file_path ?: return@show)
                             ), MimeTypeMap.getSingleton()
                                 .getMimeTypeFromExtension(File(file.file_path).extension)
@@ -532,9 +529,8 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
                         intent_send.type = MimeTypeMap.getSingleton()
                             .getMimeTypeFromExtension(File(file.file_path ?: return@show).extension)
                         intent_send.putExtra(
-                            Intent.EXTRA_STREAM, FileProvider.getUriForFile(
+                            Intent.EXTRA_STREAM, FileUtil.getExportedUriForFile(
                                 context,
-                                Constants.FILE_PROVIDER_AUTHORITY,
                                 File(file.file_path)
                             )
                         ).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)

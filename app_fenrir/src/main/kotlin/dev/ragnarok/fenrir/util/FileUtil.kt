@@ -21,8 +21,13 @@ object FileUtil {
         PHOTO_DATE_FORMAT = SimpleDateFormat("yyyyMMdd_HHmmss", Utils.appLocale)
     }
 
-    fun getExportedUriForFile(context: Context, file: File): Uri {
-        return FileProvider.getUriForFile(context, Constants.FILE_PROVIDER_AUTHORITY, file)
+    fun getExportedUriForFile(context: Context, file: File): Uri? {
+        try {
+            return FileProvider.getUriForFile(context, Constants.FILE_PROVIDER_AUTHORITY, file)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return null
     }
 
     @Throws(IOException::class)

@@ -16,7 +16,6 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
         android:layout_weight="1"
-        android:background="?android:attr/selectableItemBackground"
         android:orientation="horizontal"
         android:stateListAnimator="@animator/clicked">
 

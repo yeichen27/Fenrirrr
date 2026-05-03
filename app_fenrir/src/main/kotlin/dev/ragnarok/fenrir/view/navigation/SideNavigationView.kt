@@ -479,24 +479,4 @@ class SideNavigationView : AbsNavigationView, MenuListAdapter.ActionListener {
     override fun onDrawerItemLongClick(item: AbsMenuItem) {
         selectItem(item, true)
     }
-
-    companion object {
-        internal fun getItemBySwitchableCategory(@SwitchableCategory type: String): AbsMenuItem? {
-            return when (type) {
-                SwitchableCategory.FRIENDS -> SECTION_ITEM_FRIENDS
-                SwitchableCategory.DIALOGS -> SECTION_ITEM_DIALOGS
-                SwitchableCategory.FEED -> SECTION_ITEM_FEED
-                SwitchableCategory.FEEDBACK -> SECTION_ITEM_FEEDBACK
-                SwitchableCategory.STORIES -> SECTION_ITEM_STORIES
-                SwitchableCategory.GROUPS -> SECTION_ITEM_GROUPS
-                SwitchableCategory.PHOTOS -> SECTION_ITEM_PHOTOS
-                SwitchableCategory.VIDEOS -> SECTION_ITEM_VIDEOS
-                SwitchableCategory.MUSIC -> SECTION_ITEM_AUDIOS
-                SwitchableCategory.DOCS -> SECTION_ITEM_DOCS
-                SwitchableCategory.FAVES -> SECTION_ITEM_BOOKMARKS
-                SwitchableCategory.SEARCH -> SECTION_ITEM_SEARCH
-                else -> null
-            }
-        }
-    }
 }

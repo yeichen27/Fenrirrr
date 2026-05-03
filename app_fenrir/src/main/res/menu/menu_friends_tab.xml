@@ -4,7 +4,7 @@
     <item
         android:id="@+id/action_birthdays"
         android:icon="@drawable/cake"
-        android:title="@string/birthday"
+        android:title="@string/birthdays"
         app:iconTint="?colorOnSurface"
         app:showAsAction="always" />
 </menu>
