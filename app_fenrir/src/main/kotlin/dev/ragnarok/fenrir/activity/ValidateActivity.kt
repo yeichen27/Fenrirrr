@@ -75,7 +75,11 @@ class ValidateActivity : AppCompatActivity() {
         webview.settings.userAgentString = UserAgentTool.getAccountUserAgent(accountId)
 
         //Чтобы получать уведомления об окончании загрузки страницы
-        webview.webViewClient = VkontakteWebViewClient()
+        webview.webViewClient = object : WebViewClient() {
+            override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
+                parseUrl(url)
+            }
+        }
         val cookieManager = CookieManager.getInstance()
         cookieManager.removeAllCookies {
             Log.d(
@@ -173,12 +177,6 @@ class ValidateActivity : AppCompatActivity() {
             }
         } catch (e: Exception) {
             e.printStackTrace()
-        }
-    }
-
-    private inner class VkontakteWebViewClient : WebViewClient() {
-        override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
-            parseUrl(url)
         }
     }
 

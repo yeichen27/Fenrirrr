@@ -202,4 +202,15 @@ class IAccountService : IServiceRest() {
             base(ContactsResponse.serializer())
         )
     }
+
+    fun validateAction(
+        confirm: Boolean,
+        hash: String
+    ): Flow<BaseResponse<Int>> {
+        return rest.request(
+            "account.validateAction",
+            form("confirm" to confirm, "hash" to hash),
+            baseInt
+        )
+    }
 }

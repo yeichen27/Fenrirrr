@@ -93,7 +93,7 @@ class AudiosByArtistPresenter(
     }
 
     fun playAudio(context: Context, position: Int) {
-        startForPlayList(context, audios, position, false)
+        startForPlayList(context, audios, position)
         if (!Settings.get().main().isShow_mini_player) getPlayerPlace(accountId).tryOpenWith(
             context
         )

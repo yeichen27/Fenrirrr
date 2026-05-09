@@ -328,7 +328,12 @@ class AudioLocalRecyclerAdapter(private val mContext: Context, private var data:
                     intent_send.putExtra(
                         Intent.EXTRA_STREAM, audio.url?.toUri()
                     ).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                    mContext.startActivity(intent_send)
+                    mContext.startActivity(
+                        Intent.createChooser(
+                            intent_send,
+                            mContext.resources.getString(R.string.share_using)
+                        )
+                    )
                 }
 
                 AudioLocalOption.strip_metadata_item_audio -> {

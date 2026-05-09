@@ -30,7 +30,7 @@ class CommunityInfoContactsFragment :
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val root = inflater.inflate(R.layout.fragment_community_managers, container, false)
+        val root = inflater.inflate(R.layout.fragment_community_contacts_info, container, false)
         (requireActivity() as AppCompatActivity).setSupportActionBar(root.findViewById(R.id.toolbar))
 
         ViewCompat.setOnApplyWindowInsetsListener(root) { _, windowInsets ->

@@ -10,19 +10,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?colorPrimary"
-            android:theme="@style/Theme.Toolbar.Colored" />
+        <include layout="@layout/toolbar_no_card" />
 
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tablayout"
             style="@style/Theme.Tablayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-
             app:tabMode="scrollable" />
 
     </com.google.android.material.appbar.AppBarLayout>

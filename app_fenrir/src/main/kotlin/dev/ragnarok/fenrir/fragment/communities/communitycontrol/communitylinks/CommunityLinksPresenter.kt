@@ -79,10 +79,6 @@ class CommunityLinksPresenter(
         view?.openLink(link.url)
     }
 
-    fun fireLinkEditClick() {}
-    fun fireLinkDeleteClick() {}
-    fun fireButtonAddClick() {}
-
     init {
         requestLinks()
     }

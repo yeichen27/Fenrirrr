@@ -32,7 +32,7 @@ object Auth {
                 Constants.DEFAULT_ACCOUNT_TYPE,
                 provideApplicationContext()
             ), "utf-8"
-        ))
+        )) + "&https=1"
         if (groupIds.nonNullNoEmpty()) {
             url = "$url&group_ids=$groupIds"
         }
@@ -50,6 +50,9 @@ object Auth {
             } else {
                 "all"
             }
+
+    val groupScope: String
+        get() = "messages,manage,photos,docs,wall,stories"
 
     @Throws(Exception::class)
     fun parseRedirectUrl(url: String): Array<String> {

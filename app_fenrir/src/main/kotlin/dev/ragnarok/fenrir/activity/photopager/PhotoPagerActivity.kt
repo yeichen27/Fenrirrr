@@ -49,6 +49,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.squareup.picasso3.Callback
 import com.squareup.picasso3.Rotatable
+import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.StubAnimatorListener
@@ -85,6 +86,7 @@ import dev.ragnarok.fenrir.place.Place
 import dev.ragnarok.fenrir.place.PlaceFactory
 import dev.ragnarok.fenrir.place.PlaceProvider
 import dev.ragnarok.fenrir.place.PlaceUtil
+import dev.ragnarok.fenrir.push.NotificationScheduler
 import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.settings.CurrentTheme.getNavigationBarColor
 import dev.ragnarok.fenrir.settings.CurrentTheme.getStatusBarColor
@@ -100,6 +102,9 @@ import dev.ragnarok.fenrir.view.CircleCounterButton
 import dev.ragnarok.fenrir.view.TouchImageView
 import dev.ragnarok.fenrir.view.natives.animation.ThorVGLottieView
 import dev.ragnarok.fenrir.view.pager.WeakPicassoLoadCallback
+import kotlinx.coroutines.flow.single
+import kotlinx.coroutines.runBlocking
+import java.io.File
 import kotlin.math.abs
 
 class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>(), IPhotoPagerView,
@@ -747,9 +752,49 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
         mViewPager?.registerOnPageChangeCallback(pageChangeListener)
     }
 
+    private fun transform_owner(owner_id: Long): String {
+        return if (owner_id < 0) "club" + abs(owner_id) else "id$owner_id"
+    }
+
+    private fun doDownloadTempPhoto(name: String, url: String?): File? {
+        val cache = File(cacheDir, "notif-cache")
+        if (!cache.exists()) {
+            cache.mkdirs()
+        }
+        val file = File(cache.absolutePath, name)
+        try {
+            if (!file.exists()) {
+                if (url.isNullOrEmpty()) throw Exception(getString(R.string.null_image_link))
+
+                runBlocking(NotificationScheduler.INSTANCE.coroutineContext) {
+                    try {
+                        Utils.downloadTaskFlow(file, url, Constants.GIF_TIMEOUT).single()
+                    } catch (e: Exception) {
+                        if (Constants.IS_DEBUG) {
+                            e.printStackTrace()
+                        }
+                    }
+                }
+                if (!file.exists()) {
+                    throw Exception(getString(R.string.error))
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return null
+        }
+        return file
+    }
+
     override fun sharePhoto(accountId: Long, photo: Photo) {
         val items: MutableList<Item> = ArrayList()
         items.add(Item(Methods.SHARE_LINK, Text(R.string.share_link)).setIcon(R.drawable.web))
+        items.add(
+            Item(
+                Methods.SHARE_DIRECT,
+                Text(R.string.share_external)
+            ).setIcon(R.drawable.share)
+        )
         items.add(
             Item(
                 Methods.SEND_MESSAGE,
@@ -768,6 +813,17 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
             .setTitle(R.string.repost_photo_title)
             .setAdapter(mAdapter) { _, which ->
                 when (items[which].key) {
+                    Methods.SHARE_DIRECT -> {
+                        Utils.shareExternal(
+                            this,
+                            doDownloadTempPhoto(
+                                (transform_owner(photo.ownerId) + "_" + photo.getObjectId()) + ".jpg",
+                                photo.getUrlForSize(photoSizeFromPrefs, true)
+                            ),
+                            "image/*"
+                        )
+                    }
+
                     Methods.SHARE_LINK -> Utils.shareLink(this, photo.generateWebLink(), photo.text)
                     Methods.SEND_MESSAGE -> SendAttachmentsActivity.startForSendAttachments(
                         this,
@@ -1050,9 +1106,8 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
             clearTags()
             photo.resetZoom()
             photo.orientationLocked = TouchImageView.OrientationLocked.HORIZONTAL
-            val size: Int = photoSizeFromPrefs
             currentPhoto = photo_image
-            val url = photo_image.getUrlForSize(size, true)
+            val url = photo_image.getUrlForSize(photoSizeFromPrefs, true)
             reload.setOnClickListener {
                 reload.visibility = View.INVISIBLE
                 if (url.nonNullNoEmpty()) {

@@ -150,7 +150,7 @@ class AudioDuplicateDialog :
                     stop()
                 }
             } else {
-                startForPlayList(requireActivity(), ArrayList(listOf(audio)), 0, false)
+                startForPlayList(requireActivity(), ArrayList(listOf(audio)), 0)
             }
         }
     }

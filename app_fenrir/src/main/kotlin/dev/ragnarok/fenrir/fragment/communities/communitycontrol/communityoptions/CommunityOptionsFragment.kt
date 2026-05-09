@@ -2,14 +2,10 @@ package dev.ragnarok.fenrir.fragment.communities.communitycontrol.communityoptio
 
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.RadioGroup
 import android.widget.TextView
-import androidx.core.view.MenuProvider
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.checkbox.MaterialCheckBox
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -27,8 +23,7 @@ import dev.ragnarok.fenrir.util.Month.getMonthTitle
 import dev.ragnarok.fenrir.view.MySpinnerView
 
 class CommunityOptionsFragment :
-    BaseMvpFragment<CommunityOptionsPresenter, ICommunityOptionsView>(), ICommunityOptionsView,
-    MenuProvider {
+    BaseMvpFragment<CommunityOptionsPresenter, ICommunityOptionsView>(), ICommunityOptionsView {
     private var mName: TextInputEditText? = null
     private var mDescription: TextInputEditText? = null
     private var mCommunityTypeRoot: ViewGroup? = null
@@ -47,31 +42,6 @@ class CommunityOptionsFragment :
     private var mObsceneStopWords: MaterialCheckBox? = null
     private var mObsceneStopWordsEditText: TextInputEditText? = null
     private var rAge: RadioGroup? = null
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        requireActivity().addMenuProvider(this, viewLifecycleOwner)
-    }
-
-    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-        menuInflater.inflate(R.menu.community_option_edit, menu)
-    }
-
-    override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-        if (menuItem.itemId == R.id.action_save) {
-            presenter?.fireButtonSaveClick(
-                mName?.editableText.toString().trim(),
-                mDescription?.editableText.toString().trim(),
-                mAddress?.editableText.toString().trim(),
-                mWebsite?.editableText.toString().trim(),
-                if (mObsceneFilter?.isChecked == true) 1 else 0,
-                if (mObsceneStopWords?.isChecked == true) 1 else 0,
-                mObsceneStopWordsEditText?.editableText.toString().trim()
-            )
-            return true
-        }
-        return false
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -119,6 +89,18 @@ class CommunityOptionsFragment :
         mObsceneFilter = root.findViewById(R.id.obscene_filter)
         mObsceneStopWords = root.findViewById(R.id.obscene_stopwords)
         mObsceneStopWordsEditText = root.findViewById(R.id.obscene_stopwords_values)
+
+        root.findViewById<View>(R.id.button_save).setOnClickListener {
+            presenter?.fireButtonSaveClick(
+                mName?.editableText.toString().trim(),
+                mDescription?.editableText.toString().trim(),
+                mAddress?.editableText.toString().trim(),
+                mWebsite?.editableText.toString().trim(),
+                if (mObsceneFilter?.isChecked == true) 1 else 0,
+                if (mObsceneStopWords?.isChecked == true) 1 else 0,
+                mObsceneStopWordsEditText?.editableText.toString().trim()
+            )
+        }
         return root
     }
 

@@ -9,7 +9,6 @@ import androidx.core.net.toUri
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.api.model.VKApiCommunity
@@ -36,9 +35,6 @@ class CommunityLinksFragment : BaseMvpFragment<CommunityLinksPresenter, ICommuni
         mLinksAdapter = CommunityLinksAdapter(emptyList())
         mLinksAdapter?.setActionListener(this)
         recyclerView.adapter = mLinksAdapter
-        root.findViewById<View>(R.id.button_add).setOnClickListener {
-            presenter?.fireButtonAddClick()
-        }
         return root
     }
 
@@ -69,20 +65,6 @@ class CommunityLinksFragment : BaseMvpFragment<CommunityLinksPresenter, ICommuni
         presenter?.fireLinkClick(
             link
         )
-    }
-
-    override fun onLongClick(link: VKApiCommunity.Link) {
-        val items = arrayOf(getString(R.string.edit), getString(R.string.delete))
-        MaterialAlertDialogBuilder(requireActivity())
-            .setTitle(link.name)
-            .setItems(items) { _, which ->
-                when (which) {
-                    0 -> presenter?.fireLinkEditClick()
-                    1 -> presenter?.fireLinkDeleteClick()
-                }
-            }
-            .setNegativeButton(R.string.button_cancel, null)
-            .show()
     }
 
     companion object {

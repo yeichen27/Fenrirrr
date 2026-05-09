@@ -72,8 +72,7 @@ class LinkViewHolder(itemView: View) : IViewHolder(itemView) {
                 openUrl(
                     itemView.context as Activity,
                     Settings.get().accounts().current,
-                    item.url,
-                    false
+                    item.url
                 )
             }
         }

@@ -280,7 +280,7 @@ class ConversationMultiAttachmentsPresenter(
     }
 
     fun playAudio(context: Context, position: Int) {
-        MusicPlaybackService.startForPlayList(context, mAudios, position, false)
+        MusicPlaybackService.startForPlayList(context, mAudios, position)
         if (!Settings.get().main().isShow_mini_player) PlaceFactory.getPlayerPlace(accountId)
             .tryOpenWith(
                 context

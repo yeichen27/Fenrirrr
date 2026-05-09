@@ -59,6 +59,9 @@ object AppNotificationChannels {
     val birthdaysChannelId: String
         get() = makeChannelId("birthdays_channel")
 
+    val validationChannelId: String
+        get() = makeChannelId("validation_channel")
+
     fun getChatMessageChannel(context: Context): NotificationChannel {
         val channelName = context.getString(R.string.message_channel)
         val channel = NotificationChannel(
@@ -199,6 +202,19 @@ object AppNotificationChannels {
         return channel
     }
 
+    fun getValidationMessageChannel(context: Context): NotificationChannel {
+        val channelName = context.getString(R.string.validation_channel)
+        val channel = NotificationChannel(
+            validationChannelId,
+            channelName,
+            NotificationManager.IMPORTANCE_HIGH
+        )
+        channel.setSound(getNotificationRingtone(context), ATTRIBUTES)
+        channel.enableLights(true)
+        channel.enableVibration(true)
+        return channel
+    }
+
     private fun makeChannelId(id: String): String {
         val ch = Settings.get().main().customChannelNotif
         return if (ch == 0) {
@@ -219,6 +235,7 @@ object AppNotificationChannels {
         nManager?.deleteNotificationChannel(groupInvitesChannelId)
         nManager?.deleteNotificationChannel(friendRequestsChannelId)
         nManager?.deleteNotificationChannel(birthdaysChannelId)
+        nManager?.deleteNotificationChannel(validationChannelId)
         Settings.get().main().nextCustomChannelNotif()
     }
 }

@@ -475,15 +475,25 @@ class GroupWallPresenter(
         )
     }
 
+    fun fireStartCommunityLogin() {
+        val groupId = abs(ownerId)
+        view?.startLoginCommunityActivity(
+            groupId
+        )
+    }
+
     fun fireCommunityMessagesClick() {
         if (settings.getAccessToken(ownerId).nonNullNoEmpty()) {
             openCommunityMessages()
         } else {
-            val groupId = abs(ownerId)
-            view?.startLoginCommunityActivity(
-                groupId
-            )
+            view?.openSelectCommunityAuthDialog()
         }
+    }
+
+    fun fireGroupTokenEntered(token: String) {
+        settings.registerAccountId(ownerId, false)
+        settings.storeAccessToken(ownerId, token)
+        openCommunityMessages()
     }
 
     private fun openCommunityMessages() {

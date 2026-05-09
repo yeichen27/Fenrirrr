@@ -1,6 +1,30 @@
-diff -ruN a/com/google/android/material/badge/BadgeDrawable.java b/com/google/android/material/badge/BadgeDrawable.java
---- a/com/google/android/material/badge/BadgeDrawable.java	2025-10-22 19:46:00.000000000 +0300
-+++ b/com/google/android/material/badge/BadgeDrawable.java	2024-05-24 13:50:12.000000000 +0300
+diff -ruN a/lib/java/com/google/android/material/AndroidManifest.xml b/lib/java/com/google/android/material/AndroidManifest.xml
+--- a/lib/java/com/google/android/material/AndroidManifest.xml	2026-04-29 21:19:19.000000000 +0300
++++ b/lib/java/com/google/android/material/AndroidManifest.xml	1970-01-01 03:00:00.000000000 +0300
+@@ -1,20 +0,0 @@
+-<?xml version="1.0" encoding="utf-8"?>
+-<!-- Copyright (C) 2015 The Android Open Source Project
+-
+-     Licensed under the Apache License, Version 2.0 (the "License");
+-     you may not use this file except in compliance with the License.
+-     You may obtain a copy of the License at
+-
+-          http://www.apache.org/licenses/LICENSE-2.0
+-
+-     Unless required by applicable law or agreed to in writing, software
+-     distributed under the License is distributed on an "AS IS" BASIS,
+-     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+-     See the License for the specific language governing permissions and
+-     limitations under the License.
+--->
+-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+-    package="com.google.android.material">
+-
+-  <application/>
+-</manifest>
+diff -ruN a/lib/java/com/google/android/material/badge/BadgeDrawable.java b/lib/java/com/google/android/material/badge/BadgeDrawable.java
+--- a/lib/java/com/google/android/material/badge/BadgeDrawable.java	2026-04-29 21:19:19.000000000 +0300
++++ b/lib/java/com/google/android/material/badge/BadgeDrawable.java	2024-05-24 13:50:12.000000000 +0300
 @@ -490,6 +490,17 @@
      }
    }
@@ -19,9 +43,9 @@ diff -ruN a/com/google/android/material/badge/BadgeDrawable.java b/com/google/an
    /** Returns whether this badge will display a number. */
    public boolean hasNumber() {
      return !state.hasText() && state.hasNumber();
-diff -ruN a/com/google/android/material/badge/BadgeState.java b/com/google/android/material/badge/BadgeState.java
---- a/com/google/android/material/badge/BadgeState.java	2025-10-22 19:46:00.000000000 +0300
-+++ b/com/google/android/material/badge/BadgeState.java	2024-05-14 22:22:38.000000000 +0300
+diff -ruN a/lib/java/com/google/android/material/badge/BadgeState.java b/lib/java/com/google/android/material/badge/BadgeState.java
+--- a/lib/java/com/google/android/material/badge/BadgeState.java	2026-04-29 21:19:19.000000000 +0300
++++ b/lib/java/com/google/android/material/badge/BadgeState.java	2024-05-14 22:22:38.000000000 +0300
 @@ -207,7 +207,7 @@
              : storedState.badgeWithTextShapeAppearanceOverlayResId;
  
@@ -80,9 +104,9 @@ diff -ruN a/com/google/android/material/badge/BadgeState.java b/com/google/andro
      }
    }
  }
-diff -ruN a/com/google/android/material/badge/ExperimentalBadgeUtils.java b/com/google/android/material/badge/ExperimentalBadgeUtils.java
---- a/com/google/android/material/badge/ExperimentalBadgeUtils.java	2025-10-22 19:46:00.000000000 +0300
-+++ b/com/google/android/material/badge/ExperimentalBadgeUtils.java	2022-06-22 15:35:34.000000000 +0300
+diff -ruN a/lib/java/com/google/android/material/badge/ExperimentalBadgeUtils.java b/lib/java/com/google/android/material/badge/ExperimentalBadgeUtils.java
+--- a/lib/java/com/google/android/material/badge/ExperimentalBadgeUtils.java	2026-04-29 21:19:19.000000000 +0300
++++ b/lib/java/com/google/android/material/badge/ExperimentalBadgeUtils.java	2022-06-22 15:35:34.000000000 +0300
 @@ -16,10 +16,8 @@
  
  package com.google.android.material.badge;
@@ -100,9 +124,9 @@ diff -ruN a/com/google/android/material/badge/ExperimentalBadgeUtils.java b/com/
  })
 -@Experimental(level = ERROR)
  public @interface ExperimentalBadgeUtils {}
-diff -ruN a/com/google/android/material/bottomnavigation/res/values/styles.xml b/com/google/android/material/bottomnavigation/res/values/styles.xml
---- a/com/google/android/material/bottomnavigation/res/values/styles.xml	2025-10-22 19:46:00.000000000 +0300
-+++ b/com/google/android/material/bottomnavigation/res/values/styles.xml	2025-05-07 00:08:56.663587281 +0300
+diff -ruN a/lib/java/com/google/android/material/bottomnavigation/res/values/styles.xml b/lib/java/com/google/android/material/bottomnavigation/res/values/styles.xml
+--- a/lib/java/com/google/android/material/bottomnavigation/res/values/styles.xml	2026-04-29 21:19:19.000000000 +0300
++++ b/lib/java/com/google/android/material/bottomnavigation/res/values/styles.xml	2025-05-07 00:08:56.000000000 +0300
 @@ -66,7 +66,6 @@
      <item name="itemPaddingTop">@dimen/m3_bottom_nav_item_padding_top</item>
      <item name="itemPaddingBottom">@dimen/m3_bottom_nav_item_padding_bottom</item>
@@ -126,9 +150,9 @@ diff -ruN a/com/google/android/material/bottomnavigation/res/values/styles.xml b
    <style name="Widget.Material3.BottomNavigationView.ActiveIndicator" parent="">
      <item name="android:width">@dimen/m3_bottom_nav_item_active_indicator_width</item>
      <item name="android:height">@dimen/m3_bottom_nav_item_active_indicator_height</item>
-diff -ruN a/com/google/android/material/bottomsheet/BottomSheetBehavior.java b/com/google/android/material/bottomsheet/BottomSheetBehavior.java
---- a/com/google/android/material/bottomsheet/BottomSheetBehavior.java	2025-10-22 19:46:00.000000000 +0300
-+++ b/com/google/android/material/bottomsheet/BottomSheetBehavior.java	2025-10-15 10:16:56.150346968 +0300
+diff -ruN a/lib/java/com/google/android/material/bottomsheet/BottomSheetBehavior.java b/lib/java/com/google/android/material/bottomsheet/BottomSheetBehavior.java
+--- a/lib/java/com/google/android/material/bottomsheet/BottomSheetBehavior.java	2026-04-29 21:19:19.000000000 +0300
++++ b/lib/java/com/google/android/material/bottomsheet/BottomSheetBehavior.java	2026-04-11 14:15:04.000000000 +0300
 @@ -74,6 +74,8 @@
  import androidx.customview.view.AbsSavedState;
  import androidx.customview.widget.ViewDragHelper;
@@ -138,7 +162,7 @@ diff -ruN a/com/google/android/material/bottomsheet/BottomSheetBehavior.java b/c
  import com.google.android.material.internal.ViewUtils;
  import com.google.android.material.internal.ViewUtils.RelativePadding;
  import com.google.android.material.motion.MaterialBackHandler;
-@@ -1778,6 +1780,19 @@
+@@ -1782,6 +1784,19 @@
    }
  
    @Nullable
@@ -158,7 +182,7 @@ diff -ruN a/com/google/android/material/bottomsheet/BottomSheetBehavior.java b/c
    @VisibleForTesting
    View findScrollingChild(View view) {
      if (view.getVisibility() != View.VISIBLE) {
-@@ -1786,6 +1801,12 @@
+@@ -1790,6 +1805,12 @@
      if (view.isNestedScrollingEnabled()) {
        return view;
      }
@@ -171,10 +195,10 @@ diff -ruN a/com/google/android/material/bottomsheet/BottomSheetBehavior.java b/c
      if (view instanceof ViewGroup) {
        ViewGroup group = (ViewGroup) view;
        for (int i = 0, count = group.getChildCount(); i < count; i++) {
-diff -ruN a/com/google/android/material/card/MaterialCardViewHelper.java b/com/google/android/material/card/MaterialCardViewHelper.java
---- a/com/google/android/material/card/MaterialCardViewHelper.java	2025-10-22 19:46:00.000000000 +0300
-+++ b/com/google/android/material/card/MaterialCardViewHelper.java	2025-08-22 13:49:17.147908135 +0300
-@@ -166,7 +166,7 @@
+diff -ruN a/lib/java/com/google/android/material/card/MaterialCardViewHelper.java b/lib/java/com/google/android/material/card/MaterialCardViewHelper.java
+--- a/lib/java/com/google/android/material/card/MaterialCardViewHelper.java	2026-04-29 21:19:19.000000000 +0300
++++ b/lib/java/com/google/android/material/card/MaterialCardViewHelper.java	2026-04-11 14:16:43.000000000 +0300
+@@ -167,7 +167,7 @@
      foregroundContentDrawable = new MaterialShapeDrawable();
      setShapeAppearance(shapeAppearanceModelBuilder.build());
  
@@ -183,7 +207,7 @@ diff -ruN a/com/google/android/material/card/MaterialCardViewHelper.java b/com/g
          MotionUtils.resolveThemeInterpolator(
              materialCardView.getContext(),
              R.attr.motionEasingLinearInterpolator,
-@@ -230,7 +230,7 @@
+@@ -231,7 +231,7 @@
  
      materialCardView.setBackgroundInternal(insetDrawable(bgDrawable));
      fgDrawable =
@@ -192,7 +216,7 @@ diff -ruN a/com/google/android/material/card/MaterialCardViewHelper.java b/com/g
      materialCardView.setForeground(insetDrawable(fgDrawable));
  
      // Card corner radius overrides the shape appearance in precedence.
-@@ -252,6 +252,11 @@
+@@ -253,6 +253,11 @@
      }
    }
  
@@ -204,7 +228,7 @@ diff -ruN a/com/google/android/material/card/MaterialCardViewHelper.java b/com/g
    boolean isBackgroundOverwritten() {
      return isBackgroundOverwritten;
    }
-@@ -327,7 +332,7 @@
+@@ -328,7 +333,7 @@
    void updateClickable() {
      Drawable previousFgDrawable = fgDrawable;
      fgDrawable =
@@ -213,41 +237,9 @@ diff -ruN a/com/google/android/material/card/MaterialCardViewHelper.java b/com/g
      if (previousFgDrawable != fgDrawable) {
        updateInsetForeground(fgDrawable);
      }
-diff -ruN a/com/google/android/material/floatingactionbutton/FloatingActionButtonImpl.java b/com/google/android/material/floatingactionbutton/FloatingActionButtonImpl.java
---- a/com/google/android/material/floatingactionbutton/FloatingActionButtonImpl.java	2025-10-22 19:46:00.000000000 +0300
-+++ b/com/google/android/material/floatingactionbutton/FloatingActionButtonImpl.java	2025-03-25 18:36:11.000000000 +0300
-@@ -177,21 +177,19 @@
-     }
-     shapeDrawable.initializeElevationOverlay(view.getContext());
- 
--    final Drawable rippleContent;
-     if (borderWidth > 0) {
-       borderDrawable = createBorderDrawable(borderWidth, backgroundTint);
--      rippleContent =
--          new LayerDrawable(
--              new Drawable[] {checkNotNull(borderDrawable), checkNotNull(shapeDrawable)});
-+      rippleDrawable =
-+              new RippleDrawable(
-+                      RippleUtils.sanitizeRippleDrawableColor(rippleColor), new LayerDrawable(
-+                      new Drawable[]{checkNotNull(borderDrawable), checkNotNull(shapeDrawable)}), null);
-     } else {
-       borderDrawable = null;
--      rippleContent = shapeDrawable;
-+      rippleDrawable =
-+              new RippleDrawable(
-+                      RippleUtils.sanitizeRippleDrawableColor(rippleColor), shapeDrawable, null);
-     }
- 
--    rippleDrawable =
--        new RippleDrawable(
--            RippleUtils.sanitizeRippleDrawableColor(rippleColor), rippleContent, null);
--
-     contentBackground = rippleDrawable;
-   }
- 
-diff -ruN a/com/google/android/material/materialswitch/res/values/dimens.xml b/com/google/android/material/materialswitch/res/values/dimens.xml
---- a/com/google/android/material/materialswitch/res/values/dimens.xml	2025-10-22 19:46:00.000000000 +0300
-+++ b/com/google/android/material/materialswitch/res/values/dimens.xml	2025-01-07 08:14:20.000000000 +0300
+diff -ruN a/lib/java/com/google/android/material/materialswitch/res/values/dimens.xml b/lib/java/com/google/android/material/materialswitch/res/values/dimens.xml
+--- a/lib/java/com/google/android/material/materialswitch/res/values/dimens.xml	2026-04-29 21:19:19.000000000 +0300
++++ b/lib/java/com/google/android/material/materialswitch/res/values/dimens.xml	2025-01-07 08:14:20.000000000 +0300
 @@ -16,9 +16,9 @@
    -->
  
@@ -261,10 +253,10 @@ diff -ruN a/com/google/android/material/materialswitch/res/values/dimens.xml b/c
 +  <dimen name="mtrl_switch_track_height">24dp</dimen>
    <dimen name="mtrl_switch_text_padding">16dp</dimen>
  </resources>
-diff -ruN a/com/google/android/material/snackbar/Snackbar.java b/com/google/android/material/snackbar/Snackbar.java
---- a/com/google/android/material/snackbar/Snackbar.java	2025-10-22 19:46:00.000000000 +0300
-+++ b/com/google/android/material/snackbar/Snackbar.java	2025-03-16 15:37:14.000000000 +0300
-@@ -276,7 +276,7 @@
+diff -ruN a/lib/java/com/google/android/material/snackbar/Snackbar.java b/lib/java/com/google/android/material/snackbar/Snackbar.java
+--- a/lib/java/com/google/android/material/snackbar/Snackbar.java	2026-04-29 21:19:19.000000000 +0300
++++ b/lib/java/com/google/android/material/snackbar/Snackbar.java	2025-12-17 22:25:17.000000000 +0300
+@@ -283,7 +283,7 @@
    }
  
    @Nullable
@@ -273,7 +265,7 @@ diff -ruN a/com/google/android/material/snackbar/Snackbar.java b/com/google/andr
      ViewGroup fallback = null;
      do {
        if (view instanceof CoordinatorLayout) {
-@@ -388,6 +388,11 @@
+@@ -471,6 +471,11 @@
          : userSetDuration;
    }
  

@@ -52,8 +52,9 @@ android {
         buildConfigField("String", "SERVICE_TOKEN", libs.versions.vkServiceToken.commaString())
         buildConfigField("String", "FAKE_ABI", libs.versions.fakeAbi.commaString())
         buildConfigField("String", "FAKE_DEVICE", libs.versions.fakeDevice.commaString())
-        buildConfigField("Integer", "TARGET_SDK", libs.versions.appTargetSDK.get())
+        buildConfigField("int", "TARGET_SDK", libs.versions.appTargetSDK.get())
         buildConfigField("boolean", "FORCE_DEVELOPER_MODE", isDevelopBuildString())
+        buildConfigField("int", "VK_API_GROUP_ADMIN_APP_ID", libs.versions.vkGroupAdminAppId.get())
 
         ndk {
             abiFilters.clear()

@@ -753,28 +753,31 @@ MAKEROWYJ(ABGR, 0, 1, 2, 4)
 MAKEROWYJ(RGBA, 3, 2, 1, 4)
 #undef MAKEROWYJ
 
-static __inline uint8_t RGBToYMatrix(uint8_t r,
-                                     uint8_t g,
-                                     uint8_t b,
+static __inline uint8_t RGBToYMatrix(uint8_t b0,
+                                     uint8_t b1,
+                                     uint8_t b2,
+                                     uint8_t b3,
                                      const struct ArgbConstants* c) {
-  return (c->kRGBToY[2] * r + c->kRGBToY[1] * g + c->kRGBToY[0] * b +
-          c->kAddY[0]) >>
+  return (c->kRGBToY[0] * b0 + c->kRGBToY[1] * b1 + c->kRGBToY[2] * b2 +
+          c->kRGBToY[3] * b3 + c->kAddY[0]) >>
          8;
 }
-static __inline uint8_t RGBToUMatrix(uint8_t r,
-                                     uint8_t g,
-                                     uint8_t b,
+static __inline uint8_t RGBToUMatrix(uint8_t b0,
+                                     uint8_t b1,
+                                     uint8_t b2,
+                                     uint8_t b3,
                                      const struct ArgbConstants* c) {
-  return (c->kAddUV[0] -
-          (c->kRGBToU[2] * r + c->kRGBToU[1] * g + c->kRGBToU[0] * b)) >>
+  return (c->kAddUV[0] - (c->kRGBToU[0] * b0 + c->kRGBToU[1] * b1 +
+                         c->kRGBToU[2] * b2 + c->kRGBToU[3] * b3)) >>
          8;
 }
-static __inline uint8_t RGBToVMatrix(uint8_t r,
-                                     uint8_t g,
-                                     uint8_t b,
+static __inline uint8_t RGBToVMatrix(uint8_t b0,
+                                     uint8_t b1,
+                                     uint8_t b2,
+                                     uint8_t b3,
                                      const struct ArgbConstants* c) {
-  return (c->kAddUV[0] -
-          (c->kRGBToV[2] * r + c->kRGBToV[1] * g + c->kRGBToV[0] * b)) >>
+  return (c->kAddUV[0] - (c->kRGBToV[0] * b0 + c->kRGBToV[1] * b1 +
+                         c->kRGBToV[2] * b2 + c->kRGBToV[3] * b3)) >>
          8;
 }
 
@@ -784,7 +787,7 @@ void ARGBToYMatrixRow_C(const uint8_t* src_argb,
                         const struct ArgbConstants* c) {
   int x;
   for (x = 0; x < width; ++x) {
-    dst_y[0] = RGBToYMatrix(src_argb[2], src_argb[1], src_argb[0], c);
+    dst_y[0] = RGBToYMatrix(src_argb[0], src_argb[1], src_argb[2], src_argb[3], c);
     src_argb += 4;
     dst_y += 1;
   }
@@ -799,25 +802,28 @@ void ARGBToUVMatrixRow_C(const uint8_t* src_argb,
   const uint8_t* src_argb1 = src_argb + src_stride_argb;
   int x;
   for (x = 0; x < width - 1; x += 2) {
-    uint8_t ab =
+    uint8_t b0 =
         (src_argb[0] + src_argb[4] + src_argb1[0] + src_argb1[4] + 2) >> 2;
-    uint8_t ag =
+    uint8_t b1 =
         (src_argb[1] + src_argb[5] + src_argb1[1] + src_argb1[5] + 2) >> 2;
-    uint8_t ar =
+    uint8_t b2 =
         (src_argb[2] + src_argb[6] + src_argb1[2] + src_argb1[6] + 2) >> 2;
-    dst_u[0] = RGBToUMatrix(ar, ag, ab, c);
-    dst_v[0] = RGBToVMatrix(ar, ag, ab, c);
+    uint8_t b3 =
+        (src_argb[3] + src_argb[7] + src_argb1[3] + src_argb1[7] + 2) >> 2;
+    dst_u[0] = RGBToUMatrix(b0, b1, b2, b3, c);
+    dst_v[0] = RGBToVMatrix(b0, b1, b2, b3, c);
     src_argb += 8;
     src_argb1 += 8;
     dst_u += 1;
     dst_v += 1;
   }
   if (width & 1) {
-    uint8_t ab = (src_argb[0] + src_argb1[0] + 1) >> 1;
-    uint8_t ag = (src_argb[1] + src_argb1[1] + 1) >> 1;
-    uint8_t ar = (src_argb[2] + src_argb1[2] + 1) >> 1;
-    dst_u[0] = RGBToUMatrix(ar, ag, ab, c);
-    dst_v[0] = RGBToVMatrix(ar, ag, ab, c);
+    uint8_t b0 = (src_argb[0] + src_argb1[0] + 1) >> 1;
+    uint8_t b1 = (src_argb[1] + src_argb1[1] + 1) >> 1;
+    uint8_t b2 = (src_argb[2] + src_argb1[2] + 1) >> 1;
+    uint8_t b3 = (src_argb[3] + src_argb1[3] + 1) >> 1;
+    dst_u[0] = RGBToUMatrix(b0, b1, b2, b3, c);
+    dst_v[0] = RGBToVMatrix(b0, b1, b2, b3, c);
   }
 }
 
@@ -828,11 +834,10 @@ void ARGBToUV444MatrixRow_C(const uint8_t* src_argb,
                             const struct ArgbConstants* c) {
   int x;
   for (x = 0; x < width; ++x) {
-    uint8_t ab = src_argb[0];
-    uint8_t ag = src_argb[1];
-    uint8_t ar = src_argb[2];
-    dst_u[0] = RGBToUMatrix(ar, ag, ab, c);
-    dst_v[0] = RGBToVMatrix(ar, ag, ab, c);
+    dst_u[0] =
+        RGBToUMatrix(src_argb[0], src_argb[1], src_argb[2], src_argb[3], c);
+    dst_v[0] =
+        RGBToVMatrix(src_argb[0], src_argb[1], src_argb[2], src_argb[3], c);
     src_argb += 4;
     dst_u += 1;
     dst_v += 1;
@@ -1513,16 +1518,16 @@ void J400ToARGBRow_C(const uint8_t* src_y, uint8_t* dst_argb, int width) {
       YUVCONSTANTSBODY(YG, YB, VR, VG, UG, UB);
 
 #define MAKEARGBCONSTANTS(name, RY, GY, BY, RU, GU, BU, RV, GV, BV, AY, AUV)   \
-  const struct ArgbConstants SIMD_ALIGNED(kArgb##name##Constants) =            \
+  extern const struct ArgbConstants SIMD_ALIGNED(kArgb##name##Constants) =     \
       ARGBCONSTANTSBODY(BY, GY, RY, 0, -(BU), -(GU), -(RU), 0, -(BV), -(GV),   \
                         -(RV), 0, AY, AUV);                                    \
-  const struct ArgbConstants SIMD_ALIGNED(kAbgr##name##Constants) =            \
+  extern const struct ArgbConstants SIMD_ALIGNED(kAbgr##name##Constants) =     \
       ARGBCONSTANTSBODY(RY, GY, BY, 0, -(RU), -(GU), -(BU), 0, -(RV), -(GV),   \
                         -(BV), 0, AY, AUV);                                    \
-  const struct ArgbConstants SIMD_ALIGNED(kRgba##name##Constants) =            \
+  extern const struct ArgbConstants SIMD_ALIGNED(kRgba##name##Constants) =     \
       ARGBCONSTANTSBODY(0, BY, GY, RY, 0, -(BU), -(GU), -(RU), 0, -(BV),       \
                         -(GV), -(RV), AY, AUV);                                \
-  const struct ArgbConstants SIMD_ALIGNED(kBgra##name##Constants) =            \
+  extern const struct ArgbConstants SIMD_ALIGNED(kBgra##name##Constants) =     \
       ARGBCONSTANTSBODY(0, RY, GY, BY, 0, -(RU), -(GU), -(BU), 0, -(RV),       \
                         -(GV), -(BV), AY, AUV);
 

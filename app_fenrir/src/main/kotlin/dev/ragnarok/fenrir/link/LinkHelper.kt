@@ -91,7 +91,13 @@ import kotlin.math.abs
 
 object LinkHelper {
     @SuppressLint("CheckResult")
-    fun openUrl(context: Activity, accountId: Long, link: String?, isMain: Boolean) {
+    fun openUrl(
+        context: Activity,
+        accountId: Long,
+        link: String?,
+        isMain: Boolean = false,
+        actionOpen: Boolean = false
+    ) {
         if (link.isNullOrEmpty()) {
             createCustomToast(context, null)?.showToastError(R.string.empty_clipboard_url)
             return
@@ -104,7 +110,7 @@ object LinkHelper {
                     } else {
                         t.link?.let {
                             if (!openVKlink(context, accountId, it, isMain)) {
-                                if (Settings.get().main().isOpenUrlInternal > 0) {
+                                if (!actionOpen && Settings.get().main().isOpenUrlInternal > 0) {
                                     openLinkInBrowser(context, t.link)
                                 } else {
                                     getExternalLinkPlace(accountId, it).tryOpenWith(context)
@@ -124,7 +130,7 @@ object LinkHelper {
                 }) { e -> createCustomToast(context, null)?.showToastThrowable(e) }
         } else {
             if (!openVKlink(context, accountId, link, isMain)) {
-                if (Settings.get().main().isOpenUrlInternal > 0) {
+                if (!actionOpen && Settings.get().main().isOpenUrlInternal > 0) {
                     openLinkInBrowser(context, link)
                 } else {
                     getExternalLinkPlace(accountId, link).tryOpenWith(context)
@@ -392,7 +398,7 @@ object LinkHelper {
                     listOf(Audio().setId(audioLink.trackId).setOwnerId(audioLink.ownerId))
                 )
                     .fromIOToMain({
-                        startForPlayList(context, ArrayList(it), 0, false)
+                        startForPlayList(context, ArrayList(it), 0)
                         getPlayerPlace(Settings.get().accounts().current).tryOpenWith(context)
                     }) { e -> createCustomToast(context, null)?.showToastThrowable(e) }
             }

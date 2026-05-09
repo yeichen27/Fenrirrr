@@ -10,7 +10,6 @@ import android.content.Intent
 import android.content.pm.ShortcutManager
 import android.content.res.ColorStateList
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.net.Uri
@@ -29,7 +28,6 @@ import androidx.activity.result.contract.ActivityResultContracts.StartActivityFo
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.edit
-import androidx.core.graphics.scale
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
@@ -118,12 +116,12 @@ import dev.ragnarok.fenrir.model.LocalPhoto
 import dev.ragnarok.fenrir.model.SwitchableCategory
 import dev.ragnarok.fenrir.module.FenrirNative
 import dev.ragnarok.fenrir.nonNullNoEmpty
-import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.clear_cache
-import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.with
+import dev.ragnarok.fenrir.picasso.PicassoInstance
 import dev.ragnarok.fenrir.picasso.transforms.EllipseTransformation
 import dev.ragnarok.fenrir.picasso.transforms.RoundTransformation
 import dev.ragnarok.fenrir.place.Place
 import dev.ragnarok.fenrir.place.PlaceFactory
+import dev.ragnarok.fenrir.push.NotificationScheduler
 import dev.ragnarok.fenrir.service.FaveSyncWorker
 import dev.ragnarok.fenrir.service.KeepLongpollService
 import dev.ragnarok.fenrir.settings.AvatarStyle
@@ -149,6 +147,7 @@ import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
 import dev.ragnarok.fenrir.view.MySearchView
 import dev.ragnarok.fenrir.view.natives.animation.ThorVGLottieView
 import dev.ragnarok.fenrir.view.navigation.AbsNavigationView
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.prefs.Preferences
 import java.io.File
 import java.io.FileOutputStream
@@ -442,10 +441,10 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
         }
     }
 
-    private fun enableChatPhotoBackground(index: Int) {
-        val bEnable: Boolean = when (index) {
-            0, 1, 2, 3 -> false
-            else -> true
+    private fun enableChatPhotoBackground(param: String?) {
+        val bEnable: Boolean = when (param) {
+            "4" -> true
+            else -> false
         }
         preferencesAdapter?.applyToPreference("chat_light_background") {
             it.enabled = bEnable
@@ -1051,7 +1050,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 initialSelection = "1"
                 titleRes = R.string.picasso_dispatcher
                 onSelectionChange {
-                    clear_cache()
+                    PicassoInstance.clear_cache()
                 }
             }
         }
@@ -1170,10 +1169,8 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
             ) {
                 initialSelection = "0"
                 titleRes = R.string.chat_background
-                getString()?.let { enableChatPhotoBackground(it.toInt()) }
                 onSelectionChange {
-                    val index = it.toInt()
-                    enableChatPhotoBackground(index)
+                    enableChatPhotoBackground(it)
                 }
             }
 
@@ -1183,7 +1180,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                     selectLocalImage(false)
                     true
                 }
-                val bitmap = getDrawerBackgroundFile(requireActivity(), true)
+                val bitmap = CurrentTheme.getDrawerBackgroundFile(requireActivity(), true)
                 if (bitmap.exists()) {
                     icon(Drawable.createFromPath(bitmap.absolutePath))
                 } else icon(R.drawable.dir_photo)
@@ -1195,7 +1192,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                     selectLocalImage(true)
                     true
                 }
-                val bitmap = getDrawerBackgroundFile(requireActivity(), false)
+                val bitmap = CurrentTheme.getDrawerBackgroundFile(requireActivity(), false)
                 if (bitmap.exists()) {
                     icon(Drawable.createFromPath(bitmap.absolutePath))
                 } else icon(R.drawable.dir_photo)
@@ -1204,8 +1201,8 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
             pref("reset_chat_background") {
                 titleRes = R.string.delete_chats_photo
                 onClick {
-                    val chatLight = getDrawerBackgroundFile(requireActivity(), true)
-                    val chatDark = getDrawerBackgroundFile(requireActivity(), false)
+                    val chatLight = CurrentTheme.getDrawerBackgroundFile(requireActivity(), true)
+                    val chatDark = CurrentTheme.getDrawerBackgroundFile(requireActivity(), false)
                     try {
                         tryDeleteFile(chatLight)
                         tryDeleteFile(chatDark)
@@ -1214,7 +1211,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                             ?.showToastError(e.message)
                     }
                     preferencesAdapter?.applyToPreference("chat_light_background") {
-                        val bitmap = getDrawerBackgroundFile(requireActivity(), true)
+                        val bitmap = CurrentTheme.getDrawerBackgroundFile(requireActivity(), true)
                         if (bitmap.exists()) {
                             it.icon(Drawable.createFromPath(bitmap.absolutePath))
                         } else it.icon(R.drawable.dir_photo)
@@ -1222,7 +1219,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                     }
 
                     preferencesAdapter?.applyToPreference("chat_dark_background") {
-                        val bitmap = getDrawerBackgroundFile(requireActivity(), false)
+                        val bitmap = CurrentTheme.getDrawerBackgroundFile(requireActivity(), false)
                         if (bitmap.exists()) {
                             it.icon(Drawable.createFromPath(bitmap.absolutePath))
                         } else it.icon(R.drawable.dir_photo)
@@ -1256,33 +1253,56 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 lightSlider = true
             }
 
-            switch("my_message_no_color") {
+            switch("message_out_no_color") {
                 defaultValue = false
-                titleRes = R.string.my_message_no_color
+                titleRes = R.string.message_out_no_color
                 disableDependents = true
             }
 
-            switch("custom_message_color_usage") {
+            switch("custom_message_out_color_usage") {
                 defaultValue = false
-                dependency = "my_message_no_color"
-                titleRes = R.string.usage_custom_message_color
+                dependency = "message_out_no_color"
+                titleRes = R.string.custom_message_out_color_usage
             }
 
-            colorPick("custom_message_color", parentFragmentManager) {
-                dependency = "custom_message_color_usage"
-                titleRes = R.string.custom_message_color
+            colorPick("custom_color_message_out_primary", parentFragmentManager) {
+                dependency = "custom_message_out_color_usage"
+                titleRes = R.string.custom_color_message_out_primary
                 alphaSlider = true
                 density = 12
                 defaultValue = "#CBD438FF".toColor()
                 lightSlider = true
             }
 
-            colorPick("custom_second_message_color", parentFragmentManager) {
-                dependency = "custom_message_color_usage"
-                titleRes = R.string.custom_second_message_color
+            colorPick("custom_color_message_out_secondary", parentFragmentManager) {
+                dependency = "custom_message_out_color_usage"
+                titleRes = R.string.custom_color_message_out_secondary
                 alphaSlider = true
                 density = 12
                 defaultValue = "#BF6539DF".toColor()
+                lightSlider = true
+            }
+
+            switch("custom_message_in_color_usage") {
+                defaultValue = false
+                titleRes = R.string.custom_message_in_color_usage
+            }
+
+            colorPick("custom_color_message_in_primary", parentFragmentManager) {
+                dependency = "custom_message_in_color_usage"
+                titleRes = R.string.custom_color_message_in_primary
+                alphaSlider = true
+                density = 12
+                defaultValue = "#D4444444".toColor()
+                lightSlider = true
+            }
+
+            colorPick("custom_color_message_in_secondary", parentFragmentManager) {
+                dependency = "custom_message_in_color_usage"
+                titleRes = R.string.custom_color_message_in_secondary
+                alphaSlider = true
+                density = 12
+                defaultValue = "#D4444444".toColor()
                 lightSlider = true
             }
 
@@ -2147,6 +2167,10 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         (requireActivity() as AppCompatActivity).setSupportActionBar(view.findViewById(R.id.toolbar))
+
+        enableChatPhotoBackground(
+            PreferenceScreen.getPreferences(requireActivity()).getString("chat_background", "0")
+        )
     }
 
     private fun onSecurityClick() {
@@ -2164,21 +2188,36 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
         }
     }
 
+    @Suppress("deprecation")
     private fun changeDrawerBackground(isDark: Boolean, data: Intent?) {
         val photos: ArrayList<LocalPhoto>? = data?.getParcelableArrayListExtraCompat(PHOTOS)
         if (photos.isNullOrEmpty()) {
             return
         }
+        val x = Utils.displaySize.x
+        val y = Utils.displaySize.y
+        if (x <= 100 || y < 100) {
+            return
+        }
         val photo = photos[0]
         val light = !isDark
-        val file = getDrawerBackgroundFile(requireActivity(), light)
-        var original: Bitmap?
+        val file = CurrentTheme.getDrawerBackgroundFile(requireActivity(), light)
         try {
-            original = BitmapFactory.decodeFile(photo.fullImageUri?.path)
-            original = checkBitmap(original)
-            original?.let {
+            val bitmap = runBlocking(NotificationScheduler.INSTANCE.coroutineContext) {
+                PicassoInstance.with().load(photo.fullImageUri?.toString()).centerCrop()
+                    .resize(x, y)
+                    .get()?.copy(
+                        Bitmap.Config.ARGB_8888,
+                        true
+                    )
+            }
+            bitmap?.let {
                 FileOutputStream(file).use { fos ->
-                    it.compress(Bitmap.CompressFormat.JPEG, 100, fos)
+                    it.compress(
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) Bitmap.CompressFormat.WEBP_LOSSLESS else Bitmap.CompressFormat.WEBP,
+                        100,
+                        fos
+                    )
                     fos.flush()
                     fos.close()
                     it.recycle()
@@ -2415,11 +2454,11 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 )
             }
             resolveAvatarStyleViews(current, ivCircleSelected, ivOvalSelected)
-            with()
+            PicassoInstance.with()
                 .load(R.drawable.ava_settings)
                 .transform(RoundTransformation())
                 .into(ivCircle)
-            with()
+            PicassoInstance.with()
                 .load(R.drawable.ava_settings)
                 .transform(EllipseTransformation())
                 .into(ivOval)
@@ -2431,7 +2470,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                     Settings.get()
                         .ui()
                         .storeAvatarStyle(if (circle) AvatarStyle.CIRCLE else AvatarStyle.OVAL)
-                    clear_cache()
+                    PicassoInstance.clear_cache()
                     parentFragmentManager.setFragmentResult(
                         PreferencesExtra.RECREATE_ACTIVITY_REQUEST,
                         Bundle()
@@ -2883,13 +2922,9 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
             return fragment
         }
 
-        fun getDrawerBackgroundFile(context: Context, light: Boolean): File {
-            return File(context.filesDir, if (light) "chat_light.jpg" else "chat_dark.jpg")
-        }
-
         fun cleanTmpFileCache(context: Context, notify: Boolean) {
             try {
-                clear_cache()
+                PicassoInstance.clear_cache()
                 var cache = File(context.cacheDir, "notif-cache")
                 if (cache.exists() && cache.isDirectory) {
                     val children = cache.list()
@@ -2981,29 +3016,6 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 .syncSingleSafe()
             Utils.clearReactionAssets(accountId)
             activity.recreate()
-        }
-
-        internal fun checkBitmap(bitmap: Bitmap?): Bitmap? {
-            bitmap ?: return null
-            if (bitmap.width <= 0 || bitmap.height <= 0 || bitmap.width <= 4000 && bitmap.height <= 4000) {
-                return bitmap
-            }
-            var mWidth = bitmap.width
-            var mHeight = bitmap.height
-            val mCo = mHeight.coerceAtMost(mWidth).toFloat() / mHeight.coerceAtLeast(mWidth)
-            if (mWidth > mHeight) {
-                mWidth = 4000
-                mHeight = (4000 * mCo).toInt()
-            } else {
-                mHeight = 4000
-                mWidth = (4000 * mCo).toInt()
-            }
-            if (mWidth <= 0 || mHeight <= 0) {
-                return bitmap
-            }
-            val tmp = bitmap.scale(mWidth, mHeight)
-            bitmap.recycle()
-            return tmp
         }
     }
 }

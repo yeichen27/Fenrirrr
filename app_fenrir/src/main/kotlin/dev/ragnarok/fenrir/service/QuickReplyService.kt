@@ -5,7 +5,9 @@ import android.content.Intent
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.RemoteInput
 import dev.ragnarok.fenrir.Extra
+import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.domain.Repository.messages
+import dev.ragnarok.fenrir.ifNonNullNoEmpty
 import dev.ragnarok.fenrir.model.Message
 import dev.ragnarok.fenrir.model.SaveMessageBuilder
 import dev.ragnarok.fenrir.util.AppPerms
@@ -15,31 +17,46 @@ import java.io.File
 
 class QuickReplyService : IntentService(QuickReplyService::class.java.name) {
     override fun onHandleIntent(intent: Intent?) {
-        if (intent != null && ACTION_ADD_MESSAGE == intent.action && intent.extras != null) {
-            val accountId = (intent.extras ?: return).getLong(Extra.ACCOUNT_ID)
-            val peerId = (intent.extras ?: return).getLong(Extra.PEER_ID)
-            val msg = RemoteInput.getResultsFromIntent(intent)
-            if (msg != null) {
-                val body = msg.getCharSequence(Extra.BODY)
-                addMessage(accountId, peerId, body?.toString())
+        intent ?: return
+        val extras = intent.extras ?: return
+        when {
+            ACTION_ADD_MESSAGE == intent.action -> {
+                val accountId = extras.getLong(Extra.ACCOUNT_ID)
+                val peerId = extras.getLong(Extra.PEER_ID)
+                val msg = RemoteInput.getResultsFromIntent(intent)
+                msg?.getCharSequence(Extra.BODY).ifNonNullNoEmpty({
+                    addMessage(accountId, peerId, it.toString())
+                }, {})
             }
-        } else if (intent != null && ACTION_MARK_AS_READ == intent.action && intent.extras != null) {
-            val accountId = (intent.extras ?: return).getLong(Extra.ACCOUNT_ID)
-            val peerId = (intent.extras ?: return).getLong(Extra.PEER_ID)
-            val msgId = (intent.extras ?: return).getInt(Extra.MESSAGE_ID)
-            messages.markAsRead(accountId, peerId, msgId).syncSingleSafe()
-        } else if (intent != null && ACTION_DELETE_FILE == intent.action && intent.extras != null) {
-            if (AppPerms.hasNotificationPermissionSimple(this)) {
-                NotificationManagerCompat.from(this).cancel(
-                    (intent.extras ?: return).getString(Extra.TYPE), (intent.extras ?: return)
-                        .getInt(Extra.ID)
-                )
+
+            ACTION_MARK_AS_READ == intent.action -> {
+                val accountId = extras.getLong(Extra.ACCOUNT_ID)
+                val peerId = extras.getLong(Extra.PEER_ID)
+                val msgId = extras.getInt(Extra.MESSAGE_ID)
+                messages.markAsRead(accountId, peerId, msgId).syncSingleSafe()
             }
-            File((intent.extras ?: return).getString(Extra.DOC) ?: return).delete()
+
+            ACTION_DELETE_FILE == intent.action -> {
+                if (AppPerms.hasNotificationPermissionSimple(this)) {
+                    NotificationManagerCompat.from(this).cancel(
+                        extras.getString(Extra.TYPE), extras.getInt(Extra.ID)
+                    )
+                }
+                File(extras.getString(Extra.DOC) ?: return).delete()
+            }
+
+            ACTION_VALIDATE == intent.action -> {
+                val accountId = extras.getLong(Extra.ACCOUNT_ID)
+                val hash = extras.getString(Extra.HASH)
+                hash.ifNonNullNoEmpty({
+                    InteractorFactory.createAccountInteractor()
+                        .validateAction(accountId, true, it).syncSingleSafe()
+                }, {})
+            }
         }
     }
 
-    private fun addMessage(accountId: Long, peerId: Long, text: String?) {
+    private fun addMessage(accountId: Long, peerId: Long, text: String) {
         val messagesInteractor = messages
         val builder = SaveMessageBuilder(accountId, peerId).setText(text)
         messagesInteractor.put(builder).syncSingleSafe()
@@ -47,10 +64,10 @@ class QuickReplyService : IntentService(QuickReplyService::class.java.name) {
     }
 
     companion object {
-        const val ACTION_ADD_MESSAGE = "SendService.ACTION_ADD_MESSAGE"
-        const val ACTION_MARK_AS_READ = "SendService.ACTION_MARK_AS_READ"
-        const val ACTION_DELETE_FILE = "SendService.ACTION_DELETE_FILE"
-
+        const val ACTION_ADD_MESSAGE = "QuickReplyService.ACTION_ADD_MESSAGE"
+        const val ACTION_MARK_AS_READ = "QuickReplyService.ACTION_MARK_AS_READ"
+        const val ACTION_DELETE_FILE = "QuickReplyService.ACTION_DELETE_FILE"
+        const val ACTION_VALIDATE = "QuickReplyService.ACTION_VALIDATE"
 
         fun intentForAddMessage(
             context: Context,
@@ -91,6 +108,18 @@ class QuickReplyService : IntentService(QuickReplyService::class.java.name) {
             intent.putExtra(Extra.ACCOUNT_ID, accountId)
             intent.putExtra(Extra.PEER_ID, peerId)
             intent.putExtra(Extra.MESSAGE_ID, msgId)
+            return intent
+        }
+
+        fun intentForAccountValidate(
+            context: Context,
+            accountId: Long,
+            hash: String
+        ): Intent {
+            val intent = Intent(context, QuickReplyService::class.java)
+            intent.action = ACTION_VALIDATE
+            intent.putExtra(Extra.ACCOUNT_ID, accountId)
+            intent.putExtra(Extra.HASH, hash)
             return intent
         }
     }

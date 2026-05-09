@@ -719,6 +719,7 @@
     <string name="loading">Загрузка</string>
     <string name="all_friends">Все друзья</string>
     <string name="share_link">Поделиться ссылкой</string>
+    <string name="share_external">Поделиться внешнее</string>
     <string name="share_using">Поделиться с помощью</string>
     <string name="mutual_friends">Общие друзья</string>
     <string name="results_in_a_network">Найденное в сети</string>
@@ -1211,6 +1212,7 @@
     <string name="group_invites_channel">Приглашения в группы</string>
     <string name="likes_channel">Мне нравится</string>
     <string name="new_posts_channel">Новые записи</string>
+    <string name="validation_channel">Валидация</string>
     <string name="allow_fingerprint_title">Разрешить отпечаток пальца</string>
     <string name="error_login_by_fingerprint_not_allowed">Вход с помощью отпечатка пальца не разрешен</string>
     <string name="birthdays">Дни рождения</string>
@@ -1320,7 +1322,7 @@
     <string name="show_mini_player">Показывать мини-плеер</string>
     <string name="audio_in_status">Обновлять аудио в статусе</string>
     <string name="show_audio_top">Показывать популярные треки</string>
-    <string name="my_message_no_color">Отключить цвет исходящих сообщений</string>
+    <string name="message_out_no_color">Отключить цвет исходящих сообщений</string>
     <string name="do_upload_video">Загрузить видео из локального хранилища?</string>
     <string name="null_audio">Нет проигрываемых аудио</string>
     <string name="audio_not_found">Аудио не найдено в списке</string>
@@ -1336,12 +1338,14 @@
     <string name="use_custom_chat_color">Задать цвет фона</string>
     <string name="custom_chat_color_second">Второй цвет фона</string>
     <string name="custom_chat_color_summary">Установите фон в “Монотонный”, чтобы он стал градиентом</string>
-    <string name="custom_message_color">Первый цвет исходящего сообщения</string>
-    <string name="usage_custom_message_color">Задать цвет исходящего сообщения</string>
+    <string name="custom_color_message_out_primary">Первый цвет исходящего сообщения</string>
+    <string name="custom_message_out_color_usage">Задать цвет исходящего сообщения</string>
+    <string name="custom_color_message_in_primary">Первый цвет входящего сообщения</string>
+    <string name="custom_message_in_color_usage">Задать цвет входящего сообщения</string>
     <string name="last_read">Последнее прочитанное</string>
     <string name="enable_last_read">Переход к последнему прочитанному сообщению</string>
     <string name="enable_last_read_summary">Показать кнопку в чате</string>
-    <string name="show_profile_in_additional_page">Показывать профиль в всплывающем меню</string>
+    <string name="show_profile_in_additional_page">Показывать профиль во всплывающем меню</string>
     <string name="swipes_for_chats_mode">Свайпы в чатах</string>
     <string name="chat_users_count">%1$d участников</string>
     <string name="display_writing">Показывать набор сообщения собеседником</string>
@@ -1415,7 +1419,8 @@
     <string name="output_call">Входящий звонок</string>
     <string name="graffiti">Граффити</string>
     <string name="photo_album">Фото Альбом</string>
-    <string name="custom_second_message_color">Второй цвет исходящего сообщения</string>
+    <string name="custom_color_message_out_secondary">Второй цвет исходящего сообщения</string>
+    <string name="custom_color_message_in_secondary">Второй цвет входящего сообщения</string>
     <string name="short_link">Сокращение ссылок</string>
     <string name="do_short_link">Сократить</string>
     <string name="validate">Проверить</string>

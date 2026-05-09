@@ -22,6 +22,7 @@ import dev.ragnarok.fenrir.listener.BackPressCallback
 import dev.ragnarok.fenrir.model.PhotoAlbum
 import dev.ragnarok.fenrir.model.PhotoAlbumEditor
 import dev.ragnarok.fenrir.place.PlaceFactory
+import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.view.steppers.base.AbsStepHolder
 import dev.ragnarok.fenrir.view.steppers.base.AbsSteppersVerticalAdapter
 import dev.ragnarok.fenrir.view.steppers.impl.CreatePhotoAlbumStep1Holder
@@ -48,14 +49,16 @@ class CreatePhotoAlbumFragment : BaseMvpFragment<EditPhotoAlbumPresenter, IEditP
         ViewCompat.setOnApplyWindowInsetsListener(root) { _, windowInsets ->
             val insets =
                 windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
-            val imeFixedBottom =
-                if (windowInsets.isVisible(WindowInsetsCompat.Type.ime())) max(
-                    windowInsets.getInsets(
-                        WindowInsetsCompat.Type.ime()
-                    ).bottom, insets.bottom
-                ) else insets.bottom
             root.findViewById<View>(R.id.toolbar)?.setPadding(0, insets.top, 0, 0)
-            root.setPadding(0, 0, 0, imeFixedBottom)
+            if (!Settings.get().main().is_side_navigation) {
+                val imeFixedBottom =
+                    if (windowInsets.isVisible(WindowInsetsCompat.Type.ime())) max(
+                        windowInsets.getInsets(
+                            WindowInsetsCompat.Type.ime()
+                        ).bottom, insets.bottom
+                    ) else insets.bottom
+                root.setPadding(0, 0, 0, imeFixedBottom)
+            }
             WindowInsetsCompat.CONSUMED
         }
 

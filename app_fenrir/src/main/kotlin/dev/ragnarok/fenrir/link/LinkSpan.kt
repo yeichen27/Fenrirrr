@@ -22,7 +22,7 @@ class LinkSpan(
 ) : ClickableSpan() {
     override fun onClick(widget: View) {
         if (Settings.get().main().is_notification_force_link) {
-            LinkHelper.openUrl(context as Activity, Settings.get().accounts().current, link, false)
+            LinkHelper.openUrl(context as Activity, Settings.get().accounts().current, link)
             return
         }
         val menus = ModalBottomSheetDialogFragment.Builder()
@@ -51,7 +51,7 @@ class LinkSpan(
                     LinkHelper.openUrl(
                         context as Activity,
                         Settings.get().accounts().current,
-                        link, false
+                        link
                     )
                 }
 

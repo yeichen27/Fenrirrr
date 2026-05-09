@@ -502,7 +502,7 @@ open class PhotoPagerPresenter internal constructor(
                             LinkHelper.openUrl(
                                 context,
                                 accountId,
-                                data, false
+                                data
                             )
                         }
                         .setNeutralButton(R.string.copy_text) { _, _ ->

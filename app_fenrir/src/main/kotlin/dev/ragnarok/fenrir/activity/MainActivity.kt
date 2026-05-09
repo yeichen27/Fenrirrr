@@ -267,7 +267,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                         LinkHelper.openUrl(
                             this,
                             mAccountId,
-                            scanner, false
+                            scanner
                         )
                     }
                     .setNeutralButton(R.string.copy_text) { _, _ ->
@@ -775,8 +775,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                                     LinkHelper.openUrl(
                                         this@MainActivity,
                                         mAccountId,
-                                        temp,
-                                        false
+                                        temp
                                     )
                                 }
                             }
@@ -946,7 +945,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                             playlist.add(tmp)
                         }
                         intent.removeExtra(Intent.EXTRA_STREAM)
-                        startForPlayList(this, playlist, 0, false)
+                        startForPlayList(this, playlist, 0)
                         PlaceFactory.getPlayerPlace(mAccountId).tryOpenWith(this)
                     }
                 }
@@ -993,11 +992,17 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                                 "share_$data"
                             ).setUrl(data.toString()).setOwnerId(mAccountId).setArtist(Artist)
                             .setTitle(TrackName).setId(data.toString().hashCode())
-                    startForPlayList(this, ArrayList(listOf(tmp)), 0, false)
+                    startForPlayList(this, ArrayList(listOf(tmp)), 0)
                     PlaceFactory.getPlayerPlace(mAccountId).tryOpenWith(this)
                     return false
                 }
-                LinkHelper.openUrl(this, mAccountId, data.toString(), isMain)
+                LinkHelper.openUrl(
+                    this,
+                    mAccountId,
+                    data.toString(),
+                    isMain = isMain,
+                    actionOpen = true
+                )
                 return true
             }
 

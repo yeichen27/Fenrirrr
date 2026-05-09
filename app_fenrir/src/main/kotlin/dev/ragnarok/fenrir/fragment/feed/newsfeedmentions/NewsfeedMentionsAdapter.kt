@@ -347,8 +347,7 @@ class NewsfeedMentionsAdapter(
                 LinkHelper.openUrl(
                     holder.tvCopyright.context as Activity,
                     Settings.get().accounts().current,
-                    vit.link,
-                    false
+                    vit.link
                 )
             }
         } ?: run { holder.tvCopyright.visibility = View.GONE }

@@ -5,7 +5,7 @@ plugins {
     alias(libs.plugins.devtools.ksp)
 }
 
-//1.6.0
+//1.6.1
 
 fun isDevelopBuild() = libs.versions.developerBuild.get().toBoolean()
 fun Provider<String>.asInt() = get().toInt()

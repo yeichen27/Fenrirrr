@@ -63,8 +63,6 @@ internal class MainSettings(context: Context) : IMainSettings {
         get() = getPreferences(app).getBoolean("is_player_support_volume", false)
     override val isShow_bot_keyboard: Boolean
         get() = getPreferences(app).getBoolean("show_bot_keyboard", true)
-    override val isMy_message_no_color: Boolean
-        get() = getPreferences(app).getBoolean("my_message_no_color", false)
     override val isNotification_bubbles_enabled: Boolean
         get() = getPreferences(app).getBoolean("notification_bubbles", true)
     override val isMessages_menu_down: Boolean
@@ -489,15 +487,32 @@ internal class MainSettings(context: Context) : IMainSettings {
         )
     override val isCustom_chat_color: Boolean
         get() = getPreferences(app).getBoolean("custom_chat_color_usage", false)
-    override val colorMyMessage: Int
-        get() = getPreferences(app).getInt("custom_message_color", "#CBD438FF".toColor())
-    override val secondColorMyMessage: Int
+
+    override val isMessageOutNoColor: Boolean
+        get() = getPreferences(app).getBoolean("message_out_no_color", false)
+    override val isCustomMessageOutColor: Boolean
+        get() = getPreferences(app).getBoolean("custom_message_out_color_usage", false)
+    override val customColorMessageOutPrimary: Int
         get() = getPreferences(app).getInt(
-            "custom_second_message_color",
+            "custom_color_message_out_primary",
+            "#CBD438FF".toColor()
+        )
+    override val customColorMessageOutSecondary: Int
+        get() = getPreferences(app).getInt(
+            "custom_color_message_out_secondary",
             "#BF6539DF".toColor()
         )
-    override val isCustom_MyMessage: Boolean
-        get() = getPreferences(app).getBoolean("custom_message_color_usage", false)
+
+    override val isCustomMessageInColor: Boolean
+        get() = getPreferences(app).getBoolean("custom_message_in_color_usage", false)
+    override val customColorMessageInPrimary: Int
+        get() = getPreferences(app).getInt("custom_color_message_in_primary", "#D4444444".toColor())
+    override val customColorMessageInSecondary: Int
+        get() = getPreferences(app).getInt(
+            "custom_color_message_in_secondary",
+            "#D4444444".toColor()
+        )
+
     override val isInfo_reading: Boolean
         get() = getPreferences(app).getBoolean("info_reading", true)
     override val isAuto_read: Boolean

@@ -104,10 +104,18 @@ import dev.ragnarok.fenrir.view.pager.GateTransformer
 import dev.ragnarok.fenrir.view.pager.SliderTransformer
 import dev.ragnarok.fenrir.view.pager.Transformers_Types
 import dev.ragnarok.fenrir.view.pager.ZoomOutTransformer
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Response
+import java.io.BufferedInputStream
 import java.io.Closeable
+import java.io.File
+import java.io.FileOutputStream
 import java.io.IOException
+import java.io.OutputStream
 import java.util.Calendar
 import java.util.Collections
 import java.util.LinkedList
@@ -128,7 +136,8 @@ object Utils {
     private val reload_reactions_assets: MutableList<Long> = LinkedList()
 
     var follower_kick_mode = false
-    private val displaySize = Point()
+    var displaySize = Point()
+        private set
     private var device_id: String? = null
     private var hiddenDevice_id: String? = null
     var density = 1f
@@ -1059,11 +1068,56 @@ object Utils {
     }
 
     fun shareLink(activity: Activity, link: String?, subject: String?) {
-        link ?: return
+        if (link.isNullOrEmpty()) {
+            return
+        }
         val sharingIntent = Intent(Intent.ACTION_SEND)
         sharingIntent.type = "text/plain"
         sharingIntent.putExtra(Intent.EXTRA_SUBJECT, subject)
         sharingIntent.putExtra(Intent.EXTRA_TEXT, link)
+        activity.startActivity(
+            Intent.createChooser(
+                sharingIntent,
+                activity.resources.getString(R.string.share_using)
+            )
+        )
+    }
+
+    fun downloadTaskFlow(file: File, url: String, timeout: Long): Flow<Boolean> = flow {
+        val output: OutputStream = FileOutputStream(file)
+        val builder: OkHttpClient.Builder = createOkHttp(timeout, false)
+        val request: Request = Request.Builder()
+            .url(url)
+            .build()
+        val response: Response = builder.build().newCall(request).execute()
+        if (!response.isSuccessful) {
+            throw Exception(
+                "Server return " + response.code +
+                        " " + response.message
+            )
+        }
+        val inputStream = response.body.byteStream()
+        val input = BufferedInputStream(inputStream)
+        val data = ByteArray(80 * 1024)
+        var bufferLength = 0
+        while (input.read(data).also { bufferLength = it } != -1) {
+            output.write(data, 0, bufferLength)
+        }
+        output.flush()
+        input.close()
+        response.close()
+        emit(true)
+    }
+
+    fun shareExternal(activity: Activity, file: File?, mime: String) {
+        if (file == null || !file.exists()) {
+            return
+        }
+        val sharingIntent = Intent(Intent.ACTION_SEND)
+        sharingIntent.type = mime
+        sharingIntent.putExtra(
+            Intent.EXTRA_STREAM, FileUtil.getExportedUriForFile(activity, file)
+        ).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         activity.startActivity(
             Intent.createChooser(
                 sharingIntent,

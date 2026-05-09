@@ -184,8 +184,7 @@ class FeedbackVKOfficialFragment :
                 LinkHelper.openUrl(
                     requireActivity(),
                     Settings.get().accounts().current,
-                    (action as ActionURL).getUrl(),
-                    false
+                    (action as ActionURL).getUrl()
                 )
             }
 

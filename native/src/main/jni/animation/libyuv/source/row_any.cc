@@ -1748,9 +1748,6 @@ ANY11SB(Convert8To8Row_Any_AVX2,
     memcpy(dst_ptr + np, vout, r * BPP);                                \
   }
 
-#ifdef HAS_HALFFLOATROW_SSE2
-ANY11P16(HalfFloatRow_Any_SSE2, HalfFloatRow_SSE2, uint16_t, uint16_t, 2, 2, 7)
-#endif
 #ifdef HAS_HALFFLOATROW_AVX2
 ANY11P16(HalfFloatRow_Any_AVX2, HalfFloatRow_AVX2, uint16_t, uint16_t, 2, 2, 15)
 #endif
@@ -2201,6 +2198,7 @@ ANY14(SplitARGBRow_Any_NEON, SplitARGBRow_NEON, 4, 15)
     SIMD_ALIGNED(uint8_t vin[256 * 2]);                                      \
     SIMD_ALIGNED(uint8_t vout[256 * 2]);                                     \
     memset(vin, 0, sizeof(vin)); /* for msan */                              \
+    memset(vout, 0, sizeof(vout)); /* for msan */                            \
     int r = width & MASK;                                                    \
     int n = width & ~MASK;                                                   \
     if (n > 0) {                                                             \
@@ -2244,6 +2242,7 @@ ANY14(SplitARGBRow_Any_NEON, SplitARGBRow_NEON, 4, 15)
     SIMD_ALIGNED(uint8_t vin[256 * 2]);                                      \
     SIMD_ALIGNED(uint8_t vout[256 * 2]);                                     \
     memset(vin, 0, sizeof(vin)); /* for msan */                              \
+    memset(vout, 0, sizeof(vout)); /* for msan */                            \
     int r = width & MASK;                                                    \
     int n = width & ~MASK;                                                   \
     if (n > 0) {                                                             \

@@ -1,6 +1,7 @@
 package dev.ragnarok.fenrir.fragment.wall.groupwall
 
 import android.app.Activity
+import android.app.Dialog
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.os.Bundle
@@ -14,13 +15,16 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
+import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textview.MaterialTextView
 import com.squareup.picasso3.BitmapTarget
 import com.squareup.picasso3.Picasso
+import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.ActivityUtils.setToolbarSubtitle
@@ -28,6 +32,7 @@ import dev.ragnarok.fenrir.activity.ActivityUtils.setToolbarTitle
 import dev.ragnarok.fenrir.activity.LoginActivity.Companion.createIntent
 import dev.ragnarok.fenrir.activity.LoginActivity.Companion.extractGroupTokens
 import dev.ragnarok.fenrir.activity.SelectionUtils.addSelectionProfileSupport
+import dev.ragnarok.fenrir.api.Auth
 import dev.ragnarok.fenrir.fragment.base.horizontal.HorizontalMenuAdapter
 import dev.ragnarok.fenrir.fragment.base.horizontal.HorizontalOptionsAdapter
 import dev.ragnarok.fenrir.fragment.docs.DocsListPresenter
@@ -67,6 +72,7 @@ import dev.ragnarok.fenrir.toColor
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.getVerifiedColor
 import dev.ragnarok.fenrir.util.Utils.setBackgroundTint
+import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
 import dev.ragnarok.fenrir.view.ProfileCoverDrawable
 import dev.ragnarok.fenrir.view.natives.animation.ThorVGLottieView
 import kotlin.math.abs
@@ -230,7 +236,7 @@ class GroupWallFragment : AbsWallFragment<IGroupWallView, GroupWallPresenter>(),
     }
 
     override fun openVKURL(accountId: Long, link: String) {
-        LinkHelper.openUrl(requireActivity(), accountId, link, false)
+        LinkHelper.openUrl(requireActivity(), accountId, link)
     }
 
     private val coverTarget = object : BitmapTarget {
@@ -477,6 +483,68 @@ class GroupWallFragment : AbsWallFragment<IGroupWallView, GroupWallPresenter>(),
             .show()
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        parentFragmentManager.setFragmentResultListener(
+            ENTRY_COMMUNITY_AUTH_RESULT,
+            this
+        ) { _, result ->
+            result.getString(Extra.TOKEN).ifNonNullNoEmpty({
+                presenter?.fireGroupTokenEntered(
+                    it
+                )
+            }, {
+                presenter?.fireStartCommunityLogin()
+            })
+        }
+    }
+
+    class EntryCommunityAuthDialog : DialogFragment() {
+        override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+            val root = View.inflate(requireActivity(), R.layout.entry_community_auth, null)
+            root.findViewById<View>(R.id.button_implicit_auth).setOnClickListener {
+                val res = Bundle()
+                res.putString(Extra.TOKEN, "")
+                parentFragmentManager.setFragmentResult(
+                    ENTRY_COMMUNITY_AUTH_RESULT,
+                    res
+                )
+                dismiss()
+            }
+            return MaterialAlertDialogBuilder(requireActivity())
+                .setView(root)
+                .setCancelable(true)
+                .setTitle(R.string.login_title)
+                .setNegativeButton(R.string.button_cancel, null)
+                .setPositiveButton(R.string.button_ok) { _, _ ->
+                    try {
+                        val access_token =
+                            root.findViewById<TextInputEditText>(R.id.edit_access_token).text.toString()
+                                .trim()
+                        if (access_token.isNotEmpty()) {
+                            val res = Bundle()
+                            res.putString(Extra.TOKEN, access_token)
+                            parentFragmentManager.setFragmentResult(
+                                ENTRY_COMMUNITY_AUTH_RESULT,
+                                res
+                            )
+                        }
+                    } catch (e: Exception) {
+                        createCustomToast(
+                            requireActivity(),
+                            view
+                        )?.showToastError(e.localizedMessage)
+                    }
+                    dismiss()
+                }.create()
+        }
+    }
+
+    override fun openSelectCommunityAuthDialog() {
+        EntryCommunityAuthDialog().show(parentFragmentManager, "EntryCommunityAuthDialog")
+    }
+
     override fun goToGroupChats(accountId: Long, community: Community) {
         getGroupChatsPlace(accountId, abs(community.id)).tryOpenWith(requireActivity())
     }
@@ -484,8 +552,8 @@ class GroupWallFragment : AbsWallFragment<IGroupWallView, GroupWallPresenter>(),
     override fun startLoginCommunityActivity(groupId: Long) {
         val intent = createIntent(
             requireActivity(),
-            "2685278",
-            "messages,photos,docs,manage",
+            Constants.API_GROUP_ADMIN_ID.toString(),
+            Auth.groupScope,
             listOf(groupId)
         )
         requestCommunity.launch(intent)
@@ -698,5 +766,9 @@ class GroupWallFragment : AbsWallFragment<IGroupWallView, GroupWallPresenter>(),
                 presenter?.fireGroupChatsClick()
             }
         }
+    }
+
+    companion object {
+        private const val ENTRY_COMMUNITY_AUTH_RESULT = "entry_community_auth_result"
     }
 }

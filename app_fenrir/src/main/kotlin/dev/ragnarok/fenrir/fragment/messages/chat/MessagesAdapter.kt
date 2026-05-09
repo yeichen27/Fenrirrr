@@ -380,45 +380,62 @@ class MessagesAdapter(
         }
         if (!message.isGraffiti) {
             when (message.cryptStatus) {
-                CryptStatus.ENCRYPTED, CryptStatus.DECRYPT_FAILED -> holder.bubble.setNonGradientColor(
-                    "#D4ff0000".toColor()
-                )
+                CryptStatus.ENCRYPTED, CryptStatus.DECRYPT_FAILED -> {
+                    holder.bubble.setNonGradientColor(
+                        "#D4ff0000".toColor()
+                    )
+                }
 
-                CryptStatus.NO_ENCRYPTION, CryptStatus.DECRYPTED -> if (message.isOut) {
-                    if (Settings.get().main().isCustom_MyMessage) holder.bubble.setGradientColor(
-                        Settings.get().main().colorMyMessage,
-                        Settings.get().main().secondColorMyMessage
-                    ) else {
-                        if (Settings.get()
-                                .main().isMy_message_no_color
-                        ) holder.bubble.setNonGradientColor(
-                            CurrentTheme.getColorFromAttrs(
-                                R.attr.message_bubble_color,
-                                context,
-                                "#D4ff0000"
-                            )
-                        ) else {
+                CryptStatus.NO_ENCRYPTION, CryptStatus.DECRYPTED -> {
+                    if (message.isOut) {
+                        if (Settings.get().main().isCustomMessageOutColor) {
                             holder.bubble.setGradientColor(
+                                Settings.get().main().customColorMessageOutPrimary,
+                                Settings.get().main().customColorMessageOutSecondary
+                            )
+                        } else {
+                            if (Settings.get()
+                                    .main().isMessageOutNoColor
+                            ) {
+                                holder.bubble.setNonGradientColor(
+                                    CurrentTheme.getColorFromAttrs(
+                                        R.attr.message_bubble_color,
+                                        context,
+                                        "#D4ff0000"
+                                    )
+                                )
+                            } else {
+                                holder.bubble.setGradientColor(
+                                    CurrentTheme.getColorFromAttrs(
+                                        R.attr.my_messages_bubble_color,
+                                        context,
+                                        "#D4ff0000"
+                                    ),
+                                    CurrentTheme.getColorFromAttrs(
+                                        R.attr.my_messages_secondary_bubble_color,
+                                        context,
+                                        "#D4ff0000"
+                                    )
+                                )
+                            }
+                        }
+                    } else {
+                        if (!Settings.get().main().isCustomMessageInColor) {
+                            holder.bubble.setNonGradientColor(
                                 CurrentTheme.getColorFromAttrs(
-                                    R.attr.my_messages_bubble_color,
-                                    context,
-                                    "#D4ff0000"
-                                ),
-                                CurrentTheme.getColorFromAttrs(
-                                    R.attr.my_messages_secondary_bubble_color,
+                                    R.attr.message_bubble_color,
                                     context,
                                     "#D4ff0000"
                                 )
                             )
+                        } else {
+                            holder.bubble.setGradientColor(
+                                Settings.get().main().customColorMessageInPrimary,
+                                Settings.get().main().customColorMessageInSecondary
+                            )
                         }
                     }
-                } else holder.bubble.setNonGradientColor(
-                    CurrentTheme.getColorFromAttrs(
-                        R.attr.message_bubble_color,
-                        context,
-                        "#D4ff0000"
-                    )
-                )
+                }
             }
         }
         holder.body.text =

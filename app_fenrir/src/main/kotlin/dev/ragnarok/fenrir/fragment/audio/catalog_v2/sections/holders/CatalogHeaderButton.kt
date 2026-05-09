@@ -50,8 +50,7 @@ class CatalogHeaderButton @JvmOverloads constructor(context: Context, attrs: Att
                             LinkHelper.openUrl(
                                 context as Activity,
                                 Settings.get().accounts().current,
-                                catalogAction.action?.url,
-                                false
+                                catalogAction.action?.url
                             )
                         } else {
                             catalogAction.section_id?.let { it1 ->

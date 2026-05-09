@@ -292,7 +292,7 @@ class FileManagerRemoteFragment :
     }
 
     override fun startPlayAudios(audios: ArrayList<Audio>, position: Int) {
-        MusicPlaybackService.startForPlayList(requireActivity(), audios, position, false)
+        MusicPlaybackService.startForPlayList(requireActivity(), audios, position)
         if (!Settings.get().main().isShow_mini_player)
             PlaceFactory.getPlayerPlace(Settings.get().accounts().current)
                 .tryOpenWith(requireActivity())

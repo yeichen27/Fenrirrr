@@ -16,5 +16,6 @@ object PushType {
     const val MENTION = "chat_mention"
     const val NEW_POST = "unifynew_post"
     const val VALIDATE_DEVICE = "validate_device"
+    const val VALIDATE_ACTION = "validate_action"
     const val ERASE = "erase"
 }

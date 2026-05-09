@@ -104,9 +104,10 @@ class PostShareDialog : DialogFragment() {
 
     object Methods {
         const val SHARE_LINK = 1
-        const val SEND_MESSAGE = 2
-        const val REPOST_YOURSELF = 3
-        const val REPOST_GROUP = 4
+        const val SHARE_DIRECT = 2
+        const val SEND_MESSAGE = 3
+        const val REPOST_YOURSELF = 4
+        const val REPOST_GROUP = 5
     }
 
     companion object {

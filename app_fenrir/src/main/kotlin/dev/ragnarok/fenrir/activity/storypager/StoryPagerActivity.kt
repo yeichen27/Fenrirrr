@@ -521,7 +521,7 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
                 LinkHelper.openUrl(
                     this,
                     account_id,
-                    story.target_url, false
+                    story.target_url
                 )
             }
         }

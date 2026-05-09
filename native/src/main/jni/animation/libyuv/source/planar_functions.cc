@@ -8,6 +8,7 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
+#include "libyuv/convert_from_argb.h"  // For ArgbConstants
 #include "libyuv/planar_functions.h"
 
 #include <assert.h>
@@ -5077,14 +5078,6 @@ int HalfFloatPlane(const uint16_t* src_y,
     height = 1;
     src_stride_y = dst_stride_y = 0;
   }
-#if defined(HAS_HALFFLOATROW_SSE2)
-  if (TestCpuFlag(kCpuHasSSE2)) {
-    HalfFloatRow = HalfFloatRow_Any_SSE2;
-    if (IS_ALIGNED(width, 8)) {
-      HalfFloatRow = HalfFloatRow_SSE2;
-    }
-  }
-#endif
 #if defined(HAS_HALFFLOATROW_AVX2)
   if (TestCpuFlag(kCpuHasAVX2)) {
     HalfFloatRow = HalfFloatRow_Any_AVX2;

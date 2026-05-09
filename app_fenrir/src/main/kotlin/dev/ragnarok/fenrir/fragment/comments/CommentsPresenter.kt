@@ -5,6 +5,7 @@ import android.content.Context
 import android.os.Bundle
 import androidx.annotation.StringRes
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.Includes.attachmentsRepository
 import dev.ragnarok.fenrir.Includes.networkInterfaces
 import dev.ragnarok.fenrir.Includes.stores
@@ -174,18 +175,19 @@ class CommentsPresenter(
             )
             return
         }
+        if (s.length > Constants.MAX_TEXT_LENGTH_FOR_STICKER_HELP) {
+            return
+        }
         stickersWordsDisplayDisposable.set(
             stickersInteractor.getKeywordsStickers(
                 authorId,
                 s.trim()
             )
-                .delayedFlow(500)
-                .fromIOToMain({
+                .delayedFlow(800)
+                .fromIOToMain {
                     view?.updateStickers(
                         it
                     )
-                }) { u ->
-                    showError(u)
                 })
     }
 

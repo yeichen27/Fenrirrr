@@ -65,7 +65,6 @@ interface ISettings {
 
     interface IMainSettings {
         val isSendByEnter: Boolean
-        val isMy_message_no_color: Boolean
         val isNotification_bubbles_enabled: Boolean
         val isMessages_menu_down: Boolean
         val isExpand_voice_transcript: Boolean
@@ -152,9 +151,16 @@ interface ISettings {
         val colorChat: Int
         val secondColorChat: Int
         val isCustom_chat_color: Boolean
-        val colorMyMessage: Int
-        val secondColorMyMessage: Int
-        val isCustom_MyMessage: Boolean
+
+        val isMessageOutNoColor: Boolean
+        val isCustomMessageOutColor: Boolean
+        val customColorMessageOutPrimary: Int
+        val customColorMessageOutSecondary: Int
+
+        val isCustomMessageInColor: Boolean
+        val customColorMessageInPrimary: Int
+        val customColorMessageInSecondary: Int
+
         val isUse_stop_audio: Boolean
         val isPlayer_Has_Background: Boolean
         val isShow_mini_player: Boolean

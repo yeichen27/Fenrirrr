@@ -154,8 +154,7 @@ class FeedAdapter(
                 LinkHelper.openUrl(
                     viewHolder.tvCopyright.context as Activity,
                     Settings.get().accounts().current,
-                    vit.link,
-                    false
+                    vit.link
                 )
             }
         } ?: run { viewHolder.tvCopyright.visibility = View.GONE }

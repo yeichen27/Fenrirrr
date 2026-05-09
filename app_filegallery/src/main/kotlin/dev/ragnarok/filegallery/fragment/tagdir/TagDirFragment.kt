@@ -145,7 +145,7 @@ class TagDirFragment : BaseMvpFragment<TagDirPresenter, ITagDirView>(), ITagDirV
     }
 
     override fun startPlayAudios(audios: ArrayList<Audio>, position: Int) {
-        MusicPlaybackService.startForPlayList(requireActivity(), audios, position, false)
+        MusicPlaybackService.startForPlayList(requireActivity(), audios, position)
         if (!Settings.get().main().isShow_mini_player)
             PlaceFactory.getPlayerPlace().tryOpenWith(requireActivity())
     }

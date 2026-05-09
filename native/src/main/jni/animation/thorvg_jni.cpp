@@ -10,7 +10,11 @@
 #include <utime.h>
 #include <thorvg.h>
 #include <lz4.h>
+
+#ifdef HAVE_ZLIB
 #include <zlib-ng.h>
+#endif
+
 #include <sys/stat.h>
 #include "fenrir_native.h"
 #include "tvgGifEncoder.h"
@@ -156,6 +160,7 @@ Java_dev_ragnarok_fenrir_module_animation_thorvg_ThorVGSVGRender_createBitmapNat
 std::string doDecompressResource(size_t length, char *bytes, bool &orig) {
     orig = false;
     std::string data;
+#ifdef HAVE_ZLIB
     if (length >= GZIP_HEADER_LENGTH && memcmp(bytes, GZIP_HEADER, GZIP_HEADER_LENGTH) == 0) {
         zng_stream zs;
         memset(&zs, 0, sizeof(zs));
@@ -183,8 +188,10 @@ std::string doDecompressResource(size_t length, char *bytes, bool &orig) {
         if (ret != Z_STREAM_END) {
             return "";
         }
-    } else if (length >= MY_LZ4_HEADER_LENGTH &&
-               memcmp(bytes, MY_LZ4_HEADER, MY_LZ4_HEADER_LENGTH) == 0) {
+    }
+#endif
+    if (length >= MY_LZ4_HEADER_LENGTH &&
+        memcmp(bytes, MY_LZ4_HEADER, MY_LZ4_HEADER_LENGTH) == 0) {
         MY_LZ4HDR_PUSH hdr = {};
         memcpy(&hdr, bytes, sizeof(MY_LZ4HDR_PUSH));
         data.resize(hdr.size);
@@ -530,7 +537,7 @@ Java_dev_ragnarok_fenrir_module_animation_thorvg_ThorVGLottie2Gif_lottie2gif(JNI
     if (fps > 60) {
         fps = 60;
     } else if (fps <= 0) {
-        fps = (info.animation->totalFrame() / info.animation->duration());
+        fps = (jint) (info.animation->totalFrame() / info.animation->duration());
     }
 
     auto delay = (1.0f / (float) fps);
@@ -549,7 +556,7 @@ Java_dev_ragnarok_fenrir_module_animation_thorvg_ThorVGLottie2Gif_lottie2gif(JNI
 
         env->CallVoidMethod(store_Wlistener, mth_start);
 
-        for (auto p = 0.0f; p < duration; p += delay) {
+        for (float p = 0.0f; p < duration; p += delay) {
             auto frameNo = info.animation->totalFrame() * (p / duration);
             info.animation->frame(frameNo);
             info.canvas->update();
@@ -567,7 +574,7 @@ Java_dev_ragnarok_fenrir_module_animation_thorvg_ThorVGLottie2Gif_lottie2gif(JNI
 
         env->CallVoidMethod(store_Wlistener, mth_end);
     } else {
-        for (auto p = 0.0f; p < duration; p += delay) {
+        for (float p = 0.0f; p < duration; p += delay) {
             auto frameNo = info.animation->totalFrame() * (p / duration);
             info.animation->frame(frameNo);
             info.canvas->update();

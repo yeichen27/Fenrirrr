@@ -933,6 +933,7 @@
     <string name="loading">Loading</string>
     <string name="all_friends">All friends</string>
     <string name="share_link">Share link</string>
+    <string name="share_external">Share external</string>
     <string name="share_using">Share with</string>
     <string name="mutual_friends">Mutual friends</string>
     <string name="results_in_a_network">Found on the net</string>
@@ -1451,6 +1452,7 @@
     <string name="group_invites_channel">Group invitations</string>
     <string name="likes_channel">Like this</string>
     <string name="new_posts_channel">New post</string>
+    <string name="validation_channel">Validation</string>
     <string name="allow_fingerprint_title">Allow fingerprint</string>
     <string name="error_login_by_fingerprint_not_allowed">Fingerprint login not allowed</string>
     <string name="birthdays">Birthdays</string>
@@ -1570,7 +1572,7 @@
     <string name="show_mini_player">Show mini player</string>
     <string name="audio_in_status">Update audio in status</string>
     <string name="show_audio_top">Show popular tracks</string>
-    <string name="my_message_no_color">Disable outgoing message color</string>
+    <string name="message_out_no_color">Disable outgoing message color</string>
     <string name="do_upload_video">Download videos from local storage?</string>
     <string name="null_audio">No playable audio</string>
     <string name="audio_not_found">Audio not found in the list</string>
@@ -1586,8 +1588,10 @@
     <string name="use_custom_chat_color">Set background color</string>
     <string name="custom_chat_color_second">Second background color</string>
     <string name="custom_chat_color_summary">Set the background to “Monotone” so that it becomes a gradient</string>
-    <string name="custom_message_color">First color of outgoing message</string>
-    <string name="usage_custom_message_color">Set the color of the outgoing message</string>
+    <string name="custom_color_message_out_primary">First color of outgoing message</string>
+    <string name="custom_message_out_color_usage">Set the color of the outgoing message</string>
+    <string name="custom_color_message_in_primary">First color of incoming message</string>
+    <string name="custom_message_in_color_usage">Set the color of the incoming message</string>
     <string name="last_read">Last read</string>
     <string name="enable_last_read">Go to the last read message</string>
     <string name="enable_last_read_summary">Show button in chat</string>
@@ -1666,7 +1670,8 @@
     <string name="output_call">Incoming call</string>
     <string name="graffiti">Graffiti</string>
     <string name="photo_album">Photo Album</string>
-    <string name="custom_second_message_color">Second color of outgoing message</string>
+    <string name="custom_color_message_out_secondary">Second color of outgoing message</string>
+    <string name="custom_color_message_in_secondary">Second color of incoming message</string>
     <string name="short_link">Shorten links</string>
     <string name="do_short_link">Shorten</string>
     <string name="validate">Verify</string>

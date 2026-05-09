@@ -68,4 +68,6 @@ interface IAccountsInteractor {
     fun getExchangeToken(
         accountId: Long
     ): Flow<RefreshToken>
+
+    fun validateAction(accountId: Long, confirm: Boolean, hash: String): Flow<Boolean>
 }

@@ -46,7 +46,7 @@ android {
         targetSdk = libs.versions.appTargetSDK.asInt()
         versionCode = libs.versions.appVersionCode.asInt()
         versionName = libs.versions.appVersionName.get()
-        buildConfigField("Integer", "TARGET_SDK", libs.versions.appTargetSDK.get())
+        buildConfigField("int", "TARGET_SDK", libs.versions.appTargetSDK.get())
         buildConfigField("boolean", "FORCE_DEVELOPER_MODE", isDevelopBuildString())
 
         applicationId = "dev.ragnarok.filegallery"

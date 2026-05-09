@@ -322,18 +322,27 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
             ViewCompat.setOnApplyWindowInsetsListener(root) { v, windowInsets ->
                 val insets =
                     windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
-                val imeFixedBottom =
-                    if (windowInsets.isVisible(WindowInsetsCompat.Type.ime())) max(
-                        windowInsets.getInsets(
-                            WindowInsetsCompat.Type.ime()
-                        ).bottom, insets.bottom
-                    ) else insets.bottom
-                v.setPadding(
-                    0,
-                    insets.top,
-                    0,
-                    imeFixedBottom
-                )
+                if (!Settings.get().main().is_side_navigation) {
+                    val imeFixedBottom =
+                        if (windowInsets.isVisible(WindowInsetsCompat.Type.ime())) max(
+                            windowInsets.getInsets(
+                                WindowInsetsCompat.Type.ime()
+                            ).bottom, insets.bottom
+                        ) else insets.bottom
+                    v.setPadding(
+                        0,
+                        insets.top,
+                        0,
+                        imeFixedBottom
+                    )
+                } else {
+                    v.setPadding(
+                        0,
+                        insets.top,
+                        0,
+                        0
+                    )
+                }
                 WindowInsetsCompat.CONSUMED
             }
         } else {
@@ -523,12 +532,17 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
     }
 
     override fun updateStickers(items: List<Sticker>) {
-        if (items.isEmpty()) {
-            stickersKeywordsView?.visibility = View.GONE
-        } else {
-            stickersKeywordsView?.visibility = View.VISIBLE
+        stickersAdapter?.apply {
+            if (itemCount <= 0 && items.isEmpty()) {
+                return
+            }
+            if (items.isEmpty()) {
+                stickersKeywordsView?.visibility = View.GONE
+            } else {
+                stickersKeywordsView?.visibility = View.VISIBLE
+            }
+            setData(items)
         }
-        stickersAdapter?.setData(items)
     }
 
     override fun hideWriting() {

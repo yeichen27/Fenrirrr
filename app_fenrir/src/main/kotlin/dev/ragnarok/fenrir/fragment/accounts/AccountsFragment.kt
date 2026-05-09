@@ -797,6 +797,6 @@ class AccountsFragment : BaseMvpFragment<AccountsPresenter, IAccountsView>(), IA
     }
 
     companion object {
-        const val ENTRY_ACCOUNT_RESULT = "entry_account_result"
+        private const val ENTRY_ACCOUNT_RESULT = "entry_account_result"
     }
 }

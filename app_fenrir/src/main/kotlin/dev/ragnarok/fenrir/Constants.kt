@@ -1,7 +1,5 @@
 package dev.ragnarok.fenrir
 
-import android.content.res.Resources
-
 object Constants {
     const val API_VERSION = "5.186"
     const val AUTH_API_VERSION = API_VERSION
@@ -24,6 +22,7 @@ object Constants {
     const val IOS_APP_VERSION_CODE = 3893
 
     const val API_ID: Int = BuildConfig.VK_API_APP_ID
+    const val API_GROUP_ADMIN_ID: Int = BuildConfig.VK_API_GROUP_ADMIN_APP_ID
     const val SECRET: String = BuildConfig.VK_CLIENT_SECRET
     const val PHOTOS_PATH = "DCIM/Fenrir"
     const val AUDIO_PLAYER_SERVICE_IDLE = 300000
@@ -37,12 +36,6 @@ object Constants {
 
     var DEVICE_COUNTRY_CODE = "ru"
 
-    val SCREEN_WIDTH
-        get() = Resources.getSystem().displayMetrics?.widthPixels ?: 1920
-
-    val SCREEN_HEIGHT
-        get() = Resources.getSystem().displayMetrics?.heightPixels ?: 1080
-
     const val API_TIMEOUT = 25L
     const val EXO_PLAYER_TIMEOUT = 60L
     const val UPLOAD_TIMEOUT = 3600L
@@ -52,6 +45,7 @@ object Constants {
     const val LONGPOLL_WAIT = 25L
     const val PICASSO_TIMEOUT = 15L
     const val MAX_AUTOPLAY_VIDEO_IN_POST = 1
+    const val MAX_TEXT_LENGTH_FOR_STICKER_HELP = 20
 
     val CATALOG_V2_IGNORE_SECTIONS = arrayOf("podcasts", "radiostations")
 }

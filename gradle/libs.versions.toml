@@ -1,8 +1,8 @@
 [versions]
 # APP
-developerBuild = "false"
+developerBuild = "true"
 
-agpVersion = "9.2.0"
+agpVersion = "9.2.1"
 appCompileSDK = "37"
 appBuildTools = "37.0.0"
 appNdk = "30.0.14904198"
@@ -11,7 +11,7 @@ appMinSDKDevelop = "29"
 appMinSDKNotDevelop = "26"
 appTargetSDK = "37"
 appVersionCode = "1000"
-appVersionName = "116"
+appVersionName = "117"
 
 # Androidx Libraries
 activityVersion = "1.13.0"
@@ -37,17 +37,17 @@ graphicsShapesAndroidVersion = "1.1.0"
 lifecycleVersion = "2.11.0-beta01"
 media3Version = "1.10.0"
 resourceInspectionAnnotationVersion = "1.0.1"
-savedStateVersion = "1.5.0-beta01"
+savedStateVersion = "1.5.0-rc01"
 swiperefreshlayoutVersion = "1.2.0"
-tracingVersion = "2.0.0-alpha06"
+tracingVersion = "2.0.0-alpha07"
 transitionVersion = "1.7.0"
 vectordrawableVersion = "1.2.0"
-webkitVersion = "1.16.0-rc01"
+webkitVersion = "1.16.0"
 workVersion = "2.11.2"
 
 #Firebase Libraries
 firebaseDatatransportVersion = "20.0.1"
-firebaseMessagingVersion = "25.0.1"
+firebaseMessagingVersion = "25.0.2"
 
 #Firebase-Common Libraries
 firebaseCommonVersion = "22.0.1"
@@ -61,7 +61,7 @@ autoValueVersion = "1.11.1"
 # Common Libraries
 gmsServicesVersion = "4.4.4"
 kotlinVersion = "2.3.21"
-kotlinCoroutinesVersion = "1.10.2"
+kotlinCoroutinesVersion = "1.11.0"
 kotlinSerializerVersion = "1.11.0"
 kotlinAtomicfuVersion = "0.32.1"
 daggerVersion = "2.59.2"
@@ -80,6 +80,7 @@ targetAbiDevelop = "arm64-v8a,x86_64"
 targetAbiNotDevelop = "arm64-v8a,armeabi-v7a,x86_64"
 vkAppId = "2274003"
 vkClientSecret = "hHbZxrka2uZ6jB1inYsH"
+vkGroupAdminAppId = "2685278"
 kateAppId = "2685278"
 kateClientSecret = "lxhD8OD7dMsqtXIm5IUY"
 vkServiceToken = "7915b3df7915b3df7915b3dfd9794b73c0779157915b3df20c283430d77571be482c8b3"

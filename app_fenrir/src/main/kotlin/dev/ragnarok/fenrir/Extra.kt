@@ -93,7 +93,6 @@ object Extra {
     const val SELECTED = "selected"
     const val SERVICE = "service"
     const val SETTINGS = "settings"
-    const val SHUFFLE_MODE = "shuffle_mode"
     const val SOURCE = "source"
     const val SOURCES = "sources"
     const val STACK_TRACE = "stack_trace"
@@ -117,6 +116,7 @@ object Extra {
     const val DETAILS = "details"
     const val CODE = "code"
     const val DATA = "data"
+    const val HASH = "hash"
     const val DB_ID = "db_id"
     const val IN_TABS_CONTAINER = "in_tabs_container"
 }

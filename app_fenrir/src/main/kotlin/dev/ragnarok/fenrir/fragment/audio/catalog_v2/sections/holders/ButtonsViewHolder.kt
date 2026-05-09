@@ -59,8 +59,7 @@ class ButtonsViewHolder(itemView: View) : IViewHolder(itemView) {
                             LinkHelper.openUrl(
                                 context,
                                 Settings.get().accounts().current,
-                                catalogAction.action?.url,
-                                false
+                                catalogAction.action?.url
                             )
                         }
                     } else {

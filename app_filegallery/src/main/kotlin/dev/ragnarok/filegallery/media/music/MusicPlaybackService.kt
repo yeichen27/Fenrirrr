@@ -12,6 +12,7 @@ import android.os.IBinder
 import android.util.Log
 import androidx.annotation.OptIn
 import androidx.camera.camera2.adapter.future
+import androidx.core.content.edit
 import androidx.core.graphics.scale
 import androidx.core.net.toUri
 import androidx.media3.common.AudioAttributes
@@ -42,11 +43,13 @@ import androidx.media3.session.SessionResult
 import com.google.common.collect.ImmutableList
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
+import de.maxr1998.modernpreferences.PreferenceScreen
 import dev.ragnarok.filegallery.Constants
 import dev.ragnarok.filegallery.Extra
 import dev.ragnarok.filegallery.R
 import dev.ragnarok.filegallery.getParcelableArrayListExtraCompat
 import dev.ragnarok.filegallery.model.Audio
+import dev.ragnarok.filegallery.nonNullNoEmpty
 import dev.ragnarok.filegallery.orZero
 import dev.ragnarok.filegallery.picasso.PicassoInstance
 import dev.ragnarok.filegallery.settings.Settings
@@ -338,6 +341,12 @@ class MusicPlaybackService : MediaSessionService() {
                 musicPlayer.shuffleMode = shuffleMode
                 notifyChange(SHUFFLE_MODE_CHANGED)
                 refreshMediaButtonCustomLayout()
+                PreferenceScreen.getPreferences(this).edit(true) {
+                    putBoolean(
+                        PREFS_SHUFFLE,
+                        shuffleMode
+                    )
+                }
             }
         }
 
@@ -348,6 +357,12 @@ class MusicPlaybackService : MediaSessionService() {
                 musicPlayer.repeatMode = repeatMode
                 notifyChange(REPEAT_MODE_CHANGED)
                 refreshMediaButtonCustomLayout()
+                PreferenceScreen.getPreferences(this).edit(true) {
+                    putInt(
+                        PREFS_REPEAT,
+                        repeatMode
+                    )
+                }
             }
         }
 
@@ -372,11 +387,27 @@ class MusicPlaybackService : MediaSessionService() {
             val audios: ArrayList<Audio>? =
                 intent.getParcelableArrayListExtraCompat(Extra.AUDIOS)
             val position = intent.getIntExtra(Extra.POSITION, 0)
-            val forceShuffle = intent.getIntExtra(Extra.SHUFFLE_MODE, SHUFFLE_NONE)
-            if (audios != null) {
+            if (audios.nonNullNoEmpty()) {
+                val repeatMode = PreferenceScreen.getPreferences(this)
+                    .getInt(PREFS_REPEAT, Player.REPEAT_MODE_OFF)
+                val shuffleMode = PreferenceScreen.getPreferences(this)
+                    .getBoolean(PREFS_SHUFFLE, false)
+                var changed = false
+                if (musicPlayer.repeatMode != repeatMode) {
+                    musicPlayer.repeatMode = repeatMode
+                    notifyChange(REPEAT_MODE_CHANGED)
+                    refreshMediaButtonCustomLayout()
+                    changed = true
+                }
                 musicPlayer.setSources(audios)
-                shuffleMode = forceShuffle != 0
                 musicPlayer.playAt(position)
+                if (musicPlayer.shuffleMode != shuffleMode) {
+                    musicPlayer.shuffleMode = shuffleMode
+                    notifyChange(SHUFFLE_MODE_CHANGED)
+                    if (!changed) {
+                        refreshMediaButtonCustomLayout()
+                    }
+                }
             }
         }
     }
@@ -1186,14 +1217,18 @@ class MusicPlaybackService : MediaSessionService() {
         const val CUSTOM_COMMAND_REPEAT_MODE_ALL =
             "dev.ragnarok.filegallery.media.music.custom_command_repeat_mode_all"
 
+        const val PREFS_REPEAT =
+            "music_playback_repeat"
+        const val PREFS_SHUFFLE =
+            "music_playback_shuffle"
+
         const val ACTION_PLAYLIST = "start_playlist"
         const val MAX_QUEUE_SIZE = 200
 
         fun startForPlayList(
             context: Context,
             audios: ArrayList<Audio>,
-            position: Int,
-            forceShuffle: Boolean
+            position: Int
         ) {
             if (audios.isEmpty()) {
                 return
@@ -1233,7 +1268,6 @@ class MusicPlaybackService : MediaSessionService() {
             intent.action = ACTION_PLAYLIST
             intent.putParcelableArrayListExtra(Extra.AUDIOS, target)
             intent.putExtra(Extra.POSITION, targetPosition)
-            intent.putExtra(Extra.SHUFFLE_MODE, if (forceShuffle) SHUFFLE else SHUFFLE_NONE)
             context.startService(intent)
         }
     }

@@ -140,7 +140,7 @@ class AccountsInteractor(
     override fun getPushSettings(accountId: Long): Flow<List<ConversationPushItem>> {
         return networker.vkDefault(accountId)
             .account()
-            .pushSettings.map { obj -> obj.pushSettings }
+            .pushSettings.map { it.pushSettings }
     }
 
     override fun saveProfileInfo(
@@ -279,5 +279,11 @@ class AccountsInteractor(
                 }
                 data
             }
+    }
+
+    override fun validateAction(accountId: Long, confirm: Boolean, hash: String): Flow<Boolean> {
+        return networker.vkDefault(accountId)
+            .account()
+            .validateAction(confirm, hash)
     }
 }

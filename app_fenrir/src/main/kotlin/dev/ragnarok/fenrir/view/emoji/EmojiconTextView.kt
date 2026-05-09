@@ -144,8 +144,7 @@ class EmojiconTextView @JvmOverloads constructor(context: Context, attrs: Attrib
                         LinkHelper.openUrl(
                             context as Activity,
                             Settings.get().accounts().current,
-                            url,
-                            false
+                            url
                         )
                     }
                 }

@@ -86,4 +86,10 @@ interface IAccountApi {
 
     @CheckResult
     fun resetMessagesContacts(): Flow<Boolean>
+
+    @CheckResult
+    fun validateAction(
+        confirm: Boolean,
+        hash: String
+    ): Flow<Boolean>
 }

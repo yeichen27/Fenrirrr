@@ -207,4 +207,16 @@ internal class AccountApi(accountId: Long, provider: IServiceProvider) :
                     .map(checkResponseWithErrorHandling())
             }
     }
+
+    override fun validateAction(
+        confirm: Boolean,
+        hash: String
+    ): Flow<Boolean> {
+        return provideService(IAccountService(), TokenType.USER)
+            .flatMapConcat {
+                it.validateAction(confirm, hash)
+                    .map(extractResponseWithErrorHandling())
+                    .checkInt()
+            }
+    }
 }

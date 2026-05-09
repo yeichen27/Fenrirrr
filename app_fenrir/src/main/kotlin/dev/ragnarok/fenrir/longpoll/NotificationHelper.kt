@@ -15,6 +15,7 @@ import androidx.core.app.RemoteInput
 import androidx.core.content.pm.ShortcutInfoCompat
 import androidx.core.content.pm.ShortcutManagerCompat
 import androidx.core.graphics.drawable.IconCompat
+import com.google.firebase.messaging.RemoteMessage
 import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
@@ -22,11 +23,14 @@ import dev.ragnarok.fenrir.activity.ChatActivityBubbles.Companion.forStart
 import dev.ragnarok.fenrir.activity.MainActivity
 import dev.ragnarok.fenrir.api.model.VKApiMessage
 import dev.ragnarok.fenrir.domain.Repository.messages
+import dev.ragnarok.fenrir.kJson
 import dev.ragnarok.fenrir.link.internal.OwnerLinkSpanFactory.withSpans
 import dev.ragnarok.fenrir.longpoll.AppNotificationChannels.chatMessageChannelId
 import dev.ragnarok.fenrir.longpoll.AppNotificationChannels.getChatMessageChannel
 import dev.ragnarok.fenrir.longpoll.AppNotificationChannels.getGroupChatMessageChannel
+import dev.ragnarok.fenrir.longpoll.AppNotificationChannels.getValidationMessageChannel
 import dev.ragnarok.fenrir.longpoll.AppNotificationChannels.groupChatMessageChannelId
+import dev.ragnarok.fenrir.longpoll.AppNotificationChannels.validationChannelId
 import dev.ragnarok.fenrir.model.Message
 import dev.ragnarok.fenrir.model.Owner
 import dev.ragnarok.fenrir.model.Peer
@@ -38,6 +42,7 @@ import dev.ragnarok.fenrir.place.PlaceFactory.getExternalLinkPlace
 import dev.ragnarok.fenrir.push.ChatEntryFetcher
 import dev.ragnarok.fenrir.push.ChatEntryFetcher.DialogInfo
 import dev.ragnarok.fenrir.push.NotificationScheduler
+import dev.ragnarok.fenrir.service.QuickReplyService.Companion.intentForAccountValidate
 import dev.ragnarok.fenrir.service.QuickReplyService.Companion.intentForAddMessage
 import dev.ragnarok.fenrir.service.QuickReplyService.Companion.intentForReadMessage
 import dev.ragnarok.fenrir.settings.Settings
@@ -45,24 +50,19 @@ import dev.ragnarok.fenrir.settings.theme.ThemesController.toastColor
 import dev.ragnarok.fenrir.util.AppPerms
 import dev.ragnarok.fenrir.util.FileUtil
 import dev.ragnarok.fenrir.util.ShortcutUtils.chatOpenIntent
-import dev.ragnarok.fenrir.util.Utils.createOkHttp
+import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.declOfNum
 import dev.ragnarok.fenrir.util.Utils.makeImmutablePendingIntent
 import dev.ragnarok.fenrir.util.Utils.makeMutablePendingIntent
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromScopeToMain
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.runBlocking
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.Response
-import java.io.BufferedInputStream
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import java.io.File
-import java.io.FileOutputStream
-import java.io.OutputStream
 
 object NotificationHelper {
+    private const val NOTIFICATION_VALIDATION = 61
     private const val NOTIFICATION_MESSAGE = 62
     const val NOTIFICATION_WALL_POST_ID = 63
     const val NOTIFICATION_REPLY_ID = 64
@@ -183,7 +183,7 @@ object NotificationHelper {
         accountId: Long, context: Context, account: DialogInfo,
         info: DialogInfo, message: Message, history: List<Message>?
     ) {
-        val account_peer = Peer(accountId).setTitle(account.title).setAvaUrl(account.img)
+        val accountPeer = Peer(accountId).setTitle(account.title).setAvaUrl(account.img)
         val peer = Peer(message.peerId).setTitle(info.title).setAvaUrl(info.img)
         showNotification(
             context,
@@ -195,7 +195,7 @@ object NotificationHelper {
                 R.drawable.ic_avatar_unknown
             ),
             history,
-            account_peer,
+            accountPeer,
             account.icon ?: BitmapFactory.decodeResource(
                 context.resources,
                 R.drawable.ic_avatar_unknown
@@ -255,7 +255,7 @@ object NotificationHelper {
         return withSpans(text, owners = true, topics = false, listener = null)
     }
 
-    private fun MakeMedia(
+    private fun makeMedia(
         context: Context,
         msgs: NotificationCompat.MessagingStyle,
         message: Message,
@@ -318,9 +318,9 @@ object NotificationHelper {
         peer: Peer,
         message: Message,
         avatar: Bitmap,
-        History: List<Message>?,
+        history: List<Message>?,
         ich: Peer,
-        acc_avatar: Bitmap
+        accAvatar: Bitmap
     ) {
         val hideBody = Settings.get()
             .security()
@@ -335,7 +335,7 @@ object NotificationHelper {
             if (Peer.isGroupChat(message.peerId)) groupChatMessageChannelId else chatMessageChannelId
         val msgs = NotificationCompat.MessagingStyle(
             Person.Builder()
-                .setName(ich.getTitle()).setIcon(IconCompat.createWithBitmap(acc_avatar))
+                .setName(ich.getTitle()).setIcon(IconCompat.createWithBitmap(accAvatar))
                 .setKey(accountId.toString()).build()
         )
         val inbox = NotificationCompat.MessagingStyle.Message(
@@ -343,24 +343,24 @@ object NotificationHelper {
             message.date * 1000,
             Person.Builder()
                 .setName(getSenderName(message.sender, context))
-                .setIcon(IconCompat.createWithBitmap(if (message.senderId == accountId) acc_avatar else avatar))
+                .setIcon(IconCompat.createWithBitmap(if (message.senderId == accountId) accAvatar else avatar))
                 .setKey(message.senderId.toString()).build()
         )
-        if (History != null) {
-            for (i in History.reversed()) {
+        if (history != null) {
+            for (i in history.reversed()) {
                 val h_inbox = NotificationCompat.MessagingStyle.Message(
                     getMessageContent(hideBody, i, context),
                     i.date * 1000,
                     Person.Builder()
                         .setName(getSenderName(i.sender, context))
-                        .setIcon(IconCompat.createWithBitmap(if (i.senderId == accountId) acc_avatar else avatar))
+                        .setIcon(IconCompat.createWithBitmap(if (i.senderId == accountId) accAvatar else avatar))
                         .setKey(i.senderId.toString()).build()
                 )
-                MakeMedia(context, msgs, i, hideBody, accountId, acc_avatar, avatar)
+                makeMedia(context, msgs, i, hideBody, accountId, accAvatar, avatar)
                 msgs.addMessage(h_inbox)
             }
         }
-        MakeMedia(context, msgs, message, hideBody, accountId, acc_avatar, avatar)
+        makeMedia(context, msgs, message, hideBody, accountId, accAvatar, avatar)
         msgs.addMessage(inbox)
         if (message.peerId > VKApiMessage.CHAT_PEER) {
             msgs.conversationTitle = peer.getTitle()
@@ -434,7 +434,7 @@ object NotificationHelper {
             createNotificationShortcut(
                 context, builder, Person.Builder()
                     .setName(getSenderName(message.sender, context))
-                    .setIcon(IconCompat.createWithBitmap(if (message.senderId == accountId) acc_avatar else avatar))
+                    .setIcon(IconCompat.createWithBitmap(if (message.senderId == accountId) accAvatar else avatar))
                     .setKey(message.senderId.toString()).build(), peer, accountId
             )
         }
@@ -447,28 +447,40 @@ object NotificationHelper {
         }
     }
 
+    @Serializable
+    private class ValidateActionContext {
+        @SerialName("confirm_hash")
+        var confirmHash: String? = null
+    }
+
+    @SuppressLint("LaunchActivityFromNotification")
     fun showSimpleNotification(
         context: Context,
-        body: String?,
-        title: String?,
-        url: String?
+        message: RemoteMessage
     ) {
-        val hideBody = Settings.get()
-            .security()
-            .needHideMessagesBodyForNotif
-        val text =
-            if (hideBody) context.getString(R.string.message_text_is_not_available) else body
+        val body = message.data["body"]
+        val title = message.data["title"]
+        val url = message.data["url"]
+        var confirmHash: String? = null
+        try {
+            message.data["context"].nonNullNoEmpty {
+                val contextObject: ValidateActionContext =
+                    kJson.decodeFromString(ValidateActionContext.serializer(), it)
+                confirmHash = contextObject.confirmHash
+            }
+        } catch (_: Exception) {
+        }
+
         val nManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        nManager.createNotificationChannel(getChatMessageChannel(context))
-        nManager.createNotificationChannel(getGroupChatMessageChannel(context))
-        val builder = NotificationCompat.Builder(context, chatMessageChannelId)
+        nManager.createNotificationChannel(getValidationMessageChannel(context))
+        val builder = NotificationCompat.Builder(context, validationChannelId)
             .setSmallIcon(R.drawable.client_round)
-            .setContentText(text)
+            .setContentText(body)
             .setContentTitle(title)
             .setStyle(NotificationCompat.BigTextStyle().bigText(body))
             .setAutoCancel(true)
         builder.priority = NotificationCompat.PRIORITY_HIGH
-        if (!url.isNullOrEmpty()) {
+        if (url.nonNullNoEmpty()) {
             val aid = Settings.get()
                 .accounts()
                 .current
@@ -483,12 +495,24 @@ object NotificationHelper {
                 makeImmutablePendingIntent(PendingIntent.FLAG_CANCEL_CURRENT)
             )
             builder.setContentIntent(contentIntent)
+        } else if (confirmHash.nonNullNoEmpty()) {
+            val aid = Settings.get()
+                .accounts()
+                .current
+            val validationIntent = intentForAccountValidate(context, aid, confirmHash)
+            val validationPendingIntent = PendingIntent.getService(
+                context,
+                confirmHash.hashCode(),
+                validationIntent,
+                makeImmutablePendingIntent(PendingIntent.FLAG_CANCEL_CURRENT)
+            )
+            builder.setContentIntent(validationPendingIntent)
         }
         val notification = builder.build()
         if (AppPerms.hasNotificationPermissionSimple(context)) {
             nManager.notify(
                 "simple " + Settings.get().accounts().current,
-                NOTIFICATION_MESSAGE,
+                NOTIFICATION_VALIDATION,
                 notification
             )
         }
@@ -517,33 +541,6 @@ object NotificationHelper {
         //}
     }
 
-    private fun downloadTask(file: File, url: String): Flow<Boolean> = flow {
-        val output: OutputStream = FileOutputStream(file)
-        val builder: OkHttpClient.Builder = createOkHttp(Constants.GIF_TIMEOUT, false)
-        val request: Request = Request.Builder()
-            .url(url)
-            .build()
-        val response: Response = builder.build().newCall(request).execute()
-        if (!response.isSuccessful) {
-            throw Exception(
-                "Server return " + response.code +
-                        " " + response.message
-            )
-        }
-        val inputStream = response.body.byteStream()
-        val input = BufferedInputStream(inputStream)
-        val data = ByteArray(80 * 1024)
-        var bufferLength = 0
-        while (input.read(data).also { bufferLength = it } != -1) {
-            output.write(data, 0, bufferLength)
-        }
-        //MimeType = response.header("Content-Type", "image/jpeg");
-        output.flush()
-        input.close()
-        response.close()
-        emit(true)
-    }
-
     private fun doDownloadDataNotification(
         mContext: Context,
         url: String?,
@@ -562,7 +559,7 @@ object NotificationHelper {
 
                 runBlocking(NotificationScheduler.INSTANCE.coroutineContext) {
                     try {
-                        downloadTask(file, url).single()
+                        Utils.downloadTaskFlow(file, url, Constants.GIF_TIMEOUT).single()
                     } catch (e: Exception) {
                         if (Constants.IS_DEBUG) {
                             e.printStackTrace()

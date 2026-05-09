@@ -566,8 +566,7 @@ class CatalogV2SectionAdapter(
                     MusicPlaybackService.startForPlayList(
                         mContext,
                         audios,
-                        position,
-                        false
+                        position
                     )
                     if (!Settings.get().main().isShow_mini_player) PlaceFactory.getPlayerPlace(
                         Settings.get().accounts().current
@@ -1159,7 +1158,7 @@ class CatalogV2SectionAdapter(
                 }
             }
             MusicPlaybackService.startForPlayList(
-                mContext, op, op.indexOf(audio), false
+                mContext, op, op.indexOf(audio)
             )
             if (!Settings.get().main().isShow_mini_player) PlaceFactory.getPlayerPlace(
                 account_id

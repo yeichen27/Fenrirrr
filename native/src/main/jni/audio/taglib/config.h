@@ -3,7 +3,7 @@
 
 #define   HAVE_GCC_BYTESWAP 1
 #define   HAVE_GCC_ATOMIC 1
-#define   HAVE_ZLIB 1
+#undef    HAVE_ZLIB
 #define   NDEBUG 1
 
 #endif

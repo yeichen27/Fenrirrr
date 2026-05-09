@@ -26,6 +26,7 @@ import dev.ragnarok.fenrir.activity.ActivityUtils.supportToolbarFor
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
 import dev.ragnarok.fenrir.listener.TextWatcherAdapter
 import dev.ragnarok.fenrir.model.Poll
+import dev.ragnarok.fenrir.settings.Settings
 import kotlin.math.max
 
 class CreatePollFragment : BaseMvpFragment<CreatePollPresenter, ICreatePollView>(),
@@ -49,14 +50,16 @@ class CreatePollFragment : BaseMvpFragment<CreatePollPresenter, ICreatePollView>
         ViewCompat.setOnApplyWindowInsetsListener(root) { _, windowInsets ->
             val insets =
                 windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
-            val imeFixedBottom =
-                if (windowInsets.isVisible(WindowInsetsCompat.Type.ime())) max(
-                    windowInsets.getInsets(
-                        WindowInsetsCompat.Type.ime()
-                    ).bottom, insets.bottom
-                ) else insets.bottom
             root.findViewById<View>(R.id.toolbar)?.setPadding(0, insets.top, 0, 0)
-            root.setPadding(0, 0, 0, imeFixedBottom)
+            if (!Settings.get().main().is_side_navigation) {
+                val imeFixedBottom =
+                    if (windowInsets.isVisible(WindowInsetsCompat.Type.ime())) max(
+                        windowInsets.getInsets(
+                            WindowInsetsCompat.Type.ime()
+                        ).bottom, insets.bottom
+                    ) else insets.bottom
+                root.setPadding(0, 0, 0, imeFixedBottom)
+            }
             WindowInsetsCompat.CONSUMED
         }
 

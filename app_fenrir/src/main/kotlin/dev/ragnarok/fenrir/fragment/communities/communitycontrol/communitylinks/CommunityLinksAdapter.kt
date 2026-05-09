@@ -29,10 +29,6 @@ class CommunityLinksAdapter(private var links: List<VKApiCommunity.Link>) :
         holder.itemView.setOnClickListener {
             actionListener?.onClick(link)
         }
-        holder.itemView.setOnLongClickListener {
-            actionListener?.onLongClick(link)
-            true
-        }
         val photoUrl = link.photo_50
         if (photoUrl.nonNullNoEmpty()) {
             holder.icon.visibility = View.VISIBLE
@@ -64,7 +60,6 @@ class CommunityLinksAdapter(private var links: List<VKApiCommunity.Link>) :
 
     interface ActionListener {
         fun onClick(link: VKApiCommunity.Link)
-        fun onLongClick(link: VKApiCommunity.Link)
     }
 
     class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {

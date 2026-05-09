@@ -14,6 +14,7 @@ import androidx.core.view.WindowInsetsCompat
 import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.ActivityFeatures
+import dev.ragnarok.fenrir.activity.MainActivity
 import dev.ragnarok.fenrir.dialog.ImageSizeAlertDialog
 import dev.ragnarok.fenrir.fragment.attachments.abspostedit.AbsPostEditFragment
 import dev.ragnarok.fenrir.getParcelableArrayListCompat
@@ -21,6 +22,7 @@ import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.model.EditingPostType
 import dev.ragnarok.fenrir.model.ModelsBundle
 import dev.ragnarok.fenrir.model.WallEditorAttrs
+import dev.ragnarok.fenrir.settings.Settings
 import kotlin.math.max
 
 class PostCreateFragment : AbsPostEditFragment<PostCreatePresenter, IPostCreateView>(),
@@ -34,14 +36,16 @@ class PostCreateFragment : AbsPostEditFragment<PostCreatePresenter, IPostCreateV
         ViewCompat.setOnApplyWindowInsetsListener(root) { _, windowInsets ->
             val insets =
                 windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
-            val imeFixedBottom =
-                if (windowInsets.isVisible(WindowInsetsCompat.Type.ime())) max(
-                    windowInsets.getInsets(
-                        WindowInsetsCompat.Type.ime()
-                    ).bottom, insets.bottom
-                ) else insets.bottom
             root.findViewById<View>(R.id.toolbar)?.setPadding(0, insets.top, 0, 0)
-            root.setPadding(0, 0, 0, imeFixedBottom)
+            if (requireActivity() !is MainActivity || !Settings.get().main().is_side_navigation) {
+                val imeFixedBottom =
+                    if (windowInsets.isVisible(WindowInsetsCompat.Type.ime())) max(
+                        windowInsets.getInsets(
+                            WindowInsetsCompat.Type.ime()
+                        ).bottom, insets.bottom
+                    ) else insets.bottom
+                root.setPadding(0, 0, 0, imeFixedBottom)
+            }
             WindowInsetsCompat.CONSUMED
         }
         return root

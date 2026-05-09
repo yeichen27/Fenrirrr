@@ -931,6 +931,9 @@ class ChatPresenter(
             view?.updateStickers(emptyList())
             return
         }
+        if (s.length > Constants.MAX_TEXT_LENGTH_FOR_STICKER_HELP) {
+            return
+        }
         stickersWordsDisplayDisposable +=
             stickersInteractor.getKeywordsStickers(accountId, s.trim())
                 .delayedFlow(800)

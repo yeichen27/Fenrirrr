@@ -110,11 +110,9 @@ class FcmListenerService : FirebaseMessagingService() {
                 PushType.BIRTHDAY -> BirthdayFCMMessage.fromRemoteMessage(message)
                     ?.notify(context, accountId)
 
-                PushType.SHOW_MESSAGE, PushType.VALIDATE_DEVICE -> NotificationHelper.showSimpleNotification(
+                PushType.SHOW_MESSAGE, PushType.VALIDATE_DEVICE, PushType.VALIDATE_ACTION -> NotificationHelper.showSimpleNotification(
                     context,
-                    message.data["body"],
-                    message.data["title"],
-                    message.data["url"]
+                    message
                 )
 
                 PushType.MENTION -> MentionMessage.fromRemoteMessage(message)

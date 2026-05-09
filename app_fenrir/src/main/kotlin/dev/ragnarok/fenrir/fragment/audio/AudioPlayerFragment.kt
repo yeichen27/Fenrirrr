@@ -857,7 +857,12 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
             intent_send.putExtra(
                 Intent.EXTRA_STREAM, current.url?.toUri()
             ).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            requireActivity().startActivity(intent_send)
+            requireActivity().startActivity(
+                Intent.createChooser(
+                    intent_send,
+                    requireActivity().resources.getString(R.string.share_using)
+                )
+            )
             return
         }
         requestShare.launch(

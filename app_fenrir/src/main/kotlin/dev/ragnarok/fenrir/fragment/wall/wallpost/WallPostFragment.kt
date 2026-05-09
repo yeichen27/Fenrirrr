@@ -382,8 +382,7 @@ class WallPostFragment : PlaceSupportMvpFragment<WallPostPresenter, IWallPostVie
                 LinkHelper.openUrl(
                     requireActivity(),
                     Settings.get().accounts().current,
-                    vit.link,
-                    false
+                    vit.link
                 )
             }
         } ?: run { tvCopyright.visibility = View.GONE }
@@ -402,7 +401,7 @@ class WallPostFragment : PlaceSupportMvpFragment<WallPostPresenter, IWallPostVie
                         LinkHelper.openUrl(
                             requireActivity(),
                             Settings.get().accounts().current,
-                            URL, false
+                            URL
                         )
                     }
                 })

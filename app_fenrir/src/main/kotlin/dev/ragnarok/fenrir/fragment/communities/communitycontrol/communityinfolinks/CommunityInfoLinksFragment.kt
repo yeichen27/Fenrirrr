@@ -50,7 +50,6 @@ class CommunityInfoLinksFragment :
         mLinksAdapter = CommunityInfoLinksAdapter(emptyList())
         mLinksAdapter?.setActionListener(this)
         recyclerView.adapter = mLinksAdapter
-        root.findViewById<View>(R.id.button_add).visibility = View.INVISIBLE
         return root
     }
 

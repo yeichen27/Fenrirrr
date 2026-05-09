@@ -100,8 +100,7 @@ class PlaylistFragment : BottomSheetDialogFragment(), AudioRecyclerAdapter.Click
                     startForPlayList(
                         requireActivity(),
                         mData,
-                        it1.getItemRawPosition(it),
-                        false
+                        it1.getItemRawPosition(it)
                     )
                 }
             }
@@ -140,7 +139,7 @@ class PlaylistFragment : BottomSheetDialogFragment(), AudioRecyclerAdapter.Click
         if (MusicPlaybackController.queue == mData) {
             MusicPlaybackController.skip(position)
         } else {
-            startForPlayList(requireActivity(), mData, position, false)
+            startForPlayList(requireActivity(), mData, position)
         }
     }
 

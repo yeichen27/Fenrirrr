@@ -225,7 +225,7 @@ class AudiosLocalServerPresenter :
     }
 
     fun playAudio(context: Context, position: Int) {
-        startForPlayList(context, ArrayList(audios), position, false)
+        startForPlayList(context, ArrayList(audios), position)
         if (!get().main().isShow_mini_player) getPlayerPlace().tryOpenWith(
             context
         )

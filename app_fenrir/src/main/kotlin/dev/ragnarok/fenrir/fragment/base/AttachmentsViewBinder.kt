@@ -1151,8 +1151,7 @@ class AttachmentsViewBinder(
                     LinkHelper.openUrl(
                         mContext,
                         Settings.get().accounts().current,
-                        "https://www.google.com/maps?q=${geo.latitude},${geo.longitude}",
-                        false
+                        "https://www.google.com/maps?q=${geo.latitude},${geo.longitude}"
                     )
                 }
             }

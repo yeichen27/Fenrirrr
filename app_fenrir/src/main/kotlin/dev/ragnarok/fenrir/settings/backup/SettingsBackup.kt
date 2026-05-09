@@ -34,7 +34,6 @@ class SettingsBackup {
         var revert_play_audio: Boolean? = null
         var is_player_support_volume: Boolean? = null
         var show_bot_keyboard: Boolean? = null
-        var my_message_no_color: Boolean? = null
         var notification_bubbles: Boolean? = null
         var messages_menu_down: Boolean? = null
         var expand_voice_transcript: Boolean? = null
@@ -104,9 +103,13 @@ class SettingsBackup {
         var custom_chat_color: Int? = null
         var custom_chat_color_second: Int? = null
         var custom_chat_color_usage: Boolean? = null
-        var custom_message_color: Int? = null
-        var custom_second_message_color: Int? = null
-        var custom_message_color_usage: Boolean? = null
+        var message_out_no_color: Boolean? = null
+        var custom_message_out_color_usage: Boolean? = null
+        var custom_color_message_out_primary: Int? = null
+        var custom_color_message_out_secondary: Int? = null
+        var custom_message_in_color_usage: Boolean? = null
+        var custom_color_message_in_primary: Int? = null
+        var custom_color_message_in_secondary: Int? = null
         var info_reading: Boolean? = null
         var auto_read: Boolean? = null
         var mark_listened_voice: Boolean? = null

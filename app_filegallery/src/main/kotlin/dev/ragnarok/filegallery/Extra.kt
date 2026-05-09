@@ -15,7 +15,6 @@ object Extra {
     const val POSITION = "position"
     const val PTR = "ptr"
     const val SELECT = "select"
-    const val SHUFFLE_MODE = "shuffle_mode"
     const val STACK_TRACE = "stack_trace"
     const val TITLE = "title"
     const val URL = "url"

@@ -2,13 +2,13 @@ package dev.ragnarok.fenrir.model.catalog_v2_audio
 
 import android.os.Parcel
 import android.os.Parcelable
-import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.api.model.catalog_v2_audio.VKApiCatalogV2ArtistItem
 import dev.ragnarok.fenrir.getBoolean
 import dev.ragnarok.fenrir.model.AbsModel
 import dev.ragnarok.fenrir.model.AbsModelType
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.putBoolean
+import dev.ragnarok.fenrir.util.Utils
 import kotlin.math.abs
 
 class CatalogV2ArtistItem : AbsModel {
@@ -36,7 +36,7 @@ class CatalogV2ArtistItem : AbsModel {
 
     fun getPhoto(): String? {
         var minDifference = 100000
-        val itemViewWidth: Int = Constants.SCREEN_WIDTH
+        val itemViewWidth: Int = Utils.displaySize.x
         var imgUrl: String? = null
         for (i in photo.orEmpty()) {
             val difference = abs(itemViewWidth - i.width)

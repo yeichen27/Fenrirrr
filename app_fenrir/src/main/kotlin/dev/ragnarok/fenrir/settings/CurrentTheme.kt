@@ -56,8 +56,8 @@ object CurrentTheme {
         return animator
     }
 
-    private fun getDrawerBackgroundFile(context: Context, light: Boolean): File {
-        return File(context.filesDir, if (light) "chat_light.jpg" else "chat_dark.jpg")
+    fun getDrawerBackgroundFile(context: Context, light: Boolean): File {
+        return File(context.filesDir, if (light) "chat_light.webp" else "chat_dark.webp")
     }
 
     private fun getStatic(activity: Activity): Drawable {

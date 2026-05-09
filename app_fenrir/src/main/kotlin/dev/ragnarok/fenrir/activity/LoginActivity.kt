@@ -55,7 +55,11 @@ class LoginActivity : AppCompatActivity() {
         webview.settings.userAgentString = getUserAgentByType(Constants.DEFAULT_ACCOUNT_TYPE)
 
         //Чтобы получать уведомления об окончании загрузки страницы
-        webview.webViewClient = VkontakteWebViewClient()
+        webview.webViewClient = object : WebViewClient() {
+            override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
+                parseUrl(url)
+            }
+        }
         val cookieManager = CookieManager.getInstance()
         cookieManager.removeAllCookies {
             Log.d(
@@ -146,12 +150,6 @@ class LoginActivity : AppCompatActivity() {
             }
         } catch (e: Exception) {
             e.printStackTrace()
-        }
-    }
-
-    private inner class VkontakteWebViewClient : WebViewClient() {
-        override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
-            parseUrl(url)
         }
     }
 

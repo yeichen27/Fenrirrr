@@ -53,4 +53,5 @@ interface IGroupWallView : IWallView {
     fun onSinglePhoto(ava: String, prefix: String?, community: Community)
     fun openVKURL(accountId: Long, link: String)
     fun showCommunityMemberStatusChangeDialog(isAdd: Boolean)
+    fun openSelectCommunityAuthDialog()
 }
