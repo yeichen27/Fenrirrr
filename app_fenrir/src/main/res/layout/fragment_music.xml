@@ -41,7 +41,7 @@
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/save_mode_button"
-            style="@style/Widget.Material3.FloatingActionButton.Small.Secondary"
+            style="@style/Theme.FloatingActionButtonSmallSecondary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|center_horizontal"

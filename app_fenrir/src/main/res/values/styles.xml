@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Base.App.DayNight" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Base.App.DayNight" parent="Theme.Material3Expressive.DayNight.NoActionBar">
         <!--        <item name="android:navigationBarDividerColor" tools:targetApi="o_mr1">?dividerColor</item>-->
         <item name="windowActionModeOverlay">true</item>
         <item name="actionModeBackground">?attr/colorPrimary</item>
@@ -859,7 +859,7 @@
         <item name="badgeTextColor">?colorOnPrimary</item>
     </style>
 
-    <style name="MyTransparentDialog" parent="Theme.Material3.DayNight.Dialog">
+    <style name="MyTransparentDialog" parent="Theme.Material3Expressive.DayNight.Dialog">
         <item name="android:windowIsTranslucent">true</item>
         <item name="colorPrimary">#346096</item>
         <item name="colorControlNormal">#43474E</item>
@@ -926,7 +926,7 @@
         <item name="materialCardBackgroundStyle">@drawable/background_rectangle_filled</item>
     </style>
 
-    <style name="Theme.Toolbar.Surface" parent="ThemeOverlay.Material3.Toolbar.Surface">
+    <style name="Theme.Toolbar.Surface" parent="ThemeOverlay.Material3Expressive.Toolbar.Surface">
         <!--        <item name="android:tint">?colorOnSurface</item>-->
         <item name="toolbarNavigationButtonStyle">@style/Toolbar.Button.Navigation.Tinted</item>
         <item name="actionMenuTextColor">?colorOnSurface</item>
@@ -934,11 +934,11 @@
         <item name="android:textColorSecondary">?colorOnSurface</item>
     </style>
 
-    <style name="Toolbar.Button.Navigation.TintedColored" parent="Widget.AppCompat.Toolbar.Button.Navigation">
+    <style name="Toolbar.Button.Navigation.TintedColored" parent="Widget.Material3.Toolbar.Button.Navigation">
         <item name="tint">?white_color_contrast_fix</item>
     </style>
 
-    <style name="Theme.Toolbar.Colored" parent="ThemeOverlay.Material3.Toolbar.Surface">
+    <style name="Theme.Toolbar.Colored" parent="ThemeOverlay.Material3Expressive.Toolbar.Surface">
         <item name="toolbarNavigationButtonStyle">@style/Toolbar.Button.Navigation.TintedColored
         </item>
         <item name="actionMenuTextColor">?white_color_contrast_fix</item>
@@ -947,11 +947,11 @@
         <item name="colorControlNormal">?white_color_contrast_fix</item>
     </style>
 
-    <style name="Toolbar.Button.Navigation.Tinted" parent="Widget.AppCompat.Toolbar.Button.Navigation">
+    <style name="Toolbar.Button.Navigation.Tinted" parent="Widget.Material3.Toolbar.Button.Navigation">
         <item name="tint">?colorPrimary</item>
     </style>
 
-    <style name="Toolbar.Button.Navigation.TintedDark" parent="Widget.AppCompat.Toolbar.Button.Navigation">
+    <style name="Toolbar.Button.Navigation.TintedDark" parent="Widget.Material3.Toolbar.Button.Navigation">
         <item name="tint">?toolbar_left_icon_color</item>
     </style>
 
@@ -961,7 +961,7 @@
         <item name="fontFamily">sans-serif-medium</item>
     </style>
 
-    <style name="Theme.Toolbar.Photo" parent="ThemeOverlay.Material3.Toolbar.Surface">
+    <style name="Theme.Toolbar.Photo" parent="ThemeOverlay.Material3Expressive.Toolbar.Surface">
         <item name="toolbarNavigationButtonStyle">@style/Toolbar.Button.Navigation.TintedDark</item>
         <item name="android:textColor">?android:textColorSecondary</item>
         <item name="android:textColorPrimary">@android:color/white</item>
@@ -969,7 +969,7 @@
         <item name="colorControlNormal">@android:color/white</item>
     </style>
 
-    <style name="Theme.Toolbar.Video" parent="ThemeOverlay.Material3.Toolbar.Surface">
+    <style name="Theme.Toolbar.Video" parent="ThemeOverlay.Material3Expressive.Toolbar.Surface">
         <item name="toolbarNavigationButtonStyle">@style/Toolbar.Button.Navigation.TintedDark</item>
         <item name="android:textColor">?android:textColorSecondary</item>
         <item name="android:textColorPrimary">@android:color/white</item>
@@ -978,11 +978,7 @@
     </style>
 
     <style name="Theme.Tablayout" parent="Widget.Material3.TabLayout">
-        <item name="tabRippleColor">?colorPrimary</item>
         <item name="tabMode">scrollable</item>
-        <item name="tabTextColor">?android:textColorSecondary</item>
-        <item name="tabSelectedTextColor">?colorPrimary</item>
-        <item name="tabIndicatorColor">?colorPrimary</item>
         <item name="enforceTextAppearance">true</item>
         <item name="tabGravity">start</item>
         <item name="tabTextAppearance">@style/MineCustomTabText</item>
@@ -1004,27 +1000,57 @@
         <item name="android:textSize">14sp</item>
     </style>
 
-    <style name="Theme.FloatingActionButton" parent="Widget.Material3.FloatingActionButton.Primary">
+    <style name="Theme.FloatingActionButton" parent="Widget.Material3Expressive.FloatingActionButton">
         <item name="backgroundTint">?colorSurface</item>
         <item name="tint">?colorSecondary</item>
     </style>
 
-    <style name="Theme.FloatingActionButtonSecondary" parent="Widget.Material3.FloatingActionButton.Secondary">
+    <style name="Theme.FloatingActionButtonSecondary" parent="Widget.Material3Expressive.FloatingActionButton">
+        <item name="materialThemeOverlay">
+            @style/ThemeOverlay.Material3Expressive.FloatingActionButton.SecondaryContainer
+        </item>
         <item name="backgroundTint">?colorSecondary</item>
         <item name="tint">@color/white</item>
     </style>
 
-    <style name="Theme.ButtonSecondary" parent="Widget.Material3.Button.IconButton">
-        <item name="shapeAppearanceOverlay">@style/MyButton.shapeAppearance</item>
+    <style name="Theme.ButtonSecondary" parent="Widget.Material3Expressive.Button.IconButton">
+        <item name="shapeAppearance">@style/MyButton.shapeAppearance</item>
         <item name="android:insetLeft">0dp</item>
         <item name="android:insetRight">0dp</item>
         <item name="android:textColor">@color/white</item>
         <item name="iconTint">@color/white</item>
         <item name="iconPadding">0dp</item>
+        <item name="android:paddingLeft">8dp</item>
+        <item name="android:paddingRight">8dp</item>
+        <item name="android:paddingTop">8dp</item>
+        <item name="android:paddingBottom">8dp</item>
         <item name="backgroundTint">?colorSecondary</item>
     </style>
 
-    <style name="Theme.FloatingActionButtonAudio" parent="Widget.Material3.FloatingActionButton.Primary">
+    <style name="ThemeOverlay.FloatingActionButtonSurface" parent="">
+        <item name="colorContainer">@macro/m3_comp_fab_surface_container_color</item>
+        <item name="colorOnContainer">@macro/m3_comp_fab_surface_icon_color</item>
+    </style>
+
+    <style name="Theme.FloatingActionButtonSmallSurface" parent="Widget.Material3Expressive.FloatingActionButton">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.FloatingActionButtonSurface</item>
+        <item name="fabCustomSize">@dimen/m3_comp_fab_small_container_height</item>
+        <item name="maxImageSize">@dimen/m3_comp_fab_small_icon_size</item>
+        <item name="shapeAppearance">@macro/m3_comp_fab_small_container_shape</item>
+        <item name="shapeAppearanceOverlay">@null</item>
+    </style>
+
+    <style name="Theme.FloatingActionButtonSmallSecondary" parent="Widget.Material3Expressive.FloatingActionButton">
+        <item name="materialThemeOverlay">
+            @style/ThemeOverlay.Material3Expressive.FloatingActionButton.SecondaryContainer
+        </item>
+        <item name="fabCustomSize">@dimen/m3_comp_fab_small_container_height</item>
+        <item name="maxImageSize">@dimen/m3_comp_fab_small_icon_size</item>
+        <item name="shapeAppearance">@macro/m3_comp_fab_small_container_shape</item>
+        <item name="shapeAppearanceOverlay">@null</item>
+    </style>
+
+    <style name="Theme.FloatingActionButtonAudio" parent="Widget.Material3Expressive.FloatingActionButton">
         <item name="backgroundTint">@color/white</item>
         <item name="tint">?colorSurface</item>
         <item name="rippleColor">?colorSurface</item>
@@ -1109,7 +1135,7 @@
         <item name="android:background">?attr/selectableItemBackground</item>
     </style>
 
-    <style name="MySplitButton" parent="Widget.Material3.MaterialButtonGroup.Connected">
+    <style name="MySplitButton" parent="Widget.Material3Expressive.MaterialButtonGroup.Connected">
         <item name="android:spacing">2dp</item>
         <item name="android:paddingTop">10dp</item>
         <item name="android:paddingBottom">10dp</item>
@@ -1118,12 +1144,12 @@
         <item name="shapeAppearance">@style/MyButton.shapeAppearance</item>
     </style>
 
-    <style name="MyOutlinedButton" parent="Widget.Material3.Button.OutlinedButton">
+    <style name="MyOutlinedButton" parent="Widget.Material3Expressive.Button.OutlinedButton">
         <item name="shapeAppearanceOverlay">@style/MyButton.shapeAppearance</item>
         <item name="android:textAllCaps">true</item>
     </style>
 
-    <style name="MyOutlinedHeaderButton" parent="Widget.Material3.Button.OutlinedButton">
+    <style name="MyOutlinedHeaderButton" parent="Widget.Material3Expressive.Button.OutlinedButton">
         <item name="android:paddingTop">7dp</item>
         <item name="android:paddingBottom">6dp</item>
         <item name="android:paddingStart">
@@ -1137,7 +1163,7 @@
         <item name="android:textAllCaps">true</item>
     </style>
 
-    <style name="MyButton" parent="Widget.Material3.Button">
+    <style name="MyButton" parent="Widget.Material3Expressive.Button">
         <item name="shapeAppearanceOverlay">@style/MyButton.shapeAppearance</item>
         <item name="android:textAllCaps">true</item>
     </style>

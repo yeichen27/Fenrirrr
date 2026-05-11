@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Base.App.DayNight" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Base.App.DayNight" parent="Theme.Material3Expressive.DayNight.NoActionBar">
         <!--        <item name="android:navigationBarDividerColor" tools:targetApi="o_mr1">?dividerColor</item>-->
         <item name="windowActionModeOverlay">true</item>
         <item name="actionModeBackground">?attr/colorPrimary</item>
@@ -789,7 +789,7 @@
         <item name="badgeTextColor">?colorOnPrimary</item>
     </style>
 
-    <style name="Theme.Toolbar.Surface" parent="ThemeOverlay.Material3.Toolbar.Surface">
+    <style name="Theme.Toolbar.Surface" parent="ThemeOverlay.Material3Expressive.Toolbar.Surface">
         <!--        <item name="android:tint">?colorOnSurface</item>-->
         <item name="toolbarNavigationButtonStyle">@style/Toolbar.Button.Navigation.Tinted</item>
         <item name="actionMenuTextColor">?colorOnSurface</item>
@@ -797,11 +797,11 @@
         <item name="android:textColorSecondary">?colorOnSurface</item>
     </style>
 
-    <style name="Toolbar.Button.Navigation.Tinted" parent="Widget.AppCompat.Toolbar.Button.Navigation">
+    <style name="Toolbar.Button.Navigation.Tinted" parent="Widget.Material3.Toolbar.Button.Navigation">
         <item name="tint">?colorPrimary</item>
     </style>
 
-    <style name="Toolbar.Button.Navigation.TintedDark" parent="Widget.AppCompat.Toolbar.Button.Navigation">
+    <style name="Toolbar.Button.Navigation.TintedDark" parent="Widget.Material3.Toolbar.Button.Navigation">
         <item name="tint">?toolbar_left_icon_color</item>
     </style>
 
@@ -811,7 +811,7 @@
         <item name="fontFamily">sans-serif-medium</item>
     </style>
 
-    <style name="Theme.Toolbar.Photo" parent="ThemeOverlay.Material3.Toolbar.Surface">
+    <style name="Theme.Toolbar.Photo" parent="ThemeOverlay.Material3Expressive.Toolbar.Surface">
         <item name="toolbarNavigationButtonStyle">@style/Toolbar.Button.Navigation.TintedDark</item>
         <item name="android:textColor">?android:textColorSecondary</item>
         <item name="android:textColorPrimary">@android:color/white</item>
@@ -819,7 +819,7 @@
         <item name="colorControlNormal">@android:color/white</item>
     </style>
 
-    <style name="Theme.Toolbar.Video" parent="ThemeOverlay.Material3.Toolbar.Surface">
+    <style name="Theme.Toolbar.Video" parent="ThemeOverlay.Material3Expressive.Toolbar.Surface">
         <item name="toolbarNavigationButtonStyle">@style/Toolbar.Button.Navigation.TintedDark</item>
         <item name="android:textColor">?android:textColorSecondary</item>
         <item name="android:textColorPrimary">@android:color/white</item>
@@ -828,11 +828,7 @@
     </style>
 
     <style name="Theme.Tablayout" parent="Widget.Material3.TabLayout">
-        <item name="tabRippleColor">?colorPrimary</item>
         <item name="tabMode">scrollable</item>
-        <item name="tabTextColor">?android:textColorSecondary</item>
-        <item name="tabSelectedTextColor">?colorPrimary</item>
-        <item name="tabIndicatorColor">?colorPrimary</item>
         <item name="enforceTextAppearance">true</item>
         <item name="tabGravity">start</item>
         <item name="tabTextAppearance">@style/MineCustomTabText</item>
@@ -842,17 +838,20 @@
         <item name="android:textAllCaps">true</item>
     </style>
 
-    <style name="Theme.FloatingActionButton" parent="Widget.Material3.FloatingActionButton.Primary">
+    <style name="Theme.FloatingActionButton" parent="Widget.Material3Expressive.FloatingActionButton">
         <item name="backgroundTint">?colorSurface</item>
         <item name="tint">?colorSecondary</item>
     </style>
 
-    <style name="Theme.FloatingActionButtonSecondary" parent="Widget.Material3.FloatingActionButton.Secondary">
+    <style name="Theme.FloatingActionButtonSecondary" parent="Widget.Material3Expressive.FloatingActionButton">
+        <item name="materialThemeOverlay">
+            @style/ThemeOverlay.Material3Expressive.FloatingActionButton.SecondaryContainer
+        </item>
         <item name="backgroundTint">?colorSecondary</item>
         <item name="tint">@color/white</item>
     </style>
 
-    <style name="Theme.FloatingActionButtonAudio" parent="Widget.Material3.FloatingActionButton.Primary">
+    <style name="Theme.FloatingActionButtonAudio" parent="Widget.Material3Expressive.FloatingActionButton">
         <item name="backgroundTint">@color/white</item>
         <item name="tint">?colorSurface</item>
         <item name="rippleColor">?colorSurface</item>

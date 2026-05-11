@@ -232,6 +232,10 @@ class LocalJsonToChatFragment :
         mEmpty?.visibility = if (visible) View.VISIBLE else View.GONE
     }
 
+    override fun refetchReactionCache(accountId: Long) {
+        mAdapter?.refetchReactionCache(accountId)
+    }
+
     override fun displayData(posts: ArrayList<Message>) {
         mAdapter?.setItems(posts, true)
     }

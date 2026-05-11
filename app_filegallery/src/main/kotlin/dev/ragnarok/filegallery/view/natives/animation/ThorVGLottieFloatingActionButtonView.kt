@@ -87,8 +87,8 @@ class ThorVGLottieFloatingActionButtonView @JvmOverloads constructor(
                 return
             }
             animatedDrawable?.setSize(maxImageSize, maxImageSize)
-            repeatModeTmp?.let { animatedDrawable?.setRepeatMode(it) }
-            repeatTmp?.let { animatedDrawable?.setRepeatCount(if (it) Int.MAX_VALUE else 1) }
+            repeatModeTmp?.let { animatedDrawable?.repeatMode = it }
+            repeatTmp?.let { animatedDrawable?.repeatCount = if (it) Int.MAX_VALUE else 1 }
             super.setImageDrawable(animatedDrawable)
             animatedDrawable?.callback = this
             animatedDrawable?.setAnimationListener(mListener)
@@ -245,12 +245,12 @@ class ThorVGLottieFloatingActionButtonView @JvmOverloads constructor(
     }
 
     fun setRepeat(repeat: Boolean) {
-        animatedDrawable?.setRepeatCount(if (repeat) Int.MAX_VALUE else 1)
+        animatedDrawable?.repeatCount = if (repeat) Int.MAX_VALUE else 1
         repeatTmp = repeat
     }
 
     fun setRepeatMode(@RepeatMode repeatMode: Int) {
-        animatedDrawable?.setRepeatMode(repeatMode)
+        animatedDrawable?.repeatMode = repeatMode
         repeatModeTmp = repeatMode
     }
 

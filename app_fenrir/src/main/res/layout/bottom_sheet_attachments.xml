@@ -116,7 +116,7 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button_send"
-            style="@style/Widget.Material3.Button.IconButton.Filled"
+            style="@style/Widget.Material3Expressive.Button.IconButton.Filled"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"

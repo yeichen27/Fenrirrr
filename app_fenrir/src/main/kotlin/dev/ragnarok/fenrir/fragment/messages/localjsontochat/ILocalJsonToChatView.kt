@@ -18,4 +18,6 @@ interface ILocalJsonToChatView : IMvpView, IErrorView,
     fun displayToolbarAvatar(peer: Peer)
     fun attachments_mode(accountId: Long, last_selected: Int)
     fun resolveEmptyText(visible: Boolean)
+
+    fun refetchReactionCache(accountId: Long)
 }

@@ -214,6 +214,10 @@ class NotReadMessagesFragment :
         }
     }
 
+    override fun refetchReactionCache(accountId: Long) {
+        mMessagesAdapter?.refetchReactionCache(accountId)
+    }
+
     override fun focusTo(index: Int) {
         mEndlessRecyclerOnScrollListener?.let { mRecyclerView?.removeOnScrollListener(it) }
         mRecyclerView?.scrollToPosition(index + 1) // +header

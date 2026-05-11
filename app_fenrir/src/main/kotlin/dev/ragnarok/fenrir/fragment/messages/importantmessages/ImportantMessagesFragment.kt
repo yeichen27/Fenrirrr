@@ -184,6 +184,10 @@ class ImportantMessagesFragment :
         //"Not yet implemented"
     }
 
+    override fun refetchReactionCache(accountId: Long) {
+        mAdapter?.refetchReactionCache(accountId)
+    }
+
     override fun notifyDataAdded(position: Int, count: Int) {
         mAdapter?.notifyItemRangeInserted(position, count)
     }

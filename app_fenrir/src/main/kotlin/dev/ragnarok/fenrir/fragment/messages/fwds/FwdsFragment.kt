@@ -124,6 +124,10 @@ class FwdsFragment : PlaceSupportMvpFragment<FwdsPresenter, IFwdsView>(), OnMess
         // not supported
     }
 
+    override fun refetchReactionCache(accountId: Long) {
+        mAdapter?.refetchReactionCache(accountId)
+    }
+
     override fun notifyMessagesUpAdded(position: Int, count: Int) {
         // not supported
     }

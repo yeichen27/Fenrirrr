@@ -43,7 +43,7 @@ object FenrirNative {
 
     @get:Synchronized
     val appContext: Context
-        get() = mAppContext!!
+        get() = mAppContext ?: throw IllegalStateException("App instance is null!!!")
 
     interface NativeOnException {
         fun onException(e: Error)

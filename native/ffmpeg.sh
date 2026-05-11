@@ -7,6 +7,7 @@ cd $HOME
 #cd ffmpeg
 #rm -r -f ".git"
 
+rm $FFMPEG_VERSION.zip
 wget https://github.com/FFmpeg/FFmpeg/archive/refs/heads/release/$FFMPEG_VERSION.zip
 if [[ $? -ne 0 ]]; then
     echo "Wget failed!"

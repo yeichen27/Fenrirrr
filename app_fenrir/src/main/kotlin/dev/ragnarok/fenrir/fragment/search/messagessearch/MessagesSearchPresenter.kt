@@ -213,6 +213,28 @@ class MessagesSearchPresenter(
         }
     }
 
+    fun refreshReactionsIfNeed() {
+        if (Utils.needReloadReactionAssets(accountId)) {
+            appendJob(messages.getReactionsAssets(accountId).fromIOToMain({
+                if (Utils.getReactionsAssets()[accountId] == null) {
+                    Utils.getReactionsAssets()[accountId] = HashMap()
+                } else {
+                    Utils.getReactionsAssets()[accountId]?.clear()
+                }
+                for (i in it) {
+                    Utils.getReactionsAssets()[accountId]?.set(i.reaction_id, i)
+                }
+                view?.refetchReactionCache(accountId)
+            }, {
+                Settings.get().main().del_last_reaction_assets_sync(accountId)
+                Utils.clearReactionAssets(accountId)
+                if (Settings.get().main().isDeveloper_mode) {
+                    showError(it)
+                }
+            }))
+        }
+    }
+
     companion object {
         private const val COUNT = 50
     }
@@ -228,5 +250,6 @@ class MessagesSearchPresenter(
         if (canSearch(criteria)) {
             doSearch()
         }
+        refreshReactionsIfNeed()
     }
 }

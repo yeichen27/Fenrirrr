@@ -79,8 +79,13 @@ class MessagesAdapter(
     private var onMessageActionListener: OnMessageActionListener? = null
     private var onReactionListener: ReactionContainer.ReactionClicked? = null
 
-    private val reactions: Map<Int, ReactionAsset> =
+    private var reactions: Map<Int, ReactionAsset> =
         HashMap(Utils.getReactionsAssets()[accountId].orEmpty())
+
+    fun refetchReactionCache(accountId: Long) {
+        reactions = HashMap(Utils.getReactionsAssets()[accountId].orEmpty())
+        notifyDataSetChanged()
+    }
 
     override fun onBindItemViewHolder(
         viewHolder: RecyclerView.ViewHolder,

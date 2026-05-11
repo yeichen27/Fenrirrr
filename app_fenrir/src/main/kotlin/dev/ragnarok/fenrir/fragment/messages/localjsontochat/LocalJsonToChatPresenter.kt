@@ -9,6 +9,7 @@ import dev.ragnarok.fenrir.fragment.base.PlaceSupportPresenter
 import dev.ragnarok.fenrir.model.Message
 import dev.ragnarok.fenrir.model.Peer
 import dev.ragnarok.fenrir.nonNullNoEmpty
+import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.Pair
 import dev.ragnarok.fenrir.util.PersistentLogger
 import dev.ragnarok.fenrir.util.Utils
@@ -197,6 +198,28 @@ class LocalJsonToChatPresenter(
         view?.displayToolbarAvatar(peer)
     }
 
+    fun refreshReactionsIfNeed() {
+        if (Utils.needReloadReactionAssets(accountId)) {
+            appendJob(messages.getReactionsAssets(accountId).fromIOToMain({
+                if (Utils.getReactionsAssets()[accountId] == null) {
+                    Utils.getReactionsAssets()[accountId] = HashMap()
+                } else {
+                    Utils.getReactionsAssets()[accountId]?.clear()
+                }
+                for (i in it) {
+                    Utils.getReactionsAssets()[accountId]?.set(i.reaction_id, i)
+                }
+                view?.refetchReactionCache(accountId)
+            }, {
+                Settings.get().main().del_last_reaction_assets_sync(accountId)
+                Utils.clearReactionAssets(accountId)
+                if (Settings.get().main().isDeveloper_mode) {
+                    showError(it)
+                }
+            }))
+        }
+    }
+
     override fun onDestroyed() {
         actualDataDisposable.cancel()
         super.onDestroyed()
@@ -207,5 +230,6 @@ class LocalJsonToChatPresenter(
         isMy = false
         peer = Peer(0)
         loadActualData(context)
+        refreshReactionsIfNeed()
     }
 }

@@ -266,6 +266,7 @@ class DialogsPresenter(
                     }
                 }, {
                     Settings.get().main().del_last_reaction_assets_sync(accountId)
+                    Utils.clearReactionAssets(accountId)
                     if (Settings.get().main().isDeveloper_mode) {
                         showError(it)
                     }

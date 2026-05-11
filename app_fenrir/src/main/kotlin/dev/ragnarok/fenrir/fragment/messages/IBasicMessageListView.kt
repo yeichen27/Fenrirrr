@@ -54,4 +54,6 @@ interface IBasicMessageListView : IMvpView, IAttachmentsPlacesView,
         doStar: Boolean,
         canSpam: Boolean
     )
+
+    fun refetchReactionCache(accountId: Long)
 }

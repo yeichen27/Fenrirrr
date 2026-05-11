@@ -28,7 +28,7 @@
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/add_button"
-        style="@style/Widget.Material3.FloatingActionButton.Small.Surface"
+        style="@style/Theme.FloatingActionButtonSmallSurface"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"

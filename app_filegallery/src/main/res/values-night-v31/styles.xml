@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="App.DayNight.Dynamic" parent="Theme.Material3.DynamicColors.DayNight.NoActionBar">
+    <style name="App.DayNight.Dynamic" parent="Theme.Material3Expressive.DynamicColors.DayNight.NoActionBar">
         <item name="windowActionModeOverlay">true</item>
         <item name="actionModeBackground">?attr/colorPrimary</item>
         <item name="statusBarNonColoredColor">#000</item>

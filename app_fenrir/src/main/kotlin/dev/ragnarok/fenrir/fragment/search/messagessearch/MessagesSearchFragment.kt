@@ -123,6 +123,10 @@ class MessagesSearchFragment :
         mAdapter?.disableVoiceMessagePlaying()
     }
 
+    override fun refetchReactionCache(accountId: Long) {
+        mAdapter?.refetchReactionCache(accountId)
+    }
+
     override fun onVoiceHolderBinded(voiceMessageId: Int, voiceHolderId: Int) {
         presenter?.fireVoiceHolderCreated(
             voiceMessageId,

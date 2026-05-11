@@ -204,12 +204,13 @@ std::string doDecompressResource(size_t length, char *bytes, bool &orig) {
 }
 
 extern "C" JNIEXPORT jlong
-Java_dev_ragnarok_fenrir_module_animation_thorvg_ThorVGLottieDrawable_nLoadFromFile(JNIEnv *env,
-                                                                                    jobject,
-                                                                                    jstring srcPath,
-                                                                                    jintArray data,
-                                                                                    jintArray colorReplacement,
-                                                                                    jboolean useMoveColor) {
+Java_dev_ragnarok_fenrir_module_animation_thorvg_ThorVGLottieNativeBindings_nLoadFromFile(
+        JNIEnv *env,
+        jobject,
+        jstring srcPath,
+        jintArray data,
+        jintArray colorReplacement,
+        jboolean useMoveColor) {
     auto *info = new LottieAnimation();
     tvg::ColorReplace colors;
     if (useMoveColor) {
@@ -289,12 +290,13 @@ Java_dev_ragnarok_fenrir_module_animation_thorvg_ThorVGLottieDrawable_nLoadFromF
 }
 
 extern "C" JNIEXPORT jlong
-Java_dev_ragnarok_fenrir_module_animation_thorvg_ThorVGLottieDrawable_nLoadFromMemory(JNIEnv *env,
-                                                                                      jobject,
-                                                                                      jlong json,
-                                                                                      jintArray data,
-                                                                                      jintArray colorReplacement,
-                                                                                      jboolean useMoveColor) {
+Java_dev_ragnarok_fenrir_module_animation_thorvg_ThorVGLottieNativeBindings_nLoadFromMemory(
+        JNIEnv *env,
+        jobject,
+        jlong json,
+        jintArray data,
+        jintArray colorReplacement,
+        jboolean useMoveColor) {
     tvg::ColorReplace colors;
     if (useMoveColor) {
         colors.setUseCustomColorsLottieOffset();
@@ -346,8 +348,9 @@ Java_dev_ragnarok_fenrir_module_animation_thorvg_ThorVGLottieDrawable_nLoadFromM
 }
 
 extern "C" JNIEXPORT void
-Java_dev_ragnarok_fenrir_module_animation_thorvg_ThorVGLottieDrawable_nDestroy(JNIEnv *, jobject,
-                                                                               jlong ptr) {
+Java_dev_ragnarok_fenrir_module_animation_thorvg_ThorVGLottieNativeBindings_nDestroy(JNIEnv *,
+                                                                                     jobject,
+                                                                                     jlong ptr) {
     if (!ptr) {
         return;
     }
@@ -355,7 +358,7 @@ Java_dev_ragnarok_fenrir_module_animation_thorvg_ThorVGLottieDrawable_nDestroy(J
 }
 
 extern "C" void
-Java_dev_ragnarok_fenrir_module_animation_thorvg_ThorVGLottieDrawable_nSetBufferSize(
+Java_dev_ragnarok_fenrir_module_animation_thorvg_ThorVGLottieNativeBindings_nSetBufferSize(
         JNIEnv *env, jobject,
         jlong ptr, jobject bitmap, jfloat width, jfloat height) {
     if (!ptr || !bitmap) {
@@ -401,11 +404,11 @@ Java_dev_ragnarok_fenrir_module_animation_thorvg_ThorVGLottieDrawable_nSetBuffer
 }
 
 extern "C" JNIEXPORT void
-Java_dev_ragnarok_fenrir_module_animation_thorvg_ThorVGLottieDrawable_nGetFrame(JNIEnv *env,
-                                                                                jobject,
-                                                                                jlong ptr,
-                                                                                jobject bitmap,
-                                                                                jint frame) {
+Java_dev_ragnarok_fenrir_module_animation_thorvg_ThorVGLottieNativeBindings_nGetFrame(JNIEnv *env,
+                                                                                      jobject,
+                                                                                      jlong ptr,
+                                                                                      jobject bitmap,
+                                                                                      jint frame) {
     if (!ptr || !bitmap) {
         return;
     }

@@ -169,7 +169,7 @@
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/goto_button"
-        style="@style/Widget.Material3.FloatingActionButton.Small.Surface"
+        style="@style/Theme.FloatingActionButtonSmallSurface"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignEnd="@id/fragment_friend_dialog_list"

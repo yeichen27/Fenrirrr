@@ -374,6 +374,28 @@ abstract class AbsMessageListPresenter<V : IBasicMessageListView> internal const
         view?.playAudioList(accountId, tmpPos, comboAudios)
     }
 
+    fun refreshReactionsIfNeed() {
+        if (Utils.needReloadReactionAssets(accountId)) {
+            appendJob(Repository.messages.getReactionsAssets(accountId).fromIOToMain({
+                if (Utils.getReactionsAssets()[accountId] == null) {
+                    Utils.getReactionsAssets()[accountId] = HashMap()
+                } else {
+                    Utils.getReactionsAssets()[accountId]?.clear()
+                }
+                for (i in it) {
+                    Utils.getReactionsAssets()[accountId]?.set(i.reaction_id, i)
+                }
+                view?.refetchReactionCache(accountId)
+            }, {
+                Settings.get().main().del_last_reaction_assets_sync(accountId)
+                Utils.clearReactionAssets(accountId)
+                if (Settings.get().main().isDeveloper_mode) {
+                    showError(it)
+                }
+            }))
+        }
+    }
+
     init {
         createVoicePlayer()
         mVoiceMessageLookup = Lookup(500)
@@ -382,5 +404,6 @@ abstract class AbsMessageListPresenter<V : IBasicMessageListView> internal const
                 resolveVoiceMessagePlayingState(true)
             }
         })
+        refreshReactionsIfNeed()
     }
 }

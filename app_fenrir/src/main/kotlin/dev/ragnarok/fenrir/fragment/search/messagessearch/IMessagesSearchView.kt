@@ -27,4 +27,6 @@ interface IMessagesSearchView : IBaseSearchView<Message> {
 
     fun goToPeerLookup(accountId: Long, peer: Peer)
     fun disableVoicePlaying()
+
+    fun refetchReactionCache(accountId: Long)
 }

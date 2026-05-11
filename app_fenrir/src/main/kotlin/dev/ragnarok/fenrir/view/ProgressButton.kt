@@ -90,7 +90,7 @@ class ProgressButton : FrameLayout {
 
     private fun setAnimation(thorVGLottieDrawable: ThorVGLottieDrawable) {
         clearAnimationDrawable()
-        thorVGLottieDrawable.setRepeatCount(Int.MAX_VALUE)
+        thorVGLottieDrawable.repeatCount = Int.MAX_VALUE
         thorVGLottieDrawable.setSize(Utils.dp(24f), Utils.dp(24f))
         thorVGLottieDrawable.start()
         animatedDrawable = thorVGLottieDrawable

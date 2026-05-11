@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="ImageEditTheme" parent="Theme.Material3.Dark.NoActionBar">
+    <style name="ImageEditTheme" parent="Theme.Material3Expressive.Dark.NoActionBar">
         <item name="android:windowActionBar">false</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowFullscreen">true</item>
@@ -26,7 +26,7 @@
         <item name="colorSecondaryFixedDim">#AFB0B2</item>
     </style>
 
-    <style name="ImageTextDialog" parent="Theme.Material3.Dark.Dialog">
+    <style name="ImageTextDialog" parent="Theme.Material3Expressive.Dark.Dialog">
         <item name="android:windowActionBar">false</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowFullscreen">true</item>

@@ -35,21 +35,14 @@ object UncompressDefaultInterceptor : Interceptor {
             .build()
     }
 
-    override fun intercept(chain: Interceptor.Chain): Response =
-        if (!Utils.isCompressIncomingTraffic) {
-            val request = chain.request().newBuilder()
-                .header("Accept-Encoding", "none")
+    override fun intercept(chain: Interceptor.Chain): Response = uncompress(
+        chain.proceed(
+            chain.request().newBuilder()
+                .header(
+                    "Accept-Encoding",
+                    if (!Utils.isCompressIncomingTraffic || !FenrirNative.isNativeLoaded) "none" else "zstd"
+                )
                 .build()
-
-            chain.proceed(request)
-        } else {
-            if (FenrirNative.isNativeLoaded) {
-                val request = chain.request().newBuilder()
-                    .header("Accept-Encoding", "zstd")
-                    .build()
-                uncompress(chain.proceed(request))
-            } else {
-                chain.proceed(chain.request())
-            }
-        }
+        )
+    )
 }

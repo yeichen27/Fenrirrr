@@ -1091,7 +1091,7 @@
         <item name="sticker_hint_color">#DD0B0B0B</item>
     </style>
 
-    <style name="MyTransparentDialog" parent="Theme.Material3.DayNight.Dialog">
+    <style name="MyTransparentDialog" parent="Theme.Material3Expressive.DayNight.Dialog">
         <item name="android:windowIsTranslucent">true</item>
         <item name="colorPrimary">#A4C9FF</item>
         <item name="colorControlNormal">#C4C6CF</item>
@@ -1154,17 +1154,20 @@
         <item name="toolbar_left_icon_color">?attr/colorPrimary</item>
     </style>
 
-    <style name="Theme.FloatingActionButtonAmoled" parent="Widget.Material3.FloatingActionButton.Primary">
+    <style name="Theme.FloatingActionButtonAmoled" parent="Widget.Material3Expressive.FloatingActionButton">
         <item name="backgroundTint">?colorPrimary</item>
         <item name="tint">?colorSurface</item>
     </style>
 
-    <style name="Theme.FloatingActionButtonSecondaryAmoled" parent="Widget.Material3.FloatingActionButton.Secondary">
+    <style name="Theme.FloatingActionButtonSecondaryAmoled" parent="Widget.Material3Expressive.FloatingActionButton">
+        <item name="materialThemeOverlay">
+            @style/ThemeOverlay.Material3Expressive.FloatingActionButton.SecondaryContainer
+        </item>
         <item name="backgroundTint">?colorOnSurface</item>
         <item name="tint">?colorSurface</item>
     </style>
 
-    <style name="Theme.ButtonSecondaryAmoled" parent="Widget.Material3.Button.IconButton">
+    <style name="Theme.ButtonSecondaryAmoled" parent="Widget.Material3Expressive.Button.IconButton">
         <item name="shapeAppearanceOverlay">@style/MyButton.shapeAppearance</item>
         <item name="android:insetLeft">0dp</item>
         <item name="android:insetRight">0dp</item>

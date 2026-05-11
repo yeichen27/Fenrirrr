@@ -927,11 +927,8 @@ class ChatPresenter(
             return
         }
         stickersWordsDisplayDisposable.cancel()
-        if (s.isNullOrEmpty()) {
+        if (s.isNullOrEmpty() || s.length > Constants.MAX_TEXT_LENGTH_FOR_STICKER_HELP) {
             view?.updateStickers(emptyList())
-            return
-        }
-        if (s.length > Constants.MAX_TEXT_LENGTH_FOR_STICKER_HELP) {
             return
         }
         stickersWordsDisplayDisposable +=

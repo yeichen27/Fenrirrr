@@ -669,6 +669,10 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
         }
     }
 
+    override fun refetchReactionCache(accountId: Long) {
+        adapter?.refetchReactionCache(accountId)
+    }
+
     private class ActionModeHolder(val rootView: View, fragment: ChatFragment) :
         View.OnClickListener {
 

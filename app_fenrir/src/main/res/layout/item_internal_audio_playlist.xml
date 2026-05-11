@@ -116,7 +116,7 @@
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/add_playlist"
-                style="@style/Widget.Material3.FloatingActionButton.Small.Surface"
+                style="@style/Theme.FloatingActionButtonSmallSurface"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:contentDescription="@null"
@@ -126,7 +126,7 @@
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/share_playlist"
-                style="@style/Widget.Material3.FloatingActionButton.Small.Surface"
+                style="@style/Theme.FloatingActionButtonSmallSurface"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
