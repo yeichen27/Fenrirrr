@@ -38,7 +38,7 @@
 
     <string-array name="array_end_list_anim_names">
         <item>Success</item>
-        <item>Balls</item>
+        <item>Circles</item>
         <item>Wave</item>
     </string-array>
 
@@ -69,7 +69,7 @@
     </string-array>
 
     <string-array name="array_chat_background_names">
-        <item>Monotone</item>
+        <item>Solid</item>
         <item>Cookies</item>
         <item>Lines</item>
         <item>Runes</item>
@@ -141,9 +141,9 @@
     </string-array>
 
     <string-array name="array_photo_rounded_names">
-        <item>Always rounded</item>
-        <item>Rounded if one photo</item>
-        <item>Not rounded</item>
+        <item>Always round</item>
+        <item>Round if single photo</item>
+        <item>Don't round</item>
     </string-array>
 
     <string-array name="array_photo_rounded_items" translatable="false">
@@ -189,7 +189,7 @@
     <string-array name="array_is_open_url_internal_names">
         <item>Disable</item>
         <item>Only VK</item>
-        <item>All Url</item>
+        <item>All links</item>
     </string-array>
 
     <string-array name="array_is_open_url_internal_items" translatable="false">
@@ -212,8 +212,8 @@
 
     <string-array name="array_autoplay_video_on_posts_names">
         <item>Disable</item>
-        <item>Only GIF (cache)</item>
-        <item>All video on post (network, cpu)</item>
+        <item>Only GIFs (caching)</item>
+        <item>All videos in posts (high data and cpu loads)</item>
     </string-array>
 
     <string-array name="array_autoplay_video_on_posts_items" translatable="false">
@@ -295,13 +295,13 @@
     <string name="crash_error_activity_out_of_memory">Out of memory!</string>
 
     <!-- Dialogs-->
-    <string name="dialogs">Dialogs</string>
+    <string name="dialogs">Chats</string>
     <string name="dialog_day_today">Today</string>
     <string name="dialog_day_yesterday">Yesterday</string>
-    <string name="dialog_day_ten_days">For 10 days</string>
+    <string name="dialog_day_ten_days">Last 10 days</string>
     <string name="dialog_pinned">Pinned</string>
-    <string name="dialog_day_older">Old</string>
-    <string name="dialog_me">I</string>
+    <string name="dialog_day_older">Older</string>
+    <string name="dialog_me">You:</string>
     <string name="attachments">[attachments]</string>
     <string name="sticker_message">[sticker]</string>
     <string name="voice_message">[audio message]</string>
@@ -321,10 +321,10 @@
     <!-- Settings-->
     <string name="settings">Settings</string>
 
-    <string name="general_settings">Commons</string>
-    <string name="about_settings">About application</string>
-    <string name="account_cache_cleaner">Clear cache and sql</string>
-    <string name="ask_account_cache_cleaner">Do clear cache and sql?</string>
+    <string name="general_settings">General</string>
+    <string name="about_settings">About</string>
+    <string name="account_cache_cleaner">Clear cache and database</string>
+    <string name="ask_account_cache_cleaner">Proceed clearing cache and database?</string>
     <string name="cache_cleaner">Clear cache</string>
     <!-- Quick Reply-->
     <string name="send">Send</string>
@@ -333,24 +333,24 @@
     <string name="search_hint">Find</string>
     <!-- MessagesSending-->
     <string name="sending">Sending</string>
-    <string name="in_order">In queue</string>
+    <string name="in_order">Queued</string>
     <string name="error">Error</string>
     <!-- Welcome-->
     <!-- Friends-->
     <string name="friends">Friends</string>
 
-    <string name="sending_message_failed">Message sending failed</string>
+    <string name="sending_message_failed">Message not sent</string>
     <string name="try_again">Repeat</string>
     <string name="delete">Delete</string>
     <string name="delete_from_playlist">Remove from playlist</string>
     <string name="select_attachments">Select attachments</string>
 
-    <string name="attachment_wall_post">Recording</string>
+    <string name="attachment_wall_post">Post</string>
     <string name="attachment_document">Document</string>
     <string name="attachment_documents">Documents</string>
     <string name="attachment_link">Link</string>
-    <string name="user_type_message">typing message</string>
-    <string name="user_type_voice">typing voice</string>
+    <string name="user_type_message">typing</string>
+    <string name="user_type_voice">recording voice message</string>
     <string name="many_users_typed">%1$s and %2$d</string>
 
     <string name="load_more">Load more</string>
@@ -366,7 +366,7 @@
     <string name="notifications_sync">Sync from VK</string>
 
     <string name="here">Here</string>
-    <string name="to_another_dialogue">Into another dialog</string>
+    <string name="to_another_dialogue">To other chat</string>
 
     <string name="music">Music</string>
 
@@ -384,8 +384,8 @@
     <string name="unknown_first_name">Unknown</string>
     <string name="unknown_last_name">user</string>
 
-    <string name="click_back_to_exit">Click again to exit</string>
-    <string name="show_more">Show in full</string>
+    <string name="click_back_to_exit">Press again to exit</string>
+    <string name="show_more">Show more</string>
 
     <string name="counter_groups">groups</string>
     <string name="counter_friends">friends</string>
@@ -399,7 +399,7 @@
     <string name="refresh">Refresh</string>
 
     <string name="set_groupchat_title">Specify the subject of the conversation</string>
-    <string name="set_news_list_title">Please enter a name for the list</string>
+    <string name="set_news_list_title">Specify the list name</string>
 
     <string name="copied_to_clipboard">Copied to clipboard</string>
 
@@ -471,18 +471,18 @@
     <string name="from_vk_albums">From VK albums</string>
     <string name="from_local_albums">From local albums</string>
     <string name="comments">Comments</string>
-    <string name="query">Key phrases</string>
-    <string name="for_wall_post">on the wall</string>
+    <string name="query">Keywords</string>
+    <string name="for_wall_post">to the wall post</string>
     <string name="for_photo">to the photo</string>
 
-    <string name="title_activity_create_post">New entry</string>
+    <string name="title_activity_create_post">New post</string>
 
     <string name="chat_empty_text">Nothing here yet…</string>
 
-    <string name="emojis_type_title">Use system emoticons</string>
-    <string name="emojis_full_screen">Full screen stickers</string>
+    <string name="emojis_type_title">Use system emoji</string>
+    <string name="emojis_full_screen">Fullscreen stickers</string>
     <string name="stickers_by_theme">Day/Night Stickers</string>
-    <string name="stickers_by_new">Stickers from new to old</string>
+    <string name="stickers_by_new">Stickers by new</string>
     <string name="stickers_by_theme_summary">May not be displayed correctly when selected</string>
     <string name="appearance_settings">Appearance</string>
     <string name="behaviour_settings">Behavior</string>
@@ -502,8 +502,8 @@
     <string name="unpin">Unpin</string>
     <string name="restore">Restore</string>
 
-    <string name="pin_result">The entry is pinned</string>
-    <string name="unpin_result">The entry is unpinned</string>
+    <string name="pin_result">Post is pinned</string>
+    <string name="unpin_result">Post is unpinned</string>
     <string name="delete_result">Removed</string>
     <string name="restore_result">Restored</string>
 
@@ -521,10 +521,10 @@
 
     <string name="drawer_categories_title">Popup menu items</string>
     <string name="side_drawer_categories_title">Side menu items</string>
-    <string name="drawer_categories_summary">Select the items to be displayed in the main menu of the application</string>
+    <string name="drawer_categories_summary">Select the items that you want to appear in the main menu of the application</string>
 
     <string name="add_vote">Vote</string>
-    <string name="remove_vote">Delete vote</string>
+    <string name="remove_vote">Retract the vote</string>
 
     <string name="saved">Saved</string>
     <string name="tag_modified">MP3 tags updated!</string>
@@ -547,73 +547,73 @@
     <string name="members_count">%1$s members</string>
     <string name="people_count">%1$d count</string>
 
-    <string name="api_error_internal_1">The server returned the damaged JSON</string>
-    <string name="api_error_1">An unknown error has occurred</string>
-    <string name="api_error_2">Application is off</string>
+    <string name="api_error_internal_1">Server returned malformed JSON</string>
+    <string name="api_error_1">An unknown error occurred</string>
+    <string name="api_error_2">Application is disabled</string>
     <string name="api_error_3">Unknown method passed</string>
     <string name="api_error_4">Invalid signature</string>
     <string name="api_error_5">User authorization failed</string>
     <string name="api_error_6">Too many requests per second</string>
-    <string name="api_error_7">No permission to perform this action</string>
-    <string name="api_error_8">Bad request</string>
-    <string name="api_error_9">Too many actions of the same type</string>
-    <string name="api_error_10">An internal server error has occurred</string>
-    <string name="api_error_11">In test mode, the application must be turned off or the user must be logged in</string>
-    <string name="api_error_14">Required to enter the code from the picture (Captcha)</string>
-    <string name="api_error_15">Access is denied</string>
-    <string name="api_error_16">Requires execution of requests via the HTTPS protocol, since the user has enabled a setting that requires work over a secure connection</string>
+    <string name="api_error_7">Insufficient permissions to perform this action</string>
+    <string name="api_error_8">Invalid request</string>
+    <string name="api_error_9">Too many similar actions</string>
+    <string name="api_error_10">Internal server error</string>
+    <string name="api_error_11">In test mode, the application must be disabled or the user must be logged in</string>
+    <string name="api_error_14">Captcha validation required</string>
+    <string name="api_error_15">Access denied</string>
+    <string name="api_error_16">HTTPS is required because the user enabled the secure connection setting</string>
     <string name="api_error_17">User validation required</string>
-    <string name="api_error_18">The page has been deleted or blocked</string>
-    <string name="api_error_19">Content not available</string>
-    <string name="api_error_20">This action is prohibited for non-Standalone applications</string>
+    <string name="api_error_18">Page was deleted or blocked</string>
+    <string name="api_error_19">Content unavailable</string>
+    <string name="api_error_20">This action is forbidden for non-Standalone applications</string>
     <string name="api_error_21">This action is allowed only for Standalone and Open API applications</string>
-    <string name="api_error_23">The method has been turned off</string>
+    <string name="api_error_23">Method is disabled</string>
     <string name="api_error_24">User confirmation required</string>
-    <string name="api_error_25">Attempt to bypass music blocking failed</string>
-    <string name="api_error_27">Community access token is invalid</string>
-    <string name="api_error_28">Application access key is invalid</string>
-    <string name="api_error_29">Method call limit reached</string>
-    <string name="api_error_30">Closed profile</string>
-    <string name="api_error_34">VK blocked this request</string>
-    <string name="api_error_42">IP is not allowed</string>
-    <string name="api_error_101">Invalid API Application ID</string>
-    <string name="api_error_103">Limit on number of arrivals exceeded</string>
-    <string name="api_error_104">Not Found</string>
+    <string name="api_error_25">Attempt to bypass music restriction failed</string>
+    <string name="api_error_27">Invalid group access token</string>
+    <string name="api_error_28">Invalid application access token</string>
+    <string name="api_error_29">Method call rate limit reached</string>
+    <string name="api_error_30">Private profile</string>
+    <string name="api_error_34">Request was blocked by VK</string>
+    <string name="api_error_42">Your IP address is banned</string>
+    <string name="api_error_101">Invalid application API ID</string>
+    <string name="api_error_103">Join limit exceeded</string>
+    <string name="api_error_104">Not found</string>
     <string name="api_error_105">Unable to save file</string>
     <string name="api_error_113">Invalid user ID</string>
     <string name="api_error_114">Invalid album ID</string>
     <string name="api_error_118">Invalid server</string>
     <string name="api_error_121">Invalid hash</string>
     <string name="api_error_150">Invalid timestamp</string>
-    <string name="api_error_174">You can\'t add yourself as a friend</string>
-    <string name="api_error_175">It is impossible to add the user who added you to his blacklist as a friend</string>
-    <string name="api_error_176">It is impossible to add a user who is on your blacklist as a friend</string>
-    <string name="api_error_200">Album access denied</string>
-    <string name="api_error_201">Audio access denied</string>
-    <string name="api_error_203">Group access denied</string>
-    <string name="api_error_210">No write access</string>
-    <string name="api_error_214">The limit on the number of publications per day has been exceeded</string>
-    <string name="api_error_219">Sponsored post has already been published</string>
+    <string name="api_error_174">Cannot add yourself as a friend</string>
+    <string name="api_error_175">Cannot add a user who has blacklisted you</string>
+    <string name="api_error_176">Cannot add a user who is in your blacklist</string>
+    <string name="api_error_200">Access to album denied</string>
+    <string name="api_error_201">Access to audio denied</string>
+    <string name="api_error_203">Access to group denied</string>
+    <string name="api_error_210">No access to post</string>
+    <string name="api_error_214">Daily post limit exceeded</string>
+    <string name="api_error_219">Advertising post was recently published already</string>
     <string name="api_error_220">Too many recipients</string>
-    <string name="api_error_221">User turned off broadcast of audio titles in status</string>
-    <string name="api_error_300">The album is full</string>
-    <string name="api_error_500">Action prohibited. You must enable voice translations in the app settings</string>
-    <string name="api_error_600">There are no rights to perform these operations with an advertising account</string>
-    <string name="api_error_603">An error occurred while working with an ad account</string>
-    <string name="api_error_701">User must be a member of the community</string>
+    <string name="api_error_221">User disabled broadcasting audio titles to status</string>
+    <string name="api_error_300">Album is full</string>
+    <string name="api_error_500">Action forbidden. You must enable voice transfers in application settings</string>
+    <string name="api_error_600">Insufficient permissions for advertising account operations</string>
+    <string name="api_error_603">Advertising account error occurred</string>
+    <string name="api_error_701">User must be a group member</string>
     <string name="api_error_800">This video has already been added</string>
-    <string name="api_error_900">Can\'t send message to blacklisted user</string>
-    <string name="api_error_901">You cannot be the first to write to the user on behalf of the community</string>
-    <string name="api_error_902">You cannot send messages to this user due to privacy settings</string>
-    <string name="api_error_909">This message cannot be edited because it is too old.</string>
+    <string name="api_error_900">Cannot send messages to a user from the blacklist</string>
+    <string name="api_error_901">Cannot initiate a conversation on behalf of a group</string>
+    <string name="api_error_902">Cannot send messages to this user due to privacy settings</string>
+    <string name="api_error_909">Cannot edit this message because it is too old</string>
     <string name="api_error_914">Too many forwarded messages</string>
-    <string name="api_error_913">The message is too long</string>
-    <string name="api_error_921">Unable to forward selected messages</string>
+    <string name="api_error_913">Message is too long</string>
+    <string name="api_error_921">Selected messages cannot be forwarded</string>
     <string name="api_error_1150">Invalid document ID</string>
-    <string name="api_error_1151">No access to delete documents</string>
-    <string name="api_error_1170">Too many news lists (maximum 10)</string>
+    <string name="api_error_1151">No permission to delete documents</string>
+    <string name="api_error_1170">Too many feed lists (maximum 10)</string>
 
-    <string name="cancel">Cancellation</string>
+    <string name="cancel">Cancel</string>
     <string name="videos">Videos</string>
     <string name="articles">Articles</string>
     <string name="products">Products</string>
@@ -637,48 +637,48 @@
 
     <string name="drawer_feedback">Feedback</string>
 
-    <string name="mentioned_in_post">mentioned you in the entry</string>
+    <string name="mentioned_in_post">mentioned you in post</string>
 
-    <string name="liked_comment">appreciated your comment</string>
+    <string name="liked_comment">liked your comment</string>
 
     <string name="shared_post">shared your post</string>
 
-    <string name="and_users_count_more">and %1$d more people</string>
+    <string name="and_users_count_more">and %1$d more person</string>
     <string name="from_date">from %1$s</string>
     <string name="for_post">to the post</string>
 
 
     <string name="keyword_for">to</string>
-    <string name="liked_your_photo_without_photo">appreciated your</string>
-    <string name="liked_your_video_without_video">appreciated your</string>
-    <string name="comment_your_photo_without_photo">commented on your</string>
-    <string name="comment_your_video_without_video">commented on your</string>
+    <string name="liked_your_photo_without_photo">liked your</string>
+    <string name="liked_your_video_without_video">liked your</string>
+    <string name="comment_your_photo_without_photo">commented your</string>
+    <string name="comment_your_video_without_video">commented your</string>
     <string name="copy_your_photo_without_photo">shared your</string>
     <string name="copy_your_video_without_video">shared your</string>
-    <string name="photo_dative">photos</string>
-    <string name="video_dative">videos</string>
+    <string name="photo_dative">photo</string>
+    <string name="video_dative">video</string>
     <string name="photo_accusative">photo</string>
     <string name="video_accusative">video</string>
     <string name="photo_ablative">photo</string>
     <string name="video_ablative">video</string>
 
     <string name="in_reply_to_your_comment">in response to your comment</string>
-    <string name="in_reply_to_your_message_in_topic">in response to your message in the discussion</string>
+    <string name="in_reply_to_your_message_in_topic">in response to your message in the topic</string>
 
     <string name="subscribed_to_your_updates">subscribed to your updates</string>
-    <string name="liked_your_post">rated your entry</string>
+    <string name="liked_your_post">liked your post</string>
 
     <string name="in_comments_for_post">in the comments to the post</string>
 
-    <string name="for_your_post">to your record</string>
+    <string name="for_your_post">to your post</string>
     <string name="on_your_wall">on your wall</string>
-    <string name="postings_you_the_news">your proposed news has been published</string>
+    <string name="postings_you_the_news">your suggested post has been published</string>
 
     <string name="mentioned_in_comment_photo_video">mentioned you in the comments to</string>
 
     <string name="in_topic">in discussion</string>
 
-    <string name="published_post_on_your_wall">posted a post on your wall</string>
+    <string name="published_post_on_your_wall">made a post on your wall</string>
 
     <string name="feedback_empty_text">Here you will see mentions, comments and likes</string>
 
@@ -686,7 +686,7 @@
 
     <string name="shorted_links_empty_text">Here you will see shortened links</string>
 
-    <string name="audio_catalog_empty_text">Here you will see the audio directory</string>
+    <string name="audio_catalog_empty_text">Here you will see the audio catalog</string>
 
     <string name="end_of_list">End of the list</string>
 
@@ -694,7 +694,7 @@
 
     <string name="open_profile">Open profile</string>
 
-    <string name="play_hls">Streaming video</string>
+    <string name="play_hls">Streaming playback</string>
     <string name="play_240" translatable="false">240p</string>
     <string name="play_360" translatable="false">360p</string>
     <string name="play_480" translatable="false">480p</string>
@@ -750,7 +750,7 @@
     <string name="city">City</string>
 
     <!--Жизненная позиция пользователя-->
-    <string name="beliefs">Life position</string>
+    <string name="beliefs">Beliefs</string>
     <string name="political_views">Political views</string>
     <string name="political_views_communist">communist</string>
     <string name="political_views_socialist">socialist</string>
@@ -759,14 +759,14 @@
     <string name="political_views_conservative">conservative</string>
     <string name="political_views_monarchist">monarchical</string>
     <string name="political_views_ultraconservative">ultra-conservative</string>
-    <string name="political_views_apathetic">indifferent</string>
+    <string name="political_views_apathetic">apathetic</string>
     <string name="political_views_libertian">libertarian</string>
 
     <string name="world_view">Worldview</string>
     <string name="personal_priority">The main thing in life</string>
     <string name="personal_priority_family_and_children">family and children</string>
     <string name="personal_priority_career_and_money">career and money</string>
-    <string name="personal_priority_entertainment_and_leisure">entertainment and recreation</string>
+    <string name="personal_priority_entertainment_and_leisure">entertainment and leisure</string>
     <string name="personal_priority_science_and_research">science and research</string>
     <string name="personal_priority_improving_the_world">improving the world</string>
     <string name="personal_priority_personal_development">self-development</string>
@@ -781,12 +781,12 @@
     <string name="important_in_others_courage_and_persistance">courage and perseverance</string>
     <string name="important_in_others_humor_and_love_for_life">humor and love of life</string>
 
-    <string name="views_on_smoking">Attitude towards smoking</string>
-    <string name="views_on_alcohol">attitude to alcohol</string>
-    <string name="views_very_negative">sharply negative</string>
+    <string name="views_on_smoking">Views on smoking</string>
+    <string name="views_on_alcohol">Views on alcohol</string>
+    <string name="views_very_negative">very negative</string>
     <string name="views_negative">negative</string>
     <string name="views_neutral">neutral</string>
-    <string name="views_compromisable">compromise</string>
+    <string name="views_compromisable">compromisable</string>
     <string name="views_positive">positive</string>
 
     <string name="inspired_by">Sources of inspiration</string>
@@ -821,7 +821,7 @@
     <string name="copy_id">Copy ID</string>
     <string name="target_url">External link</string>
     <string name="goto_user">Open owner</string>
-    <string name="goto_community">Open community</string>
+    <string name="goto_community">Open group</string>
 
     <!-- Friend status -->
     <string name="add_to_friends">Add as friend</string>
@@ -836,27 +836,27 @@
     <string name="button_no">No</string>
     <string name="button_cancel">Cancel</string>
     <string name="button_super_delete">Super</string>
-    <string name="field_is_required">Required field</string>
+    <string name="field_is_required">Field is required</string>
     <string name="attach_message">Attach message</string>
     <string name="enter_your_status">Enter your status</string>
 
     <string name="friend_request_sent">Friend request sent</string>
     <string name="friend_request_from_user_approved">Friend request approved</string>
-    <string name="request_resending">Friend request approved</string>
+    <string name="request_resending">Resending request</string>
 
-    <string name="friend_deleted">A friend has been deleted</string>
+    <string name="friend_deleted">Friend was removed</string>
     <string name="out_request_deleted">Cancel outgoing request</string>
     <string name="in_request_deleted">Cancel incoming request</string>
-    <string name="suggestion_deleted">Friend recommendation rejected</string>
+    <string name="suggestion_deleted">Friend suggestion declined</string>
 
-    <string name="status_was_changed">Status has been changed</string>
+    <string name="status_was_changed">Status was changed</string>
     <string name="open_photo_album">Open album</string>
 
     <string name="community_send_request">Send request</string>
     <string name="community_join">Join the group</string>
     <string name="community_follow">Subscribe</string>
-    <string name="community_to_go">To go</string>
-    <string name="community_not_to_go">Will not go</string>
+    <string name="community_to_go">I'm going</string>
+    <string name="community_not_to_go">I'm mot going</string>
     <string name="community_unsubscribe_from_news">Unsubscribe</string>
     <string name="community_leave">Leave the group</string>
 
@@ -867,7 +867,7 @@
     <string name="community_leave_success">You left the group</string>
 
     <string name="counter_chats">chats</string>
-    <string name="counter_topics">discussions</string>
+    <string name="counter_topics">topics</string>
     <string name="counter_articles">articles</string>
     <string name="counter_markets">products</string>
     <string name="counter_markets_services">services</string>
@@ -876,20 +876,20 @@
 
     <string name="topic_comments_counter">last update: %1$s | %2$d comments</string>
     <string name="group_chats_counter">last message: %1$s | %2$d members</string>
-    <string name="group_chats">Group\'s Chats</string>
-    <string name="topics">Discussions</string>
+    <string name="group_chats">Group\'s chats</string>
+    <string name="topics">Topics</string>
     <string name="group_chat_leave">Leave chat</string>
     <string name="delete_chat">Delete chat</string>
     <string name="delete_chat_do">Delete chat?</string>
-    <string name="post_from_group">On behalf of the group</string>
+    <string name="post_from_group">Post as group</string>
 
     <string name="for_friends_only">Only for friends</string>
     <string name="add_signature">Add author signature</string>
     <string name="edit_chat">Edit chat</string>
-    <string name="change_chat_title">Edit title chat</string>
-    <string name="chat_users">Add author signature</string>
+    <string name="change_chat_title">Edit chat title</string>
+    <string name="chat_users">Chat participants</string>
     <string name="invite_link">Invite Link</string>
-    <string name="creator_of_conversation">Conversation creator</string>
+    <string name="creator_of_conversation">Chat creator</string>
     <string name="invited_by">Invited %1$s</string>
     <string name="remove_chat_user_commit">Do you really want to exclude the user %1$s from chat?</string>
     <string name="confirmation">Confirmation</string>
@@ -897,35 +897,35 @@
     <string name="welcome_hint">Press the middle button to login :)</string>
     <string name="poll">Poll</string>
     <string name="new_poll">New poll</string>
-    <string name="poll_question">Theme pool</string>
+    <string name="poll_question">Pool question</string>
     <string name="poll_options">Answer options</string>
     <string name="add_option">Add option</string>
     <string name="shared">Shared</string>
     <string name="photo">Photo</string>
     <string name="video">Video</string>
     <string name="share">Share</string>
-    <string name="share_to_message">Share to Message</string>
+    <string name="share_to_message">Share in Messages</string>
     <string name="new_comment">New comment</string>
     <string name="editing">Editing</string>
     <string name="add_document_to_yourself_commit">Add to your documents?</string>
-    <string name="avatar_style_title">Avatar style</string>
+    <string name="avatar_style_title">Profile pictures style</string>
 
-    <string name="save_changes_question">Save changes ?</string>
+    <string name="save_changes_question">Save changes?</string>
     <string name="comment">Comment</string>
     <string name="search">Search</string>
     <string name="input">Input</string>
     <string name="bookmarks">Bookmarks</string>
-    <string name="list_is_empty">The list is empty</string>
-    <string name="list_is_empty_support_disjunction">The list is empty. Identifiers (* id …) Disjunction (A | B)</string>
+    <string name="list_is_empty">List is empty</string>
+    <string name="list_is_empty_support_disjunction">List is empty. Identifiers (*id …) Disjunction (A | B)</string>
     <string name="people">People</string>
     <string name="links">Links</string>
     <string name="posts_with_comment">Posts with comments</string>
     <string name="posts_with_query">Advanced search</string>
     <string name="posts">Posts</string>
-    <string name="loading_owner_photo_album">Uploading a photo album</string>
+    <string name="loading_owner_photo_album">Loading photo album</string>
     <string name="no_photos_found">No photos found</string>
     <string name="please_wait">Please wait</string>
-    <string name="permission_all_granted_text">Permissions granted. Repeat the action one more time</string>
+    <string name="permission_all_granted_text">Permissions granted. Pleace repeat the action.</string>
     <string name="add_to_bookmarks">Add to bookmarks</string>
     <string name="remove_from_bookmarks">Remove from bookmarks</string>
     <string name="notify_wall_added">Notify about new posts</string>
@@ -933,11 +933,11 @@
     <string name="loading">Loading</string>
     <string name="all_friends">All friends</string>
     <string name="share_link">Share link</string>
-    <string name="share_external">Share external</string>
+    <string name="share_external">Share externally</string>
     <string name="share_using">Share with</string>
     <string name="mutual_friends">Mutual friends</string>
     <string name="results_in_a_network">Found on the net</string>
-    <string name="type_here_to_start_searching">Enter to start search …</string>
+    <string name="type_here_to_start_searching">Type to start searching…</string>
     <string name="results_in_the_cache">Results from downloads</string>
     <string name="wiki_page">Wiki page</string>
     <string name="title">Name: %1$s</string>
@@ -956,7 +956,7 @@
     <string name="in_response_to">%1$s in response to %2$s</string>
     <string name="no_photos">No images</string>
     <string name="no_videos">No videos</string>
-    <string name="invites_you_to_join_community">%1$s invites you to join the community</string>
+    <string name="invites_you_to_join_community">%1$s invites you to join a group</string>
     <string name="attachments_in_chat">Chat materials</string>
     <string name="attachments_in_wall">Wall materials</string>
     <string name="messages_in_json">Chat JSON (%1$d messages)</string>
@@ -974,35 +974,35 @@
     <string name="markets_albums">Selection products</string>
     <string name="markets_all">All products</string>
     <string name="markets_description">Description: %1$s</string>
-    <string name="markets_sku">Vendor code: %1$s</string>
+    <string name="markets_sku">SKU: %1$s</string>
     <string name="markets_weight">Weight: %1$d</string>
     <string name="markets_dimensions">Sizes: %1$s</string>
     <string name="videos_count">%1$d video</string>
-    <string name="communities">Communities</string>
+    <string name="communities">Groups</string>
     <string name="save_yourself">Save in album</string>
     <string name="photo_saved_yourself">Save in album “Saved photos”</string>
     <string name="documents">Documents</string>
     <string name="search_options">Options search</string>
     <string name="clear">Clear</string>
     <string name="age_from">Age, from</string>
-    <string name="age_to">Age, before</string>
+    <string name="age_to">Age, to</string>
     <string name="august">August</string>
     <string name="birthday_day">Birthday</string>
     <string name="birthday_year">Year of birth</string>
     <string name="birthday_month">Month of birth</string>
-    <string name="by_date_added">by date of addition</string>
+    <string name="by_date_added">by date added</string>
     <string name="by_duration">by duration</string>
     <string name="by_relevance">by relevance</string>
     <string name="april">April</string>
     <string name="december">December</string>
-    <string name="default_sorting">default sort</string>
+    <string name="default_sorting">default sorting</string>
     <string name="directory_is_empty">Directory is empty</string>
     <string name="disable_safe_search">Disable safe search</string>
     <string name="youtube" translatable="false">Youtube</string>
     <string name="vimeo" translatable="false">Vimeo</string>
     <string name="event">Event</string>
     <string name="february">February</string>
-    <string name="female">Women</string>
+    <string name="female">Female</string>
     <string name="future_events_only">Future events only</string>
     <string name="group">Group</string>
     <string name="hd_only">HD only</string>
@@ -1010,23 +1010,23 @@
     <string name="january">January</string>
     <string name="june">June</string>
     <string name="long_videos">Long videos</string>
-    <string name="male">Men</string>
+    <string name="male">Male</string>
     <string name="march">March</string>
     <string name="max_duration">Maximum duration, sec</string>
     <string name="may">May</string>
     <string name="min_duration">Minimum duration, sec</string>
     <string name="november">November</string>
     <string name="october">October</string>
-    <string name="online_only">Only online</string>
+    <string name="online_only">Online only</string>
     <string name="page">Page</string>
-    <string name="relationship">Family status</string>
+    <string name="relationship">Relationship status</string>
     <string name="search_in_my_videos">Search in my videos</string>
     <string name="search_option_actively_searching">Actively looking</string>
     <string name="search_option_by_date_registered">By registration date</string>
     <string name="search_option_by_rating">By rating</string>
-    <string name="search_option_engaged">Betrothed/engaged</string>
+    <string name="search_option_engaged">Engaged</string>
     <string name="search_option_in_love">in love</string>
-    <string name="search_option_in_relationship">Meets</string>
+    <string name="search_option_in_relationship">In relationship</string>
     <string name="search_option_married">Married</string>
     <string name="search_option_its_complicated">It\'s Complicated</string>
     <string name="search_option_not_married">Not married</string>
@@ -1034,16 +1034,16 @@
     <string name="short_videos">Short videos</string>
     <string name="sorting">Sorting</string>
     <string name="sorting_by_growth_speed">by growth rate</string>
-    <string name="sorting_by_likes_number_members_number_ratio">in relation to the number of likes to the number of users</string>
+    <string name="sorting_by_likes_number_members_number_ratio">by ratio of likes to number of users</string>
     <string name="type">Type</string>
     <string name="with_photo_only">With photo only</string>
     <string name="chair">Department</string>
     <string name="faculty">Faculty</string>
-    <string name="sorting_by_day_attendance_members_number_ratio">in relation to daily traffic to the number of users</string>
-    <string name="sorting_by_comments_number_members_number_ratio">in relation to the number of comments to the number of users</string>
-    <string name="sorting_by_boards_entries_number_members_number_ratio">in relation to the number of records in relation to the number of posts in discussions to the number of users in discussions to the number of users</string>
+   <string name="sorting_by_day_attendance_members_number_ratio">by ratio of daily attendance to number of members</string>
+    <string name="sorting_by_comments_number_members_number_ratio">by ratio of comments to number of members</string>
+    <string name="sorting_by_boards_entries_number_members_number_ratio">by ratio of discussion board posts to number of members</string>
     <string name="school_class">Class</string>
-    <string name="year_of_graduation">Year of issue</string>
+    <string name="year_of_graduation">Year of graduation</string>
     <string name="please_select_option">Please, indicate “%1$s”</string>
     <string name="university_country">Country where you graduated from the university</string>
     <string name="school_city">The city where they graduated from school</string>
@@ -1069,39 +1069,39 @@
     <string name="formatted_date_yesterday">Yesterday in %1$s</string>
     <string name="formatted_date_tomorrow_clean">tomorrow at %1$s</string>
     <string name="formatted_date_yesterday_clean">yesterday in %1$s</string>
-    <string name="owner_s_posts">Owner records</string>
+    <string name="owner_s_posts">Owner\'s posts</string>
     <string name="scheduled">Scheduled</string>
     <string name="all_posts">All posts</string>
     <string name="all_audios">All audios</string>
     <string name="news_feed">Feed</string>
     <string name="subscriptions">Subscriptions</string>
-    <string name="account_manager">Manager accounts</string>
+    <string name="account_manager">Account manager</string>
     <string name="accounts">Accounts</string>
     <string name="album_cover">Album cover</string>
     <string name="commented">commented:</string>
     <string name="cancelling">Cancel</string>
-    <string name="set_as_active">Make active</string>
+    <string name="set_as_active">Set as active</string>
     <string name="account_switched_to">Current account</string>
     <string name="wall_post_is_not_yet_initialized">Post information has not been received yet, please wait</string>
     <string name="post_is_pinned">Pinned post</string>
     <string name="will_be_posted_at">Will be published %1$s</string>
-    <string name="date_is_invalid">You entered the wrong date</string>
+    <string name="date_is_invalid">You entered the invalid date</string>
     <string name="this_device_does_not_support_fcm">FCM requires Google services, enable keep Longpoll option</string>
     <string name="from_list">From the list</string>
-    <string name="photo_size">Size photo</string>
+    <string name="photo_size">Photo size</string>
     <string name="additional_settings">Extra options</string>
     <string name="button_continue">Continue</string>
     <string name="create_album">Create new album</string>
     <string name="create_playlist">Create playlist</string>
-    <string name="disallow_commenting">Disable commenting</string>
+    <string name="disallow_commenting">Disable comments</string>
     <string name="description_hint">Description</string>
     <string name="finish">End</string>
     <string name="photos_can_be_added_only_to_editors_and_administrators">Photos can only be added by editors and administrators</string>
     <string name="button_back">Back</string>
     <string name="enter_main_album_info">Main information</string>
     <string name="title_hint">Title</string>
-    <string name="who_can_have_access">Who is allowed access?</string>
-    <string name="who_cannot_have_access">Who is denied access?</string>
+    <string name="who_can_have_access">Who is allowed to access?</string>
+    <string name="who_cannot_have_access">Who is denied to access?</string>
     <string name="privacy_to_only_me">Only me</string>
     <string name="privacy_to_friends_only">Only friends</string>
     <string name="privacy_to_all_users">All users</string>
@@ -1110,19 +1110,19 @@
     <string name="and">and</string>
     <string name="privacy_view">View access</string>
     <string name="privacy_settings">Privacy settings</string>
-    <string name="privacy_comment">Access to comment</string>
+    <string name="privacy_comment">Commenting access</string>
     <string name="who_is_allowed_to_view_this_album">Who can view this album?</string>
-    <string name="who_is_not_allowed_to_view_this_album">Who is banned from viewing this album?</string>
-    <string name="who_is_allowed_to_comment_photos">Who can comment on photos?</string>
-    <string name="who_is_not_allowed_to_comment_this_album">Who is prohibited from commenting on this album?</string>
+    <string name="who_is_not_allowed_to_view_this_album">Who is restricted from viewing this album?</string>
+    <string name="who_is_allowed_to_comment_photos">Who can comment photos?</string>
+    <string name="who_is_not_allowed_to_comment_this_album">Who is restricted from commenting on this album?</string>
     <string name="copy_data">Copy</string>
     <string name="forward">Forward</string>
     <string name="read">Read</string>
     <string name="open">Open</string>
-    <string name="enter_captcha_text">Enter the text from the picture</string>
-    <string name="from_camera">To make a photo</string>
-    <string name="updated_profile_photo_at">%1$s updated photo on the page</string>
-    <string name="updated_status_at">update status: %1$s</string>
+    <string name="enter_captcha_text">Enter the text from the image</string>
+    <string name="from_camera">Make a photo</string>
+    <string name="updated_profile_photo_at">%1$s updated profile picture</string>
+    <string name="updated_status_at">%1$s updated status</string>
     <string name="messages">Messages</string>
     <string name="error_with_message">Error: %1$s</string>
     <string name="gif_player">Gif-player</string>
@@ -1132,21 +1132,21 @@
     <string name="authorization">Authorization</string>
     <string name="jump_to_comment">Go to comment</string>
     <string name="open_post">Show post</string>
-    <string name="open_topic">Open discussion</string>
+    <string name="open_topic">Open topic</string>
     <string name="show_photo">Show photo</string>
     <string name="show_video">Show video</string>
     <string name="choose_action">Actions</string>
-    <string name="apply">To accept</string>
+    <string name="apply">Accept</string>
     <string name="create_pin_code_title">Create a PIN</string>
-    <string name="entered_pin_codes_do_not_match">The entered PIN codes do not match</string>
+    <string name="entered_pin_codes_do_not_match">Entered PIN codes do not match</string>
     <string name="key_exchange">Key exchange</string>
-    <string name="key_exchange_content_text">Keys are exchanged with %1$s</string>
+    <string name="key_exchange_content_text">Excanging keys with %1$s</string>
     <string name="key_exchange_request">Key exchange request</string>
     <string name="key_exchange_request_content_text">%1$s requests permission to exchange encryption keys</string>
-    <string name="limit_exceeded_number_of_attempts_message">Limit of input attempts exceeded</string>
+    <string name="limit_exceeded_number_of_attempts_message">Input attempt limit exceeded</string>
     <string name="not_yet_implemented_message">Not yet implemented!</string>
-    <string name="pin_is_invalid_message">Invalid PIN</string>
-    <string name="repeat_pin_code_title">Repeat PIN</string>
+    <string name="pin_is_invalid_message">PIN is invalid</string>
+    <string name="repeat_pin_code_title">Repeat the PIN</string>
     <string name="session_already_created">The session is already active</string>
     <string name="use_pin_title">Use a PIN or fingerprint</string>
     <string name="button_0" translatable="false">0</string>
@@ -1170,51 +1170,51 @@
     <string name="button_9_desc">WXYZ</string>
     <string name="vk_url" translatable="false">https://vk.ru/</string>
     <string name="key_exchange_failed">Key exchange failed</string>
-    <string name="you_have_successfully_exchanged_keys">You have successfully exchanged keys, now you can enable message encryption</string>
+    <string name="you_have_successfully_exchanged_keys">Key exchange completed successfully. You can now enable message encryption</string>
     <string name="encryption_status">Encryption status</string>
     <string name="no_encryption_keys">No encryption keys</string>
-    <string name="you_dont_have_encryption_keys_stored_initiate_key_exchange">You do not have any encryption keys stored. Initiate a key exchange?</string>
+    <string name="you_dont_have_encryption_keys_stored_initiate_key_exchange">You have no stored encryption keys. Initiate key exchange?</string>
     <string name="counter_documents">documents</string>
-    <string name="ask_for_pin_on_application_start_title">PIN-code at start</string>
-    <string name="ask_for_pin_on_application_start_summary">Request a PIN-code when starting the application</string>
+    <string name="ask_for_pin_on_application_start_title">PIN on app start</string>
+    <string name="ask_for_pin_on_application_start_summary">Require PIN when the app starts</string>
     <string name="delayed_pin_for_entrance_title">Don\'t ask every time</string>
-    <string name="delayed_pin_for_entrance_summary">Request PIN-code only after 10 minutes</string>
-    <string name="you_have_received_request_for_key_exchange_from">You received an encryption key exchange request from</string>
-    <string name="use_pin_for_security_title">Use PIN</string>
+    <string name="delayed_pin_for_entrance_summary">Require PIN only after 10 minutes</string>
+    <string name="you_have_received_request_for_key_exchange_from">You have received an encryption key exchange request from</string>
+    <string name="use_pin_for_security_title">Use PIN code</string>
     <string name="security">Security</string>
-    <string name="change_pin_title">Change PIN</string>
-    <string name="button_decline">Reject</string>
-    <string name="button_accept">To accept</string>
+    <string name="change_pin_title">Change PIN code</string>
+    <string name="button_decline">Decline</string>
+    <string name="button_accept">Accept</string>
     <string name="accepted_friend_request">accepted a friend request</string>
 
-    <string name="encryption_terms_of_use">
+<string name="encryption_terms_of_use">
         TERMS OF USE
         \n
         \n1. FUNCTIONAL FEATURES
-        \n1.1. The option implies encryption of only the text of messages, attachment protection is not implemented.
-        \n1.2. This option is not available for group or community conversations.
-        \n1.3. In order to start the exchange of encrypted messages, the interlocutors must go through the key exchange procedure.
-        \n1.4. Messages can be decrypted only on the device that participated in the exchange of a specific key pair, on other devices, in other applications or in the browser, the user will not be able to read the original text of the messages.
+        \n1.1. This feature provides encryption of message text only, attachment protection is not implemented.
+        \n1.2. This feature is not available for group chats or conversations with groups.
+        \n1.3. To start exchanging encrypted messages, participants must complete a key exchange procedure.
+        \n1.4. Messages can only be decrypted on the device that participated in the specific key pair exchange. On other devices, in other applications, or in a browser, the user will not be able to read the original message content.
         \n
-        \n2. EXCHANGE OF ENCRYPTION KEYS
-        \n2.1. To transfer the keys, the application will send several service messages directly to the dialog.
-        \n2.2. The compromise of service messages does not pose a security threat, they perform exclusively a transport role and do not contain encryption keys in clear text.
-        \n2.3. Removing service messages from the dialog will not affect the encryption functionality in any way.
-        \n2.4. Key exchange can be repeated an infinite number of times, while new messages will be encrypted with new keys, and old ones can still be decrypted with old ones.
+        \n2. KEY EXCHANGE
+        \n2.1. To transfer keys, the application will send several system messages directly into the conversation.
+        \n2.2. Compromise of system messages does not pose a security risk, they serve only as transport and do not contain encryption keys in plaintext.
+        \n2.3. Deleting system messages from the conversation does not affect encryption functionality.
+        \n2.4. Key exchange can be performed repeatedly an unlimited number of times. New messages will be encrypted with new keys, while old messages can still be decrypted with previous keys.
         \n
-        \n3. STORING KEYS
-        \n3.1. Encryption keys are stored locally on the devices of the interlocutors in permanent or random access memory (depending on the selected mode).
-        \n3.2. If the encryption keys are lost, the user will not be able to read encrypted incoming and outgoing messages.
-        \n3.3. The user will lose encryption keys in the following cases:
-        \n- remove the application from the device;
+        \n3. KEY STORAGE
+        \n3.1. Encryption keys are stored locally on users' devices in persistent or volatile memory (depending on the chosen mode).
+        \n3.2. If encryption keys are lost, the user will not be able to read encrypted incoming or outgoing messages.
+        \n3.3. The user may lose encryption keys in the following cases:
+        \n- uninstalling the application from the device;
         \n- clearing application data;
-        \n- after using the “Delete keys” option in the application settings;
-        \n- after closing the application (only for key storage mode in RAM);
-        \n- when deleting an account from the application.
+        \n- using the “Delete keys” option in the application settings;
+        \n- closing the application (only in volatile key storage mode);
+        \n- removing the account from the application.
         \n
-        \n4. DENIAL OF RESPONSIBILITY
-        \n4.1. The developers of the Fenrir application are not responsible for the loss of user data in the event of loss of encryption keys or incorrect use of this option.</string>
-    <string name="choose_location_key_store">Choose where to store your keys</string>
+        \n4. DISCLAIMER
+        \n4.1. The developers of the Fenrir application are not responsible for any data loss resulting from loss of encryption keys or improper use of this feature.</string>
+    <string name="choose_location_key_store">Select key storage location</string>
     <string name="clear_storage_of_encryption_keys">Clear encryption key store</string>
     <string name="delete_keys">Delete keys</string>
     <string name="encryption_terms_of_use_title">Terms of Use</string>
@@ -1223,48 +1223,48 @@
     <string name="fenrir_encryption">Fenrir encryption</string>
     <string name="secured_messages">Protected messages</string>
     <string name="store_in_ram">Store in RAM</string>
-    <string name="store_in_ram_summary">The encryption keys will be placed in RAM. IMPORTANT. After closing the application, you will permanently lose these keys and will not be able to decrypt incoming and outgoing messages.</string>
+    <string name="store_in_ram_summary">Encryption keys will be stored in volatile memory. IMPORTANT: After closing the application, these keys will be permanently lost and you will not be able to decrypt incoming or outgoing messages.</string>
     <string name="store_on_disk">Save on disk (recommended)</string>
-    <string name="store_on_disk_summary">The encryption keys will be saved in the permanent memory of the device.</string>
-    <string name="for_topic">In discussion</string>
+    <string name="store_on_disk_summary">Encryption keys will be saved in persistent device storage.</string>
+    <string name="for_topic">In topic</string>
     <string name="reached_maximum_count_of_attachments">Maximum number of attachments reached</string>
     <string name="select">Choose answer option</string>
-    <string name="votes_count">%1$d of votes</string>
+    <string name="votes_count">%1$d votes</string>
 
-    <string name="like_title">Liked</string>
-    <string name="likes">Marks “I like”</string>
+    <string name="like_title">Like</string>
+    <string name="likes">Likes</string>
     <string name="likes_posts">Liked</string>
     <string name="chat_background">Background</string>
     <string name="notification_bubbles">Enable Bubbles notifications</string>
     <string name="chat_light_background">Day background (photo)</string>
     <string name="chat_dark_background">Night background (photo)</string>
-    <string name="go_to_post">Go to the post</string>
+    <string name="go_to_post">Go to post</string>
     <string name="success">Success</string>
-    <string name="post_text">Text post</string>
+    <string name="post_text">Post text</string>
     <string name="allow_text_selection">Allow text selection</string>
-    <string name="in_a_civil_union">In a civil marriage</string>
+    <string name="in_a_civil_union">In a civil union</string>
     <string name="copied_text">Text copied to clipboard</string>
     <string name="copy_text">Copy text</string>
     <string name="upload_not_resolved_exception_message">Download incomplete or interrupted</string>
-    <string name="go_to_video">Go to the video</string>
-    <string name="go_to_photo">Go to the photo</string>
-    <string name="wait_until_file_upload_is_complete">Wait for the file download to complete</string>
+    <string name="go_to_video">Go to video</string>
+    <string name="go_to_photo">Go to photo</string>
+    <string name="wait_until_file_upload_is_complete">Wait until the file upload is complete</string>
     <string name="link">Link</string>
     <string name="id">Id</string>
     <string name="article">Article</string>
     <string name="copied">Copied</string>
 
-    <string name="vk_photos_tab_title">Photo VK</string>
+    <string name="vk_photos_tab_title">VK Photos</string>
     <string name="local_photos_tab_title">Local photos</string>
     <string name="local_gallery_tab_title">Gallery</string>
-    <string name="message_attachment_empty_text">No attachments yet (limit 10)</string>
+    <string name="message_attachment_empty_text">No attachments yet (max 10)</string>
     <string name="button_add_photo">Add photo/video</string>
     <string name="log_type_error">Exceptions</string>
     <string name="settings_show_logs_title">Logs</string>
-    <string name="settings_domain">Domain API VK</string>
-    <string name="settings_vk_auth_domain">Domain OAUTH VK</string>
-    <string name="application_logs">Logs application</string>
-    <string name="search_option_empty_text">Search options not available</string>
+    <string name="settings_domain">VK API domain</string>
+    <string name="settings_vk_auth_domain">VK OAUTH domain</string>
+    <string name="application_logs">Application logs</string>
+    <string name="search_option_empty_text">No search options available</string>
     <string name="comment_editing_title">Editing</string>
     <string name="saving">Saving</string>
     <string name="suggests">Suggestions</string>
@@ -1272,60 +1272,60 @@
     <string name="doc_filter_text">Text</string>
     <string name="doc_filter_archive">Archives</string>
     <string name="doc_filter_gif" translatable="false">GIF</string>
-    <string name="doc_filter_image">Pictures</string>
+    <string name="doc_filter_image">Images</string>
     <string name="doc_filter_audio">Audio</string>
     <string name="doc_filter_video">Video</string>
     <string name="doc_filter_books">Books</string>
     <string name="doc_filter_other">Other</string>
     <string name="files_tab_title">Files</string>
     <string name="add_to_launcher_shortcuts">Add to app shortcuts</string>
-    <string name="wall_text_hint">Enter news text</string>
-    <string name="document_short">Dock</string>
+    <string name="wall_text_hint">Enter the post text</string>
+    <string name="document_short">Doc</string>
     <string name="button_postpone">Postpone</string>
     <string name="message_obtaining_owner_information">Getting information about the owner</string>
-    <string name="title_suggest_news">Suggest news</string>
+    <string name="title_suggest_news">Suggest a post</string>
     <string name="who_likes">Who liked</string>
     <string name="send_to_friend">Send to a friend</string>
     <string name="other">Other</string>
     <string name="hide_notif_message_body_summary">Don\'t show message text in notification</string>
-    <string name="hide_notif_message_body_title">Hide message body</string>
+    <string name="hide_notif_message_body_title">Hide message content</string>
     <string name="message_text_is_not_available">New message</string>
     <string name="comments_empty_text">Be the first to leave a comment here</string>
     <string name="the_comment_is_not_in_the_list">The comment is not in the list</string>
     <string name="place_for_your_comment">• place for your comment •</string>
 
     <string name="section_play_title">Play</string>
-    <string name="play_in_external_player">Play in a third-party player</string>
+    <string name="play_in_external_player">Play in third-party player</string>
     <string name="title_play_in_newpipe">Play in NewPipe</string>
     <string name="title_play_in_youtube_vanced">Play in Youtube Revanced</string>
     <string name="title_play_in_youtube">Play in Youtube</string>
     <string name="title_play_in_coub">Play in Coub</string>
-    <string name="title_play_in_another_software">Play through third-party software</string>
+    <string name="title_play_in_another_software">Play in third-party software</string>
     <string name="title_play_in_browser">Play in browser</string>
     <string name="title_select_resolution">Choose quality</string>
 
     <string name="community_options_main_info_title">Main information</string>
     <string name="community_options_name_title">Title</string>
-    <string name="community_control">Control</string>
-    <string name="community_managers_tab_title">Control</string>
+    <string name="community_control">Management</string>
+    <string name="community_managers_tab_title">Managers</string>
     <string name="community_managers_contacts">Contacts</string>
-    <string name="community_options_description_title">Community description</string>
-    <string name="community_options_link_title">Address page</string>
-    <string name="community_options_type_title">Type group</string>
-    <string name="community_options_additional_info_title">Additionally</string>
+    <string name="community_options_description_title">Group description</string>
+    <string name="community_options_link_title">Page address</string>
+    <string name="community_options_type_title">Group type</string>
+    <string name="community_options_additional_info_title">Additional information</string>
     <string name="community_options_category_title">Category</string>
     <string name="community_options_website_title">Web site</string>
     <string name="community_options_age_restrictions_title">Age restrictions</string>
-    <string name="age_restriction_under_16_years">Under 16</string>
+    <string name="age_restriction_under_16_years">Under 16 years</string>
     <string name="age_restriction_16_years_and_over">16 years and older</string>
     <string name="age_restriction_18_years_and_over">18 years and older</string>
-    <string name="community_options_date_created_title">Date of creation</string>
-    <string name="select_category_hint">Choose category</string>
+    <string name="community_options_date_created_title">Creation date</string>
+    <string name="select_category_hint">Select a category</string>
     <string name="community_options_comments_title">Comments</string>
     <string name="community_options_feedback_title">Feedback</string>
-    <string name="community_options_enable_comments">Comments on</string>
+    <string name="community_options_enable_comments">Comments enabled</string>
     <string name="community_options_comments_filter_title">Comment filter</string>
-    <string name="community_options_enable_profanity_filter">Turn on obscene language filter</string>
+    <string name="community_options_enable_profanity_filter">Enable profanity filter</string>
     <string name="community_options_enable_keyword_filter">Enable keyword filter</string>
     <string name="community_options_separate_keywords_by_commas">List keywords separated by commas.</string>
     <string name="community_links_tab_title">Links</string>
@@ -1337,18 +1337,18 @@
     <string name="role_unknown">Unknown</string>
     <string name="ban_comment_text">Comment: %1$s</string>
     <string name="ban_admin_and_date_text">Blocked %1$s %2$s</string>
-    <string name="until_date_time">before %1$s %2$s</string>
-    <string name="forever">Forever and ever</string>
-    <string name="community_messages">Messages community</string>
+    <string name="until_date_time">until %1$s %2$s</string>
+    <string name="forever">Forever</string>
+    <string name="community_messages">Group messages</string>
     <string name="select_from_list_title">Select from the list</string>
     <string name="day">Day</string>
-    <string name="not_selected">Not chosen</string>
+    <string name="not_selected">Not selectd</string>
     <string name="month">Month</string>
     <string name="year">Year</string>
-    <string name="block_user">Blocking</string>
-    <string name="community_ban_block_for_title">Blocking period</string>
-    <string name="community_ban_reason_title">Cause</string>
-    <string name="block_for_forever">Forever and ever</string>
+    <string name="block_user">Ban</string>
+    <string name="community_ban_block_for_title">Ban period</string>
+    <string name="community_ban_reason_title">Reason</string>
+    <string name="block_for_forever">Forever</string>
     <string name="block_for_year">For a year</string>
     <string name="block_for_month">For a month</string>
     <string name="block_for_week">For a week</string>
@@ -1356,20 +1356,20 @@
     <string name="block_for_hour">For an hour</string>
     <string name="reason_spam">Spam</string>
     <string name="reason_irrelevant_messages">Insulting participants</string>
-    <string name="reason_strong_language">Obscene expressions</string>
-    <string name="reason_verbal_abuse">Posts off topic</string>
+    <string name="reason_strong_language">Profanity</string>
+    <string name="reason_verbal_abuse">Off-topic messages</string>
     <string name="reason_other">Other</string>
     <string name="community_ban_comment_title">Comment</string>
     <string name="show_this_comment_to_the_blocked_user">Show this comment to blocked user</string>
-    <string name="community_ban_comment_hint">You can post a short comment here</string>
+    <string name="community_ban_comment_hint">You enter a short comment here</string>
     <string name="save">Save</string>
-    <string name="community_choose_access_level_title">Authority level</string>
+    <string name="community_choose_access_level_title">Permission level</string>
     <string name="community_moderator">Moderator</string>
-    <string name="community_moderator_desc">Can delete user-added content, manage community blacklist</string>
+    <string name="community_moderator_desc">Can remove user-added content and manage community blacklist</string>
     <string name="community_editor">Editor</string>
     <string name="community_editor_desc">Can post on behalf of the community, add, delete and edit content, update the main photo</string>
     <string name="community_administrator">Administrator</string>
-    <string name="community_administrator_desc">Can appoint and remove administrators, change community name and address</string>
+    <string name="community_administrator_desc">Can assign and remove administrators, change community name and address</string>
     <string name="community_manager_show_in_contacts">Show in contact block</string>
     <string name="community_manager_position">Position</string>
     <string name="community_manager_email">Email</string>
@@ -1384,21 +1384,21 @@
     <string name="accounts_restored">Accounts restored from backup</string>
     <string name="error_video_playback_is_not_possible">Video cannot be played</string>
     <string name="request_executor_title">Testing requests</string>
-    <string name="request_body_title">Body request</string>
+    <string name="request_body_title">Request body</string>
     <string name="request_method_title">Method</string>
-    <string name="request_params_title">Parameters request</string>
+    <string name="request_params_title">Request parameters</string>
     <string name="button_execute">Execute</string>
-    <string name="request_response_title">Answer</string>
-    <string name="waiting_for_response_message">Waiting for an answer</string>
-    <string name="dev_settings">For developers</string>
-    <string name="getting_list_loading_message">Getting the list</string>
+    <string name="request_response_title">Response</string>
+    <string name="waiting_for_response_message">Waiting for response</string>
+    <string name="dev_settings">Developer settings</string>
+    <string name="getting_list_loading_message">Loading list</string>
     <string name="select_comment_author">Select author</string>
     <string name="add_to_my_videos">Add to my videos</string>
     <string name="user_blacklist_title">Blacklist</string>
     <string name="add_to_blacklist">Add to the blacklist</string>
     <string name="report">Report</string>
     <string name="rename">Rename</string>
-    <string name="rename_local">Rename local</string>
+    <string name="rename_local">Rename locally</string>
     <string name="mentions">Mentions</string>
     <string name="is_to_blacklist">Unblock</string>
     <string name="button_activate">Activate</string>
@@ -1418,7 +1418,7 @@
     <string name="action_add">Add</string>
     <string name="action_add_audios">Add tracks</string>
     <string name="to_gif_converter">Convert to Gif</string>
-    <string name="get_bitrate">Show bitrate</string>
+    <string name="get_bitrate">Get bitrate</string>
     <string name="use_internal_downloader">Use internal download manager</string>
     <string name="use_internal_downloader_summary">For videos and documents</string>
     <string name="bitrate">Bitrate: %1$d kbs, Size: %2$s</string>
@@ -1432,10 +1432,10 @@
     <string name="login_phone_or_email_hint">Phone and email</string>
     <string name="login_hint">Login</string>
     <string name="login_title">LOGIN | VK</string>
-    <string name="button_login_via_web">Across Web</string>
+    <string name="button_login_via_web">Via Web</string>
     <string name="button_login">Login</string>
     <string name="drawer_edit_title">Pop-up menu</string>
-    <string name="theme_edit_title">Choice of colors</string>
+    <string name="theme_edit_title">Select theme</string>
     <string name="login_app_code_hint">Confirmation code</string>
     <string name="button_login_send_code_via_sms">Send code via SMS</string>
     <string name="error_not_found_message">Object not found</string>
@@ -1444,24 +1444,24 @@
     <string name="quick_search_title">Quick search</string>
     <string name="countries_title">Countries</string>
     <string name="message_channel">Messages</string>
-    <string name="group_message_channel">Group conversations</string>
+    <string name="group_message_channel">Group chats</string>
     <string name="key_exchange_channel">Key exchange</string>
     <string name="audio_channel">Fenrir-Player</string>
     <string name="comment_channel">Comments</string>
     <string name="friend_requests_channel">Friend requests</string>
     <string name="group_invites_channel">Group invitations</string>
-    <string name="likes_channel">Like this</string>
-    <string name="new_posts_channel">New post</string>
+    <string name="likes_channel">Like</string>
+    <string name="new_posts_channel">New posts</string>
     <string name="validation_channel">Validation</string>
     <string name="allow_fingerprint_title">Allow fingerprint</string>
     <string name="error_login_by_fingerprint_not_allowed">Fingerprint login not allowed</string>
     <string name="birthdays">Birthdays</string>
     <string name="error_key_exchange_invalid_session_state">Invalid session status. Key exchange failed.</string>
     <string name="error_key_exchange_cancelled_by_user">Key exchange was canceled by user</string>
-    <string name="error_key_exchange_session_expired">The session is no longer active. Try the exchange again.</string>
+    <string name="error_key_exchange_session_expired">The session is no longer active. Try exchanging keys again.</string>
     <string name="last_closed_page">Last closed</string>
     <string name="open_links_in_app">Open links in the app</string>
-    <string name="pause">paused</string>
+    <string name="pause">pause</string>
     <string name="skype" translatable="false">Skype</string>
     <string name="family">Family</string>
     <string name="instagram" translatable="false">Instagram</string>
@@ -1474,37 +1474,37 @@
     <string name="toast_comment_sent">The comment has been posted!</string>
     <string name="share_to_wall_label">On wall</string>
     <string name="gif" translatable="false">GIF %1$s</string>
-    <string name="error_post_creation_no_auth">There are no active accounts in the app! Publication canceled.</string>
-    <string name="select_post_destination_label">Select a posting destination</string>
-    <string name="avatar_was_changed_successfully">New avatar uploaded successfully!</string>
+    <string name="error_post_creation_no_auth">There are no active accounts in the app! Posting canceled.</string>
+    <string name="select_post_destination_label">Select post destination</string>
+    <string name="avatar_was_changed_successfully">New profile picture uploaded successfully!</string>
     <string name="button_show">Show</string>
-    <string name="upload_new_photo">Change avatar</string>
+    <string name="upload_new_photo">Change profile picture</string>
     <string name="upload_new_story">Upload story</string>
-    <string name="channel_upload_files">Uploading files</string>
+    <string name="channel_upload_files">Upload files</string>
     <string name="files_uploading_notification_title">Uploading files</string>
     <string name="service_pinned_message">%1$s pinned the message</string>
     <string name="service_unpinned_message">%1$s unpinned the message</string>
     <string name="service_invite_user_by_link">%1$s joined by link</string>
     <string name="photo_preview_size_title">Photo preview size</string>
     <string name="channel_keep_longpoll">Longpoll</string>
-    <string name="may_down_charge">Consumes charge</string>
-    <string name="keep_longpoll_notification_title">Retention Longpoll</string>
-    <string name="settings_keep_longpoll_title">Keep Longpoll</string>
-    <string name="settings_no_push">Do not accept Push FCM notifications</string>
-    <string name="settings_keep_longpoll_summary">Keep in touch with the notification service. May lead to increased power consumption!</string>
+    <string name="may_down_charge">May increase battery usage</string>
+    <string name="keep_longpoll_notification_title">Longpoll background service</string>
+    <string name="settings_keep_longpoll_title">Keep Longpoll alive</string>
+    <string name="settings_no_push">Do not receive FCM push notifications</string>
+    <string name="settings_keep_longpoll_summary">Maintain connection with the notification service. May increase battery usage!</string>
     <string name="close">Closed</string>
     <string name="attach">Attach</string>
     <string name="emoji" translatable="false">Emoij</string>
 
     <string name="edit_message">Edit messages</string>
     <string name="messages_delete_for_all_question_message">Are you sure you want to delete messages?</string>
-    <string name="button_for_all">For all</string>
+    <string name="button_for_all">For everyone</string>
     <string name="button_for_me">For me</string>
-    <string name="message_edited_at">(edit %1$s)</string>
-    <string name="multiply_poll">Multi-select</string>
+    <string name="message_edited_at">(edited %1$s)</string>
+    <string name="multiply_poll">Multipe choice</string>
     <string name="photo_comment_push_title">New photo comment</string>
     <string name="video_comment_push_title">New video comment</string>
-    <string name="wall_comment_push_title">New comment on the post</string>
+    <string name="wall_comment_push_title">New post comment</string>
     <string name="audios">Audio</string>
     <string name="playlist">Playlist</string>
     <string name="playlists">Playlists</string>
@@ -1512,17 +1512,17 @@
     <string name="choose_theme_title">Color palette</string>
     <string name="album">Album:</string>
     <string name="open_album">Open album</string>
-    <string name="acoustic">Acoustics</string>
-    <string name="by_artist">By performer</string>
-    <string name="auto_compete">Autocorrection</string>
-    <string name="with_lyrics">Contains song lyrics</string>
-    <string name="my_saved">On page</string>
+    <string name="acoustic">Acoustic</string>
+    <string name="by_artist">By artist</string>
+    <string name="auto_compete">Auto-correction</string>
+    <string name="with_lyrics">With lyrics</string>
+    <string name="my_saved">In profile</string>
     <string name="alternative">Alternative</string>
-    <string name="chanson">Shanson</string>
-    <string name="classical">Classic</string>
+    <string name="chanson">Chanson</string>
+    <string name="classical">Classical</string>
     <string name="dance" translatable="false">Dance</string>
     <string name="drum_and_bass" translatable="false">Drum\'n\'bass</string>
-    <string name="easy_listening">Lung</string>
+    <string name="easy_listening">Easy listening</string>
     <string name="disco">Disco</string>
     <string name="ethnic">Folk</string>
     <string name="indie_pop">Indie pop</string>
@@ -1535,27 +1535,27 @@
     <string name="trance">Trance</string>
     <string name="jazz_and_blues">Jazz and blues</string>
     <string name="top">Popular</string>
-    <string name="gift">Present</string>
-    <string name="gifts">Presents</string>
+    <string name="gift">Gift</string>
+    <string name="gifts">Gifts</string>
     <string name="chat">Chat</string>
-    <string name="chat_json">Chat from JSON</string>
+    <string name="chat_json">Chat out of JSON</string>
     <string name="lottie_preview">Lottie Preview</string>
     <string name="open_clipboard_url">Open link in clipboard</string>
-    <string name="set_offline">Send offline request</string>
-    <string name="scan_qr">Scan QR</string>
-    <string name="empty_clipboard_url">The clipboard does not contain a link</string>
+    <string name="set_offline">Send offline status</string>
+    <string name="scan_qr">Scan QR code</string>
+    <string name="empty_clipboard_url">Clipboard does not contain a link</string>
     <string name="empty_url">Empty link</string>
-    <string name="get_lyrics">SONG TEXT</string>
-    <string name="get_lyrics_menu">Song text</string>
+    <string name="get_lyrics">LYRICS</string>
+    <string name="get_lyrics_menu">Lyrics</string>
     <string name="get_recommendation_by_audio">Search similar</string>
     <string name="uploaded">Uploaded:</string>
-    <string name="has_tags">Contains marks</string>
+    <string name="has_tags">Has tags</string>
     <string name="pages">Pages</string>
-    <string name="succ_offline">You have become offline</string>
-    <string name="err_offline">Error, you\'re online!</string>
-    <string name="user_readed_yor_message">Has read your message</string>
-    <string name="user_readed_yor_message_woman">Has read your message</string>
-    <string name="user_readed_yor_message_man">Has read your message</string>
+    <string name="succ_offline">You are offline</string>
+    <string name="err_offline">Error, you are online!</string>
+    <string name="user_readed_yor_message">Read your message</string>
+    <string name="user_readed_yor_message_woman">Read your message</string>
+    <string name="user_readed_yor_message_man">Read your message</string>
     <string name="copy_track_info">Copy info</string>
     <string name="search_by_artist">Artist</string>
     <string name="info_reading">Notify me when my message was read</string>
@@ -1566,33 +1566,33 @@
     <string name="downloading">Downloading</string>
     <string name="recommendation">Recommendations</string>
     <string name="biometric">Place your finger on the fingerprint reader</string>
-    <string name="biometric_not_support">Fingerprint not supported!</string>
+    <string name="biometric_not_support">Fingerprint authentication is not supported!</string>
     <string name="show_recent_dialogs">Show recent chats</string>
-    <string name="is_side_navigation">Side navigation menu</string>
+    <string name="is_side_navigation">Side menu</string>
     <string name="show_mini_player">Show mini player</string>
-    <string name="audio_in_status">Update audio in status</string>
+    <string name="audio_in_status">Show playing audio in status</string>
     <string name="show_audio_top">Show popular tracks</string>
     <string name="message_out_no_color">Disable outgoing message color</string>
-    <string name="do_upload_video">Download videos from local storage?</string>
-    <string name="null_audio">No playable audio</string>
+    <string name="do_upload_video">Upload video from local storage?</string>
+    <string name="null_audio">No audio available for playback</string>
     <string name="audio_not_found">Audio not found in the list</string>
     <string name="audio_force_download">Already downloaded. Download anyway?</string>
-    <string name="audio_force_download_pc">On the computer. Download anyway?</string>
+    <string name="audio_force_download_pc">Already available on computer. Download anyway?</string>
     <string name="null_image_link">Missing download link</string>
     <string name="use_api_5_90_for_audio">Use VK Api 5.90 for audio</string>
-    <string name="use_api_5_90_for_audio_summary">If downloading not work, disable it</string>
+    <string name="use_api_5_90_for_audio_summary">Disable if audio downloads do not work</string>
     <string name="expires">%1$s %2$s</string>
     <string name="disable_history">Don\'t show Stories</string>
     <string name="audio_round_icon">Rounded audio covers</string>
     <string name="custom_chat_color">First background color</string>
     <string name="use_custom_chat_color">Set background color</string>
     <string name="custom_chat_color_second">Second background color</string>
-    <string name="custom_chat_color_summary">Set the background to “Monotone” so that it becomes a gradient</string>
+    <string name="custom_chat_color_summary">Set the background to "Solid" so that it becomes a gradient</string>
     <string name="custom_color_message_out_primary">First color of outgoing message</string>
     <string name="custom_message_out_color_usage">Set the color of the outgoing message</string>
     <string name="custom_color_message_in_primary">First color of incoming message</string>
     <string name="custom_message_in_color_usage">Set the color of the incoming message</string>
-    <string name="last_read">Last read</string>
+    <string name="last_read">Last read message</string>
     <string name="enable_last_read">Go to the last read message</string>
     <string name="enable_last_read_summary">Show button in chat</string>
     <string name="show_profile_in_additional_page">Show profile in popup menu</string>
@@ -1609,13 +1609,13 @@
     <string name="import_accounts">Import settings</string>
     <string name="export_accounts">Export settings</string>
     <string name="entry_account">Enter</string>
-    <string name="show_qr">Show QR</string>
-    <string name="download_peer_to">Download messages</string>
+    <string name="show_qr">Show QR code</string>
+    <string name="download_peer_to">Export chat</string>
     <string name="make_screenshot">Take a screenshot</string>
     <string name="usages">Used</string>
-    <string name="is_player_support_volume">Volume switch in the player</string>
-    <string name="notif_photos">%1$d photo</string>
-    <string name="notif_videos">%1$d video</string>
+    <string name="is_player_support_volume">Volume control in player</string>
+    <string name="notif_photos">%1$d photos</string>
+    <string name="notif_videos">%1$d videos</string>
     <string name="notif_attach">(%1$d %2$s)</string>
     <string name="notif_forward">(%1$d forwarded)</string>
     <string name="auto_read">Read messages automatically</string>
@@ -1630,26 +1630,26 @@
     <string name="copy_simple">Copy</string>
     <string name="webview_night_mode">Turn on WebView night mode</string>
     <string name="snow_mode">Snow simulation</string>
-    <string name="webview_summary">Color pages depending on the theme</string>
+    <string name="webview_summary">Apply theme colors to web pages</string>
     <string name="be_online">Stay online</string>
     <string name="wall_attachments">Wall attachments</string>
-    <string name="posts_analized">%1$d posts checked</string>
-    <string name="messages_analized">%1$d messages checked</string>
-    <string name="comments_analized">%1$d comments checked</string>
-    <string name="photo_rounded_view">Round image edges</string>
+    <string name="posts_analized">%1$d posts analyzed</string>
+    <string name="messages_analized">%1$d messages analyzed</string>
+    <string name="comments_analized">%1$d comments analyzed</string>
+    <string name="photo_rounded_view">Rounded image edges</string>
     <string name="font_size">Font size</string>
-    <string name="load_history_notif">Dialog preview in notifications</string>
-    <string name="load_history_notif_summary">Show recent chat messages (may cause captcha)</string>
+    <string name="load_history_notif">Chat preview in notifications</string>
+    <string name="load_history_notif_summary">Show recent chat messages (may cause rate limit)</string>
     <string name="search_stories">Search stories</string>
     <string name="by_name">By name</string>
     <string name="by_owner">By owner</string>
     <string name="notif_sticker">Sticker</string>
-    <string name="notif_voice">A voice message</string>
+    <string name="notif_voice">Voice message</string>
     <string name="developer_mode">Developer mode</string>
     <string name="dont_write">Don\'t send typing status</string>
     <string name="over_ten_attach">Send more than 10 attachments</string>
     <string name="open_photo">Open photo</string>
-    <string name="open_avatar">Open avatar</string>
+    <string name="open_avatar">Open profile picture</string>
     <string name="add_and_download_button">Download and add</string>
     <string name="delete_cache_images">Clear image cache on startup</string>
     <string name="voice_click" translatable="false">Ab</string>
@@ -1657,7 +1657,7 @@
     <string name="audio_goto_artist">Go to artist</string>
     <string name="hide_dialog">Hide</string>
     <string name="set_no_hide_dialog">Remove restrictions</string>
-    <string name="local_audios">On device</string>
+    <string name="local_audios">Stored on this device</string>
     <string name="not_supported">Not supported</string>
     <string name="crypt_version">Encryption version</string>
     <string name="not_supported_hide">Set the pin code in the settings!</string>
@@ -1665,51 +1665,51 @@
     <string name="is_expired">Expired</string>
     <string name="story">History</string>
     <string name="call">Call</string>
-    <string name="geo">Geo</string>
+    <string name="geo">Place</string>
     <string name="input_call">Outgoing call</string>
     <string name="output_call">Incoming call</string>
     <string name="graffiti">Graffiti</string>
     <string name="photo_album">Photo Album</string>
     <string name="custom_color_message_out_secondary">Second color of outgoing message</string>
     <string name="custom_color_message_in_secondary">Second color of incoming message</string>
-    <string name="short_link">Shorten links</string>
+    <string name="short_link">Link shortening</string>
     <string name="do_short_link">Shorten</string>
     <string name="validate">Verify</string>
     <string name="link_not_banned">Normal link</string>
     <string name="link_banned">Banned link</string>
     <string name="link_processing">Link is being verified</string>
     <string name="additional_info">Additional Information</string>
-    <string name="select_audio">Audio selection</string>
+    <string name="select_audio">Select audio</string>
     <string name="stop_action">Stop</string>
     <string name="important">Important messages</string>
     <string name="show_wall_cover">Show profile cover</string>
     <string name="mention_user">Mention</string>
-    <string name="update_news">New news available</string>
-    <string name="update_dialogs">Refresh dialogs?</string>
-    <string name="load_next_dialogs">Load next dialogs?</string>
-    <string name="to_html">To HTML</string>
-    <string name="to_json">To JSON</string>
+    <string name="update_news">New updates available</string>
+    <string name="update_dialogs">Refresh chats?</string>
+    <string name="load_next_dialogs">Load next chats?</string>
+    <string name="to_html">HTML</string>
+    <string name="to_json">JSON</string>
     <string name="select_type">Choose format:</string>
-    <string name="start_news">Update news at startup</string>
+    <string name="start_news">Update feed at startup</string>
     <string name="disable_sensored_voice">Disable proximity sensor</string>
     <string name="disable_sensored_voice_summary">For voice messages</string>
-    <string name="public_photo">Added photo:</string>
-    <string name="public_photo_wall">Added to the wall:</string>
-    <string name="public_video">Added video:</string>
+    <string name="public_photo">Added a photo:</string>
+    <string name="public_photo_wall">Posted on wall:</string>
+    <string name="public_video">Added a video:</string>
     <string name="public_audio">Added audio:</string>
-    <string name="public_photo_tag">Tagged in the photo:</string>
+    <string name="public_photo_tag">Tagged in photo:</string>
     <string name="public_friends">Added friends:</string>
     <string name="json_all_attachments">All attachments</string>
     <string name="json_all_messages">Turn off</string>
     <string name="json_attachments_forward">Forwarded</string>
     <string name="updates">Updates</string>
-    <string name="do_chat_download">Download chat…</string>
+    <string name="do_chat_download">Exporting chat…</string>
     <string name="do_delete">Delete?</string>
     <string name="enter_link">Enter link</string>
     <string name="enter_audio_info">Edit audio</string>
     <string name="info">Attention:</string>
     <string name="what_search">What are you looking for?</string>
-    <string name="search_dialogs">Dialogs</string>
+    <string name="search_dialogs">Chats</string>
     <string name="search_messages">Messages</string>
     <string name="do_update">Refresh</string>
     <string name="audio_save_mode_button">Download multiple tracks</string>
@@ -1718,7 +1718,7 @@
     <string name="later">Request accepted, please wait…</string>
     <string name="work_manager">Fenrir Work</string>
     <string name="channel_keep_work_manager">WorkManager</string>
-    <string name="player_has_background">Player has background</string>
+    <string name="player_has_background">Player background</string>
     <string name="show_mutual_count">Show mutual friends</string>
     <string name="show_mutual_count_summary">On user page</string>
     <string name="change_name">Name</string>
@@ -1728,167 +1728,167 @@
     <string name="new_friend">New friends:</string>
     <string name="not_follower">No longer followers:</string>
     <string name="new_follower">New followers:</string>
-    <string name="not_request">No longer requests:</string>
+    <string name="not_request">No longer subscribed to:</string>
     <string name="new_communities">New communities:</string>
-    <string name="not_communities">No longer consists:</string>
+    <string name="not_communities">No longer a member of:</string>
     <string name="keyboard">Keyboard</string>
     <string name="show_bot_keyboard">Bot keyboard</string>
     <string name="do_zoom_photo">Instagram-like photo zooming</string>
-    <string name="do_auto_play_video">Auto select video quality</string>
+    <string name="do_auto_play_video">Automatic video quality selection</string>
     <string name="video_not_have_link">Video has no link</string>
-    <string name="change_upload_size">Show picture sending quality settings</string>
+    <string name="change_upload_size">Show image upload quality settings</string>
     <string name="wall_themed">Decoration for vikings</string>
     <string name="runes_show">Show runes</string>
     <string name="pagan_symbol">Symbol</string>
-    <string name="photo_settings">Viewing photos</string>
-    <string name="video_settings">Viewing videos</string>
+    <string name="photo_settings">Photo viewing</string>
+    <string name="video_settings">Video viewing</string>
     <string name="canceled_by_receiver">Canceled by recipient</string>
     <string name="canceled_by_initiator">Canceled by the initiator</string>
-    <string name="call_reached">Completed</string>
+    <string name="call_reached">Ended</string>
     <string name="marketer">Contact the seller</string>
-    <string name="not_update_dialogs">Update dialogs manually</string>
-    <string name="autoplay_video_on_posts">Autoplay video on posts</string>
+    <string name="not_update_dialogs">Update chats manually</string>
+    <string name="autoplay_video_on_posts">Autoplay video in posts</string>
     <string name="select_icon">Select an icon:</string>
     <string name="default_icon">Standard</string>
     <string name="dynamic_icon">Dynamic Android 12</string>
     <string name="custom_icon">Custom</string>
     <string name="select_custom_icon">Change App icon</string>
-    <string name="messages_menu_down">Message action menu at the bottom</string>
+    <string name="messages_menu_down">Show message actions menu at the bottom</string>
     <string name="my">My</string>
-    <string name="not_permitted">No permissions granted! Function not available</string>
-    <string name="dialog_send_helper">You can forward it by swiping the dialogue</string>
-    <string name="playlist_helper">You can add audio only to your playlists (long click on the playlist)</string>
-    <string name="audio_dead_helper">Tracks without links (VK did not give away) have a skull icon or a warning. Will play a special track instead of them</string>
+    <string name="not_permitted">Permissions not granted! Feature is unavailable</string>
+    <string name="dialog_send_helper">You can forward it by swiping the message</string>
+    <string name="playlist_helper">You can add audio only to your own playlists (long press the playlist)</string>
+    <string name="audio_dead_helper">Tracks without URLs (not returned by the VK API) are marked with a skull or warning icon. A special track will be played instead</string>
     <string name="language_ui">Language</string>
     <string name="end_list_anim">End of list animation</string>
     <string name="radius">Radius</string>
-    <string name="gps">GPS</string>
+    <string name="gps">Geolocation</string>
     <string name="restore_login_info">Login: %1$s, Password %2$s, Validation %3$s</string>
     <string name="all_photos">All Photos</string>
-    <string name="detect_qr">Detect QR</string>
-    <string name="show_photos_line">Show photos carousel</string>
-    <string name="native_parcel_photo">Native Parcel for photo</string>
-    <string name="native_parcel_story">Native Parcel for story</string>
-    <string name="native_parcel_docs">Native Parcel for docs</string>
-    <string name="native_parcel_summary">If it crashes when opening</string>
+    <string name="detect_qr">Read QR code</string>
+    <string name="show_photos_line">Show photo carousel</string>
+    <string name="native_parcel_photo">Use native Parcel for photos</string>
+    <string name="native_parcel_story">Use native Parcel for stories</string>
+    <string name="native_parcel_docs">Use native Parcel for documents</string>
+    <string name="native_parcel_summary">Enable if the app crashes when opening</string>
     <string name="disable_likes">Hide likes (photos, walls)</string>
     <string name="date_start">Date from:</string>
     <string name="date_to">Date to:</string>
     <string name="uploaded_video">Uploaded: %1$s</string>
     <string name="added_video">Added: %1$s</string>
-    <string name="friends_by_phone">Contacts Sync</string>
+    <string name="friends_by_phone">Sync contacts</string>
     <string name="old_track">Old</string>
     <string name="new_track">New</string>
     <string name="dual_track">Both</string>
-    <string name="runic">Runic</string>
-    <string name="local_media_server">Local Media Server</string>
-    <string name="on_server">On Server</string>
+    <string name="runic">Runes</string>
+    <string name="local_media_server">Local media server</string>
+    <string name="on_server">On server</string>
     <string name="no_system_equalizer">No system equalizer found</string>
     <string name="show_hidden_accounts">Show hidden accounts</string>
-    <string name="disable_hidden_accounts">Block hidden accounts</string>
-    <string name="set_device">Set Device</string>
-    <string name="not_read">Not read</string>
-    <string name="not_read_show">Fast Unread</string>
-    <string name="not_read_show_summary">If Unread > 30</string>
+    <string name="disable_hidden_accounts">Lock hidden accounts</string>
+    <string name="set_device">Set device</string>
+    <string name="not_read">Unread</string>
+    <string name="not_read_show">Quick unread access</string>
+    <string name="not_read_show_summary">If unread count exceeds 30</string>
     <string name="rotate_video">Rotate</string>
     <string name="popup">Popup</string>
-    <string name="not_read_count">Not read: %1$d</string>
+    <string name="not_read_count">Unread: %1$d</string>
     <string name="show_donate_anim">Show donate animation</string>
-    <string name="go_discography">Go Discography</string>
+    <string name="go_discography">Open discography</string>
     <string name="return_away">Return</string>
     <string name="reverse_time">From old to new</string>
-    <string name="local_server_sync">Synchronize the remote list</string>
-    <string name="local_server_sync_get">Get remote list</string>
+    <string name="local_server_sync">Synchronize downloads list</string>
+    <string name="local_server_sync_get">Get downloads list</string>
     <string name="update_time">Set current time</string>
-    <string name="max_bitmap_resolution">Max bitmap Resolution</string>
+    <string name="max_bitmap_resolution">Max picture resolution</string>
     <string name="max_thumb_resolution">Max cover resolution</string>
-    <string name="video_ext">Video Extensions</string>
+    <string name="video_ext">Video extensions</string>
     <string name="photo_ext">Photo extensions</string>
-    <string name="audio_ext">Audio Extensions</string>
+    <string name="audio_ext">Audio extensions</string>
     <string name="artists">Artists</string>
-    <string name="video_controller_to_decor">Video controller to decor view</string>
-    <string name="video_swipes">Enable video swipes</string>
-    <string name="do_logs">Record logs</string>
+    <string name="video_controller_to_decor">Video controller buttons in DecorView</string>
+    <string name="video_swipes">Enable video player swipes</string>
+    <string name="do_logs">Enagle logging</string>
     <string name="dump_fcm">Debug firebase</string>
     <string name="need_restart">Restart required</string>
     <string name="enable_native">Enable native libraries</string>
     <string name="lifecycle_music_service">Audio service lifetime (sec)</string>
     <string name="ffmpeg_audio_codecs">FFmpeg audio codecs</string>
-    <string name="strip_news_repost">Remove reposts from news</string>
-    <string name="need_refresh">Need Refresh</string>
+    <string name="strip_news_repost">Hide reposts in feed</string>
+    <string name="need_refresh">Requires list refresh</string>
     <string name="scoped_storage">Scoped Storage Android 11</string>
     <string name="rotating_player_cover">Rotate player cover</string>
-    <string name="sort_old_to_new">From Old to New</string>
-    <string name="sort_new_to_old">From New to Old</string>
+    <string name="sort_old_to_new">From old to new</string>
+    <string name="sort_new_to_old">From new to old</string>
     <string name="show_date">Show Date</string>
-    <string name="rotate_speed">Rotate speed %1$d</string>
-    <string name="rotate_scale">Scale %1$d</string>
+    <string name="rotate_speed">Rotation speed %1$d</string>
+    <string name="rotate_scale">Background scale %1$d</string>
     <string name="player_blur">Blur %1$d</string>
-    <string name="invert_rotating">Invert rotating</string>
-    <string name="fade_saturation">Fade saturation</string>
-    <string name="player_background">Player background cover settings</string>
-    <string name="do_report">Send report?</string>
+    <string name="invert_rotating">Rotate clockwise</string>
+    <string name="fade_saturation">Fading saturation</string>
+    <string name="player_background">Player background settings</string>
+    <string name="do_report">Send a report?</string>
     <string name="data">Data</string>
-    <string name="notification_force_link">Force open link in notification page</string>
-    <string name="disrate">Disrate</string>
-    <string name="assign_administrator">Assign Administrator</string>
+    <string name="notification_force_link">Open links directly from notifications</string>
+    <string name="disrate">Demote</string>
+    <string name="assign_administrator">Assign administrator</string>
     <string name="do_convert">Converting…</string>
-    <string name="recording_to_opus">Recording voice to Opus</string>
+    <string name="recording_to_opus">Record voice messages in Opus</string>
     <string name="recording_to_opus_summary">Experimental, Android 10 and up</string>
-    <string name="do_convert_request">Do Convert?</string>
-    <string name="play_audio_after_current">Play After current</string>
-    <string name="viewpager_page_transform">Page Transformer Viewpager2</string>
+    <string name="do_convert_request">Convert?</string>
+    <string name="play_audio_after_current">Play next</string>
+    <string name="viewpager_page_transform">Viewpager2 animation</string>
     <string name="player_cover_transform">Player cover swipe animation</string>
     <string name="is_side_no_stroke">Is side no stroke</string>
     <string name="headers_in_dialog">Date header in dialog</string>
-    <string name="push_first">Move to first</string>
+    <string name="push_first">Move to top</string>
     <string name="revert_play_audio">Play button - menu</string>
-    <string name="foreground_downloader">Foreground Downloader</string>
-    <string name="side_transition">Side animated transition</string>
-    <string name="ad_block_story_news">Blocking ads</string>
-    <string name="block_news_by_words">Block news by words</string>
-    <string name="block_news_by_words_message">Each pattern on a new line</string>
-    <string name="ad_block_story_news_summary">Stories, news</string>
+    <string name="foreground_downloader">Download manager</string>
+    <string name="side_transition">Transition animation</string>
+    <string name="ad_block_story_news">Block ads</string>
+    <string name="block_news_by_words">Hide posts with keywords</string>
+    <string name="block_news_by_words_message">Each entry on a new line</string>
+    <string name="ad_block_story_news_summary">Stories, feed</string>
     <string name="open_comment_thread">Open %1$s</string>
-    <string name="expand_voice_transcript">Expand Voice Transcript</string>
-    <string name="service_playlists">Service Playlists</string>
-    <string name="enable_notifications">Enable Notifications</string>
-    <string name="disable_notifications">Disable Notifications</string>
-    <string name="rendering_mode">Bitmap rendering mode</string>
+    <string name="expand_voice_transcript">Expand voice transcript</string>
+    <string name="service_playlists">Service playlists</string>
+    <string name="enable_notifications">Enable notifications</string>
+    <string name="disable_notifications">Disable notifications</string>
+    <string name="rendering_mode">Pictures rendering mode</string>
     <string name="new_loading_dialog">New loading dialog</string>
-    <string name="open_branch">Open Branch?</string>
-    <string name="fix_dir_time">Fix dir modification time</string>
-    <string name="do_not_use">Do not use! For the author of the client only!</string>
-    <string name="mention_fave">Mention in Fave</string>
-    <string name="pin_digit">pin digit</string>
+    <string name="open_branch">Open branch?</string>
+    <string name="fix_dir_time">Fix directory modification time</string>
+    <string name="do_not_use">Do not use! For client author only!</string>
+    <string name="mention_fave">Mentions in bookmarks</string>
+    <string name="pin_digit">PIN code</string>
     <string name="delete_dynamic_shortcuts">Delete dynamic shortcuts</string>
     <string name="reset_notifications_groups">Reset notifications</string>
     <string name="not_available">NOT AVAILABLE</string>
-    <string name="refresh_audio_token">Refresh Audio Token</string>
-    <string name="compress_incoming_traffic">Compress incoming Traffic</string>
-    <string name="compress_outgoing_traffic">Compress outgoing Traffic</string>
-    <string name="do_not_clear_back_stack">Don\'t clear backstack when music</string>
+    <string name="refresh_audio_token">Refresh audio token</string>
+    <string name="compress_incoming_traffic">Compress incoming traffic</string>
+    <string name="compress_outgoing_traffic">Compress outgoing traffic</string>
+    <string name="do_not_clear_back_stack">Don\'t clear backstack during music playback</string>
     <string name="slidr_vertical_settings">Vertical settings:</string>
     <string name="slidr_horizontal_settings">Horizontal settings:</string>
-    <string name="slidr_sensitive">Sensitive %1$d</string>
+    <string name="slidr_sensitive">Sensitivity %1$d</string>
     <string name="slidr_velocity_threshold">Velocity threshold %1$d</string>
     <string name="slidr_distance_threshold">Distance threshold %1$d</string>
-    <string name="slidr_settings">Settings Slidr</string>
-    <string name="not_set_artist">Not set</string>
+    <string name="slidr_settings">Slidr settings</string>
+    <string name="not_set_artist">Not specified</string>
     <string name="copy_value">Copy</string>
-    <string name="download_voice_ogg">Download voice as ogg</string>
-    <string name="error_hiding">Error hiding!</string>
-    <string name="limit_cache_images">Memory image cache limit</string>
+    <string name="download_voice_ogg">Download voice messages as ogg</string>
+    <string name="error_hiding">Unable to hide!</string>
+    <string name="limit_cache_images">Image cache memory limit</string>
     <string name="files_count_a">%1$d file</string>
     <string name="files_count_b">%1$d files</string>
     <string name="files_count_c">%1$d files</string>
     <string name="select_file">Select %1$s</string>
-    <string name="select_folder">Select dir</string>
-    <string name="send_file_as_voice">Send file as Voice</string>
-    <string name="hidden_dialogs_helper">Long press pencil button (create a conversation) to show hidden conversations</string>
+    <string name="select_folder">Select directory</string>
+    <string name="send_file_as_voice">Send file as voice message</string>
+    <string name="hidden_dialogs_helper">Long press the pencil button (create a chat) to show hidden chats</string>
     <string name="favorites">Favorites</string>
     <string name="shortcuts">Shortcuts</string>
-    <string name="comments_disabled_post">Comments disabled for this post!</string>
+    <string name="comments_disabled_post">Comments for this post are disabled!</string>
     <string name="recently">Recently</string>
     <string name="reset">Reset</string>
     <string name="enable_dirs_files_count">Number of files in a folder</string>
@@ -1896,64 +1896,64 @@
     <string name="gender_man">Male</string>
     <string name="closed">Closed</string>
     <string name="opened">Opened</string>
-    <string name="mark_listened_voice">Mark Listened Voice</string>
-    <string name="voters">Voters</string>
-    <string name="validate_tls">Certificate Verification</string>
-    <string name="validate_tls_summary">Shutdown makes you vulnerable</string>
-    <string name="feed_ban">Feed ban</string>
+    <string name="mark_listened_voice">Mark listened voice messages as played</string>
+    <string name="voters">Voted</string>
+    <string name="validate_tls">Certificate validation</string>
+    <string name="validate_tls_summary">Disabling makes you vulnerable</string>
+    <string name="feed_ban">Disable feed</string>
     <string name="blocked">Blocked</string>
     <string name="root_dir">Root</string>
-    <string name="reset_settings">Reset Settings</string>
-    <string name="wrong_settings_format">This setting format is not supported!</string>
-    <string name="settings_for_another_client">The settings for a cat are not suitable for a regular client and vice versa!</string>
-    <string name="group_members">Group Members</string>
+    <string name="reset_settings">Reset settings</string>
+    <string name="wrong_settings_format">This settings format is not supported!</string>
+    <string name="settings_for_another_client">Kate version settings format is not supported in a regular client and vice versa!</string>
+    <string name="group_members">Group members</string>
     <string name="donut">Donut</string>
     <string name="all">All</string>
-    <string name="unsure">Unsure</string>
+    <string name="unsure">I might go</string>
     <string name="managers">Managers</string>
     <string name="toggle_monitor_on">Changes</string>
-    <string name="toggle_monitor_off">Stop Changes</string>
-    <string name="toggle_monitor_info">Shows changes in the number of friends, members, etc. Works if quantity is less than 1000</string>
+    <string name="toggle_monitor_off">Disable changes monitoring</string>
+    <string name="toggle_monitor_info">Works if the number of friends is no more than 1000</string>
     <string name="delta">Delta</string>
     <string name="strip_metadata">Strip metadata</string>
     <string name="parser_type">Parser</string>
     <string name="privated">Private</string>
-    <string name="birthdays_title">Birth Days</string>
-    <string name="show_photos_date">Show photos date</string>
+    <string name="birthdays_title">Birthdays</string>
+    <string name="show_photos_date">Show photo date</string>
     <string name="action_jump_offset">Jump</string>
     <string name="audio_catalog_v2">Audio Catalog v2</string>
     <string name="sync">Sync</string>
-    <string name="faves_sync">Fave Content Sync</string>
+    <string name="faves_sync">Sync bookmarks</string>
     <string name="action_catalog_v2_find_friends">Find friends</string>
     <string name="action_catalog_v2_find_groups">Find groups</string>
     <string name="action_catalog_v2_recent">Recent</string>
     <string name="action_catalog_v2_artists">Artists</string>
-    <string name="token_community_required">Token Community Required!</string>
-    <string name="communities_in_page_search">Communities in page search</string>
+    <string name="token_community_required">Group token required!</string>
+    <string name="communities_in_page_search">Search groups on page</string>
     <string name="sections">Sections</string>
     <string name="do_unimportant">Remove from important?</string>
     <string name="enter_to_group_chat">Enter to group chat?</string>
     <string name="interesting">Interesting</string>
     <string name="catalog_v2_edit_list">Edit list</string>
-    <string name="turn_on">Turn on</string>
+    <string name="turn_on">Enable</string>
     <string name="photos_with_user">Photos with user</string>
-    <string name="wall_photos">Photos on Wall</string>
-    <string name="block_or_delete">Block a subscriber? Mode save per session</string>
-    <string name="exchange_token">Exchange Token</string>
-    <string name="available_only_dons">Only available to dons!</string>
-    <string name="font_only_for_chats">Font only for chats</string>
+    <string name="wall_photos">Photos on wall</string>
+    <string name="block_or_delete">Block a subscriber? This choice will be remembered until restart</string>
+    <string name="exchange_token">Exchange token</string>
+    <string name="available_only_dons">Available only for supporters!</string>
+    <string name="font_only_for_chats">Font for chats only</string>
     <string name="views">Views</string>
     <string name="answer">Answer</string>
     <string name="clips">Clips</string>
     <string name="stories">Stories</string>
     <string name="account_not_registered">Account not registered!</string>
-    <string name="disable_unvote">Disable unvote</string>
-    <string name="empty_background">Empty Background</string>
+    <string name="disable_unvote">Disable vote retraction</string>
+    <string name="empty_background">Empty background</string>
     <string name="remember">Remember</string>
     <string name="instant_photo_display">Instant photo display</string>
     <string name="picasso_dispatcher" translatable="false">Picasso3 dispatcher</string>
     <string name="select_more">Select More…</string>
-    <string name="chat_popup_menu">Popup Menu in chat</string>
+    <string name="chat_popup_menu">Chat popup menu</string>
     <string name="reactions">Reactions</string>
     <string name="subscribe_to_community">Subscribe to community?</string>
     <string name="unsubscribe_from_community">Unsubscribe from community?</string>
@@ -1961,24 +1961,24 @@
     <string name="remove_feedback">Delete notification?</string>
     <string name="account_type">Account Type:</string>
     <string name="ip">IP Address:</string>
-    <string name="auth_by_code">Auth By Code</string>
+    <string name="auth_by_code">Login with code</string>
     <string name="single_line_elements">Single line elements</string>
     <string name="single_line_videos">Videos</string>
     <string name="single_line_photos">Photos</string>
-    <string name="auth_by_qr">Auth by qr</string>
-    <string name="auth_by_qr_error">QR code entry is not possible!</string>
+    <string name="auth_by_qr">Login with QR code</string>
+    <string name="auth_by_qr_error">QR login is not available!</string>
     <string name="refreshing_token">Refreshing Token…</string>
-    <string name="error_title">Error title: %1$s</string>
-    <string name="error_stacktrace">Error stacktrace: %1$s</string>
+    <string name="error_title">Error: %1$s</string>
+    <string name="error_stacktrace">Stacktrace: %1$s</string>
     <string name="feed_owner_list">Feed Lists</string>
     <string name="owner_count_a">%1$d owner</string>
     <string name="owner_count_b">%1$d owners</string>
     <string name="owner_count_c">%1$d owners</string>
     <string name="long_click_photo">Long press on the photo</string>
-    <string name="photo_zoom_enable_list">Scroll through zoomed images</string>
-    <string name="only_not_viewed_followers">Show only unseen followers</string>
-    <string name="sms_auth_help">If you can\'t log in, open VK ID settings in your browser -> Two-factor authentication -> Backup codes, and enter them instead of your password!</string>
+    <string name="photo_zoom_enable_list">Swipe zoomed images</string>
+    <string name="only_not_viewed_followers">Show only unviewed followers</string>
+    <string name="sms_auth_help">If login fails, open VK ID settings in a browser: Two-factor authentication -> Backup codes, and use them instead of a password!</string>
     <string name="repeat_mode">Repeat</string>
-    <string name="saving_network_traffic">Saving network traffic</string>
+    <string name="saving_network_traffic">Data saving mode</string>
     <string name="select_storage">Select storage</string>
 </resources>
