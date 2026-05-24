@@ -1014,7 +1014,7 @@
     </style>
 
     <style name="Theme.ButtonSecondary" parent="Widget.Material3Expressive.Button.IconButton">
-        <item name="shapeAppearance">@style/MyButton.shapeAppearance</item>
+        <item name="shapeAppearance">@xml/my_button_shape_state_list</item>
         <item name="android:insetLeft">0dp</item>
         <item name="android:insetRight">0dp</item>
         <item name="android:textColor">@color/white</item>
@@ -1144,9 +1144,18 @@
         <item name="shapeAppearance">@style/MyButton.shapeAppearance</item>
     </style>
 
-    <style name="MyOutlinedButton" parent="Widget.Material3Expressive.Button.OutlinedButton">
-        <item name="shapeAppearanceOverlay">@style/MyButton.shapeAppearance</item>
+    <style name="MyOutlinedButtonAllCaps" parent="Widget.Material3Expressive.Button.OutlinedButton">
+        <item name="shapeAppearance">@xml/my_button_shape_state_list</item>
         <item name="android:textAllCaps">true</item>
+        <item name="android:textColor">@color/button_profile_text_color</item>
+        <item name="backgroundTint">@color/button_profile_tint</item>
+        <item name="strokeColor">@color/button_profile_text_color</item>
+    </style>
+
+    <style name="MyOutlinedButton" parent="Widget.Material3Expressive.Button.OutlinedButton">
+        <item name="android:textColor">@color/button_profile_text_color</item>
+        <item name="backgroundTint">@color/button_profile_tint</item>
+        <item name="strokeColor">@color/button_profile_text_color</item>
     </style>
 
     <style name="MyOutlinedHeaderButton" parent="Widget.Material3Expressive.Button.OutlinedButton">
@@ -1161,15 +1170,30 @@
         <item name="android:minWidth">@dimen/mtrl_min_touch_target_size</item>
         <item name="iconSize">20dp</item>
         <item name="android:textAllCaps">true</item>
+        <item name="android:textColor">@color/button_profile_text_color</item>
+        <item name="backgroundTint">@color/button_profile_tint</item>
+        <item name="strokeColor">@color/button_profile_text_color</item>
     </style>
 
     <style name="MyButton" parent="Widget.Material3Expressive.Button">
-        <item name="shapeAppearanceOverlay">@style/MyButton.shapeAppearance</item>
+        <item name="shapeAppearance">@xml/my_button_shape_state_list</item>
         <item name="android:textAllCaps">true</item>
     </style>
 
-    <style name="MyButton.shapeAppearance" parent="">
+    <style name="MyButton.shapeAppearance">
         <item name="cornerSize">25%</item>
+    </style>
+
+    <style name="SendAttachmentButton" parent="Widget.Material3Expressive.Button.IconButton">
+        <item name="android:minWidth">@dimen/m3_btn_icon_only_min_width</item>
+        <item name="android:paddingLeft">@dimen/m3_btn_icon_only_default_padding</item>
+        <item name="android:paddingRight">@dimen/m3_btn_icon_only_default_padding</item>
+        <item name="android:paddingTop">@dimen/m3_btn_icon_only_default_padding</item>
+        <item name="android:paddingBottom">@dimen/m3_btn_icon_only_default_padding</item>
+        <item name="android:insetLeft">@dimen/m3_btn_inset</item>
+        <item name="android:insetRight">@dimen/m3_btn_inset</item>
+        <item name="iconSize">@dimen/m3_btn_icon_only_default_size</item>
+        <item name="iconPadding">@dimen/m3_btn_icon_only_icon_padding</item>
     </style>
 
     <style name="ZoomLayoutStyle" parent="App.DayNight">

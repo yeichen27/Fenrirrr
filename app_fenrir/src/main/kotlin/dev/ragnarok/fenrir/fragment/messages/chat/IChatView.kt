@@ -117,4 +117,10 @@ interface IChatView : IBasicMessageListView, IErrorView, IToastView {
     fun openPollCreationWindow(accountId: Long, ownerId: Long)
 
     fun setupKeepScreenOn(keep: Boolean)
+    fun showReactedPeers(
+        accountId: Long,
+        reaction_id: Int?,
+        conversation_message_id: Int,
+        peerId: Long
+    )
 }

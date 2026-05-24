@@ -33,7 +33,8 @@ import dev.ragnarok.fenrir.fragment.feedback.FeedbackFragment
 import dev.ragnarok.fenrir.fragment.friends.birthday.BirthDayFragment
 import dev.ragnarok.fenrir.fragment.friends.friendsbyphones.FriendsByPhonesFragment
 import dev.ragnarok.fenrir.fragment.friends.friendstabs.FriendsTabsFragment
-import dev.ragnarok.fenrir.fragment.likes.LikesFragment
+import dev.ragnarok.fenrir.fragment.likes.likes.LikesFragment
+import dev.ragnarok.fenrir.fragment.likes.reactions.ReactedPeersFragment
 import dev.ragnarok.fenrir.fragment.likes.storiesview.StoriesViewFragment
 import dev.ragnarok.fenrir.fragment.messages.chatmembers.ChatMembersFragment
 import dev.ragnarok.fenrir.fragment.messages.conversationattachments.ConversationFragmentFactory
@@ -991,5 +992,15 @@ object PlaceFactory {
         return Place(Place.FEED_OWNERS)
             .withLongExtra(Extra.ACCOUNT_ID, accountId)
             .withLongExtra(Extra.DB_ID, listDbId)
+    }
+
+    fun getReactedPeersPlace(
+        accountId: Long,
+        peerId: Long,
+        cmid: Int,
+        reactionId: Int?
+    ): Place {
+        return Place(Place.REACTED_PEERS)
+            .setArguments(ReactedPeersFragment.buildArgs(accountId, peerId, cmid, reactionId))
     }
 }

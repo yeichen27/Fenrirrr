@@ -237,9 +237,7 @@ object Entity2Model {
         for (pair in users) {
             val dt = owners.getById(pair)
             if (dt.ownerType == OwnerType.USER) data.add(
-                owners.getById(
-                    pair
-                ) as User
+                dt as User
             )
         }
         return data

@@ -39,7 +39,6 @@
             android:id="@+id/item_fwd_message_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:autoLink="all"
             android:gravity="start"
             android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
             app:emojiconSize="20sp"
@@ -60,7 +59,8 @@
             android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
             android:textColor="?colorOnSurface"
             app:icon="@drawable/ic_fluent_channel_follow_24_regular"
-            app:iconTint="?colorOnSurface" />
+            app:iconTint="?colorOnSurface"
+            app:strokeColor="?colorOnSurface" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/item_fwd_message_time"

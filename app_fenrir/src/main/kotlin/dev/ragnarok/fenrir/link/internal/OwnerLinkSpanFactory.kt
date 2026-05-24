@@ -1,6 +1,5 @@
 package dev.ragnarok.fenrir.link.internal
 
-import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.ClickableSpan
@@ -50,11 +49,11 @@ object OwnerLinkSpanFactory {
     }
 
     fun withSpans(
-        input: String?,
+        input: CharSequence?,
         owners: Boolean,
         topics: Boolean,
         listener: ActionListener?
-    ): Spannable? {
+    ): CharSequence? {
         if (input.isNullOrEmpty()) {
             return null
         }
@@ -101,7 +100,7 @@ object OwnerLinkSpanFactory {
             }
             return result
         }
-        return SpannableStringBuilder(input)
+        return input
     }
 
     private fun toLong(str: String?, pow_n: Int): Long {
@@ -115,71 +114,65 @@ object OwnerLinkSpanFactory {
         return Settings.get().accounts().current
     }
 
-    private fun findTopicLinks(input: String?): List<TopicLink>? {
+    private fun findTopicLinks(input: CharSequence): List<TopicLink>? {
         return try {
-            input?.let {
-                val res = topicCommentPattern.findAll(it)
-                val links: MutableList<TopicLink> = ArrayList(res.count())
-                for (i in res) {
-                    val link = TopicLink()
-                    val club = "club" == i.groupValues.getOrNull(1)
-                    link.start = i.range.first
-                    link.end = i.range.last + 1
-                    link.replyToOwner = toLong(i.groupValues.getOrNull(2), if (club) -1 else 1)
-                    link.topicOwnerId = toLong(i.groupValues.getOrNull(3), 1)
-                    link.replyToCommentId = i.groupValues.getOrNull(4)?.toInt().orZero()
-                    link.targetLine = i.groupValues.getOrNull(5)
-                    links.add(link)
-                }
-                links
+            val res = topicCommentPattern.findAll(input)
+            val links: MutableList<TopicLink> = ArrayList(res.count())
+            for (i in res) {
+                val link = TopicLink()
+                val club = "club" == i.groupValues.getOrNull(1)
+                link.start = i.range.first
+                link.end = i.range.last + 1
+                link.replyToOwner = toLong(i.groupValues.getOrNull(2), if (club) -1 else 1)
+                link.topicOwnerId = toLong(i.groupValues.getOrNull(3), 1)
+                link.replyToCommentId = i.groupValues.getOrNull(4)?.toInt().orZero()
+                link.targetLine = i.groupValues.getOrNull(5)
+                links.add(link)
             }
+            links
         } catch (_: Exception) {
             null
         }
     }
 
-    private fun findOwnersLinks(input: String?): List<OwnerLink>? {
+    private fun findOwnersLinks(input: CharSequence): List<OwnerLink>? {
         return try {
-            input?.let {
-                val res = ownerPattern.findAll(it)
-                val links: MutableList<OwnerLink> = ArrayList(res.count())
-                for (i in res) {
-                    val club = "club" == i.groupValues.getOrNull(1)
-                    val ownerId = toLong(i.groupValues.getOrNull(2), if (club) -1 else 1)
-                    val name = i.groupValues.getOrNull(3)
+            val res = ownerPattern.findAll(input)
+            val links: MutableList<OwnerLink> = ArrayList(res.count())
+            for (i in res) {
+                val club = "club" == i.groupValues.getOrNull(1)
+                val ownerId = toLong(i.groupValues.getOrNull(2), if (club) -1 else 1)
+                val name = i.groupValues.getOrNull(3)
 
-                    links.add(OwnerLink(i.range.first, i.range.last + 1, ownerId, name.orEmpty()))
-                }
-                links
+                links.add(OwnerLink(i.range.first, i.range.last + 1, ownerId, name.orEmpty()))
             }
+            links
         } catch (_: Exception) {
             null
         }
     }
 
-    private fun findOthersLinks(input: String?): List<OtherLink>? {
+    private fun findOthersLinks(input: CharSequence): List<OtherLink>? {
         return try {
-            input?.let {
-                val res = linkPattern.findAll(it)
-                val links: MutableList<OtherLink> = ArrayList(res.count())
-                for (i in res) {
-                    links.add(
-                        OtherLink(
-                            i.range.first,
-                            i.range.last + 1,
-                            i.groupValues.getOrNull(1).orEmpty(),
-                            i.groupValues.getOrNull(2).orEmpty()
-                        )
+            val res = linkPattern.findAll(input)
+            val links: MutableList<OtherLink> = ArrayList(res.count())
+            for (i in res) {
+                links.add(
+                    OtherLink(
+                        i.range.first,
+                        i.range.last + 1,
+                        i.groupValues.getOrNull(1).orEmpty(),
+                        i.groupValues.getOrNull(2).orEmpty()
                     )
-                }
-                links
+                )
             }
+            links
         } catch (_: Exception) {
             null
         }
     }
 
-    fun getTextWithCollapseOwnerLinks(input: String?): String? {
+    fun getTextWithCollapseOwnerLinks(input: CharSequence?): CharSequence? {
         if (input.isNullOrEmpty()) {
             return null
         }
@@ -187,11 +180,11 @@ object OwnerLinkSpanFactory {
         return replace(input, links)
     }
 
-    private fun replace(input: String?, links: List<AbsInternalLink>?): String? {
+    private fun replace(input: CharSequence, links: List<AbsInternalLink>?): CharSequence {
         if (links.isNullOrEmpty()) {
             return input
         }
-        val result = StringBuilder(input ?: "")
+        val result = StringBuilder(input)
         for (y in links.indices) {
             val link = links[y]
             if (link.targetLine.isNullOrEmpty()) {

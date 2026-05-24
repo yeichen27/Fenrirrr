@@ -1435,6 +1435,16 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
         }
     }
 
+    override fun showReactedPeers(
+        accountId: Long,
+        reaction_id: Int?,
+        conversation_message_id: Int,
+        peerId: Long
+    ) {
+        PlaceFactory.getReactedPeersPlace(accountId, peerId, conversation_message_id, reaction_id)
+            .tryOpenWith(requireActivity())
+    }
+
     internal fun onEditCameraClick() {
         if (AppPerms.hasCameraPermission(requireContext())) {
             presenter?.fireEditCameraClick()
@@ -2262,6 +2272,15 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
 
     override fun onReactionClicked(reaction_id: Int?, conversation_message_id: Int, peerId: Long) {
         presenter?.fireReactionClicked(reaction_id, conversation_message_id, peerId)
+    }
+
+    override fun onReactionLongClicked(
+        reaction_id: Int?,
+        conversation_message_id: Int,
+        peerId: Long
+    ): Boolean {
+        presenter?.fireReactionLongClicked(reaction_id, conversation_message_id, peerId)
+        return true
     }
 
     override fun copyToClipBoard(link: String) {

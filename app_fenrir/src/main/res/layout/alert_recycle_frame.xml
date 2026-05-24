@@ -16,7 +16,6 @@
             android:id="@+id/alert_message"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:autoLink="web|phone|email"
             android:gravity="center"
             android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
             android:textIsSelectable="true"

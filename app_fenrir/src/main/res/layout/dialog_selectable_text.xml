@@ -12,7 +12,7 @@
         android:id="@+id/selectable_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:autoLink="all"
+        android:autoLink="web|phone|email"
         android:minHeight="48dp"
         android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
         android:textIsSelectable="true"

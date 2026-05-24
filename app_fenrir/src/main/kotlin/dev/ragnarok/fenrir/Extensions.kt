@@ -616,6 +616,48 @@ fun Parcel.readObjectLong(): Long? {
     } else null
 }
 
+fun Bundle.writeObjectDouble(key: String, value: Double?) {
+    putBoolean(Extra.IS_NULL, value == null)
+    if (value != null) {
+        putDouble(key, value)
+    }
+}
+
+fun Bundle.readObjectDouble(key: String): Double? {
+    val isNull = getBoolean(Extra.IS_NULL)
+    return if (!isNull) {
+        getDouble(key)
+    } else null
+}
+
+fun Bundle.writeObjectLong(key: String, value: Long?) {
+    putBoolean(Extra.IS_NULL, value == null)
+    if (value != null) {
+        putLong(key, value)
+    }
+}
+
+fun Bundle.readObjectLong(key: String): Long? {
+    val isNull = getBoolean(Extra.IS_NULL)
+    return if (!isNull) {
+        getLong(key)
+    } else null
+}
+
+fun Bundle.writeObjectInteger(key: String, value: Int?) {
+    putBoolean(Extra.IS_NULL, value == null)
+    if (value != null) {
+        putInt(key, value)
+    }
+}
+
+fun Bundle.readObjectInteger(key: String): Int? {
+    val isNull = getBoolean(Extra.IS_NULL)
+    return if (!isNull) {
+        getInt(key)
+    } else null
+}
+
 inline fun <reified T> MutableList<T>.swap(index1: Int, index2: Int) {
     val tmp = this[index1]
     this[index1] = this[index2]

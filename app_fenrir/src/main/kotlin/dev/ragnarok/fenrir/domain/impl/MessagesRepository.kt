@@ -14,6 +14,7 @@ import dev.ragnarok.fenrir.api.model.VKApiConversation
 import dev.ragnarok.fenrir.api.model.VKApiConversationMembers
 import dev.ragnarok.fenrir.api.model.VKApiDialog
 import dev.ragnarok.fenrir.api.model.VKApiMessage
+import dev.ragnarok.fenrir.api.model.VKApiReactedMessagesPeers
 import dev.ragnarok.fenrir.api.model.VKApiReactionAsset
 import dev.ragnarok.fenrir.api.model.interfaces.IAttachmentToken
 import dev.ragnarok.fenrir.api.model.local_json.ChatJsonResponse
@@ -85,6 +86,7 @@ import dev.ragnarok.fenrir.model.OwnerType
 import dev.ragnarok.fenrir.model.Peer
 import dev.ragnarok.fenrir.model.PeerDeleting
 import dev.ragnarok.fenrir.model.PeerUpdate
+import dev.ragnarok.fenrir.model.ReactedMessagesPeers
 import dev.ragnarok.fenrir.model.ReactionAsset
 import dev.ragnarok.fenrir.model.SaveMessageBuilder
 import dev.ragnarok.fenrir.model.SentMsg
@@ -1652,6 +1654,49 @@ class MessagesRepository(
             .map {
                 peerUpdatePublisher.emit(listOf(update))
                 true
+            }
+    }
+
+    override fun getReactedPeers(
+        accountId: Long,
+        peer_id: Long,
+        cmid: Int,
+        reaction_id: Int?
+    ): Flow<List<ReactedMessagesPeers>> {
+        return networker.vkDefault(accountId)
+            .messages()
+            .getReactedPeers(peer_id, cmid, reaction_id, true, Fields.FIELDS_BASE_OWNER)
+            .flatMapConcat {
+                val dtos: List<VKApiReactedMessagesPeers> =
+                    listEmptyIfNull(it.reactions)
+                val ownerIds: Collection<Long> = if (dtos.nonNullNoEmpty()) {
+                    val vkOwnIds = VKOwnIds()
+                    for (dto in dtos) {
+                        vkOwnIds.append(dto.userId)
+                    }
+                    vkOwnIds.all
+                } else {
+                    emptyList()
+                }
+                val existsOwners = transformOwners(it.profiles, it.groups)
+                ownersRepository.findBaseOwnersDataAsBundle(
+                    accountId,
+                    ownerIds,
+                    IOwnersRepository.MODE_ANY,
+                    existsOwners
+                )
+                    .map { ownersBundle ->
+                        val models: MutableList<ReactedMessagesPeers> = ArrayList(dtos.size)
+                        for (dto in dtos) {
+                            val reacted =
+                                ReactedMessagesPeers()
+                            reacted.setReactionId(dto.reactionId)
+                            reacted.setOwnerId(dto.userId)
+                            reacted.setOwner(ownersBundle.findById(dto.userId))
+                            models.add(reacted)
+                        }
+                        models
+                    }
             }
     }
 

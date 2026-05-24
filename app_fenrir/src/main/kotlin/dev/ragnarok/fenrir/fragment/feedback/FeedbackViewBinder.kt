@@ -527,7 +527,7 @@ class FeedbackViewBinder(
         val feedBackText = OwnerLinkSpanFactory.getTextWithCollapseOwnerLinks(feedback?.text)
         var action = AppTextUtils.getDateFromUnixTime(feedback?.date.orZero())
         action = action + SPACE + context.getString(R.string.in_reply_to_your_comment)
-        val parentText: String = if (parent?.text.isNullOrEmpty()) {
+        val parentText: CharSequence = if (parent?.text.isNullOrEmpty()) {
             context.getString(
                 R.string.from_date,
                 AppTextUtils.getDateFromUnixTime(parent?.date.orZero())
@@ -577,7 +577,7 @@ class FeedbackViewBinder(
         val feedBackText = OwnerLinkSpanFactory.getTextWithCollapseOwnerLinks(feedback?.text)
         var action = AppTextUtils.getDateFromUnixTime(feedback?.date.orZero())
         action = action + SPACE + context.getString(R.string.in_reply_to_your_comment)
-        val parentText: String = if (parent?.text.isNullOrEmpty()) {
+        val parentText: CharSequence = if (parent?.text.isNullOrEmpty()) {
             context.getString(
                 R.string.from_date,
                 AppTextUtils.getDateFromUnixTime(parent?.date.orZero())
@@ -675,7 +675,7 @@ class FeedbackViewBinder(
         val feedBackText = OwnerLinkSpanFactory.getTextWithCollapseOwnerLinks(feedback?.text)
         var action = AppTextUtils.getDateFromUnixTime(notification.date)
         action = action + SPACE + context.getString(R.string.in_reply_to_your_comment)
-        val parentText: String = if (parent?.text.isNullOrEmpty()) {
+        val parentText: CharSequence = if (parent?.text.isNullOrEmpty()) {
             context.getString(
                 R.string.from_date,
                 AppTextUtils.getDateFromUnixTime(parent?.date.orZero())
@@ -792,7 +792,7 @@ class FeedbackViewBinder(
         val user = owners?.get(0)
         var action = genFullUsersString(owners.orEmpty())
         action = action + SPACE + context.getString(R.string.liked_your_post)
-        val info: String
+        val info: CharSequence
         val postTitle = getPostTextCopyIncluded(post)
         info = if (postTitle.isNullOrEmpty()) {
             context.getString(R.string.from_date, AppTextUtils.getDateFromUnixTime(post.date))
@@ -907,7 +907,7 @@ class FeedbackViewBinder(
         action = action + SPACE + context.getString(R.string.shared_post)
         val link = Link.startOf(0)
         val postText = getPostTextCopyIncluded(post)
-        val info: String = if (postText.isNullOrEmpty()) {
+        val info: CharSequence = if (postText.isNullOrEmpty()) {
             context.getString(R.string.from_date, AppTextUtils.getDateFromUnixTime(post.date))
         } else {
             OwnerLinkSpanFactory.getTextWithCollapseOwnerLinks(postText)?.let { reduce(it) } ?: ""
@@ -994,7 +994,7 @@ class FeedbackViewBinder(
                 )
         }
         action = action + SPACE + context.getString(R.string.liked_comment)
-        val commentText: String = if (comment?.text.isNullOrEmpty()) {
+        val commentText: CharSequence = if (comment?.text.isNullOrEmpty()) {
             context.getString(
                 R.string.from_date,
                 AppTextUtils.getDateFromUnixTime(comment?.date.orZero())
@@ -1042,7 +1042,7 @@ class FeedbackViewBinder(
                 )
         }
         action = action + SPACE + context.getString(R.string.liked_comment)
-        val commentText: String = if (comment?.text.isNullOrEmpty()) {
+        val commentText: CharSequence = if (comment?.text.isNullOrEmpty()) {
             context.getString(
                 R.string.from_date,
                 AppTextUtils.getDateFromUnixTime(comment?.date.orZero())
@@ -1092,7 +1092,7 @@ class FeedbackViewBinder(
                 )
         }
         action = action + SPACE + context.getString(R.string.liked_comment)
-        val commentText: String = if (comment?.text.isNullOrEmpty()) {
+        val commentText: CharSequence = if (comment?.text.isNullOrEmpty()) {
             context.getString(
                 R.string.from_date,
                 AppTextUtils.getDateFromUnixTime(comment?.date.orZero())
@@ -1203,8 +1203,8 @@ class FeedbackViewBinder(
      * @param input строка, которую надо обрезать
      * @return обрезанная строка
      */
-    private fun reduce(input: String): String {
-        return if (input.length > 100) input.take(100) + "..." else input
+    private fun reduce(input: CharSequence): String {
+        return if (input.length > 100) input.toString().take(100) + "..." else input.toString()
     }
 
     /**

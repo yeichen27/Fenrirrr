@@ -20,6 +20,7 @@ import dev.ragnarok.fenrir.api.model.response.LongpollHistoryResponse
 import dev.ragnarok.fenrir.api.model.response.MessageDeleteResponse
 import dev.ragnarok.fenrir.api.model.response.MessageHistoryResponse
 import dev.ragnarok.fenrir.api.model.response.MessageImportantResponse
+import dev.ragnarok.fenrir.api.model.response.ReactedMessagesPeersResponse
 import dev.ragnarok.fenrir.api.model.response.SendMessageResponse
 import kotlinx.coroutines.flow.Flow
 
@@ -194,4 +195,13 @@ interface IMessagesApi {
 
     @CheckResult
     fun getReactionsAssets(): Flow<Assets<VKApiReactionAsset>>
+
+    @CheckResult
+    fun getReactedPeers(
+        peer_id: Long,
+        cmid: Int,
+        reaction_id: Int?,
+        extended: Boolean?,
+        fields: String?
+    ): Flow<ReactedMessagesPeersResponse>
 }

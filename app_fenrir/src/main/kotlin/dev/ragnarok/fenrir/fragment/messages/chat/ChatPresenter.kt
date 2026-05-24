@@ -2450,6 +2450,10 @@ class ChatPresenter(
         sendMessage(builder)
     }
 
+    fun fireReactionLongClicked(reaction_id: Int?, conversation_message_id: Int, peerId: Long) {
+        view?.showReactedPeers(accountId, reaction_id, conversation_message_id, peerId)
+    }
+
     fun fireReactionClicked(reaction_id: Int?, conversation_message_id: Int, peerId: Long) {
         if (isHiddenAccount(messagesOwnerId) || isHiddenAccount(accountId)) {
             return

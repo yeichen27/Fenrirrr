@@ -442,6 +442,10 @@ fun ResponseBody.isMsgPack(): Boolean {
     return contentType()?.toString()?.contains("msgpack") == true
 }
 
+fun ResponseBody.isJson(): Boolean {
+    return contentType()?.toString()?.contains("json") == true
+}
+
 inline fun <reified T : Parcelable> Parcel.readTypedObjectCompat(c: Parcelable.Creator<T>): T? {
     return if (readInt() != 0) {
         c.createFromParcel(this)
@@ -609,6 +613,48 @@ fun Parcel.readObjectLong(): Long? {
     val isNull = getBoolean()
     return if (!isNull) {
         readLong()
+    } else null
+}
+
+fun Bundle.writeObjectDouble(key: String, value: Double?) {
+    putBoolean(Extra.IS_NULL, value == null)
+    if (value != null) {
+        putDouble(key, value)
+    }
+}
+
+fun Bundle.readObjectDouble(key: String): Double? {
+    val isNull = getBoolean(Extra.IS_NULL)
+    return if (!isNull) {
+        getDouble(key)
+    } else null
+}
+
+fun Bundle.writeObjectLong(key: String, value: Long?) {
+    putBoolean(Extra.IS_NULL, value == null)
+    if (value != null) {
+        putLong(key, value)
+    }
+}
+
+fun Bundle.readObjectLong(key: String): Long? {
+    val isNull = getBoolean(Extra.IS_NULL)
+    return if (!isNull) {
+        getLong(key)
+    } else null
+}
+
+fun Bundle.writeObjectInteger(key: String, value: Int?) {
+    putBoolean(Extra.IS_NULL, value == null)
+    if (value != null) {
+        putInt(key, value)
+    }
+}
+
+fun Bundle.readObjectInteger(key: String): Int? {
+    val isNull = getBoolean(Extra.IS_NULL)
+    return if (!isNull) {
+        getInt(key)
     } else null
 }
 

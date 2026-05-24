@@ -19,6 +19,7 @@ import dev.ragnarok.fenrir.api.model.response.LongpollHistoryResponse
 import dev.ragnarok.fenrir.api.model.response.MessageDeleteResponse
 import dev.ragnarok.fenrir.api.model.response.MessageHistoryResponse
 import dev.ragnarok.fenrir.api.model.response.MessageImportantResponse
+import dev.ragnarok.fenrir.api.model.response.ReactedMessagesPeersResponse
 import dev.ragnarok.fenrir.api.model.response.SendMessageResponse
 import dev.ragnarok.fenrir.api.model.response.UploadChatPhotoResponse
 import dev.ragnarok.fenrir.api.rest.IServiceRest
@@ -689,6 +690,25 @@ class IMessageService : IServiceRest() {
                 "peer_id" to peer_id,
                 "cmid" to cmid
             ), baseInt
+        )
+    }
+
+    //messages.getMessageReadPeers
+    fun getReactedPeers(
+        peer_id: Long,
+        cmid: Int,
+        reaction_id: Int?,
+        extended: Int?,
+        fields: String?
+    ): Flow<BaseResponse<ReactedMessagesPeersResponse>> {
+        return rest.request(
+            "messages.getReactedPeers", form(
+                "peer_id" to peer_id,
+                "cmid" to cmid,
+                "reaction_id" to reaction_id,
+                "extended" to extended,
+                "fields" to fields
+            ), base(ReactedMessagesPeersResponse.serializer())
         )
     }
 }

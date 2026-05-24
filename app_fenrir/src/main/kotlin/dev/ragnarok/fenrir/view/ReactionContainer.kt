@@ -104,11 +104,27 @@ class ReactionContainer : RowLayout {
                     listener?.onReactionClicked(res, conversation_message_id, peerId)
                 }
             }
+            root.setOnLongClickListener {
+                if (reaction.count <= 0) {
+                    false
+                } else {
+                    listener?.onReactionLongClicked(
+                        reaction.reaction_id,
+                        conversation_message_id,
+                        peerId
+                    ) == true
+                }
+            }
         }
     }
 
     interface ReactionClicked {
         fun onReactionClicked(reaction_id: Int?, conversation_message_id: Int, peerId: Long)
+        fun onReactionLongClicked(
+            reaction_id: Int?,
+            conversation_message_id: Int,
+            peerId: Long
+        ): Boolean
     }
 
     private inner class ReactionHolder(root: View) {

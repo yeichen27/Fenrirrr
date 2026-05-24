@@ -24,6 +24,7 @@ import dev.ragnarok.fenrir.api.model.response.LongpollHistoryResponse
 import dev.ragnarok.fenrir.api.model.response.MessageDeleteResponse
 import dev.ragnarok.fenrir.api.model.response.MessageHistoryResponse
 import dev.ragnarok.fenrir.api.model.response.MessageImportantResponse
+import dev.ragnarok.fenrir.api.model.response.ReactedMessagesPeersResponse
 import dev.ragnarok.fenrir.api.model.response.SendMessageResponse
 import dev.ragnarok.fenrir.api.services.IMessageService
 import dev.ragnarok.fenrir.util.Utils.listEmptyIfNull
@@ -477,6 +478,20 @@ internal class MessagesApi(accountId: Long, provider: IServiceProvider) :
                     peer_id,
                     cmid
                 ).map(extractResponseWithErrorHandling())
+            }
+    }
+
+    override fun getReactedPeers(
+        peer_id: Long,
+        cmid: Int,
+        reaction_id: Int?,
+        extended: Boolean?,
+        fields: String?
+    ): Flow<ReactedMessagesPeersResponse> {
+        return serviceRx(TokenType.USER, TokenType.COMMUNITY)
+            .flatMapConcat {
+                it.getReactedPeers(peer_id, cmid, reaction_id, integerFromBoolean(extended), fields)
+                    .map(extractResponseWithErrorHandling())
             }
     }
 }

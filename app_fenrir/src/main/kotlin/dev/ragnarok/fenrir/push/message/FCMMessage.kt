@@ -36,15 +36,18 @@ class FCMMessage {
     }
 
     companion object {
-        fun fromRemoteMessage(remote: RemoteMessage): FCMMessage {
+        fun fromRemoteMessage(remote: RemoteMessage): FCMMessage? {
             val message = FCMMessage()
             val data = remote.data
             val context: MessageContext =
-                kJson.decodeFromString(MessageContext.serializer(), data["context"]!!)
+                kJson.decodeFromString(MessageContext.serializer(), data["context"] ?: return null)
             message.message_id = context.msg_id
             message.peerId =
                 if (context.chat_id == 0) context.sender_id else Peer.fromChatId(context.chat_id.toLong())
             message.conversation_message_id = context.conversation_message_id
+            if (message.message_id == 0 || message.peerId == 0L || message.conversation_message_id == 0) {
+                return null
+            }
             return message
         }
     }

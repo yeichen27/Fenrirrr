@@ -37,10 +37,6 @@ extern "C" {
 // LIBYUV_UNLIMITED_BT709
 // LIBYUV_UNLIMITED_BT2020
 
-#if defined(LIBYUV_BIT_EXACT)
-#define LIBYUV_UNATTENUATE_DUP 1
-#endif
-
 // llvm x86 is poor at ternary operator, so use branchless min/max.
 
 #define USE_BRANCHLESS 1
@@ -3578,12 +3574,8 @@ const uint32_t fixed_invtbl8[256] = {
     T(0xfc),    T(0xfd),    T(0xfe), 0x01000100};
 #undef T
 
-#if defined(LIBYUV_UNATTENUATE_DUP)
 // This code mimics the Intel SIMD version for better testability.
 #define UNATTENUATE(f, ia) clamp255(((f | (f << 8)) * ia) >> 16)
-#else
-#define UNATTENUATE(f, ia) clamp255((f * ia) >> 8)
-#endif
 
 // mimics the Intel SIMD code for exactness.
 void ARGBUnattenuateRow_C(const uint8_t* src_argb,
@@ -4378,26 +4370,6 @@ void NV12ToRGB565Row_AVX2(const uint8_t* src_y,
 }
 #endif
 
-#ifdef HAS_RGB24TOYJROW_AVX2
-// Convert 16 RGB24 pixels (64 bytes) to 16 YJ values.
-}
-#endif  // HAS_RGB24TOYJROW_AVX2
-
-#ifdef HAS_RAWTOYJROW_AVX2
-// Convert 32 RAW pixels (128 bytes) to 32 YJ values.
-}
-#endif  // HAS_RAWTOYJROW_AVX2
-
-#ifdef HAS_RGB24TOYJROW_SSSE3
-// Convert 16 RGB24 pixels (64 bytes) to 16 YJ values.
-}
-#endif  // HAS_RGB24TOYJROW_SSSE3
-
-#ifdef HAS_RAWTOYJROW_SSSE3
-// Convert 16 RAW pixels (64 bytes) to 16 YJ values.
-}
-#endif  // HAS_RAWTOYJROW_SSSE3
-
 #ifdef HAS_INTERPOLATEROW_16TO8_AVX2
 void InterpolateRow_16To8_AVX2(uint8_t* dst_ptr,
                                const uint16_t* src_ptr,
@@ -4409,7 +4381,7 @@ void InterpolateRow_16To8_AVX2(uint8_t* dst_ptr,
   SIMD_ALIGNED(uint16_t row[MAXTWIDTH]);
   while (width > 0) {
     int twidth = width > MAXTWIDTH ? MAXTWIDTH : width;
-    InterpolateRow_16_C(row, src_ptr, src_stride, twidth, source_y_fraction);
+    InterpolateRow_16_AVX2(row, src_ptr, src_stride, twidth, source_y_fraction);
     Convert16To8Row_AVX2(row, dst_ptr, scale, twidth);
     src_ptr += twidth;
     dst_ptr += twidth;

@@ -6,7 +6,6 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.text.method.LinkMovementMethod
-import android.text.util.Linkify
 import android.util.SparseArray
 import android.view.LayoutInflater
 import android.view.View
@@ -410,7 +409,6 @@ class AttachmentsViewBinder(
             val holder = CopyHolder(itemView as ViewGroup, mAttachmentsActionCallback)
             itemView.tag = holder
             if (!reduce) {
-                holder.bodyView.autoLinkMask = Linkify.WEB_URLS
                 holder.bodyView.movementMethod = LinkMovementMethod.getInstance()
             }
             container.addView(itemView)

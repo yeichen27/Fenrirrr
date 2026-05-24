@@ -10,7 +10,7 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/item_message_restore"
-        style="@style/Widget.Material3Expressive.Button.OutlinedButton"
+        style="@style/MyOutlinedButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -87,7 +87,6 @@
                 android:id="@+id/item_message_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:autoLink="all"
                 android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
                 android:textColorLink="?colorPrimary"
                 app:displayHashTags="true"

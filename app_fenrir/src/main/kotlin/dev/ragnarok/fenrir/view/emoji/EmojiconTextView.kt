@@ -12,19 +12,28 @@ import android.text.Spanned
 import android.text.style.CharacterStyle
 import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
+import android.text.util.Linkify
 import android.util.AttributeSet
 import android.view.View
 import androidx.core.net.toUri
+import androidx.core.text.util.LinkifyCompat
 import androidx.fragment.app.FragmentActivity
 import dev.ragnarok.fenrir.EmojiconHandler.addEmojis
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.link.LinkHelper
 import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.ModalBottomSheetDialogFragment
 import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.OptionRequest
+import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.settings.AppPrefs
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.ClickableForegroundColorSpan
+import dev.ragnarok.fenrir.util.coroutines.CancelableJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils
 import dev.ragnarok.fenrir.view.WrapWidthTextView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.launch
+import java.util.concurrent.Executors
 
 class EmojiconTextView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null) :
     WrapWidthTextView(
@@ -37,6 +46,8 @@ class EmojiconTextView @JvmOverloads constructor(context: Context, attrs: Attrib
     private var mOnHashTagClickListener: OnHashTagClickListener? = null
     private var mDisplayHashTags = false
     private var mHashTagWordColor = 0
+    private var linksResolved: CharSequence? = null
+    private var mResolveLinks = CancelableJob()
     private fun init(attrs: AttributeSet?) {
         mAdditionalHashTagChars = ArrayList(2)
         mAdditionalHashTagChars?.add('_')
@@ -56,7 +67,6 @@ class EmojiconTextView @JvmOverloads constructor(context: Context, attrs: Attrib
                 a.recycle()
             }
         }
-        text = text
     }
 
     private fun setColorsToAllHashTags(text: Spannable) {
@@ -113,24 +123,10 @@ class EmojiconTextView @JvmOverloads constructor(context: Context, attrs: Attrib
     }
 
     override fun setText(originalText: CharSequence?, type: BufferType) {
-        if (originalText?.isNotEmpty() == true) {
-            val spannable: Spannable = SpannableStringBuilder.valueOf(originalText)
-            if (mDisplayHashTags) {
-                setColorsToAllHashTags(spannable)
-            }
-            if (isInEditMode || !Settings.get().ui().isSystemEmoji) {
-                addEmojis(context, spannable, mEmojiconSize, mTextStart, mTextLength)
-            }
-            val mode = if (isInEditMode) 0 else Settings.get().main().isOpenUrlInternal
-            if (mode > 0) {
-                linkifyVKUrl(spannable)
-            }
-            if (mode > 1) {
-                linkifyNonVKUrl(spannable)
-            }
-            super.setText(spannable, type)
-        } else {
-            super.setText(originalText, type)
+        super.setText(originalText, type)
+        if (originalText.nonNullNoEmpty()) {
+            linksResolved = originalText
+            makeResolveLinkJob()
         }
     }
 
@@ -309,7 +305,6 @@ class EmojiconTextView @JvmOverloads constructor(context: Context, attrs: Attrib
     }
 
     private fun getAllHashTags(withHashes: Boolean): List<String> {
-        val text = text.toString()
         val spannable = getText() as Spannable
 
         // use set to exclude duplicates
@@ -329,6 +324,63 @@ class EmojiconTextView @JvmOverloads constructor(context: Context, attrs: Attrib
     val allHashTags: List<String>
         get() = getAllHashTags(false)
 
+    private fun makeResolveLinkJob() {
+        mResolveLinks.cancel()
+        mResolveLinks.set(linkResolveScheduler.launch {
+            val spannable: Spannable =
+                SpannableStringBuilder.valueOf(linksResolved ?: return@launch)
+            if (mDisplayHashTags) {
+                setColorsToAllHashTags(spannable)
+            }
+            if (!Settings.get().ui().isSystemEmoji) {
+                addEmojis(context, spannable, mEmojiconSize, mTextStart, mTextLength)
+            }
+            val mode = Settings.get().main().isOpenUrlInternal
+            if (mode > 0) {
+                linkifyVKUrl(spannable)
+            }
+            if (mode > 1) {
+                linkifyNonVKUrl(spannable)
+            }
+            /*
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                val textClassifier = context.getSystemService(TextClassificationManager::class.java)
+                    .textClassifier
+                val request = TextLinks.Request.Builder(spannable)
+                textClassifier.generateLinks(request.build()).apply(
+                    spannable,
+                    TextLinks.APPLY_STRATEGY_IGNORE,
+                    null
+                )
+            }
+             */
+            LinkifyCompat.addLinks(
+                spannable,
+                Linkify.PHONE_NUMBERS or Linkify.EMAIL_ADDRESSES
+            )
+            CoroutinesUtils.inMainThread {
+                linksResolved = null
+                super.setText(spannable, BufferType.SPANNABLE)
+            }
+        })
+    }
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        if (isInEditMode || linksResolved.isNullOrEmpty()) {
+            return
+        }
+        makeResolveLinkJob()
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        if (isInEditMode) {
+            return
+        }
+        mResolveLinks.cancel()
+    }
+
     interface OnHashTagClickListener {
         fun onHashTagClicked(hashTag: String)
     }
@@ -340,6 +392,9 @@ class EmojiconTextView @JvmOverloads constructor(context: Context, attrs: Attrib
             Regex("(((http|https|rstp)://)?(\\w+.)?(youtube\\.com|youtu\\.be)/\\S*)")
         private val URL_NON_VK_PATTERN: Regex =
             Regex("((http|https|rstp)://(?!(\\w+.)?vk\\.(ru|com|me|cc)/)\\S*)")
+
+        private val linkResolveScheduler =
+            CoroutineScope(Executors.newSingleThreadExecutor().asCoroutineDispatcher())
     }
 
     init {

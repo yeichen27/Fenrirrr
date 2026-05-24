@@ -471,7 +471,7 @@ int ARGBToUYVY(const uint8_t* src_argb,
 
 // RAW to NV21 with Matrix
 LIBYUV_API
-int RAWToNV21Matrix(const uint8_t* src_raw,
+int RGBToNV21Matrix(const uint8_t* src_raw,
                     int src_stride_raw,
                     uint8_t* dst_y,
                     int dst_stride_y,

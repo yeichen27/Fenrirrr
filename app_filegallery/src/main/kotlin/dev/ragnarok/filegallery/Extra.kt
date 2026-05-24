@@ -19,5 +19,6 @@ object Extra {
     const val TITLE = "title"
     const val URL = "url"
     const val DATA = "data"
+    const val IS_NULL = "is_null"
     const val IS_SELECT = "is_select"
 }

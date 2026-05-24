@@ -50,6 +50,7 @@ import android.util.FloatProperty;
 import android.util.StateSet;
 import android.util.TypedValue;
 import android.view.animation.OvershootInterpolator;
+import androidx.annotation.ColorInt;
 import androidx.annotation.DimenRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -743,12 +744,54 @@ public class FocusRingDrawable extends DrawableWrapper {
     state.ringEnabled = enabled;
   }
 
+  @ColorInt
+  public int getFocusRingOuterStrokeColor() {
+    return state.ringOuterColor;
+  }
+
+  public void setFocusRingOuterStrokeColor(@ColorInt int outerStrokeColor) {
+    state.ringOuterColor = outerStrokeColor;
+  }
+
+  @ColorInt
+  public int getFocusRingInnerStrokeColor() {
+    return state.ringInnerColor;
+  }
+
+  public void setFocusRingInnerStrokeColor(@ColorInt int innerStrokeColor) {
+    state.ringInnerColor = innerStrokeColor;
+  }
+
+  public float getFocusRingOuterStrokeWidth() {
+    return state.ringOuterStrokeWidth;
+  }
+
+  public void setFocusRingOuterStrokeWidth(float outerStrokeWidth) {
+    state.ringOuterStrokeWidth = outerStrokeWidth;
+  }
+
+  public float getFocusRingInnerStrokeWidth() {
+    return state.ringInnerStrokeWidth;
+  }
+
+  public void setFocusRingInnerStrokeWidth(float innerStrokeWidth) {
+    state.ringInnerStrokeWidth = innerStrokeWidth;
+  }
+
   public float getFocusRingInset() {
     return state.ringInset;
   }
 
   public void setFocusRingInset(float inset) {
     state.ringInset = inset;
+  }
+
+  public float getFocusRingInnerInset() {
+    return state.ringInnerInset;
+  }
+
+  public void setFocusRingInnerInset(float innerInset) {
+    state.ringInnerInset = innerInset;
   }
 
   public float getFocusRingRadius() {
@@ -776,6 +819,15 @@ public class FocusRingDrawable extends DrawableWrapper {
 
   public void setFocusRingShapeAppearance(@Nullable ShapeAppearance shapeAppearance) {
     state.ringShapeAppearance = shapeAppearance;
+  }
+
+  public boolean updateFocusRingShapeAppearanceFromWrappedDrawable() {
+    ShapeAppearance shapeAppearance = toShapeAppearance(getDrawable());
+    if (shapeAppearance != null) {
+      updateShapeAppearanceCornerSizeOrPath(shapeAppearance);
+      return true;
+    }
+    return false;
   }
 
   @Nullable
@@ -863,9 +915,7 @@ public class FocusRingDrawable extends DrawableWrapper {
       updateShapeAppearanceCornerSizeOrPath(state.ringShapeAppearance);
       return;
     }
-    ShapeAppearance shapeAppearance = toShapeAppearance(getDrawable());
-    if (shapeAppearance != null) {
-      updateShapeAppearanceCornerSizeOrPath(shapeAppearance);
+    if (updateFocusRingShapeAppearanceFromWrappedDrawable()) {
       return;
     }
     shapeAppearanceCornerSize = -1;

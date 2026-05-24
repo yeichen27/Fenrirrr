@@ -875,10 +875,10 @@ int BGRAToI420(const uint8_t* src_bgra,
                int width,
                int height);
 
-// BGRA little endian (argb in memory) to I422.
+// ABGR little endian (rgba in memory) to I420.
 LIBYUV_API
-int BGRAToI422(const uint8_t* src_bgra,
-               int src_stride_bgra,
+int ABGRToI420(const uint8_t* src_abgr,
+               int src_stride_abgr,
                uint8_t* dst_y,
                int dst_stride_y,
                uint8_t* dst_u,
@@ -888,10 +888,10 @@ int BGRAToI422(const uint8_t* src_bgra,
                int width,
                int height);
 
-// ABGR little endian (rgba in memory) to I420.
+// BGRA little endian (argb in memory) to I422.
 LIBYUV_API
-int ABGRToI420(const uint8_t* src_abgr,
-               int src_stride_abgr,
+int BGRAToI422(const uint8_t* src_bgra,
+               int src_stride_bgra,
                uint8_t* dst_y,
                int dst_stride_y,
                uint8_t* dst_u,
@@ -914,9 +914,9 @@ int ABGRToI422(const uint8_t* src_abgr,
                int width,
                int height);
 
-// RGBA little endian (abgr in memory) to I420.
+// RGBA little endian (abgr in memory) to I422.
 LIBYUV_API
-int RGBAToI420(const uint8_t* src_rgba,
+int RGBAToI422(const uint8_t* src_rgba,
                int src_stride_rgba,
                uint8_t* dst_y,
                int dst_stride_y,
@@ -927,9 +927,9 @@ int RGBAToI420(const uint8_t* src_rgba,
                int width,
                int height);
 
-// RGBA little endian (abgr in memory) to I422.
+// RGBA little endian (abgr in memory) to I420.
 LIBYUV_API
-int RGBAToI422(const uint8_t* src_rgba,
+int RGBAToI420(const uint8_t* src_rgba,
                int src_stride_rgba,
                uint8_t* dst_y,
                int dst_stride_y,

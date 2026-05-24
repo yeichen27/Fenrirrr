@@ -210,6 +210,7 @@ open class Place : Parcelable {
         const val AUTH_BY_CODE = 100
         const val FEED_OWNER_LIST = 101
         const val FEED_OWNERS = 102
+        const val REACTED_PEERS = 103
 
         @JvmField
         val CREATOR: Parcelable.Creator<Place> = object : Parcelable.Creator<Place> {

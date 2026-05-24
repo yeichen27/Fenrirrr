@@ -71,7 +71,19 @@ class FeedbackVKOfficialDtoAdapter :
                     ) && optString(
                         root_item,
                         "icon_type"
-                    ) == "friend_found"
+                    ) == "friend_found" && optString(
+                        action_item,
+                        "url"
+                    )?.contains("friends_swipe") != true
+                ) {
+                    dto.action = ActionURL(optString(action_item, "url"))
+                } else if ("custom" == optString(
+                        action_item,
+                        "type"
+                    ) && optString(
+                        action_item,
+                        "url"
+                    )?.contains("/story") == true
                 ) {
                     dto.action = ActionURL(optString(action_item, "url"))
                 } else if ("message_open" == optString(

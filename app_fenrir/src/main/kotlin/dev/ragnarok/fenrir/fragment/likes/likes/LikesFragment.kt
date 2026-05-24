@@ -1,4 +1,4 @@
-package dev.ragnarok.fenrir.fragment.likes
+package dev.ragnarok.fenrir.fragment.likes.likes
 
 import android.os.Bundle
 import dev.ragnarok.fenrir.Extra
@@ -8,7 +8,7 @@ import dev.ragnarok.fenrir.activity.ActivityUtils.supportToolbarFor
 import dev.ragnarok.fenrir.fragment.absownerslist.AbsOwnersListFragment
 import dev.ragnarok.fenrir.fragment.absownerslist.ISimpleOwnersView
 
-class LikesFragment : AbsOwnersListFragment<LikesListPresenter, ISimpleOwnersView>() {
+class LikesFragment : AbsOwnersListFragment<LikesPresenter, ISimpleOwnersView>() {
     override fun onResume() {
         super.onResume()
         val actionBar = supportToolbarFor(this)
@@ -24,7 +24,7 @@ class LikesFragment : AbsOwnersListFragment<LikesListPresenter, ISimpleOwnersVie
             .apply(requireActivity())
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?) = LikesListPresenter(
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = LikesPresenter(
         requireArguments().getLong(Extra.ACCOUNT_ID),
         requireArguments().getString(Extra.TYPE)!!,
         requireArguments().getLong(Extra.OWNER_ID),

@@ -1729,4 +1729,5 @@
     <string name="repeat_mode">Повтор</string>
     <string name="saving_network_traffic">Экономия трафика</string>
     <string name="select_storage">Выберите хранилище</string>
+    <string name="reacted_peers">Отреагировали</string>
 </resources>

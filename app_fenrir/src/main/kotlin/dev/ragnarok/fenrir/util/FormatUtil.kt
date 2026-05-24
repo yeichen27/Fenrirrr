@@ -1,7 +1,6 @@
 package dev.ragnarok.fenrir.util
 
 import android.content.Context
-import android.text.Spannable
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.link.internal.OwnerLinkSpanFactory
 import java.text.DateFormat
@@ -13,7 +12,7 @@ object FormatUtil {
     fun formatCommunityBanInfo(
         context: Context, adminId: Long, adminName: String?,
         endDate: Long, adminClickListener: OwnerLinkSpanFactory.ActionListener?
-    ): Spannable? {
+    ): CharSequence? {
         val endDateString: String = if (endDate == 0L) {
             context.getString(R.string.forever).lowercase(Locale.getDefault())
         } else {

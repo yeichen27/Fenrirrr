@@ -1,4 +1,4 @@
-package dev.ragnarok.fenrir.fragment.likes
+package dev.ragnarok.fenrir.fragment.likes.likes
 
 import android.os.Bundle
 import dev.ragnarok.fenrir.domain.ILikesInteractor
@@ -11,7 +11,7 @@ import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import dev.ragnarok.fenrir.util.coroutines.CompositeJob
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 
-class LikesListPresenter(
+class LikesPresenter(
     accountId: Long,
     private val type: String,
     private val ownerId: Long,

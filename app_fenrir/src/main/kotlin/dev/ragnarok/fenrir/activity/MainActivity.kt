@@ -101,7 +101,8 @@ import dev.ragnarok.fenrir.fragment.friends.birthday.BirthDayFragment
 import dev.ragnarok.fenrir.fragment.friends.friendsbyphones.FriendsByPhonesFragment
 import dev.ragnarok.fenrir.fragment.friends.friendstabs.FriendsTabsFragment
 import dev.ragnarok.fenrir.fragment.gifts.GiftsFragment
-import dev.ragnarok.fenrir.fragment.likes.LikesFragment
+import dev.ragnarok.fenrir.fragment.likes.likes.LikesFragment
+import dev.ragnarok.fenrir.fragment.likes.reactions.ReactedPeersFragment
 import dev.ragnarok.fenrir.fragment.likes.storiesview.StoriesViewFragment
 import dev.ragnarok.fenrir.fragment.localserver.filemanagerremote.FileManagerRemoteFragment
 import dev.ragnarok.fenrir.fragment.localserver.photoslocalserver.PhotosLocalServerFragment
@@ -1845,6 +1846,10 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                     args.getLong(Extra.ACCOUNT_ID),
                     args.getLong(Extra.DB_ID)
                 )
+            )
+
+            Place.REACTED_PEERS -> attachToFront(
+                ReactedPeersFragment.newInstance(args)
             )
 
             else -> throw IllegalArgumentException("Main activity can't open this place, type: " + place.type)

@@ -6,7 +6,7 @@ plugins {
     alias(libs.plugins.android.library)
 }
 
-//1.14.0-rc01
+//1.14.0
 
 fun isDevelopBuild() = libs.versions.developerBuild.get().toBoolean()
 fun Provider<String>.asInt() = get().toInt()

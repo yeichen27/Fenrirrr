@@ -136,7 +136,6 @@
                             android:id="@+id/header_group_status"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:autoLink="web|phone|map|email"
                             android:ellipsize="end"
                             android:gravity="end"
                             android:maxLines="6"
@@ -178,7 +177,6 @@
                         android:insetBottom="3dp"
                         android:maxLines="1"
                         android:textSize="12sp"
-                        app:backgroundTint="@color/button_profile_tint"
                         tools:text="Primary" />
 
                     <com.google.android.material.button.MaterialButton
@@ -196,7 +194,7 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/header_group_secondary_button"
-                    style="@style/MyOutlinedButton"
+                    style="@style/MyOutlinedButtonAllCaps"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"

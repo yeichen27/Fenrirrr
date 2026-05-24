@@ -19,6 +19,7 @@ import dev.ragnarok.fenrir.model.MessageUpdate
 import dev.ragnarok.fenrir.model.Peer
 import dev.ragnarok.fenrir.model.PeerDeleting
 import dev.ragnarok.fenrir.model.PeerUpdate
+import dev.ragnarok.fenrir.model.ReactedMessagesPeers
 import dev.ragnarok.fenrir.model.ReactionAsset
 import dev.ragnarok.fenrir.model.SaveMessageBuilder
 import dev.ragnarok.fenrir.model.SentMsg
@@ -207,4 +208,10 @@ interface IMessagesRepository {
     ): Flow<Boolean>
 
     fun getReactionsAssets(accountId: Long): Flow<List<ReactionAsset>>
+    fun getReactedPeers(
+        accountId: Long,
+        peer_id: Long,
+        cmid: Int,
+        reaction_id: Int?
+    ): Flow<List<ReactedMessagesPeers>>
 }

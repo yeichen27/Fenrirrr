@@ -143,7 +143,7 @@
     <string-array name="array_photo_rounded_names">
         <item>Always round</item>
         <item>Round if single photo</item>
-        <item>Don't round</item>
+        <item>Don\'t round</item>
     </string-array>
 
     <string-array name="array_photo_rounded_items" translatable="false">
@@ -855,8 +855,8 @@
     <string name="community_send_request">Send request</string>
     <string name="community_join">Join the group</string>
     <string name="community_follow">Subscribe</string>
-    <string name="community_to_go">I'm going</string>
-    <string name="community_not_to_go">I'm mot going</string>
+    <string name="community_to_go">I\'m going</string>
+    <string name="community_not_to_go">I\'m mot going</string>
     <string name="community_unsubscribe_from_news">Unsubscribe</string>
     <string name="community_leave">Leave the group</string>
 
@@ -1039,7 +1039,7 @@
     <string name="with_photo_only">With photo only</string>
     <string name="chair">Department</string>
     <string name="faculty">Faculty</string>
-   <string name="sorting_by_day_attendance_members_number_ratio">by ratio of daily attendance to number of members</string>
+    <string name="sorting_by_day_attendance_members_number_ratio">by ratio of daily attendance to number of members</string>
     <string name="sorting_by_comments_number_members_number_ratio">by ratio of comments to number of members</string>
     <string name="sorting_by_boards_entries_number_members_number_ratio">by ratio of discussion board posts to number of members</string>
     <string name="school_class">Class</string>
@@ -1187,7 +1187,7 @@
     <string name="button_accept">Accept</string>
     <string name="accepted_friend_request">accepted a friend request</string>
 
-<string name="encryption_terms_of_use">
+    <string name="encryption_terms_of_use">
         TERMS OF USE
         \n
         \n1. FUNCTIONAL FEATURES
@@ -1203,7 +1203,7 @@
         \n2.4. Key exchange can be performed repeatedly an unlimited number of times. New messages will be encrypted with new keys, while old messages can still be decrypted with previous keys.
         \n
         \n3. KEY STORAGE
-        \n3.1. Encryption keys are stored locally on users' devices in persistent or volatile memory (depending on the chosen mode).
+        \n3.1. Encryption keys are stored locally on users devices in persistent or volatile memory (depending on the chosen mode).
         \n3.2. If encryption keys are lost, the user will not be able to read encrypted incoming or outgoing messages.
         \n3.3. The user may lose encryption keys in the following cases:
         \n- uninstalling the application from the device;
@@ -1981,4 +1981,5 @@
     <string name="repeat_mode">Repeat</string>
     <string name="saving_network_traffic">Data saving mode</string>
     <string name="select_storage">Select storage</string>
+    <string name="reacted_peers">Reacted peers</string>
 </resources>

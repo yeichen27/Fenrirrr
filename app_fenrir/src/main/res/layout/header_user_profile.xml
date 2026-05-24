@@ -153,7 +153,6 @@
                             android:id="@+id/fragment_user_profile_status"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:autoLink="web|phone|map|email"
                             android:ellipsize="end"
                             android:gravity="end"
                             android:maxLines="6"
@@ -193,7 +192,6 @@
                         android:insetBottom="3dp"
                         android:maxLines="1"
                         android:textSize="12sp"
-                        app:backgroundTint="@color/button_profile_tint"
                         tools:text="Subscribe" />
 
                     <com.google.android.material.button.MaterialButton
