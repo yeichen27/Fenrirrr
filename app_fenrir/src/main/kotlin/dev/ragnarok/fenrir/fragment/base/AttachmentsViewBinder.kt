@@ -29,7 +29,6 @@ import dev.ragnarok.fenrir.fragment.base.holder.IdentificableHolder
 import dev.ragnarok.fenrir.fragment.base.holder.SharedHolders
 import dev.ragnarok.fenrir.ifNonNullNoEmpty
 import dev.ragnarok.fenrir.link.LinkHelper
-import dev.ragnarok.fenrir.link.internal.LinkActionAdapter
 import dev.ragnarok.fenrir.link.internal.OwnerLinkSpanFactory
 import dev.ragnarok.fenrir.model.Article
 import dev.ragnarok.fenrir.model.Attachments
@@ -94,6 +93,13 @@ class AttachmentsViewBinder(
     private val expandVoiceTranscript: Boolean = Settings.get().main().isExpand_voice_transcript
     private var mVoiceActionListener: VoiceActionListener? = null
     private var mOnHashTagClickListener: EmojiconTextView.OnHashTagClickListener? = null
+
+    private val mLinkActionAdapter = object : OwnerLinkSpanFactory.ActionListener() {
+        override fun onOwnerClick(ownerId: Long) {
+            mAttachmentsActionCallback?.onOpenOwner(ownerId)
+        }
+    }
+
     fun setOnHashTagClickListener(onHashTagClickListener: EmojiconTextView.OnHashTagClickListener?) {
         mOnHashTagClickListener = onHashTagClickListener
     }
@@ -430,11 +436,8 @@ class AttachmentsViewBinder(
                     text,
                     owners = true,
                     topics = false,
-                    listener = object : LinkActionAdapter() {
-                        override fun onOwnerClick(ownerId: Long) {
-                            mAttachmentsActionCallback?.onOpenOwner(ownerId)
-                        }
-                    })
+                    listener = mLinkActionAdapter
+                )
             check.ivAvatar.setOnClickListener {
                 mAttachmentsActionCallback?.onOpenOwner(
                     copy.authorId
@@ -554,11 +557,8 @@ class AttachmentsViewBinder(
                 if (message.cryptStatus == CryptStatus.DECRYPTED) message.decryptedText else message.text,
                 owners = true,
                 topics = false,
-                listener = object : LinkActionAdapter() {
-                    override fun onOwnerClick(ownerId: Long) {
-                        mAttachmentsActionCallback?.onOpenOwner(ownerId)
-                    }
-                })
+                listener = mLinkActionAdapter
+            )
             tvBody.visibility =
                 if (message.text.isNullOrEmpty()) View.GONE else View.VISIBLE
             itemView.findViewById<TextView>(R.id.item_fwd_message_username).text =
@@ -650,11 +650,8 @@ class AttachmentsViewBinder(
                     AppTextUtils.reduceStringForPost(subtitle),
                     owners = true,
                     topics = false,
-                    listener = object : LinkActionAdapter() {
-                        override fun onOwnerClick(ownerId: Long) {
-                            mAttachmentsActionCallback?.onOpenOwner(ownerId)
-                        }
-                    })
+                    listener = mLinkActionAdapter
+                )
             } else if (doc.type == AttachmentsTypes.WALL_REPLY) {
                 tvShowMore.visibility = if (subtitle.length > 400) View.VISIBLE else View.GONE
                 tvDetails.visibility = View.GONE
@@ -663,11 +660,8 @@ class AttachmentsViewBinder(
                     AppTextUtils.reduceStringForPost(subtitle),
                     owners = true,
                     topics = false,
-                    listener = object : LinkActionAdapter() {
-                        override fun onOwnerClick(ownerId: Long) {
-                            mAttachmentsActionCallback?.onOpenOwner(ownerId)
-                        }
-                    })
+                    listener = mLinkActionAdapter
+                )
             } else if (doc.type == AttachmentsTypes.EVENT) {
                 tvShowMore.visibility = View.GONE
                 tvDetails.visibility = View.GONE
@@ -676,11 +670,8 @@ class AttachmentsViewBinder(
                     AppTextUtils.reduceStringForPost(subtitle),
                     owners = true,
                     topics = false,
-                    listener = object : LinkActionAdapter() {
-                        override fun onOwnerClick(ownerId: Long) {
-                            mAttachmentsActionCallback?.onOpenOwner(ownerId)
-                        }
-                    })
+                    listener = mLinkActionAdapter
+                )
             } else if (doc.type == AttachmentsTypes.NOT_SUPPORTED) {
                 tvShowMore.visibility = View.GONE
                 tvDetails.visibility = View.GONE

@@ -35,7 +35,6 @@ import dev.ragnarok.fenrir.fragment.search.SearchContentType
 import dev.ragnarok.fenrir.fragment.search.criteria.NewsFeedCriteria
 import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.link.LinkHelper
-import dev.ragnarok.fenrir.link.internal.LinkActionAdapter
 import dev.ragnarok.fenrir.link.internal.OwnerLinkSpanFactory
 import dev.ragnarok.fenrir.listener.OnSectionResumeCallback
 import dev.ragnarok.fenrir.model.ParcelableOwnerWrapper
@@ -392,17 +391,9 @@ class WallPostFragment : PlaceSupportMvpFragment<WallPostPresenter, IWallPostVie
                 post.text,
                 owners = true,
                 topics = false,
-                listener = object : LinkActionAdapter() {
+                listener = object : OwnerLinkSpanFactory.ActionListener() {
                     override fun onOwnerClick(ownerId: Long) {
                         onOpenOwner(ownerId)
-                    }
-
-                    override fun onOtherClick(URL: String) {
-                        LinkHelper.openUrl(
-                            requireActivity(),
-                            Settings.get().accounts().current,
-                            URL
-                        )
                     }
                 })
         mText?.setText(spannableText, TextView.BufferType.SPANNABLE)

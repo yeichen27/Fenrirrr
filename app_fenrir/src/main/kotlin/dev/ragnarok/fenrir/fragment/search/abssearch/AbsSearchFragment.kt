@@ -17,8 +17,10 @@ import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.MainActivity
 import dev.ragnarok.fenrir.fragment.base.PlaceSupportMvpFragment
+import dev.ragnarok.fenrir.fragment.search.criteria.BaseSearchCriteria
 import dev.ragnarok.fenrir.fragment.search.filteredit.FilterEditFragment
 import dev.ragnarok.fenrir.fragment.search.options.BaseOption
+import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.listener.EndlessRecyclerOnScrollListener
 import dev.ragnarok.fenrir.listener.OnSectionResumeCallback
 import dev.ragnarok.fenrir.nonNullNoEmpty
@@ -93,6 +95,13 @@ abstract class AbsSearchFragment<P : AbsSearchPresenter<V, *, T, *>, V : IBaseSe
         }
 
         val searchView: MySearchView = root.findViewById(R.id.searchview)
+        if (savedInstanceState == null) {
+            searchView.setQuery(
+                arguments?.getParcelableCompat<BaseSearchCriteria>(Extra.CRITERIA)?.query,
+                quietly = true,
+                isInitial = true
+            )
+        }
         searchView.setOnQueryTextListener(object : MySearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 lazyPresenter {

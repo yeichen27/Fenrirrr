@@ -66,7 +66,6 @@ import dev.ragnarok.fenrir.api.model.VKApiOwner
 import dev.ragnarok.fenrir.api.model.VKApiUser
 import dev.ragnarok.fenrir.api.model.interfaces.Identificable
 import dev.ragnarok.fenrir.api.model.interfaces.IdentificableOwner
-import dev.ragnarok.fenrir.link.internal.LinkActionAdapter
 import dev.ragnarok.fenrir.link.internal.OwnerLinkSpanFactory
 import dev.ragnarok.fenrir.media.exo.OkHttpDataSource
 import dev.ragnarok.fenrir.model.ISelectable
@@ -1563,7 +1562,7 @@ object Utils {
                     message,
                     owners = true,
                     topics = false,
-                    listener = object : LinkActionAdapter() {
+                    listener = object : OwnerLinkSpanFactory.ActionListener() {
                         override fun onOwnerClick(ownerId: Long) {
                             getOwnerWallPlace(accountId, ownerId, null).tryOpenWith(context)
                         }

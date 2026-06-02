@@ -13,6 +13,7 @@ import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.toMain
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlin.time.Duration.Companion.milliseconds
 
 internal class GroupLongpoll(
     private val networker: INetworker,
@@ -28,7 +29,7 @@ internal class GroupLongpoll(
 
     private val delayedObservable: Flow<Boolean> = flow {
         while (isActive()) {
-            delay(DELAY_ON_ERROR.toLong())
+            delay(DELAY_ON_ERROR.milliseconds)
             emit(true)
         }
     }

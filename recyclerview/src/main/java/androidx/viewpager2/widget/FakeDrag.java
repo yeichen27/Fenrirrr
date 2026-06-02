@@ -16,8 +16,6 @@
 
 package androidx.viewpager2.widget;
 
-import static androidx.viewpager2.widget.ViewPager2.ORIENTATION_HORIZONTAL;
-
 import android.os.SystemClock;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
@@ -84,7 +82,7 @@ final class FakeDrag {
         mActualDraggedDistance += offsetPx;
         long time = SystemClock.uptimeMillis();
 
-        boolean isHorizontal = mViewPager.getOrientation() == ORIENTATION_HORIZONTAL;
+        boolean isHorizontal = mViewPager.getOrientation() == RecyclerView.HORIZONTAL;
         // Scroll deltas use pixels:
         final int offsetX = isHorizontal ? offsetPx : 0;
         final int offsetY = isHorizontal ? 0 : offsetPx;

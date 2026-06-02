@@ -309,20 +309,20 @@
 
 
     <LinearLayout
+        android:id="@+id/fragment_chat_empty_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:visibility="gone">
 
         <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/fragment_chat_empty_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:padding="16dp"
             android:text="@string/chat_empty_text"
-            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
-            android:visibility="gone" />
+            android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
 
         <dev.ragnarok.fenrir.view.natives.animation.ThorVGLottieView
             android:id="@+id/fragment_chat_empty_animation"
@@ -331,7 +331,6 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="16dp"
             android:alpha="0.8"
-            android:visibility="gone"
             app:loopAnimation="true" />
 
     </LinearLayout>

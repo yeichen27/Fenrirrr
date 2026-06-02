@@ -583,8 +583,8 @@ class MusicPlaybackService : MediaSessionService() {
             get() {
                 if (exoplayer.shuffleModeEnabled) {
                     val s = getShuffleOrderIndexes()
-                    for (i in 0 until s.size) {
-                        if (s[i] == exoplayer.currentMediaItemIndex) {
+                    for ((i, element) in s.withIndex()) {
+                        if (element == exoplayer.currentMediaItemIndex) {
                             return i
                         }
                     }

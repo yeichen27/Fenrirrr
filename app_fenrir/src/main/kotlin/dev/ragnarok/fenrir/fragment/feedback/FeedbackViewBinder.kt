@@ -17,7 +17,6 @@ import dev.ragnarok.fenrir.fragment.base.AttachmentsHolder
 import dev.ragnarok.fenrir.fragment.base.AttachmentsViewBinder
 import dev.ragnarok.fenrir.fragment.base.AttachmentsViewBinder.OnAttachmentsActionCallback
 import dev.ragnarok.fenrir.fragment.feedback.FeedbackAdapter.UsersHolder
-import dev.ragnarok.fenrir.link.internal.LinkActionAdapter
 import dev.ragnarok.fenrir.link.internal.OwnerLinkSpanFactory
 import dev.ragnarok.fenrir.model.Comment
 import dev.ragnarok.fenrir.model.Owner
@@ -50,7 +49,11 @@ class FeedbackViewBinder(
     private val linkColor: Int = CurrentTheme.getColorPrimary(context)
     private val attachmentsViewBinder: AttachmentsViewBinder =
         AttachmentsViewBinder(context, attachmentsActionCallback)
-    private val mLinkActionAdapter: LinkActionAdapter
+    private val mLinkActionAdapter = object : OwnerLinkSpanFactory.ActionListener() {
+        override fun onOwnerClick(ownerId: Long) {
+            openOwner(ownerId)
+        }
+    }
 
     /**
      * Настройка отображения уведомления типа "mention_comment_video"
@@ -1281,13 +1284,5 @@ class FeedbackViewBinder(
 
     companion object {
         private const val SPACE = " "
-    }
-
-    init {
-        mLinkActionAdapter = object : LinkActionAdapter() {
-            override fun onOwnerClick(ownerId: Long) {
-                openOwner(ownerId)
-            }
-        }
     }
 }

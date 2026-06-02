@@ -22,8 +22,8 @@ class LongpollUpdatesDtoAdapter : AbsDtoAdapter<VKApiLongpollUpdates>("VkApiLong
         updates.ts = optLong(root, "ts")
         val array = root["updates"]
         if (checkArray(array)) {
-            for (i in 0 until array.jsonArray.size) {
-                val updateArray = array.jsonArray[i].asJsonArraySafe
+            for (element in array.jsonArray) {
+                val updateArray = element.asJsonArraySafe
                 val event: AbsLongpollEvent? =
                     updateArray?.let {
                         kJson.decodeFromJsonElement(
@@ -34,7 +34,7 @@ class LongpollUpdatesDtoAdapter : AbsDtoAdapter<VKApiLongpollUpdates>("VkApiLong
                 if (event != null) {
                     updates.putUpdate(event)
                 } else {
-                    Logger.d(TAG, "Unhandled Longpoll event: array: $updateArray")
+                    Logger.d(TAG, "Unhandled Longpoll event: array: null")
                 }
             }
         }

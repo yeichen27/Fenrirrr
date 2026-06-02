@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso3.Transformation
 import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.R
-import dev.ragnarok.fenrir.link.internal.LinkActionAdapter
 import dev.ragnarok.fenrir.link.internal.OwnerLinkSpanFactory
 import dev.ragnarok.fenrir.model.Banned
 import dev.ragnarok.fenrir.model.User
@@ -24,7 +23,7 @@ import dev.ragnarok.fenrir.view.OnlineView
 class CommunityBannedAdapter(private var data: List<Banned>) :
     RecyclerView.Adapter<CommunityBannedAdapter.Holder>() {
     private val transformation: Transformation = CurrentTheme.createTransformationForAvatar()
-    private val ownerLinkActionListener: OwnerLinkSpanFactory.ActionListener = LinkActionAdapter()
+    private val ownerLinkActionListener = OwnerLinkSpanFactory.ActionListener()
     private var actionListener: ActionListener? = null
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
         return Holder(

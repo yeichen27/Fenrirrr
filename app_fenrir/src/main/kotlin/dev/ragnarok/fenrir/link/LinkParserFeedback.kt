@@ -1,7 +1,10 @@
 package dev.ragnarok.fenrir.link
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.text.SpannableStringBuilder
+import android.text.Spanned
+import androidx.core.util.PatternsCompat
 import dev.ragnarok.fenrir.orZero
 
 object LinkParserFeedback {
@@ -9,11 +12,12 @@ object LinkParserFeedback {
         Regex("\\[((?:id|club|event|public)\\d+)\\|([^]]+)]")
     val MENTIONS_AVATAR_PATTERN: Regex =
         Regex("\\[(id|club|event|public)(\\d+)\\|([^]]+)]")
-    private val PHONE_NUMBER_PATTERN: Regex = Regex("\\+\\d{8,15}")
-    private const val URL_REGEX_PATTERN =
-        "(?:http|https|Http|Https)?://(?:www\\.)?[-a-zA-Z\\x{0430}-\\x{044F}\\x{0410}-\\x{042F}0-9@:%._+~#=]{1,256}\\.[a-zA-Z\\x{0430}-\\x{044F}\\x{0410}-\\x{042F}0-9()]{1,6}\\S([-a-zA-Z\\x{0430}-\\x{044F}\\x{0410}-\\x{042F}0-9()@:%_+.~#?&/=]*)"
-    private var REPLY_URL_PATTERN: Regex = Regex("\\[($URL_REGEX_PATTERN)\\|([^]]+)]")
-    private var URL_PATTERN: Regex = Regex(URL_REGEX_PATTERN)
+    private val PHONE_NUMBER_PATTERN: Regex =
+        Regex("^(?:\\+7|7|8)\\s?\\(?\\d{3}\\)?[\\s-]?\\d{3}[\\s-]?\\d{2}[\\s-]?\\d{2}$")
+
+    @SuppressLint("RestrictedApi")
+    private var URL_PATTERN: Regex = PatternsCompat.AUTOLINK_WEB_URL.toRegex()
+    private var REPLY_URL_PATTERN: Regex = Regex("\\[(${URL_PATTERN.pattern})\\|([^]]+)]")
 
     fun parseLinks(context: Context, text: CharSequence): SpannableStringBuilder {
         var spannableStringBuilder = SpannableStringBuilder(text)
@@ -31,13 +35,13 @@ object LinkParserFeedback {
                 spannableStringBuilder.replace(
                     res.range.first,
                     (res.range.last + 1),
-                    res.groupValues.getOrNull(3)
+                    res.groupValues.getOrNull(16)
                 )
                 spannableStringBuilder.setSpan(
                     linkSpan,
                     res.range.first,
-                    res.range.first + (res.groupValues.getOrNull(3)?.length.orZero()),
-                    0
+                    res.range.first + (res.groupValues.getOrNull(16)?.length.orZero()),
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
                 )
             } while (res != null)
         } catch (_: Exception) {
@@ -49,7 +53,7 @@ object LinkParserFeedback {
                     LinkSpan(context, i.groupValues.getOrNull(0).orEmpty(), true),
                     i.range.first,
                     (i.range.last + 1),
-                    0
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
                 )
             }
         } catch (_: Exception) {
@@ -62,7 +66,7 @@ object LinkParserFeedback {
                     LinkSpan(context, "tel:" + i.groupValues.getOrNull(0).orEmpty(), false),
                     i.range.first,
                     (i.range.last + 1),
-                    0
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
                 )
             }
         } catch (_: Exception) {
@@ -89,7 +93,7 @@ object LinkParserFeedback {
                     linkSpan2,
                     res.range.first,
                     res.range.first + (res.groupValues.getOrNull(2)?.length.orZero()),
-                    0
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
                 )
                 spannableStringBuilder = replace2
             } while (res != null)

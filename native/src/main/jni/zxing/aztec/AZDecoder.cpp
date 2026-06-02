@@ -8,6 +8,7 @@
 #include "AZDecoder.h"
 
 #include "AZDetectorResult.h"
+#include "Barcode.h"
 #include "BitArray.h"
 #include "BitMatrix.h"
 #include "DecoderResult.h"
@@ -16,10 +17,10 @@
 #include "ZXTestSupport.h"
 #include "ZXAlgorithms.h"
 
-#include <cctype>
 #include <cstring>
 #include <numeric>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -119,7 +120,7 @@ static BitArray ExtractBits(const DetectorResult& ddata)
 /**
 * @brief Performs RS error correction on an array of bits.
 */
-static std::pair<BitArray, int> CorrectBits(const DetectorResult& ddata, const BitArray& rawbits)
+static std::tuple<BitArray, int, double> CorrectBits(const DetectorResult& ddata, const BitArray& rawbits)
 {
 	const GenericGF* gf = nullptr;
 	int codewordSize;
@@ -146,8 +147,9 @@ static std::pair<BitArray, int> CorrectBits(const DetectorResult& ddata, const B
 		throw FormatError("Invalid number of code words");
 
 	auto dataWords = ToInts<int>(rawbits, codewordSize, numCodewords, Size(rawbits) % codewordSize);
+	auto uec = ReedSolomonDecode(*gf, dataWords, numECCodewords);
 
-	if (!ReedSolomonDecode(*gf, dataWords, numECCodewords))
+	if (!uec)
 		throw ChecksumError();
 
 	// drop the ECCodewords from the dataWords array
@@ -167,7 +169,7 @@ static std::pair<BitArray, int> CorrectBits(const DetectorResult& ddata, const B
 			correctedBits.appendBits(dataWord, codewordSize);
 	}
 
-	return {std::move(correctedBits), numECCodewords * 100 / numCodewords};
+	return {std::move(correctedBits), numECCodewords * 100 / numCodewords, *uec};
 }
 
 /**
@@ -234,7 +236,7 @@ static StructuredAppendInfo ParseStructuredAppend(Content& res)
 		sai.id = text.substr(1, sp - 1); // Strip space delimiters
 		i = sp + 1;
 	}
-	if (i + 1 >= text.size() || !std::isupper(text[i]) || !std::isupper(text[i + 1]))
+	if (i + 1 >= text.size() || !IsUpper(text[i]) || !IsUpper(text[i + 1]))
 		return {};
 
 	sai.index = text[i] - 'A';
@@ -331,13 +333,13 @@ DecoderResult Decode(const BitArray& bits)
 			res.symbology.modifier = '1'; // GS1
 			res.symbology.aiFlag = AIFlag::GS1;
 			res.erase(0, 1); // Remove FNC1
-		} else if (res.bytes.size() > 2 && std::isupper(res.bytes[0]) && res.bytes[1] == 29) {
-			// FNC1 following single uppercase letter (the AIM Application Indicator)
+		} else if (res.bytes.size() > 1 && IsAlpha(res.bytes[0]) && res.bytes[1] == 29) {
+			// FNC1 following single upper/lowercase letter (the AIM Application Indicator)
 			res.symbology.modifier = '2'; // AIM
 			res.symbology.aiFlag = AIFlag::AIM;
 			res.erase(1, 1); // Remove FNC1,
-							 // The AIM Application Indicator character "A"-"Z" is left in the stream (ISO/IEC 24778:2008 16.2)
-		} else if (res.bytes.size() > 3 && std::isdigit(res.bytes[0]) && std::isdigit(res.bytes[1]) && res.bytes[2] == 29) {
+							 // The AIM Application Indicator character "A"-"Z"/"a"-"z" is left in the stream (ISO/IEC 24778:2008 16.2)
+		} else if (res.bytes.size() > 2 && IsDigit(res.bytes[0]) && IsDigit(res.bytes[1]) && res.bytes[2] == 29) {
 			// FNC1 following 2 digits (the AIM Application Indicator)
 			res.symbology.modifier = '2'; // AIM
 			res.symbology.aiFlag = AIFlag::AIM;
@@ -370,8 +372,8 @@ DecoderResult Decode(const DetectorResult& detectorResult)
 			// This is a rune - just return the rune value
 			return DecodeRune(detectorResult);
 		}
-		auto [bits, ecLevel] = CorrectBits(detectorResult, ExtractBits(detectorResult));
-		return Decode(bits).setEcLevel(std::to_string(ecLevel) + "%");
+		auto [bits, ecLevel, uec] = CorrectBits(detectorResult, ExtractBits(detectorResult));
+		return Decode(bits).setEcLevel(std::to_string(ecLevel) + "%").addExtra(BarcodeExtra::UEC, uec);
 	} catch (Error e) {
 		return e;
 	}

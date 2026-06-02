@@ -264,19 +264,19 @@ class CatalogV2SectionAdapter(
         }
 
         private fun findScrollable(items: ArrayList<AbsModel>): Int {
-            for (i in 0 until items.size) {
-                if (items[i].getModelType() == AbsModelType.MODEL_AUDIO) {
-                    val audio = items[i] as Audio
+            for ((i, element) in items.withIndex()) {
+                if (element.getModelType() == AbsModelType.MODEL_AUDIO) {
+                    val audio = element as Audio
                     if (audio.isAnimationNow) {
                         return i
                     }
-                } else if (items[i].getModelType() == AbsModelType.MODEL_CATALOG_V2_BLOCK) {
-                    val block = items[i] as CatalogV2Block
+                } else if (element.getModelType() == AbsModelType.MODEL_CATALOG_V2_BLOCK) {
+                    val block = element as CatalogV2Block
                     if (block.isScroll()) {
                         return i
                     }
-                } else if (items[i].getModelType() == AbsModelType.MODEL_CATALOG_V2_RECOMMENDATION_PLAYLIST) {
-                    val block = items[i] as CatalogV2RecommendationPlaylist
+                } else if (element.getModelType() == AbsModelType.MODEL_CATALOG_V2_RECOMMENDATION_PLAYLIST) {
+                    val block = element as CatalogV2RecommendationPlaylist
                     if (block.isScroll()) {
                         return i
                     }

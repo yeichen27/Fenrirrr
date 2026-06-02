@@ -20,7 +20,6 @@ import dev.ragnarok.fenrir.fragment.base.AttachmentsViewBinder
 import dev.ragnarok.fenrir.fragment.base.AttachmentsViewBinder.OnAttachmentsActionCallback
 import dev.ragnarok.fenrir.fragment.base.RecyclerBindableAdapter
 import dev.ragnarok.fenrir.link.LinkHelper
-import dev.ragnarok.fenrir.link.internal.LinkActionAdapter
 import dev.ragnarok.fenrir.link.internal.OwnerLinkSpanFactory
 import dev.ragnarok.fenrir.model.Post
 import dev.ragnarok.fenrir.orZero
@@ -42,7 +41,7 @@ class FavePostAdapter(
         AttachmentsViewBinder(mContext, attachmentsActionCallback)
     private val transformation: Transformation = CurrentTheme.createTransformationForAvatar()
     private val clickListener = adapterListener
-    private val mLinkActionAdapter: LinkActionAdapter = object : LinkActionAdapter() {
+    private val mLinkActionAdapter = object : OwnerLinkSpanFactory.ActionListener() {
         override fun onOwnerClick(ownerId: Long) {
             clickListener?.onAvatarClick(ownerId)
         }

@@ -663,7 +663,7 @@ public class DefaultItemAnimator extends SimpleItemAnimator {
      */
     @Override
     public boolean canReuseUpdatedViewHolder(RecyclerView.@NonNull ViewHolder viewHolder,
-                                             @NonNull List<Object> payloads) {
+            @NonNull List<Object> payloads) {
         return !payloads.isEmpty() || super.canReuseUpdatedViewHolder(viewHolder, payloads);
     }
 }

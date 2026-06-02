@@ -31,6 +31,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
+import kotlin.time.Duration.Companion.milliseconds
 
 internal class InternalCoroutineDispatcher internal constructor(
     context: Context,
@@ -95,7 +96,7 @@ internal class InternalCoroutineDispatcher internal constructor(
 
     override fun dispatchRetry(hunter: BitmapHunter) {
         scope.launch {
-            delay(RETRY_DELAY)
+            delay(RETRY_DELAY.milliseconds)
             channel.send {
                 performRetry(hunter)
             }

@@ -314,7 +314,7 @@ static int ModeMessage(const BitMatrix& image, const PerspectiveTransform& mod2P
 		bits >>= 4;
 	}
 
-	bool decodeResult = ReedSolomonDecode(GenericGF::AztecParam(), words, numECCodewords);
+	auto decodeResult = ReedSolomonDecode(GenericGF::AztecParam(), words, numECCodewords);
 
 	if ((!decodeResult) && compact) {
 		// Is this a Rune?
@@ -359,12 +359,12 @@ static void ExtractParameters(int modeMessage, bool compact, int& nbLayers, int&
 	}
 }
 
-DetectorResult Detect(const BitMatrix& image, bool isPure, bool tryHarder)
+DetectorResult Detect(const BitMatrix& image, bool isPure, bool tryHarder, bool standard, bool runes)
 {
-	return FirstOrDefault(Detect(image, isPure, tryHarder, 1));
+	return FirstOrDefault(Detect(image, isPure, tryHarder, 1, standard, runes));
 }
 
-DetectorResults Detect(const BitMatrix& image, bool isPure, bool tryHarder, int maxSymbols)
+DetectorResults Detect(const BitMatrix& image, bool isPure, bool tryHarder, int maxSymbols, bool standard, bool runes)
 {
 #ifdef PRINT_DEBUG
 	LogMatrixWriter lmw(log, image, 5, "az-log.pnm");
@@ -431,6 +431,9 @@ DetectorResults Detect(const BitMatrix& image, bool isPure, bool tryHarder, int 
 		if (!parseModeMessage(srcQuad, *fpQuad))
 			continue;
 #endif
+
+		if ((!standard && !isRune) || (!runes && isRune))
+			continue;
 
 		*fpQuad = RotatedCorners(*fpQuad, rotate, mirror);
 

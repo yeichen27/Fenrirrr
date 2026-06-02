@@ -333,7 +333,7 @@ abstract class AbsDtoAdapter<T>(name: String) : KSerializer<T> {
                 fallback
             } else try {
                 val list: MutableList<T> = ArrayList()
-                for (i in 0 until array.jsonArray.size) {
+                for (i in array.jsonArray.indices) {
                     list.add(kJson.decodeFromJsonElement(serializer, array[i]))
                 }
                 list
@@ -355,8 +355,8 @@ abstract class AbsDtoAdapter<T>(name: String) : KSerializer<T> {
             array ?: return fallback
             return try {
                 val list: MutableList<T> = ArrayList()
-                for (i in 0 until array.size) {
-                    list.add(kJson.decodeFromJsonElement(serializer, array[i]))
+                for (element in array) {
+                    list.add(kJson.decodeFromJsonElement(serializer, element))
                 }
                 list
             } catch (e: Exception) {
@@ -473,8 +473,8 @@ abstract class AbsDtoAdapter<T>(name: String) : KSerializer<T> {
             }
             array ?: return LongArray(0)
             val list = LongArray(array.size)
-            for (i in 0 until array.size) {
-                list[i] = array[i].asPrimitiveSafe?.longOrNull.orZero()
+            for ((i, element) in array.withIndex()) {
+                list[i] = element.asPrimitiveSafe?.longOrNull.orZero()
             }
             return list
         }
@@ -485,8 +485,8 @@ abstract class AbsDtoAdapter<T>(name: String) : KSerializer<T> {
             }
             array ?: return IntArray(0)
             val list = IntArray(array.size)
-            for (i in 0 until array.size) {
-                list[i] = array[i].asPrimitiveSafe?.intOrNull.orZero()
+            for ((i, element) in array.withIndex()) {
+                list[i] = element.asPrimitiveSafe?.intOrNull.orZero()
             }
             return list
         }

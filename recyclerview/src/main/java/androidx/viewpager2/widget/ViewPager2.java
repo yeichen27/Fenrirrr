@@ -79,15 +79,6 @@ import java.lang.annotation.Retention;
 public final class ViewPager2 extends ViewGroup {
     @RestrictTo(LIBRARY_GROUP_PREFIX)
     @Retention(SOURCE)
-    @IntDef({ORIENTATION_HORIZONTAL, ORIENTATION_VERTICAL})
-    public @interface Orientation {
-    }
-
-    public static final int ORIENTATION_HORIZONTAL = RecyclerView.HORIZONTAL;
-    public static final int ORIENTATION_VERTICAL = RecyclerView.VERTICAL;
-
-    @RestrictTo(LIBRARY_GROUP_PREFIX)
-    @Retention(SOURCE)
     @IntDef({SCROLL_STATE_IDLE, SCROLL_STATE_DRAGGING, SCROLL_STATE_SETTLING})
     public @interface ScrollState {
     }
@@ -303,7 +294,7 @@ public final class ViewPager2 extends ViewGroup {
                 a, 0, 0);
         try {
             setOrientation(
-                    a.getInt(R.styleable.RecyclerView_android_orientation, ORIENTATION_HORIZONTAL));
+                    a.getInt(R.styleable.RecyclerView_android_orientation, RecyclerView.HORIZONTAL));
         } finally {
             a.recycle();
         }
@@ -572,7 +563,7 @@ public final class ViewPager2 extends ViewGroup {
 
     int getPageSize() {
         final RecyclerView rv = mRecyclerView;
-        return getOrientation() == ORIENTATION_HORIZONTAL
+        return getOrientation() == RecyclerView.HORIZONTAL
                 ? rv.getWidth() - rv.getPaddingLeft() - rv.getPaddingRight()
                 : rv.getHeight() - rv.getPaddingTop() - rv.getPaddingBottom();
     }
@@ -580,16 +571,16 @@ public final class ViewPager2 extends ViewGroup {
     /**
      * Sets the orientation of the ViewPager2.
      *
-     * @param orientation {@link #ORIENTATION_HORIZONTAL} or {@link #ORIENTATION_VERTICAL}
+     * @param orientation RecyclerView.HORIZONTAL or RecyclerView.VERTICAL
      */
-    public void setOrientation(@Orientation int orientation) {
+    public void setOrientation(@RecyclerView.Orientation int orientation) {
         mLayoutManager.setOrientation(orientation);
         mAccessibilityProvider.onSetOrientation();
     }
 
-    public @Orientation int getOrientation() {
+    public @RecyclerView.Orientation int getOrientation() {
         return mLayoutManager.getOrientation() == LinearLayoutManager.VERTICAL
-                ? ViewPager2.ORIENTATION_VERTICAL : ViewPager2.ORIENTATION_HORIZONTAL;
+                ? RecyclerView.VERTICAL : RecyclerView.HORIZONTAL;
     }
 
     boolean isRtl() {
@@ -1523,7 +1514,7 @@ public final class ViewPager2 extends ViewGroup {
                 return;
             }
 
-            if (getOrientation() == ORIENTATION_HORIZONTAL) {
+            if (getOrientation() == RecyclerView.HORIZONTAL) {
                 boolean isLayoutRtl = isRtl();
                 int actionIdPageForward = isLayoutRtl ? actionIdPageLeft : actionIdPageRight;
                 int actionIdPageBackward = isLayoutRtl ? actionIdPageRight : actionIdPageLeft;
@@ -1556,7 +1547,7 @@ public final class ViewPager2 extends ViewGroup {
             int rowCount = 0;
             int colCount = 0;
             if (getAdapter() != null) {
-                if (getOrientation() == ORIENTATION_VERTICAL) {
+                if (getOrientation() == RecyclerView.VERTICAL) {
                     rowCount = getAdapter().getItemCount();
                     colCount = 1;
                 } else {
@@ -1572,10 +1563,10 @@ public final class ViewPager2 extends ViewGroup {
         }
 
         private void addCollectionItemInfo(View host, AccessibilityNodeInfoCompat infoCompat) {
-            int rowIndex = (getOrientation() == ORIENTATION_VERTICAL)
+            int rowIndex = (getOrientation() == RecyclerView.VERTICAL)
                     ? mLayoutManager.getPosition(host)
                     : 0;
-            int colIndex = (getOrientation() == ORIENTATION_HORIZONTAL)
+            int colIndex = (getOrientation() == RecyclerView.HORIZONTAL)
                     ? mLayoutManager.getPosition(host)
                     : 0;
             AccessibilityNodeInfoCompat.CollectionItemInfoCompat collectionItemInfoCompat =

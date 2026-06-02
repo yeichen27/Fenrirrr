@@ -12,18 +12,20 @@ import android.text.Spanned
 import android.text.style.CharacterStyle
 import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
-import android.text.util.Linkify
 import android.util.AttributeSet
+import android.view.MotionEvent
 import android.view.View
 import androidx.core.net.toUri
-import androidx.core.text.util.LinkifyCompat
+import androidx.core.util.PatternsCompat
 import androidx.fragment.app.FragmentActivity
 import dev.ragnarok.fenrir.EmojiconHandler.addEmojis
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.link.LinkHelper
+import dev.ragnarok.fenrir.link.LinkSpan
 import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.ModalBottomSheetDialogFragment
 import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.OptionRequest
 import dev.ragnarok.fenrir.nonNullNoEmpty
+import dev.ragnarok.fenrir.place.PlaceFactory.getExternalLinkPlace
 import dev.ragnarok.fenrir.settings.AppPrefs
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.ClickableForegroundColorSpan
@@ -48,6 +50,7 @@ class EmojiconTextView @JvmOverloads constructor(context: Context, attrs: Attrib
     private var mHashTagWordColor = 0
     private var linksResolved: CharSequence? = null
     private var mResolveLinks = CancelableJob()
+    private var interceptSpans = false
     private fun init(attrs: AttributeSet?) {
         mAdditionalHashTagChars = ArrayList(2)
         mAdditionalHashTagChars?.add('_')
@@ -67,6 +70,35 @@ class EmojiconTextView @JvmOverloads constructor(context: Context, attrs: Attrib
                 a.recycle()
             }
         }
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    override fun onTouchEvent(event: MotionEvent?): Boolean {
+        if (interceptSpans && event != null && event.action == MotionEvent.ACTION_UP) {
+            if (text is Spannable) {
+                val tmpText = text as Spannable
+                var x = event.x.toInt()
+                var y = event.y.toInt()
+
+                x -= totalPaddingLeft
+                y -= totalPaddingTop
+
+                x += scrollX
+                y += scrollY
+
+                val line = layout.getLineForVertical(y)
+                val offset = layout.getOffsetForHorizontal(line, x.toFloat())
+
+                val spans = tmpText.getSpans(offset, offset, ClickableSpan::class.java)
+
+                if (spans.isNotEmpty()) {
+                    // Клик по Spannable
+                    spans[0].onClick(this)
+                    return true
+                }
+            }
+        }
+        return super.onTouchEvent(event)
     }
 
     private fun setColorsToAllHashTags(text: Spannable) {
@@ -130,39 +162,31 @@ class EmojiconTextView @JvmOverloads constructor(context: Context, attrs: Attrib
         }
     }
 
-    private fun linkifyVKUrl(spannable: Spannable) {
-        try {
-            val res = URL_VK_PATTERN.findAll(spannable)
-            for (i in res) {
-                val url = spannable.toString().substring(i.range.first, i.range.last + 1)
-                val urlSpan: ClickableSpan = object : ClickableSpan() {
-                    override fun onClick(widget: View) {
-                        LinkHelper.openUrl(
-                            context as Activity,
-                            Settings.get().accounts().current,
-                            url
-                        )
-                    }
-                }
-                spannable.setSpan(
-                    urlSpan,
-                    i.range.first,
-                    i.range.last + 1,
-                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-                )
-            }
-        } catch (_: Exception) {
-        }
+    fun setInterceptSpans(interceptSpans: Boolean) {
+        this.interceptSpans = interceptSpans
     }
 
-    private fun linkifyNonVKUrl(spannable: Spannable) {
+    private fun linkifyUrls(spannable: Spannable) {
         try {
-            val res = URL_NON_VK_PATTERN.findAll(spannable)
+            val res = URL_PATTERN.findAll(spannable)
             for (i in res) {
-                val url = spannable.toString().substring(i.range.first, i.range.last + 1)
+                var url = spannable.toString().substring(i.range.first, i.range.last + 1)
+                if (i.range.first > 0 && spannable[i.range.first - 1] == '@') {
+                    continue
+                }
+                if (!url.startsWith("http") && !url.startsWith("https") && !url.startsWith("rstp")) {
+                    url = "https://$url"
+                }
                 val urlSpan: ClickableSpan = object : ClickableSpan() {
                     override fun onClick(widget: View) {
-                        if (URL_YOUTUBE_PATTERN.containsMatchIn(url)) {
+                        val openInternal = Settings.get().main().isOpenUrlInternal
+                        if (openInternal >= 1 && URL_VK_PATTERN.matches(url)) {
+                            LinkHelper.openUrl(
+                                context as Activity,
+                                Settings.get().accounts().current,
+                                url
+                            )
+                        } else if (openInternal >= 1 && URL_YOUTUBE_PATTERN.matches(url)) {
                             val menus = ModalBottomSheetDialogFragment.Builder()
                             val hasReVanced = AppPrefs.isReVancedYoutubeInstalled(context)
                             if (hasReVanced) {
@@ -258,6 +282,11 @@ class EmojiconTextView @JvmOverloads constructor(context: Context, attrs: Attrib
                                     }
                                 }
                             }
+                        } else if (openInternal >= 2) {
+                            getExternalLinkPlace(
+                                Settings.get().accounts().current,
+                                url
+                            ).tryOpenWith(context)
                         } else {
                             LinkHelper.openLinkInBrowser(context, url)
                         }
@@ -327,21 +356,38 @@ class EmojiconTextView @JvmOverloads constructor(context: Context, attrs: Attrib
     private fun makeResolveLinkJob() {
         mResolveLinks.cancel()
         mResolveLinks.set(linkResolveScheduler.launch {
-            val spannable: Spannable =
-                SpannableStringBuilder.valueOf(linksResolved ?: return@launch)
+            val spannable = SpannableStringBuilder.valueOf(linksResolved ?: return@launch)
             if (mDisplayHashTags) {
                 setColorsToAllHashTags(spannable)
             }
             if (!Settings.get().ui().isSystemEmoji) {
                 addEmojis(context, spannable, mEmojiconSize, mTextStart, mTextLength)
             }
-            val mode = Settings.get().main().isOpenUrlInternal
-            if (mode > 0) {
-                linkifyVKUrl(spannable)
+            try {
+                val res = PHONE_NUMBER_PATTERN.findAll(spannable)
+                for (i in res) {
+                    spannable.setSpan(
+                        LinkSpan(context, "tel:" + i.groupValues.getOrNull(0).orEmpty(), false),
+                        i.range.first,
+                        (i.range.last + 1),
+                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                    )
+                }
+            } catch (_: Exception) {
             }
-            if (mode > 1) {
-                linkifyNonVKUrl(spannable)
+            try {
+                val res = MAIL_PATTERN.findAll(spannable)
+                for (i in res) {
+                    spannable.setSpan(
+                        LinkSpan(context, "mailto:" + i.groupValues.getOrNull(0).orEmpty(), false),
+                        i.range.first,
+                        (i.range.last + 1),
+                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                    )
+                }
+            } catch (_: Exception) {
             }
+            linkifyUrls(spannable)
             /*
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                 val textClassifier = context.getSystemService(TextClassificationManager::class.java)
@@ -353,11 +399,11 @@ class EmojiconTextView @JvmOverloads constructor(context: Context, attrs: Attrib
                     null
                 )
             }
-             */
             LinkifyCompat.addLinks(
                 spannable,
-                Linkify.PHONE_NUMBERS or Linkify.EMAIL_ADDRESSES
+                Linkify.WEB_URLS or Linkify.EMAIL_ADDRESSES
             )
+             */
             CoroutinesUtils.inMainThread {
                 linksResolved = null
                 super.setText(spannable, BufferType.SPANNABLE)
@@ -390,8 +436,12 @@ class EmojiconTextView @JvmOverloads constructor(context: Context, attrs: Attrib
             Regex("(((http|https|rstp)://)?(\\w+.)?vk\\.(ru|com|me|cc)/\\S*)")
         private val URL_YOUTUBE_PATTERN: Regex =
             Regex("(((http|https|rstp)://)?(\\w+.)?(youtube\\.com|youtu\\.be)/\\S*)")
-        private val URL_NON_VK_PATTERN: Regex =
-            Regex("((http|https|rstp)://(?!(\\w+.)?vk\\.(ru|com|me|cc)/)\\S*)")
+        private val PHONE_NUMBER_PATTERN: Regex =
+            Regex("^(?:\\+7|7|8)\\s?\\(?\\d{3}\\)?[\\s-]?\\d{3}[\\s-]?\\d{2}[\\s-]?\\d{2}$")
+        private val MAIL_PATTERN: Regex = PatternsCompat.EMAIL_ADDRESS.toRegex()
+
+        @SuppressLint("RestrictedApi")
+        private var URL_PATTERN: Regex = PatternsCompat.AUTOLINK_WEB_URL.toRegex()
 
         private val linkResolveScheduler =
             CoroutineScope(Executors.newSingleThreadExecutor().asCoroutineDispatcher())

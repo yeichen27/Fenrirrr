@@ -3945,6 +3945,7 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
         super.requestDisallowInterceptTouchEvent(disallowIntercept);
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent e) {
         if (mLayoutSuppressed || mIgnoreMotionEventTillDown) {

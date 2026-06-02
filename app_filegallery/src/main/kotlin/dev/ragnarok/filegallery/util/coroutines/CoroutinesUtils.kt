@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlin.time.Duration.Companion.milliseconds
 
 object CoroutinesUtils {
     val coroutineExceptionHandlerWithToast = CoroutineExceptionHandler { _, throwable ->
@@ -149,7 +150,7 @@ object CoroutinesUtils {
 
     fun delayTaskFlow(timeMillis: Long): Flow<Boolean> {
         return flow {
-            delay(timeMillis)
+            delay(timeMillis.milliseconds)
             emit(true)
         }
     }
@@ -157,7 +158,7 @@ object CoroutinesUtils {
     inline fun <reified T> Flow<T>.delayedFlow(timeMillis: Long): Flow<T> {
         val t = this
         return flow {
-            delay(timeMillis)
+            delay(timeMillis.milliseconds)
             if (isActive()) {
                 emit(t.single())
             }
@@ -198,7 +199,7 @@ object CoroutinesUtils {
             while (needRepeat() && isActive()) {
                 t.single()
                 if (delayMS > 0) {
-                    delay(delayMS)
+                    delay(delayMS.milliseconds)
                 }
             }
             emit(true)

@@ -45,7 +45,7 @@ class AttachmentsDtoAdapter : AbsDtoAdapter<VKApiAttachments>("VKApiAttachments"
         }
         val array = json.jsonArray
         val dto = VKApiAttachments(array.size)
-        for (i in 0 until array.size) {
+        for (i in array.indices) {
             if (!checkObject(array[i])) {
                 continue
             }

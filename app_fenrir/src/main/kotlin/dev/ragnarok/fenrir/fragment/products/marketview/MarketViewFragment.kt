@@ -18,8 +18,7 @@ import dev.ragnarok.fenrir.activity.SendAttachmentsActivity.Companion.startForSe
 import dev.ragnarok.fenrir.activity.SendAttachmentsActivity.Companion.startForSendAttachmentsFor
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
 import dev.ragnarok.fenrir.getParcelableCompat
-import dev.ragnarok.fenrir.link.internal.LinkActionAdapter
-import dev.ragnarok.fenrir.link.internal.OwnerLinkSpanFactory.withSpans
+import dev.ragnarok.fenrir.link.internal.OwnerLinkSpanFactory
 import dev.ragnarok.fenrir.model.Market
 import dev.ragnarok.fenrir.model.Peer
 import dev.ragnarok.fenrir.module.parcel.ParcelNative
@@ -138,11 +137,14 @@ class MarketViewFragment : BaseMvpFragment<MarketViewPresenter, IMarketViewView>
         }
         if (market.description.isNullOrEmpty()) description?.visibility = View.GONE else {
             description?.visibility = View.VISIBLE
-            description?.text = withSpans(
+            description?.text = OwnerLinkSpanFactory.withSpans(
                 requireActivity().getString(
                     R.string.markets_description,
                     market.description
-                ), owners = true, topics = false, listener = object : LinkActionAdapter() {
+                ),
+                owners = true,
+                topics = false,
+                listener = object : OwnerLinkSpanFactory.ActionListener() {
                     override fun onOwnerClick(ownerId: Long) {
                         getOwnerWallPlace(accountId, ownerId, null).tryOpenWith(requireActivity())
                     }

@@ -75,7 +75,7 @@ class VP2NestedRecyclerView @JvmOverloads constructor(
             if (!scrolled) {
                 val dx = ev.x - initialX
                 val dy = ev.y - initialY
-                val isVpHorizontal = orientation == ViewPager2.ORIENTATION_HORIZONTAL
+                val isVpHorizontal = orientation == HORIZONTAL
                 val absDX = abs(dx)
                 val absDY = abs(dy)
                 // assuming ViewPager2 touch-slop is 2x touch-slop of child
@@ -149,7 +149,7 @@ class VP2NestedRecyclerView @JvmOverloads constructor(
             } else if (ev.action == MotionEvent.ACTION_MOVE) {
                 val dx = ev.x - initialX
                 val dy = ev.y - initialY
-                val isVpHorizontal = orientation == ViewPager2.ORIENTATION_HORIZONTAL
+                val isVpHorizontal = orientation == HORIZONTAL
                 val absDX = abs(dx)
                 val absDY = abs(dy)
                 // assuming ViewPager2 touch-slop is 2x touch-slop of child
@@ -180,7 +180,7 @@ class VP2NestedRecyclerView @JvmOverloads constructor(
                 if (!scrolled) {
                     val dx = ev.x - initialX
                     val dy = ev.y - initialY
-                    val isVpHorizontal = orientation == ViewPager2.ORIENTATION_HORIZONTAL
+                    val isVpHorizontal = orientation == HORIZONTAL
                     val absDX = abs(dx)
                     val absDY = abs(dy)
                     // assuming ViewPager2 touch-slop is 2x touch-slop of child

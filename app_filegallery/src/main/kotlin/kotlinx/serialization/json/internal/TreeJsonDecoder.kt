@@ -248,7 +248,7 @@ private class JsonPrimitiveDecoder(
     override fun decodeElementIndex(descriptor: SerialDescriptor): Int = 0
 
     override fun currentElement(tag: String): JsonElement {
-        require(tag === PRIMITIVE_TAG) { "This input can only handle primitives with '$PRIMITIVE_TAG' tag" }
+        require(tag == PRIMITIVE_TAG) { "This input can only handle primitives with '$PRIMITIVE_TAG' tag" }
         return value
     }
 }

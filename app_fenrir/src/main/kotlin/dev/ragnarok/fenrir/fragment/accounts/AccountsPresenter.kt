@@ -84,6 +84,7 @@ import okio.source
 import java.io.File
 import java.io.FileOutputStream
 import kotlin.coroutines.cancellation.CancellationException
+import kotlin.time.Duration.Companion.seconds
 
 class AccountsPresenter(savedInstanceState: Bundle?) :
     RxSupportPresenter<IAccountsView>(savedInstanceState) {
@@ -576,7 +577,7 @@ class AccountsPresenter(savedInstanceState: Bundle?) :
         data: SetAuthCodeStatusResponse
     ): Flow<Boolean> {
         return flow {
-            delay((data.polling_delay * 1000).toLong())
+            delay(data.polling_delay.seconds)
             if (isActive() && data.expires_in > System.currentTimeMillis() / 1000) {
                 networker.vkAuth().getAuthCodeStatus(
                     q, Constants.API_ID, Utils.getDeviceId(

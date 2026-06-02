@@ -13,6 +13,7 @@
 #include "DetectorResult.h"
 #include "JSON.h"
 #include "Version.h"
+#include "ZXAlgorithms.h"
 
 #ifdef ZXING_READERS
 #include "ReadBarcode.h"
@@ -328,7 +329,7 @@ Barcode CreateBarcode(const void* data, int size, int mode, const CreatorOptions
 		if (auto eci = opts.eci(); eci) {
 			if (auto cs = CharacterSetFromString(*eci); cs != CharacterSet::Unknown) {
 				zint->eci = static_cast<int>(ToECI(cs));
-			} else if (std::all_of(eci->begin(), eci->end(), [](char c) { return std::isdigit(c); })) {
+			} else if (std::all_of(eci->begin(), eci->end(), IsDigit<char>)) {
 				zint->eci = std::stoi(*eci);
 			}
 		} else if (mode == DATA_MODE) {
@@ -339,6 +340,9 @@ Barcode CreateBarcode(const void* data, int size, int mode, const CreatorOptions
 		// else if (mode == UNICODE_MODE && !IsAscii({data, narrow_cast<size_t>(size)}))
 		// 	zint->eci = static_cast<int>(ECI::UTF8);
 	}
+
+	if (opts.format() == BarcodeFormat::Telepen && (std::all_of((const char*)data, (const char*)data + size, IsDigit<char>)))
+		zint->symbology = BARCODE_TELEPEN_NUM;
 
 	int warning;
 	CHECK_WARN(ZBarcode_Encode_and_Buffer(zint, (uint8_t*)data, size, 0), warning);

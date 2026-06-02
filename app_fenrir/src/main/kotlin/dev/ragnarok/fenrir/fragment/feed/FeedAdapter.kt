@@ -22,7 +22,6 @@ import dev.ragnarok.fenrir.fragment.base.AttachmentsViewBinder.OnAttachmentsActi
 import dev.ragnarok.fenrir.fragment.base.RecyclerBindableAdapter
 import dev.ragnarok.fenrir.fragment.base.holder.IdentificableHolder
 import dev.ragnarok.fenrir.link.LinkHelper
-import dev.ragnarok.fenrir.link.internal.LinkActionAdapter
 import dev.ragnarok.fenrir.link.internal.OwnerLinkSpanFactory
 import dev.ragnarok.fenrir.model.News
 import dev.ragnarok.fenrir.orZero
@@ -45,6 +44,12 @@ class FeedAdapter(
     private var clickListener: ClickListener? = null
     private var nextHolderId = 0
     private var recyclerView: RecyclerView? = null
+
+    private val mLinkActionAdapter = object : OwnerLinkSpanFactory.ActionListener() {
+        override fun onOwnerClick(ownerId: Long) {
+            clickListener?.onAvatarClick(ownerId)
+        }
+    }
 
     @SuppressLint("SetTextI18n")
     override fun onBindItemViewHolder(viewHolder: PostHolder, position: Int, type: Int) {
@@ -74,11 +79,8 @@ class FeedAdapter(
                 result,
                 owners = true,
                 topics = false,
-                listener = object : LinkActionAdapter() {
-                    override fun onOwnerClick(ownerId: Long) {
-                        clickListener?.onAvatarClick(ownerId)
-                    }
-                })
+                listener = mLinkActionAdapter
+            )
         var force = false
         if (item.text.isNullOrEmpty()) {
             when (item.type) {

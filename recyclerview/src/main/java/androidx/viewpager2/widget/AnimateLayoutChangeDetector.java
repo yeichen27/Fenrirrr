@@ -18,13 +18,12 @@ package androidx.viewpager2.widget;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
-import static androidx.viewpager2.widget.ViewPager2.ORIENTATION_HORIZONTAL;
-
 import android.animation.LayoutTransition;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.jspecify.annotations.NonNull;
 
@@ -69,7 +68,7 @@ final class AnimateLayoutChangeDetector {
             return true;
         }
 
-        boolean isHorizontal = mLayoutManager.getOrientation() == ORIENTATION_HORIZONTAL;
+        boolean isHorizontal = mLayoutManager.getOrientation() == RecyclerView.HORIZONTAL;
         int[][] bounds = new int[childCount][2];
         for (int i = 0; i < childCount; i++) {
             View view = mLayoutManager.getChildAt(i);

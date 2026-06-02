@@ -235,7 +235,7 @@ private class JsonPrimitiveEncoder(
     }
 
     override fun putElement(key: String, element: JsonElement) {
-        require(key === PRIMITIVE_TAG) { "This output can only consume primitives with '$PRIMITIVE_TAG' tag" }
+        require(key == PRIMITIVE_TAG) { "This output can only consume primitives with '$PRIMITIVE_TAG' tag" }
         require(content == null) { "Primitive element was already recorded. Does call to .encodeXxx happen more than once?" }
         content = element
         nodeConsumer(element)

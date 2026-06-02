@@ -16,8 +16,6 @@ object OwnerLinkSpanFactory {
     private val ownerPattern: Regex = Regex("\\[(id|club)(\\d+)\\|([^]]+)]")
     private val topicCommentPattern: Regex =
         Regex("\\[(id|club)(\\d*):bp(-\\d*)_(\\d*)\\|([^]]+)]")
-    private val linkPattern: Regex =
-        Regex("\\[(https:[^]]+|http:[^]]+|vk\\.(?:ru|com|me)[^]]+|)\\|([^]]+)]")
 
     fun findPatterns(
         input: String?,
@@ -29,8 +27,7 @@ object OwnerLinkSpanFactory {
         }
         val ownerLinks = if (owners) findOwnersLinks(input) else null
         val topicLinks = if (topics) findTopicLinks(input) else null
-        val othersLinks = findOthersLinks(input)
-        val count = safeCountOfMultiple(ownerLinks, topicLinks, othersLinks)
+        val count = safeCountOfMultiple(ownerLinks, topicLinks)
         if (count > 0) {
             val all: MutableList<AbsInternalLink> = ArrayList(count)
             if (ownerLinks.nonNullNoEmpty()) {
@@ -38,9 +35,6 @@ object OwnerLinkSpanFactory {
             }
             if (topicLinks.nonNullNoEmpty()) {
                 all.addAll(topicLinks)
-            }
-            if (othersLinks.nonNullNoEmpty()) {
-                all.addAll(othersLinks)
             }
             all.sortWith(LINK_COMPARATOR)
             return all
@@ -59,8 +53,7 @@ object OwnerLinkSpanFactory {
         }
         val ownerLinks = if (owners) findOwnersLinks(input) else null
         val topicLinks = if (topics) findTopicLinks(input) else null
-        val othersLinks = findOthersLinks(input)
-        val count = safeCountOfMultiple(ownerLinks, topicLinks, othersLinks)
+        val count = safeCountOfMultiple(ownerLinks, topicLinks)
         if (count > 0) {
             val all: MutableList<AbsInternalLink> = ArrayList(count)
             if (ownerLinks.nonNullNoEmpty()) {
@@ -69,13 +62,9 @@ object OwnerLinkSpanFactory {
             if (topicLinks.nonNullNoEmpty()) {
                 all.addAll(topicLinks)
             }
-            if (othersLinks.nonNullNoEmpty()) {
-                all.addAll(othersLinks)
-            }
             all.sortWith(LINK_COMPARATOR)
             val result = SpannableStringBuilder(replace(input, all))
             for (link in all) {
-                //TODO Нужно ли удалять spannable перед установкой новых
                 val clickableSpan: ClickableSpan = object : ClickableSpan() {
                     override fun onClick(widget: View) {
                         if (listener != null) {
@@ -84,9 +73,6 @@ object OwnerLinkSpanFactory {
                             }
                             if (link is OwnerLink) {
                                 listener.onOwnerClick(link.ownerId)
-                            }
-                            if (link is OtherLink) {
-                                listener.onOtherClick(link.Link)
                             }
                         }
                     }
@@ -152,26 +138,6 @@ object OwnerLinkSpanFactory {
         }
     }
 
-    private fun findOthersLinks(input: CharSequence): List<OtherLink>? {
-        return try {
-            val res = linkPattern.findAll(input)
-            val links: MutableList<OtherLink> = ArrayList(res.count())
-            for (i in res) {
-                links.add(
-                    OtherLink(
-                        i.range.first,
-                        i.range.last + 1,
-                        i.groupValues.getOrNull(1).orEmpty(),
-                        i.groupValues.getOrNull(2).orEmpty()
-                    )
-                )
-            }
-            links
-        } catch (_: Exception) {
-            null
-        }
-    }
-
     fun getTextWithCollapseOwnerLinks(input: CharSequence?): CharSequence? {
         if (input.isNullOrEmpty()) {
             return null
@@ -217,10 +183,8 @@ object OwnerLinkSpanFactory {
         return "[" + (if (ownerId > 0) "id" else "club") + abs(ownerId) + "|" + title + "]"
     }
 
-    interface ActionListener {
-        fun onTopicLinkClicked(link: TopicLink)
-        fun onOwnerClick(ownerId: Long)
-        fun onOtherClick(URL: String)
+    open class ActionListener {
+        open fun onTopicLinkClicked(link: TopicLink) {}
+        open fun onOwnerClick(ownerId: Long) {}
     }
-
 }

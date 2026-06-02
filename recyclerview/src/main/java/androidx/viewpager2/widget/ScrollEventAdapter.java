@@ -16,7 +16,6 @@
 
 package androidx.viewpager2.widget;
 
-import static androidx.viewpager2.widget.ViewPager2.ORIENTATION_HORIZONTAL;
 import static androidx.viewpager2.widget.ViewPager2.SCROLL_STATE_DRAGGING;
 import static androidx.viewpager2.widget.ViewPager2.SCROLL_STATE_IDLE;
 import static androidx.viewpager2.widget.ViewPager2.SCROLL_STATE_SETTLING;
@@ -250,7 +249,7 @@ final class ScrollEventAdapter extends RecyclerView.OnScrollListener {
         int decoratedHeight = firstVisibleView.getHeight() + topDecorations + bottomDecorations;
         int decoratedWidth = firstVisibleView.getWidth() + leftDecorations + rightDecorations;
 
-        boolean isHorizontal = mLayoutManager.getOrientation() == ORIENTATION_HORIZONTAL;
+        boolean isHorizontal = mLayoutManager.getOrientation() == RecyclerView.HORIZONTAL;
         int start, sizePx;
         if (isHorizontal) {
             sizePx = decoratedWidth;

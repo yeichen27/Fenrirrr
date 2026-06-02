@@ -23,7 +23,6 @@ import dev.ragnarok.fenrir.fragment.base.AttachmentsViewBinder.OnAttachmentsActi
 import dev.ragnarok.fenrir.fragment.base.AttachmentsViewBinder.VoiceActionListener
 import dev.ragnarok.fenrir.fragment.base.RecyclerBindableAdapter
 import dev.ragnarok.fenrir.ifNonNullNoEmpty
-import dev.ragnarok.fenrir.link.internal.LinkActionAdapter
 import dev.ragnarok.fenrir.link.internal.OwnerLinkSpanFactory
 import dev.ragnarok.fenrir.model.CryptStatus
 import dev.ragnarok.fenrir.model.Keyboard
@@ -69,8 +68,8 @@ class MessagesAdapter(
     private val unreadColor: Int
     private val disable_read: Boolean
     private val isNightSticker: Boolean
-    private val ownerLinkAdapter: OwnerLinkSpanFactory.ActionListener =
-        object : LinkActionAdapter() {
+    private val ownerLinkAdapter =
+        object : OwnerLinkSpanFactory.ActionListener() {
             override fun onOwnerClick(ownerId: Long) {
                 attachmentsActionCallback.onOpenOwner(ownerId)
             }
@@ -78,6 +77,8 @@ class MessagesAdapter(
     private var onHashTagClickListener: EmojiconTextView.OnHashTagClickListener? = null
     private var onMessageActionListener: OnMessageActionListener? = null
     private var onReactionListener: ReactionContainer.ReactionClicked? = null
+    private val isSupportPopupMenu = Settings.get()
+        .main().isChat_popup_menu
 
     private var reactions: Map<Int, ReactionAsset> =
         HashMap(Utils.getReactionsAssets()[accountId].orEmpty())
@@ -189,6 +190,7 @@ class MessagesAdapter(
             holder.Restore.visibility = View.GONE
         }
         holder.message.visibility = if (message.text.isNullOrEmpty()) View.GONE else View.VISIBLE
+        holder.message.setInterceptSpans(isSupportPopupMenu)
         holder.message.text =
             OwnerLinkSpanFactory.withSpans(
                 message.text,
@@ -443,6 +445,7 @@ class MessagesAdapter(
                 }
             }
         }
+        holder.body.setInterceptSpans(isSupportPopupMenu)
         holder.body.text =
             OwnerLinkSpanFactory.withSpans(
                 displayedText,

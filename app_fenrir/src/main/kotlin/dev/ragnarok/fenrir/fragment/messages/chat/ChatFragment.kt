@@ -79,7 +79,6 @@ import dev.ragnarok.fenrir.getParcelableArrayListExtraCompat
 import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.getParcelableExtraCompat
 import dev.ragnarok.fenrir.link.internal.OwnerLinkSpanFactory
-import dev.ragnarok.fenrir.link.internal.TopicLink
 import dev.ragnarok.fenrir.listener.BackPressCallback
 import dev.ragnarok.fenrir.listener.ChatOnScrollListener
 import dev.ragnarok.fenrir.listener.EndlessRecyclerOnScrollListener
@@ -164,7 +163,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
     private var downMenuGroup: FrameLayout? = null
 
     private var inputViewController: InputViewController? = null
-    private var emptyText: TextView? = null
+    private var emptyContainer: ViewGroup? = null
     private var emptyAnimation: ThorVGLottieView? = null
 
     private var pinnedView: View? = null
@@ -320,11 +319,13 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
 
         if (requireActivity() is MainActivity) {
             ViewCompat.setOnApplyWindowInsetsListener(root) { v, windowInsets ->
+                val keyboardVisible = windowInsets.isVisible(WindowInsetsCompat.Type.ime())
+                presenter?.fireKeyboardOpened(keyboardVisible)
                 val insets =
                     windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
                 if (!Settings.get().main().is_side_navigation) {
                     val imeFixedBottom =
-                        if (windowInsets.isVisible(WindowInsetsCompat.Type.ime())) max(
+                        if (keyboardVisible) max(
                             windowInsets.getInsets(
                                 WindowInsetsCompat.Type.ime()
                             ).bottom, insets.bottom
@@ -347,10 +348,12 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
             }
         } else {
             ViewCompat.setOnApplyWindowInsetsListener(root) { v, windowInsets ->
+                val keyboardVisible = windowInsets.isVisible(WindowInsetsCompat.Type.ime())
+                presenter?.fireKeyboardOpened(keyboardVisible)
                 val insets =
                     windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
                 val imeFixedBottom =
-                    if (windowInsets.isVisible(WindowInsetsCompat.Type.ime())) max(
+                    if (keyboardVisible) max(
                         windowInsets.getInsets(
                             WindowInsetsCompat.Type.ime()
                         ).bottom, insets.bottom
@@ -388,7 +391,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
         toolbarAvatar = root.findViewById(R.id.toolbar_avatar)
         emptyAvatar = root.findViewById(R.id.empty_avatar_text)
 
-        emptyText = root.findViewById(R.id.fragment_chat_empty_text)
+        emptyContainer = root.findViewById(R.id.fragment_chat_empty_container)
         emptyAnimation = root.findViewById(R.id.fragment_chat_empty_animation)
         toolbarRootView = root.findViewById(R.id.toolbar_root)
 
@@ -1070,17 +1073,9 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
                     text,
                     owners = true,
                     topics = false,
-                    listener = object : OwnerLinkSpanFactory.ActionListener {
-                        override fun onTopicLinkClicked(link: TopicLink) {
-
-                        }
-
+                    listener = object : OwnerLinkSpanFactory.ActionListener() {
                         override fun onOwnerClick(ownerId: Long) {
                             presenter?.fireOwnerClick(ownerId)
-                        }
-
-                        override fun onOtherClick(URL: String) {
-
                         }
                     })
                 buttonUnpin?.visibility = if (canChange) View.VISIBLE else View.GONE
@@ -1931,8 +1926,10 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
     }
 
     override fun setEmptyTextVisible(visible: Boolean) {
-        emptyText?.isVisible = visible
-        emptyAnimation?.isVisible = visible
+        if (emptyContainer?.isVisible == visible) {
+            return
+        }
+        emptyContainer?.isVisible = visible
         if (visible) {
             emptyAnimation?.fromRes(
                 dev.ragnarok.fenrir_common.R.raw.valknut,

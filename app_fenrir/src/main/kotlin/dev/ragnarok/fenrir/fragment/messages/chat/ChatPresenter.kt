@@ -209,6 +209,8 @@ class ChatPresenter(
 
     private var isKeepScreenOn = false
 
+    private var isKeyboardOpened = false
+
     init {
         if (savedInstanceState == null) {
             generatedId = IDGEN.incrementAndGet()
@@ -871,7 +873,7 @@ class ChatPresenter(
 
     private fun resolveLoadUpHeaderView() {
         val loading = isLoadingNow
-        view?.setupLoadUpHeaderState(if (loading) LoadMoreState.LOADING else if (endOfContent) LoadMoreState.END_OF_LIST else LoadMoreState.CAN_LOAD_MORE)
+        view?.setupLoadUpHeaderState(if (loading) LoadMoreState.LOADING else if (endOfContent && data.isEmpty()) LoadMoreState.INVISIBLE else if (endOfContent) LoadMoreState.END_OF_LIST else LoadMoreState.CAN_LOAD_MORE)
     }
 
     private fun requestAtStart() {
@@ -1107,8 +1109,15 @@ class ChatPresenter(
         return (calculateAttachmentsCount() > 0 && !isReplyMessageCanVoice()) || draftMessageText.trimmedNonNullNoEmpty() || nowUploadingToEditingMessage()
     }
 
+    fun fireKeyboardOpened(opened: Boolean) {
+        if (isKeyboardOpened != opened) {
+            isKeyboardOpened = opened
+            resolveEmptyTextVisibility()
+        }
+    }
+
     private fun resolveEmptyTextVisibility() {
-        view?.setEmptyTextVisible(data.isEmpty() && !isLoadingNow)
+        view?.setEmptyTextVisible(data.isEmpty() && !isLoadingNow && !isKeyboardOpened)
     }
 
     private fun nowUploadingToEditingMessage(): Boolean {

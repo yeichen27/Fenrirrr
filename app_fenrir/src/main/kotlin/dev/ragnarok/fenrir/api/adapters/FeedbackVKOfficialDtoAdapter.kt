@@ -80,10 +80,13 @@ class FeedbackVKOfficialDtoAdapter :
                 } else if ("custom" == optString(
                         action_item,
                         "type"
-                    ) && optString(
+                    ) && (optString(
                         action_item,
                         "url"
-                    )?.contains("/story") == true
+                    )?.contains("/story") == true || optString(
+                        action_item,
+                        "url"
+                    )?.contains("/wall") == true)
                 ) {
                     dto.action = ActionURL(optString(action_item, "url"))
                 } else if ("message_open" == optString(

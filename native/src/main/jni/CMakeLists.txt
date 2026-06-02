@@ -457,6 +457,7 @@ add_library(zxing STATIC
         zxing/oned/ODDataBarExpandedReader.cpp
         zxing/oned/ODEAN8Writer.cpp
         zxing/oned/ODReader.cpp
+        zxing/oned/ODTelepenReader.cpp
         zxing/oned/ODWriterHelper.cpp
         zxing/oned/ODCodabarWriter.cpp
         zxing/oned/ODCode39Reader.cpp
@@ -476,6 +477,7 @@ add_library(zxing STATIC
         zxing/oned/ODEAN13Writer.cpp
         zxing/oned/ODMultiUPCEANReader.cpp
         zxing/oned/ODUPCEWriter.cpp
+        zxing/pdf417/MicroPDFReader.cpp
         zxing/pdf417/PDFBarcodeValue.cpp
         zxing/pdf417/PDFCodewordDecoder.cpp
         zxing/pdf417/PDFDetectionResult.cpp

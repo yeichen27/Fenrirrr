@@ -38,6 +38,7 @@ import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
 import java.lang.ref.WeakReference
 import java.util.concurrent.Executors
+import kotlin.time.Duration.Companion.milliseconds
 
 class UploadManagerImpl(
     context: Context,
@@ -57,7 +58,7 @@ class UploadManagerImpl(
 
     private val timer: Flow<IProgressUpdate?> = flow {
         while (isActive()) {
-            delay(PROGRESS_LOOKUP_DELAY.toLong())
+            delay(PROGRESS_LOOKUP_DELAY.milliseconds)
             val ret: IProgressUpdate?
             synchronized(this) {
                 val pCurrent = current

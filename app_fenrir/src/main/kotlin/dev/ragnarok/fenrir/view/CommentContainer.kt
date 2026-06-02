@@ -25,7 +25,6 @@ import dev.ragnarok.fenrir.fragment.base.AttachmentsHolder
 import dev.ragnarok.fenrir.fragment.base.AttachmentsHolder.Companion.forComment
 import dev.ragnarok.fenrir.fragment.base.AttachmentsViewBinder
 import dev.ragnarok.fenrir.fragment.comments.CommentsAdapter.OnCommentActionListener
-import dev.ragnarok.fenrir.link.internal.LinkActionAdapter
 import dev.ragnarok.fenrir.link.internal.OwnerLinkSpanFactory
 import dev.ragnarok.fenrir.link.internal.TopicLink
 import dev.ragnarok.fenrir.model.Comment
@@ -152,7 +151,7 @@ class CommentContainer : LinearLayout {
                 comment.text,
                 owners = true,
                 topics = true,
-                listener = object : LinkActionAdapter() {
+                listener = object : OwnerLinkSpanFactory.ActionListener() {
                     override fun onTopicLinkClicked(link: TopicLink) {
                         listener?.onReplyToOwnerClick(link.replyToOwner, link.replyToCommentId)
                     }

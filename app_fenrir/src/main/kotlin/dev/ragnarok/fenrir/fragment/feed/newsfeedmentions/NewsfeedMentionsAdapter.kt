@@ -23,7 +23,6 @@ import dev.ragnarok.fenrir.fragment.base.AttachmentsViewBinder.OnAttachmentsActi
 import dev.ragnarok.fenrir.fragment.feed.newsfeedmentions.NewsfeedMentionsAdapter.AbsHolder
 import dev.ragnarok.fenrir.ifNonNull
 import dev.ragnarok.fenrir.link.LinkHelper
-import dev.ragnarok.fenrir.link.internal.LinkActionAdapter
 import dev.ragnarok.fenrir.link.internal.OwnerLinkSpanFactory
 import dev.ragnarok.fenrir.model.NewsfeedComment
 import dev.ragnarok.fenrir.model.Photo
@@ -56,8 +55,6 @@ class NewsfeedMentionsAdapter(
     private val attachmentsViewBinder: AttachmentsViewBinder =
         AttachmentsViewBinder(context, callback)
     private val transformation: Transformation = CurrentTheme.createTransformationForAvatar()
-    private val linkActionAdapter: LinkActionAdapter = object : LinkActionAdapter() { // do nothing
-    }
     private val colorTextSecondary: Int = CurrentTheme.getSecondaryTextColorCode(context)
     private val iconColorActive: Int = CurrentTheme.getColorPrimary(context)
 
@@ -271,7 +268,7 @@ class NewsfeedMentionsAdapter(
             comment.text,
             owners = true,
             topics = true,
-            listener = linkActionAdapter
+            listener = null
         )
         holder.commentText.setText(text, TextView.BufferType.SPANNABLE)
         holder.commentText.visibility =
@@ -315,7 +312,7 @@ class NewsfeedMentionsAdapter(
                 reduced,
                 owners = true,
                 topics = false,
-                listener = linkActionAdapter
+                listener = null
             )
         holder.buttonShowMore.visibility =
             if (post.hasText() && post.text?.length.orZero() > 400) View.VISIBLE else View.GONE

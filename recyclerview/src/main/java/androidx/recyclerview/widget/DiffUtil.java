@@ -458,19 +458,28 @@ public class DiffUtil {
     }
 
     /**
-         * A diagonal is a match in the graph.
-         * Rather than snakes, we only record the diagonals in the path.
-         */
-        record Diagonal(int x, int y, int size) {
+     * A diagonal is a match in the graph.
+     * Rather than snakes, we only record the diagonals in the path.
+     */
+    static class Diagonal {
+        public final int x;
+        public final int y;
+        public final int size;
+
+        Diagonal(int x, int y, int size) {
+            this.x = x;
+            this.y = y;
+            this.size = size;
+        }
 
         int endX() {
-                return x + size;
-            }
-
-            int endY() {
-                return y + size;
-            }
+            return x + size;
         }
+
+        int endY() {
+            return y + size;
+        }
+    }
 
     /**
      * Snakes represent a match between two lists. It is optionally prefixed or postfixed with an

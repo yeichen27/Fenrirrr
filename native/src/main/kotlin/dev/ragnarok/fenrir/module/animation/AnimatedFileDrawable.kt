@@ -23,6 +23,7 @@ import kotlinx.coroutines.newFixedThreadPoolContext
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import kotlin.math.abs
+import kotlin.time.Duration.Companion.milliseconds
 
 class AnimatedFileDrawable(
     filePath: String,
@@ -405,7 +406,7 @@ class AnimatedFileDrawable(
             )
         }
         loadFrameTask = CoroutineScope(coroutineDispatcher).launch {
-            delay(ms)
+            delay(ms.milliseconds)
             loadFrameRunnable()
         }
     }

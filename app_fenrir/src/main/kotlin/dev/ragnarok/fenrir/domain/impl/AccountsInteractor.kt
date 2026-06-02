@@ -37,6 +37,7 @@ import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.single
+import kotlin.time.Duration.Companion.milliseconds
 
 class AccountsInteractor(
     private val networker: INetworker,
@@ -69,7 +70,7 @@ class AccountsInteractor(
                     .account()
                     .ban(owner.ownerId).checkInt().single()
                 if (s) {
-                    delay(1000) // чтобы не дергало UI
+                    delay(1000.milliseconds) // чтобы не дергало UI
                     blacklistRepository.fireAdd(accountId, owner).single()
                 }
             }

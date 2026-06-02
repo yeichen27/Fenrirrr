@@ -25,6 +25,7 @@ import java.io.File
 import java.io.InputStream
 import kotlin.math.ceil
 import kotlin.math.min
+import kotlin.time.Duration.Companion.milliseconds
 
 class ThorVGLottieDrawable : Drawable, Animatable {
     @IntDef(RESTART, REVERSE)
@@ -150,7 +151,7 @@ class ThorVGLottieDrawable : Drawable, Animatable {
                 startTime = -1L
 
                 CoroutineScope(Dispatchers.Main).launch {
-                    delay((lottieState.frameInterval - elapsedMs).coerceAtLeast(0L))
+                    delay((lottieState.frameInterval - elapsedMs).coerceAtLeast(0L).milliseconds)
                     if (running) {
                         startTime = System.nanoTime()
                         invalidateSelf()

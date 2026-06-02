@@ -23,13 +23,13 @@ class PrivacyDtoAdapter : AbsDtoAdapter<VKApiPrivacy>("VKApiPrivacy") {
         if (checkObject(owners)) {
             val allowed = owners.jsonObject["allowed"]
             if (checkArray(allowed)) {
-                for (i in 0 until allowed.jsonArray.size) {
+                for (i in allowed.jsonArray.indices) {
                     privacy.includeOwner(optLong(allowed.jsonArray, i))
                 }
             }
             val excluded = owners.jsonObject["excluded"]
             if (checkArray(excluded)) {
-                for (i in 0 until excluded.jsonArray.size) {
+                for (i in excluded.jsonArray.indices) {
                     privacy.excludeOwner(optLong(excluded.jsonArray, i))
                 }
             }
@@ -38,13 +38,13 @@ class PrivacyDtoAdapter : AbsDtoAdapter<VKApiPrivacy>("VKApiPrivacy") {
         if (checkObject(lists)) {
             val allowed = lists.jsonObject["allowed"]
             if (checkArray(allowed)) {
-                for (i in 0 until allowed.jsonArray.size) {
+                for (i in allowed.jsonArray.indices) {
                     privacy.includeFriendsList(optLong(allowed.jsonArray, i))
                 }
             }
             val excluded = lists.jsonObject["excluded"]
             if (checkArray(excluded)) {
-                for (i in 0 until excluded.jsonArray.size) {
+                for (i in excluded.jsonArray.indices) {
                     privacy.excludeFriendsList(optLong(excluded.jsonArray, i))
                 }
             }

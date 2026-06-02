@@ -41,7 +41,6 @@ import dev.ragnarok.fenrir.fragment.wall.groupwall.IGroupWallView.IOptionMenuVie
 import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.ifNonNullNoEmpty
 import dev.ragnarok.fenrir.link.LinkHelper
-import dev.ragnarok.fenrir.link.internal.LinkActionAdapter
 import dev.ragnarok.fenrir.link.internal.OwnerLinkSpanFactory
 import dev.ragnarok.fenrir.model.Community
 import dev.ragnarok.fenrir.model.CommunityDetails
@@ -90,8 +89,8 @@ class GroupWallFragment : AbsWallFragment<IGroupWallView, GroupWallPresenter>(),
             }
         }
     }
-    private val ownerLinkAdapter: OwnerLinkSpanFactory.ActionListener =
-        object : LinkActionAdapter() {
+    private val ownerLinkAdapter =
+        object : OwnerLinkSpanFactory.ActionListener() {
             override fun onOwnerClick(ownerId: Long) {
                 presenter?.fireOwnerClick(
                     ownerId

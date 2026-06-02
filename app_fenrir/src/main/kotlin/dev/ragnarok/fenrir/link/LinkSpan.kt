@@ -29,7 +29,13 @@ class LinkSpan(
         menus.add(
             OptionRequest(
                 R.id.button_ok,
-                context.getString(R.string.open),
+                context.getString(
+                    if (link.contains("tel:")) {
+                        R.string.call
+                    } else {
+                        R.string.open
+                    }
+                ),
                 R.drawable.web,
                 true
             )
@@ -58,7 +64,13 @@ class LinkSpan(
                 R.id.button_cancel -> {
                     val clipboard =
                         context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
-                    val clip = ClipData.newPlainText("response", link)
+                    var tmpLink = link
+                    if (tmpLink.contains("tel:")) {
+                        tmpLink = tmpLink.replace("tel:", "")
+                    } else if (tmpLink.contains("mailto:")) {
+                        tmpLink = tmpLink.replace("mailto:", "")
+                    }
+                    val clip = ClipData.newPlainText("response", tmpLink)
                     clipboard?.setPrimaryClip(clip)
                     createCustomToast(context, null)?.showToast(R.string.copied_to_clipboard)
                 }
@@ -68,11 +80,13 @@ class LinkSpan(
 
     override fun updateDrawState(textPaint: TextPaint) {
         super.updateDrawState(textPaint)
-        if (is_underline) textPaint.color =
-            CurrentTheme.getColorPrimary(context) else textPaint.color =
+        textPaint.color = if (is_underline) {
+            CurrentTheme.getColorPrimary(context)
+        } else {
             CurrentTheme.getColorSecondary(
                 context
             )
+        }
         textPaint.isUnderlineText = is_underline
     }
 }

@@ -35,7 +35,6 @@ import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
 import dev.ragnarok.fenrir.fragment.base.MenuAdapter
 import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.link.LinkHelper.openLinkInBrowser
-import dev.ragnarok.fenrir.link.internal.LinkActionAdapter
 import dev.ragnarok.fenrir.link.internal.OwnerLinkSpanFactory
 import dev.ragnarok.fenrir.link.internal.OwnerLinkSpanFactory.withSpans
 import dev.ragnarok.fenrir.listener.OnSectionResumeCallback
@@ -71,8 +70,8 @@ import dev.ragnarok.fenrir.view.natives.animation.AspectRatioAnimatedShapeableIm
 
 class VideoPreviewFragment : BaseMvpFragment<VideoPreviewPresenter, IVideoPreviewView>(),
     IVideoPreviewView, MenuProvider {
-    private val ownerLinkAdapter: OwnerLinkSpanFactory.ActionListener =
-        object : LinkActionAdapter() {
+    private val ownerLinkAdapter =
+        object : OwnerLinkSpanFactory.ActionListener() {
             override fun onOwnerClick(ownerId: Long) {
                 presenter?.fireOwnerClick(
                     ownerId
