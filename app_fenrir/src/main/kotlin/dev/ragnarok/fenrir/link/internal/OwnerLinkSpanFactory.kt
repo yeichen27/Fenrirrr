@@ -11,11 +11,10 @@ import dev.ragnarok.fenrir.util.Utils.safeCountOfMultiple
 import kotlin.math.abs
 
 object OwnerLinkSpanFactory {
-    private val LINK_COMPARATOR =
-        Comparator { link1: AbsInternalLink, link2: AbsInternalLink -> link1.start - link2.start }
-    private val ownerPattern: Regex = Regex("\\[(id|club)(\\d+)\\|([^]]+)]")
+    private val ownerPattern: Regex =
+        Regex("\\[(id|club|event|public)(\\d+)\\|([^]]+)]|\\[(https:[^]]+|http:[^]]+|vk\\.(?:ru|com|me)[^]]+|)\\|([^]]+)]")
     private val topicCommentPattern: Regex =
-        Regex("\\[(id|club)(\\d*):bp(-\\d*)_(\\d*)\\|([^]]+)]")
+        Regex("\\[(id|club|event|public)(\\d*):bp(-\\d*)_(\\d*)\\|([^]]+)]")
 
     fun findPatterns(
         input: String?,
@@ -36,7 +35,7 @@ object OwnerLinkSpanFactory {
             if (topicLinks.nonNullNoEmpty()) {
                 all.addAll(topicLinks)
             }
-            all.sortWith(LINK_COMPARATOR)
+            all.sortBy { it.start }
             return all
         }
         return null
@@ -62,17 +61,24 @@ object OwnerLinkSpanFactory {
             if (topicLinks.nonNullNoEmpty()) {
                 all.addAll(topicLinks)
             }
-            all.sortWith(LINK_COMPARATOR)
+            all.sortBy { it.start }
             val result = SpannableStringBuilder(replace(input, all))
             for (link in all) {
                 val clickableSpan: ClickableSpan = object : ClickableSpan() {
                     override fun onClick(widget: View) {
                         if (listener != null) {
-                            if (link is TopicLink) {
-                                listener.onTopicLinkClicked(link)
-                            }
-                            if (link is OwnerLink) {
-                                listener.onOwnerClick(link.ownerId)
+                            when (link) {
+                                is TopicLink -> {
+                                    listener.onTopicLinkClicked(link)
+                                }
+
+                                is OwnerLink -> {
+                                    listener.onOwnerClick(link.ownerId)
+                                }
+
+                                is UrlLink -> {
+                                    listener.onUrlClick(link.url)
+                                }
                             }
                         }
                     }
@@ -89,12 +95,12 @@ object OwnerLinkSpanFactory {
         return input
     }
 
-    private fun toLong(str: String?, pow_n: Int): Long {
+    private fun toLong(str: String?, powN: Int): Long {
         if (str.isNullOrEmpty()) {
             return Settings.get().accounts().current
         }
         try {
-            return str.toLong() * pow_n
+            return str.toLong() * powN
         } catch (_: NumberFormatException) {
         }
         return Settings.get().accounts().current
@@ -106,10 +112,13 @@ object OwnerLinkSpanFactory {
             val links: MutableList<TopicLink> = ArrayList(res.count())
             for (i in res) {
                 val link = TopicLink()
-                val club = "club" == i.groupValues.getOrNull(1)
+                val ownerType = i.groupValues.getOrNull(1)
                 link.start = i.range.first
                 link.end = i.range.last + 1
-                link.replyToOwner = toLong(i.groupValues.getOrNull(2), if (club) -1 else 1)
+                link.replyToOwner = toLong(
+                    i.groupValues.getOrNull(2),
+                    if ("event" == ownerType || "club" == ownerType || "public" == ownerType) -1 else 1
+                )
                 link.topicOwnerId = toLong(i.groupValues.getOrNull(3), 1)
                 link.replyToCommentId = i.groupValues.getOrNull(4)?.toInt().orZero()
                 link.targetLine = i.groupValues.getOrNull(5)
@@ -121,16 +130,30 @@ object OwnerLinkSpanFactory {
         }
     }
 
-    private fun findOwnersLinks(input: CharSequence): List<OwnerLink>? {
+    private fun findOwnersLinks(input: CharSequence): List<AbsInternalLink>? {
         return try {
             val res = ownerPattern.findAll(input)
-            val links: MutableList<OwnerLink> = ArrayList(res.count())
+            val links: MutableList<AbsInternalLink> = ArrayList(res.count())
             for (i in res) {
-                val club = "club" == i.groupValues.getOrNull(1)
-                val ownerId = toLong(i.groupValues.getOrNull(2), if (club) -1 else 1)
-                val name = i.groupValues.getOrNull(3)
+                if (i.groupValues.getOrNull(4).nonNullNoEmpty()) {
+                    links.add(
+                        UrlLink(
+                            i.range.first,
+                            i.range.last + 1,
+                            i.groupValues.getOrNull(4).orEmpty(),
+                            i.groupValues.getOrNull(5).orEmpty()
+                        )
+                    )
+                } else {
+                    val ownerType = i.groupValues.getOrNull(1)
+                    val ownerId = toLong(
+                        i.groupValues.getOrNull(2),
+                        if ("event" == ownerType || "club" == ownerType || "public" == ownerType) -1 else 1
+                    )
+                    val name = i.groupValues.getOrNull(3)
 
-                links.add(OwnerLink(i.range.first, i.range.last + 1, ownerId, name.orEmpty()))
+                    links.add(OwnerLink(i.range.first, i.range.last + 1, ownerId, name.orEmpty()))
+                }
             }
             links
         } catch (_: Exception) {
@@ -186,5 +209,6 @@ object OwnerLinkSpanFactory {
     open class ActionListener {
         open fun onTopicLinkClicked(link: TopicLink) {}
         open fun onOwnerClick(ownerId: Long) {}
+        open fun onUrlClick(url: String) {}
     }
 }

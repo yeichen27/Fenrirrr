@@ -395,6 +395,10 @@ class WallPostFragment : PlaceSupportMvpFragment<WallPostPresenter, IWallPostVie
                     override fun onOwnerClick(ownerId: Long) {
                         onOpenOwner(ownerId)
                     }
+
+                    override fun onUrlClick(url: String) {
+                        presenter?.fireUrlClick(url)
+                    }
                 })
         mText?.setText(spannableText, TextView.BufferType.SPANNABLE)
         val displaySigner = post.signerId > 0 && post.creator != null

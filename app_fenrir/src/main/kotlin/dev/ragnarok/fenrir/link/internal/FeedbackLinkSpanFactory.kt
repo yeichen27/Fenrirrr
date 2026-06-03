@@ -1,4 +1,4 @@
-package dev.ragnarok.fenrir.link
+package dev.ragnarok.fenrir.link.internal
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -7,7 +7,7 @@ import android.text.Spanned
 import androidx.core.util.PatternsCompat
 import dev.ragnarok.fenrir.orZero
 
-object LinkParserFeedback {
+object FeedbackLinkSpanFactory {
     private val MENTIONS_PATTERN: Regex =
         Regex("\\[((?:id|club|event|public)\\d+)\\|([^]]+)]")
     val MENTIONS_AVATAR_PATTERN: Regex =

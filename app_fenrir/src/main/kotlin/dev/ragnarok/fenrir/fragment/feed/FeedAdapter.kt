@@ -49,6 +49,10 @@ class FeedAdapter(
         override fun onOwnerClick(ownerId: Long) {
             clickListener?.onAvatarClick(ownerId)
         }
+
+        override fun onUrlClick(url: String) {
+            attachmentsActionCallback.onUrlOpen(url)
+        }
     }
 
     @SuppressLint("SetTextI18n")

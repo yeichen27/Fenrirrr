@@ -95,12 +95,6 @@ class PicassoFileManagerHandler(val context: Context) : RequestHandler() {
         ret
     }
 
-    private class ItemModificationComparator : Comparator<File> {
-        override fun compare(lhs: File, rhs: File): Int {
-            return rhs.lastModified().compareTo(lhs.lastModified())
-        }
-    }
-
     private fun getExifRotation(orientation: Int) =
         when (orientation) {
             ExifInterface.ORIENTATION_ROTATE_90, ExifInterface.ORIENTATION_TRANSPOSE -> 90
@@ -337,7 +331,7 @@ class PicassoFileManagerHandler(val context: Context) : RequestHandler() {
 
         val fList = requestFile.listFiles(filter)
         val dst = if (fList != null && fList.isNotEmpty()) {
-            fList.sortedWith(ItemModificationComparator())[0]
+            fList.sortedByDescending { it.lastModified() }[0]
         } else {
             null
         }

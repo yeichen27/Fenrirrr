@@ -423,7 +423,8 @@ class DialogsPresenter(
             dialog.setTitle(it)
         }
         if (index != -1) {
-            dialogs.sortWith(COMPARATOR)
+            dialogs.sortWith(compareByDescending<Dialog> { it.major_id }
+                .thenByDescending { it.minor_id })
             safeNotifyDataSetChanged()
         } else {
             if (Peer.isGroup(peerId) || Peer.isUser(peerId)) {
@@ -435,7 +436,8 @@ class DialogsPresenter(
                                 messages.insertDialog(accountId, dialog)
                                     .fromIOToMain {
                                         dialogs.add(dialog)
-                                        dialogs.sortWith(COMPARATOR)
+                                        dialogs.sortWith(compareByDescending<Dialog> { it.major_id }
+                                            .thenByDescending { it.minor_id })
                                         safeNotifyDataSetChanged()
                                     }
                             )
@@ -443,7 +445,8 @@ class DialogsPresenter(
                 )
             } else {
                 dialogs.add(dialog)
-                dialogs.sortWith(COMPARATOR)
+                dialogs.sortWith(compareByDescending<Dialog> { it.major_id }
+                    .thenByDescending { it.minor_id })
                 safeNotifyDataSetChanged()
             }
         }
@@ -737,17 +740,9 @@ class DialogsPresenter(
         view.setCanSearch(dialogsOwnerId > 0)
     }
 
-    private class DialogByIdMajorID : Comparator<Dialog> {
-        override fun compare(o1: Dialog, o2: Dialog): Int {
-            val res = o2.major_id.compareTo(o1.major_id)
-            return if (res == 0) o2.getMinor_id().compareTo(o1.getMinor_id()) else res
-        }
-    }
-
     companion object {
         private const val COUNT = 30
         private const val SAVE_DIALOGS_OWNER_ID = "save-dialogs-owner-id"
-        private val COMPARATOR: Comparator<Dialog> = DialogByIdMajorID()
         internal fun getTitleIfEmpty(users: Collection<User>): String? {
             return join(
                 users,

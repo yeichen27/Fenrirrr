@@ -1077,6 +1077,10 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
                         override fun onOwnerClick(ownerId: Long) {
                             presenter?.fireOwnerClick(ownerId)
                         }
+
+                        override fun onUrlClick(url: String) {
+                            presenter?.fireUrlClick(url)
+                        }
                     })
                 buttonUnpin?.visibility = if (canChange) View.VISIBLE else View.GONE
                 pinnedView?.setOnClickListener { presenter?.fireMessagesLookup(pinned) }

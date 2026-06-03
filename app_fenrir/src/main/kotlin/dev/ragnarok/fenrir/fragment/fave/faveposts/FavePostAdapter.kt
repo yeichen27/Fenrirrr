@@ -45,6 +45,10 @@ class FavePostAdapter(
         override fun onOwnerClick(ownerId: Long) {
             clickListener?.onAvatarClick(ownerId)
         }
+
+        override fun onUrlClick(url: String) {
+            attachmentsActionCallback.onUrlOpen(url)
+        }
     }
     private var recyclerView: RecyclerView? = null
     private var mOnHashTagClickListener: EmojiconTextView.OnHashTagClickListener? = null

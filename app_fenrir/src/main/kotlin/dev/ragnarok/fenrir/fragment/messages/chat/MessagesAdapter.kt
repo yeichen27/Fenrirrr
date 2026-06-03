@@ -73,6 +73,10 @@ class MessagesAdapter(
             override fun onOwnerClick(ownerId: Long) {
                 attachmentsActionCallback.onOpenOwner(ownerId)
             }
+
+            override fun onUrlClick(url: String) {
+                attachmentsActionCallback.onUrlOpen(url)
+            }
         }
     private var onHashTagClickListener: EmojiconTextView.OnHashTagClickListener? = null
     private var onMessageActionListener: OnMessageActionListener? = null

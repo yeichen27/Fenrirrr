@@ -1,7 +1,6 @@
 package dev.ragnarok.fenrir.link
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -92,7 +91,7 @@ import kotlin.math.abs
 object LinkHelper {
     @SuppressLint("CheckResult")
     fun openUrl(
-        context: Activity,
+        context: Context,
         accountId: Long,
         link: String?,
         isMain: Boolean = false,
@@ -130,7 +129,7 @@ object LinkHelper {
                 }) { e -> createCustomToast(context, null)?.showToastThrowable(e) }
         } else {
             if (!openVKlink(context, accountId, link, isMain)) {
-                if (!actionOpen && Settings.get().main().isOpenUrlInternal > 0) {
+                if (!actionOpen && Settings.get().main().isOpenUrlInternal < 2) {
                     openLinkInBrowser(context, link)
                 } else {
                     getExternalLinkPlace(accountId, link).tryOpenWith(context)
@@ -429,13 +428,13 @@ object LinkHelper {
     }
 
     private fun openVKlink(
-        activity: Activity,
+        context: Context,
         accountId: Long,
         url: String,
         isMain: Boolean
     ): Boolean {
         val link = VKLinkParser.parse(url)
-        return link != null && openVKLink(activity, accountId, link, isMain)
+        return link != null && openVKLink(context, accountId, link, isMain)
     }
 
     private fun getCustomTabsPackages(context: Context): ArrayList<ResolveInfo> {

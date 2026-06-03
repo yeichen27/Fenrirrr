@@ -1,4 +1,4 @@
-package dev.ragnarok.fenrir.link
+package dev.ragnarok.fenrir.link.internal
 
 import android.app.Activity
 import android.content.ClipData
@@ -9,6 +9,7 @@ import android.text.style.ClickableSpan
 import android.view.View
 import androidx.fragment.app.FragmentActivity
 import dev.ragnarok.fenrir.R
+import dev.ragnarok.fenrir.link.LinkHelper
 import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.ModalBottomSheetDialogFragment
 import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.OptionRequest
 import dev.ragnarok.fenrir.settings.CurrentTheme

@@ -100,12 +100,6 @@ class FileManagerSelectPresenter(
         viewHost.updateHeader(ext)
     }
 
-    private class ItemModificationComparator : Comparator<FileItemSelect> {
-        override fun compare(lhs: FileItemSelect, rhs: FileItemSelect): Int {
-            return rhs.modification.compareTo(lhs.modification)
-        }
-    }
-
     fun backupDirectoryScroll(scroll: Parcelable, appVerticalOffset: Int) {
         directoryScrollPositions[path.absolutePath] = Pair(scroll, appVerticalOffset)
     }
@@ -200,8 +194,8 @@ class FileManagerSelectPresenter(
                     for (i in fileListTmp) {
                         if (i.isDir) dirsList.add(i) else flsList.add(i)
                     }
-                    dirsList.sortWith(ItemModificationComparator())
-                    flsList.sortWith(ItemModificationComparator())
+                    dirsList.sortByDescending { it.modification }
+                    flsList.sortByDescending { it.modification }
                     fileListTmp.clear()
                     fileListTmp.addAll(dirsList)
                     fileListTmp.addAll(flsList)

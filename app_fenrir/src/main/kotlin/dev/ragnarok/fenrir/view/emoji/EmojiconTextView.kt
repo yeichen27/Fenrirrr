@@ -21,7 +21,7 @@ import androidx.fragment.app.FragmentActivity
 import dev.ragnarok.fenrir.EmojiconHandler.addEmojis
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.link.LinkHelper
-import dev.ragnarok.fenrir.link.LinkSpan
+import dev.ragnarok.fenrir.link.internal.LinkSpan
 import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.ModalBottomSheetDialogFragment
 import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.OptionRequest
 import dev.ragnarok.fenrir.nonNullNoEmpty

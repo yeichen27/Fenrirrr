@@ -117,7 +117,7 @@ object Model2Entity {
             .setPhoto100(model.photo100)
             .setPhoto200(model.photo200)
             .setMajor_id(model.major_id)
-            .setMinor_id(model.getMinor_id())
+            .setMinor_id(model.minor_id)
     }
 
     fun buildReactionAssetEntity(dto: ReactionAsset): ReactionAssetEntity {

@@ -53,6 +53,10 @@ class FeedbackViewBinder(
         override fun onOwnerClick(ownerId: Long) {
             openOwner(ownerId)
         }
+
+        override fun onUrlClick(url: String) {
+            attachmentsActionCallback.onUrlOpen(url)
+        }
     }
 
     /**

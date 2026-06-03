@@ -153,7 +153,7 @@ internal class StickersStorage(base: AppStorages) : AbsStorage(base), IStickersS
                 }
                 stickers.add(mapStickerSet(cursor))
             }
-            stickers.sortWith(COMPARATOR_STICKER_SET)
+            stickers.sortByDescending { it.position }
             cursor.close()
 
             if (isActive()) {
@@ -238,10 +238,6 @@ internal class StickersStorage(base: AppStorages) : AbsStorage(base), IStickersS
             StickersKeywordsColumns.KEYWORDS,
             StickersKeywordsColumns.STICKERS
         )
-        private val COMPARATOR_STICKER_SET =
-            Comparator { rhs: StickerSetEntity, lhs: StickerSetEntity ->
-                lhs.position.compareTo(rhs.position)
-            }
 
         internal fun createCv(accountId: Long, entity: StickerSetEntity, pos: Int): ContentValues {
             val cv = ContentValues()

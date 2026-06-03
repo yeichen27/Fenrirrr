@@ -12,7 +12,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
-import dev.ragnarok.fenrir.link.LinkHelper.openLinkInBrowser
+import dev.ragnarok.fenrir.link.LinkHelper
 import dev.ragnarok.fenrir.listener.EndlessRecyclerOnScrollListener
 import dev.ragnarok.fenrir.listener.PicassoPauseOnScrollListener
 import dev.ragnarok.fenrir.model.FaveLink
@@ -71,7 +71,7 @@ class FaveLinksFragment : BaseMvpFragment<FaveLinksPresenter, IFaveLinksView>(),
     }
 
     override fun openLink(accountId: Long, link: FaveLink) {
-        openLinkInBrowser(requireActivity(), link.url)
+        LinkHelper.openUrl(requireActivity(), accountId, link.url)
     }
 
     override fun notifyItemRemoved(index: Int) {

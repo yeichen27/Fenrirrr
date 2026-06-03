@@ -98,6 +98,10 @@ class AttachmentsViewBinder(
         override fun onOwnerClick(ownerId: Long) {
             mAttachmentsActionCallback?.onOpenOwner(ownerId)
         }
+
+        override fun onUrlClick(url: String) {
+            mAttachmentsActionCallback?.onUrlOpen(url)
+        }
     }
 
     fun setOnHashTagClickListener(onHashTagClickListener: EmojiconTextView.OnHashTagClickListener?) {

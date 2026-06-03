@@ -237,12 +237,11 @@ abstract class PlaceSupportMvpFragment<P : PlaceSupportPresenter<V>, V> : BaseMv
     }
 
     override fun openLink(accountId: Long, link: Link) {
-        LinkHelper.openLinkInBrowser(requireActivity(), link.url)
+        LinkHelper.openUrl(requireActivity(), accountId, link.url)
     }
 
     override fun openUrl(accountId: Long, url: String) {
-        PlaceFactory.getExternalLinkPlace(accountId, url)
-            .tryOpenWith(requireActivity())
+        LinkHelper.openUrl(requireActivity(), accountId, url)
     }
 
     override fun openWikiPage(accountId: Long, page: WikiPage) {

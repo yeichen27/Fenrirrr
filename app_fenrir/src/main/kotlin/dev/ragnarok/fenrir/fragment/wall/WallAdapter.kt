@@ -46,6 +46,10 @@ class WallAdapter(
         override fun onOwnerClick(ownerId: Long) {
             clickListener.onAvatarClick(ownerId)
         }
+
+        override fun onUrlClick(url: String) {
+            attachmentsActionCallback.onUrlOpen(url)
+        }
     }
     private var nonPublishedPostActionListener: NonPublishedPostActionListener? = null
     private var mOnHashTagClickListener: EmojiconTextView.OnHashTagClickListener? = null

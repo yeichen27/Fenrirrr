@@ -96,6 +96,10 @@ class GroupWallFragment : AbsWallFragment<IGroupWallView, GroupWallPresenter>(),
                     ownerId
                 )
             }
+
+            override fun onUrlClick(url: String) {
+                presenter?.fireUrlClick(url)
+            }
         }
     private var mHeaderHolder: GroupHeaderHolder? = null
     override fun displayBaseCommunityData(community: Community, details: CommunityDetails) {

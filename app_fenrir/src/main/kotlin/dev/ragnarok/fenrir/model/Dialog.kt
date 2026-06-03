@@ -40,7 +40,8 @@ class Dialog : IdentificableOwner, Parcelable {
         private set
     var major_id = 0
         private set
-    private var minor_id = 0
+    var minor_id = 0
+        private set
 
     constructor()
     internal constructor(parcel: Parcel) {
@@ -235,12 +236,6 @@ class Dialog : IdentificableOwner, Parcelable {
     fun setMajor_id(major_id: Int): Dialog {
         this.major_id = major_id
         return this
-    }
-
-    fun getMinor_id(): Int {
-        return if (minor_id == 0) {
-            lastMessageId
-        } else minor_id
     }
 
     fun setMinor_id(minor_id: Int): Dialog {

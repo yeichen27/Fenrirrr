@@ -253,12 +253,6 @@ class FileManagerPresenter(
         uploadManager.cancel(upload.id)
     }
 
-    private class ItemModificationComparator : Comparator<FileItem> {
-        override fun compare(lhs: FileItem, rhs: FileItem): Int {
-            return rhs.modification.compareTo(lhs.modification)
-        }
-    }
-
     fun backupDirectoryScroll(scroll: Parcelable, appVerticalOffset: Int) {
         directoryScrollPositions[path.absolutePath] = Pair(scroll, appVerticalOffset)
     }
@@ -379,8 +373,8 @@ class FileManagerPresenter(
             for (i in fileListTmp) {
                 if (i.type == FileType.folder) dirsList.add(i) else flsList.add(i)
             }
-            dirsList.sortWith(ItemModificationComparator())
-            flsList.sortWith(ItemModificationComparator())
+            dirsList.sortByDescending { it.modification }
+            flsList.sortByDescending { it.modification }
             fileListTmp.clear()
             fileListTmp.addAll(dirsList)
             fileListTmp.addAll(flsList)
@@ -460,8 +454,8 @@ class FileManagerPresenter(
                     for (i in fileListTmp) {
                         if (i.type == FileType.folder) dirsList.add(i) else flsList.add(i)
                     }
-                    dirsList.sortWith(ItemModificationComparator())
-                    flsList.sortWith(ItemModificationComparator())
+                    dirsList.sortByDescending { it.modification }
+                    flsList.sortByDescending { it.modification }
                     fileListTmp.clear()
                     fileListTmp.addAll(dirsList)
                     fileListTmp.addAll(flsList)

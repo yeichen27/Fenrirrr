@@ -18,6 +18,7 @@ import dev.ragnarok.fenrir.activity.SendAttachmentsActivity.Companion.startForSe
 import dev.ragnarok.fenrir.activity.SendAttachmentsActivity.Companion.startForSendAttachmentsFor
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
 import dev.ragnarok.fenrir.getParcelableCompat
+import dev.ragnarok.fenrir.link.LinkHelper
 import dev.ragnarok.fenrir.link.internal.OwnerLinkSpanFactory
 import dev.ragnarok.fenrir.model.Market
 import dev.ragnarok.fenrir.model.Peer
@@ -147,6 +148,14 @@ class MarketViewFragment : BaseMvpFragment<MarketViewPresenter, IMarketViewView>
                 listener = object : OwnerLinkSpanFactory.ActionListener() {
                     override fun onOwnerClick(ownerId: Long) {
                         getOwnerWallPlace(accountId, ownerId, null).tryOpenWith(requireActivity())
+                    }
+
+                    override fun onUrlClick(url: String) {
+                        LinkHelper.openUrl(
+                            requireActivity(),
+                            accountId,
+                            url
+                        )
                     }
                 })
         }

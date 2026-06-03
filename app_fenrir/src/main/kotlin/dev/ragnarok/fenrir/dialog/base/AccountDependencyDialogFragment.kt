@@ -164,11 +164,11 @@ abstract class AccountDependencyDialogFragment : BaseDialogFragment(), OnAttachm
     }
 
     override fun onLinkOpen(link: Link) {
-        LinkHelper.openLinkInBrowser(requireActivity(), link.url)
+        LinkHelper.openUrl(requireActivity(), accountId, link.url)
     }
 
     override fun onUrlOpen(url: String) {
-        getExternalLinkPlace(accountId, url).tryOpenWith(requireActivity())
+        LinkHelper.openUrl(requireActivity(), accountId, url)
     }
 
     override fun onWikiPageOpen(page: WikiPage) {

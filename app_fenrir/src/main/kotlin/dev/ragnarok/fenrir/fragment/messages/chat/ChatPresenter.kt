@@ -1306,7 +1306,8 @@ class ChatPresenter(
     }
 
     private fun addMessageToList(message: Message) {
-        addElementToList(message, data, MESSAGES_COMPARATOR)
+        addElementToList(message, data, compareByDescending<Message> { it.status }
+            .thenByDescending { it.getObjectId() })
         resolveEmptyTextVisibility()
     }
 
@@ -2042,7 +2043,7 @@ class ChatPresenter(
     }
 
     private fun canDeleteForAll(message: Message): Boolean {
-        return chatAdminsIds?.contains(accountId) == true || (message.isOut && Unixtime.now() - message.date < 24 * 60 * 60 && peerId != accountId)
+        return chatAdminsIds?.contains(accountId) == true || (message.isOut && /* Unixtime.now() - message.date < 24 * 60 * 60 && */ peerId != accountId)
     }
 
     private fun cancelWaitingForUploadMessage(messageId: Int) {
@@ -2521,7 +2522,7 @@ class ChatPresenter(
 
     fun fireBotSendClick(item: Keyboard.Button, context: Context) {
         if (item.type == "open_link") {
-            LinkHelper.openLinkInBrowser(context, item.link)
+            LinkHelper.openUrl(context, accountId, item.link)
             return
         }
         view?.scrollTo(0)
@@ -2930,15 +2931,5 @@ class ChatPresenter(
 
         private const val REQUEST_CODE_ENABLE_ENCRYPTION = 1
         private const val REQUEST_CODE_KEY_EXCHANGE = 2
-
-        private val MESSAGES_COMPARATOR = Comparator<Message> { rhs, lhs ->
-            // соблюдаем сортировку как при запросе в бд
-
-            if (lhs.status == rhs.status) {
-                return@Comparator lhs.getObjectId().compareTo(rhs.getObjectId())
-            }
-
-            lhs.status.compareTo(rhs.status)
-        }
     }
 }
