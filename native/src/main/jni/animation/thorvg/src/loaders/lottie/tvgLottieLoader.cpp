@@ -514,16 +514,6 @@ bool LottieLoader::tween(float from, float to, float progress)
     return true;
 }
 
-
-bool LottieLoader::assign(const char* layer, uint32_t ix, const char* var, float val)
-{
-    if (!ready() || !comp->expressions) return false;
-    comp->root->assign(layer, ix, var, val);
-
-    return true;
-}
-
-
 bool LottieLoader::quality(uint8_t value)
 {
     if (!ready()) return false;
@@ -532,4 +522,10 @@ bool LottieLoader::quality(uint8_t value)
         build = true;
     }
     return true;
+}
+
+
+void LottieLoader::resolver(std::function<void(const tvg::LottieAudioResolver&, void*)> func, void* data)
+{
+    builder->audioResolver = {std::move(func), data};
 }

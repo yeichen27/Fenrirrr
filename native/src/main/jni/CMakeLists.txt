@@ -35,9 +35,9 @@ foreach (ffmpeg_lib avutil swresample avcodec avformat swscale)
 endforeach ()
 
 add_library(thorvg STATIC
+        animation/thorvg/src/renderer/cpu_engine/tvgSwBlendOp.cpp
         animation/thorvg/src/renderer/cpu_engine/tvgSwFill.cpp
         animation/thorvg/src/renderer/cpu_engine/tvgSwImage.cpp
-        animation/thorvg/src/renderer/cpu_engine/tvgSwMath.cpp
         animation/thorvg/src/renderer/cpu_engine/tvgSwMemPool.cpp
         animation/thorvg/src/renderer/cpu_engine/tvgSwPostEffect.cpp
         animation/thorvg/src/renderer/cpu_engine/tvgSwRaster.cpp
@@ -45,6 +45,7 @@ add_library(thorvg STATIC
         animation/thorvg/src/renderer/cpu_engine/tvgSwRle.cpp
         animation/thorvg/src/renderer/cpu_engine/tvgSwShape.cpp
         animation/thorvg/src/renderer/cpu_engine/tvgSwStroke.cpp
+        animation/thorvg/src/renderer/cpu_engine/tvgSwUtil.cpp
         animation/thorvg/src/renderer/tvgAccessor.cpp
         animation/thorvg/src/renderer/tvgAnimation.cpp
         animation/thorvg/src/renderer/tvgCanvas.cpp
@@ -75,7 +76,6 @@ add_library(thorvg STATIC
         animation/thorvg/src/loaders/svg/tvgSvgPath.cpp
         animation/thorvg/src/loaders/svg/tvgSvgUtil.cpp
         animation/thorvg/src/loaders/svg/tvgXmlParser.cpp
-        animation/thorvg/src/common/tvgColor.cpp
         animation/thorvg/src/common/tvgCompressor.cpp
         animation/thorvg/src/common/tvgMath.cpp
         animation/thorvg/src/common/tvgStr.cpp)

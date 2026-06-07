@@ -101,7 +101,7 @@ struct SwShapeTask : SwTask
        Additionally, the stroke style should not be dashed. */
     bool antialiasing(float strokeWidth)
     {
-        return strokeWidth < 2.0f || rshape->stroke->dash.count > 0 || rshape->stroke->first || rshape->trimpath() || rshape->stroke->color.a < 255;
+        return renderer->antiAlias && (strokeWidth < 2.0f || rshape->stroke->dash.count > 0 || rshape->stroke->first || rshape->trimpath() || rshape->stroke->color.a < 255);
     }
 
     float validStrokeWidth(bool clipper)
@@ -130,9 +130,8 @@ struct SwShapeTask : SwTask
         if (updateShape) {
             shapeReset(shape);
             if (rshape->fill || rshape->color.a > 0 || clipper) {
-                if (shapePrepare(shape, rshape, transform, clipBox, curBox, renderer->mpool, tid, clips.count > 0 ? true : false)) {
-                    if (!shapeGenRle(shape, curBox, renderer->mpool, tid, antialiasing(strokeWidth))) goto err;
-                } else {
+                auto composite = clips.count > 0 ? true : false;
+                if (!shapeGenRle(shape, rshape, transform, clipBox, curBox, renderer->mpool, tid, composite, antialiasing(strokeWidth))) {
                     updateFill = false;
                     curBox.reset();
                 }
@@ -142,18 +141,15 @@ struct SwShapeTask : SwTask
         if (updateFill) {
             if (auto fill = rshape->fill) {
                 auto ctable = (flags[0] & RenderUpdateFlag::Gradient) ? true : false;
-                if (ctable) shapeResetFill(shape);
                 if (!shapeGenFillColors(shape, fill, transform, renderer->surface, opacity, ctable)) goto err;
             }
         }
         //Stroke
         if (updateShape || flags[0] & RenderUpdateFlag::Stroke) {
             if (strokeWidth > 0.0f) {
-                shapeResetStroke(shape, rshape, transform, renderer->mpool, tid);
-                if (!shapeGenStrokeRle(shape, rshape, transform, clipBox, curBox, renderer->mpool, tid)) goto err;
+                if (!shapeGenStrokeRle(shape, rshape, transform, clipBox, curBox, renderer->mpool, tid, renderer->antiAlias)) goto err;
                 if (auto fill = rshape->strokeFill()) {
                     auto ctable = (flags[0] & RenderUpdateFlag::GradientStroke) ? true : false;
-                    if (ctable) shapeResetStrokeFill(shape);
                     if (!shapeGenStrokeFillColors(shape, fill, transform, renderer->surface, opacity, ctable)) goto err;
                 }
             } else {
@@ -161,8 +157,7 @@ struct SwShapeTask : SwTask
             }
         }
 
-        //Clear current task memorypool here if the clippers would use the same memory pool
-        shapeDelOutline(shape, renderer->mpool, tid);
+        shapeDelOutline(shape);
 
         //Clip Path
         ARRAY_FOREACH(p, clips) {
@@ -179,7 +174,6 @@ struct SwShapeTask : SwTask
     err:
         shapeReset(shape);
         rleReset(shape.strokeRle);
-        shapeDelOutline(shape, renderer->mpool, tid);
         invisible();
     }
 };
@@ -225,8 +219,6 @@ struct SwImageTask : SwTask
             if (clips.count > 0) {
                 if (!imageGenRle(image, curBox, renderer->mpool, tid, false)) goto err;
                 if (image.rle) {
-                    //Clear current task memorypool here if the clippers would use the same memory pool
-                    imageDelOutline(image, renderer->mpool, tid);
                     ARRAY_FOREACH(p, clips) {
                         auto clipper = static_cast<SwTask*>(*p);
                         if (!clipper->clip(image.rle)) goto err;
@@ -241,7 +233,6 @@ struct SwImageTask : SwTask
         curBox.reset();
         imageReset(image);
     end:
-        imageDelOutline(image, renderer->mpool, tid);
         if (!nodirty) dirtyRegion->add(prvBox, curBox);
     }
 };
@@ -504,52 +495,52 @@ bool SwRenderer::blend(BlendMethod method)
 
     switch (method) {
         case BlendMethod::Multiply:
-            surface->blender = opBlendMultiply;
+            surface->blender = blendMultiply;
             break;
         case BlendMethod::Screen:
-            surface->blender = opBlendScreen;
+            surface->blender = blendScreen;
             break;
         case BlendMethod::Overlay:
-            surface->blender = opBlendOverlay;
+            surface->blender = blendOverlay;
             break;
         case BlendMethod::Darken:
-            surface->blender = opBlendDarken;
+            surface->blender = blendDarken;
             break;
         case BlendMethod::Lighten:
-            surface->blender = opBlendLighten;
+            surface->blender = blendLighten;
             break;
         case BlendMethod::ColorDodge:
-            surface->blender = opBlendColorDodge;
+            surface->blender = blendColorDodge;
             break;
         case BlendMethod::ColorBurn:
-            surface->blender = opBlendColorBurn;
+            surface->blender = blendColorBurn;
             break;
         case BlendMethod::HardLight:
-            surface->blender = opBlendHardLight;
+            surface->blender = blendHardLight;
             break;
         case BlendMethod::SoftLight:
-            surface->blender = opBlendSoftLight;
+            surface->blender = blendSoftLight;
             break;
         case BlendMethod::Difference:
-            surface->blender = opBlendDifference;
+            surface->blender = blendDifference;
             break;
         case BlendMethod::Exclusion:
-            surface->blender = opBlendExclusion;
+            surface->blender = blendExclusion;
             break;
         case BlendMethod::Hue:
-            surface->blender = opBlendHue;
+            surface->blender = blendHue;
             break;
         case BlendMethod::Saturation:
-            surface->blender = opBlendSaturation;
+            surface->blender = blendSaturation;
             break;
         case BlendMethod::Color:
-            surface->blender = opBlendColor;
+            surface->blender = blendColor;
             break;
         case BlendMethod::Luminosity:
-            surface->blender = opBlendLuminosity;
+            surface->blender = blendLuminosity;
             break;
         case BlendMethod::Add:
-            surface->blender = opBlendAdd;
+            surface->blender = blendAdd;
             break;
         default:
             surface->blender = nullptr;
@@ -925,5 +916,7 @@ SwRenderer::SwRenderer(uint32_t threads, EngineOption op)
 
     mpool = mpoolReq();
 
-    if (op == EngineOption::None) dirtyRegion.support = false;
+    auto byDefault = (op == EngineOption::Default);
+    dirtyRegion.support = (byDefault || (op & EngineOption::SmartRender));
+    antiAlias = (byDefault || !(op & EngineOption::Aliased));
 }

@@ -272,7 +272,7 @@ static jerry_value_t _buildValue(float frameNo, LottieProperty* property)
             return obj;
         }
         case LottieProperty::Type::Color: return _color((*static_cast<LottieColor*>(property))(frameNo));
-        case LottieProperty::Type::Opacity: return jerry_number((*static_cast<LottieOpacity*>(property))(frameNo));
+        case LottieProperty::Type::Opacity: return jerry_number((*static_cast<LottieOpacity*>(property))(frameNo) / 2.55f);
         case LottieProperty::Type::TextDoc: {
             const auto& doc = (*static_cast<LottieTextDoc*>(property))(frameNo);
             return doc.text ? jerry_string_sz(doc.text) : jerry_string_sz("");
@@ -306,7 +306,7 @@ static void _buildTransform(jerry_value_t context, float frameNo, LottieTransfor
     jerry_object_set_sz(obj, "rotation", rotation);
     jerry_value_free(rotation);
 
-    auto opacity = jerry_number(transform->opacity(frameNo));
+    auto opacity = jerry_number(transform->opacity(frameNo) / 2.55f);
     jerry_object_set_sz(obj, "opacity", opacity);
     jerry_value_free(opacity);
 
@@ -1462,21 +1462,9 @@ jerry_value_t LottieExpressions::buildGlobal(Context& context)
     return context.global;
 }
 
-
-void LottieExpressions::buildWritables(Context& context, LottieExpression* exp)
-{
-    if (exp->writables.empty()) return;
-    ARRAY_FOREACH(p, exp->writables) {
-        auto writable = jerry_number(p->val);
-        jerry_object_set_sz(context.global, p->var, writable);
-        jerry_value_free(writable);
-    }
-}
-
-
 jerry_value_t LottieExpressions::evaluate(float frameNo, LottieExpression* exp)
 {
-    if (exp->disabled && exp->writables.empty()) return jerry_undefined();
+    if (exp->disabled) return jerry_undefined();
 
     auto& context = this->context();
 
@@ -1501,9 +1489,6 @@ jerry_value_t LottieExpressions::evaluate(float frameNo, LottieExpression* exp)
 
     //expansions per object type
     if (exp->object->type == LottieObject::Transform) _buildTransform(context.global, frameNo, static_cast<LottieTransform*>(exp->object));
-
-    //update writable values
-    buildWritables(context, exp);
 
     //evaluate the code
     auto eval = jerry_eval((jerry_char_t *) exp->code, strlen(exp->code), JERRY_PARSE_NO_OPTS);
